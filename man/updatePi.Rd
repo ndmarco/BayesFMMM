@@ -4,7 +4,7 @@
 \alias{updatePi}
 \title{Updates the parameters pi_1 through pi_K}
 \usage{
-updatePi(Z, alpha, K, N, iter, pi)
+updatePi(Z, alpha, K, iter, pi)
 }
 \arguments{
 \item{Z}{Binary matrix of containing inclusion/exclusion to the various groups}
@@ -13,10 +13,9 @@ updatePi(Z, alpha, K, N, iter, pi)
 
 \item{K}{Number of clusters}
 
-\item{pi_l}{Placeholder of new draw}
-}
-\value{
-updated pi_l
+\item{iter}{Iteration of MCMC step}
+
+\item{pi}{Matrix conatining all past, current, and future MCMC draws}
 }
 \description{
 Updates the parameters pi_1 through pi_K

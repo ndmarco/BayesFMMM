@@ -6,10 +6,50 @@
 #' @param Z Binary matrix of containing inclusion/exclusion to the various groups
 #' @param alpha Hyperparameter for distribution of pi_i
 #' @param K Number of clusters
-#' @param pi_l Placeholder of new draw
-#' @return updated pi_l
+#' @param iter Iteration of MCMC step
+#' @param pi Matrix conatining all past, current, and future MCMC draws
 #' @export
-updatePi <- function(Z, alpha, K, N, iter, pi) {
-    invisible(.Call('_BayesFOC_updatePi', PACKAGE = 'BayesFOC', Z, alpha, K, N, iter, pi))
+updatePi <- function(Z, alpha, K, iter, pi) {
+    invisible(.Call('_BayesFOC_updatePi', PACKAGE = 'BayesFOC', Z, alpha, K, iter, pi))
+}
+
+#' Gets generalized log determinant (product of positive eigen values)
+#'
+#' @param M Matrix that we want the determinant of
+#' @return g_ldet Double countaining the generalized determinant
+#' @export
+g_ldet <- function(M) {
+    .Call('_BayesFOC_g_ldet', PACKAGE = 'BayesFOC', M)
+}
+
+#' Gets log-pdf of z given zeta
+#'
+#' @param M Cube that contains the M_i variance matrices
+#' @param m Matrix that contains the m_i mean vectors
+#' @param tilde_M Cube that contains the tilde_M_i variance matrices
+#' @param tilde_m Matrix that contains the tilde_M_i mean vectors
+#' @param f_obs Vector containing the observed points for the ith observation
+#' @param f_star Vector containing the unobserved time points of interest for ith observation
+#' @param pi Vector containing the sampled pi for this iteration
+#' @return lpdf_z Double contianing the log-pdf
+#' @export
+lpdf_z <- function(M, m, tilde_M, tilde_m, f_obs, f_star, pi_l, z_il, pinv_M, pinv_tilde_M) {
+    .Call('_BayesFOC_lpdf_z', PACKAGE = 'BayesFOC', M, m, tilde_M, tilde_m, f_obs, f_star, pi_l, z_il, pinv_M, pinv_tilde_M)
+}
+
+#' Updates the ith row of the Z Matrix
+#'
+#' @param M Matrix that contains the M_i variance matrix
+#' @param m Vector that contains the m_i mean vector
+#' @param tilde_M Matrix that contains the tilde_M_i variance matrix
+#' @param tilde_m Vector that contains the tilde_M_i mean vector
+#' @param f_obs Vector containing the observed points n
+#' @param f_star Vector containing the unobserved time points of interest for ith observation
+#' @param pi Vector containing the sampled pi for this iteration
+#' @param iter Iteration of MCMC step
+#' @param Z Cube that contains all past, current, and future MCMC draws
+#' @export
+updateZ_i <- function(M, m, tilde_M, tilde_m, f_obs, f_star, pi, iter, Z) {
+    invisible(.Call('_BayesFOC_updateZ_i', PACKAGE = 'BayesFOC', M, m, tilde_M, tilde_m, f_obs, f_star, pi, iter, Z))
 }
 
