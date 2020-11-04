@@ -38,19 +38,14 @@ double g_ldet(const arma::mat& M)
   arma::vec E = arma::zeros(N);
   // find eigen values
   eig_sym(E, M);
-  int index = 0;
+  double g_ldet =0;
   for(int i = 0; i < N; i++)
   {
     if(E(i) > 0)
     {
-      index ++;
-    }
-    else
-    {
-      break;
+      g_ldet = g_ldet + log(E(i));
     }
   }
-  double g_ldet = arma::prod(arma::log(E.subvec(0, index)));
   return g_ldet;
 }
 
@@ -79,7 +74,8 @@ double lpdf_z(const arma::mat& M, const arma::vec& m, const arma::mat& tilde_M,
   double lpdf_z = (-0.5 * g_ldet_M) - (0.5 * arma::dot(arma::pinv(M) *(f_obs -
                    M*m), (f_obs - M*m))) - (0.5 * g_ldet_tilde_M) - (0.5 *
                    arma::dot(arma::pinv(tilde_M) * (f_star -tilde_M *tilde_m),
-                   (f_star -tilde_M *tilde_m)));
+                   (f_star -tilde_M *tilde_m))) + z_il * log(pi_l) +
+                   (1 - z_il) * log(1 - pi_l);
   return lpdf_z;
 }
 
@@ -100,9 +96,8 @@ double lpdf_z(const arma::mat& M, const arma::vec& m, const arma::mat& tilde_M,
 void updateZ_i(const arma::mat& M, const arma::vec& m, const arma::mat& tilde_M,
                const arma::vec& tilde_m, const arma::vec& f_obs,
                const arma::vec& f_star, const arma::vec pi, const int iter,
-               arma::cube Z)
+               arma::cube& Z)
 {
-
 }
 
 

@@ -52,7 +52,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // updateZ_i
-void updateZ_i(const arma::mat& M, const arma::vec& m, const arma::mat& tilde_M, const arma::vec& tilde_m, const arma::vec& f_obs, const arma::vec& f_star, const arma::vec pi, const int iter, arma::cube Z);
+void updateZ_i(const arma::mat& M, const arma::vec& m, const arma::mat& tilde_M, const arma::vec& tilde_m, const arma::vec& f_obs, const arma::vec& f_star, const arma::vec pi, const int iter, arma::cube& Z);
 RcppExport SEXP _BayesFOC_updateZ_i(SEXP MSEXP, SEXP mSEXP, SEXP tilde_MSEXP, SEXP tilde_mSEXP, SEXP f_obsSEXP, SEXP f_starSEXP, SEXP piSEXP, SEXP iterSEXP, SEXP ZSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -64,7 +64,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type f_star(f_starSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type pi(piSEXP);
     Rcpp::traits::input_parameter< const int >::type iter(iterSEXP);
-    Rcpp::traits::input_parameter< arma::cube >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type Z(ZSEXP);
     updateZ_i(M, m, tilde_M, tilde_m, f_obs, f_star, pi, iter, Z);
     return R_NilValue;
 END_RCPP
