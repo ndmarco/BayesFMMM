@@ -1,6 +1,6 @@
 #include <RcppArmadillo.h>
 #include <cmath>
-
+#include "computeMM.h"
 
 // [[Rcpp::depends(RcppArmadillo)]]
 
@@ -55,8 +55,8 @@ double g_ldet(const arma::mat& M)
 //' @param m Matrix that contains the m_i mean vectors
 //' @param tilde_M Cube that contains the tilde_M_i variance matrices
 //' @param tilde_m Matrix that contains the tilde_M_i mean vectors
-//' @param f_obs Vector containing the observed points for the ith observation
-//' @param f_star Vector containing the unobserved time points of interest for ith observation
+//' @param f_obs Vector containing f at observed time points
+//' @param f_star Vector containing f at unobserved time points
 //' @param pi Vector containing the sampled pi for this iteration
 //' @return lpdf_z Double contianing the log-pdf
 //' @export
@@ -81,23 +81,43 @@ double lpdf_z(const arma::mat& M, const arma::vec& m, const arma::mat& tilde_M,
 
 //' Updates the ith row of the Z Matrix
 //'
-//' @param M Matrix that contains the M_i variance matrix
-//' @param m Vector that contains the m_i mean vector
+//' @param M Cube that contains all M matrices
+//' @param M_ph Matrix that acts as a placeholder for the new M matrix
+//' @param m Matrix that contains all m mean vectors
+//' @param m_ph vector that acts as a placeholder for new m vector
 //' @param tilde_M Matrix that contains the tilde_M_i variance matrix
 //' @param tilde_m Vector that contains the tilde_M_i mean vector
-//' @param f_obs Vector containing the observed points n
-//' @param f_star Vector containing the unobserved time points of interest for ith observation
+//' @param f_obs Field of vectors containing f at observed time points
+//' @param f_star Field of vectors containing f at unobserved time points
 //' @param pi Vector containing the sampled pi for this iteration
 //' @param iter Iteration of MCMC step
+//' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+//' @param phi Cube of current phi paramaters
 //' @param Z Cube that contains all past, current, and future MCMC draws
 //' @export
 // [[Rcpp::export]]
 
-void updateZ_i(const arma::mat& M, const arma::vec& m, const arma::mat& tilde_M,
-               const arma::vec& tilde_m, const arma::vec& f_obs,
-               const arma::vec& f_star, const arma::vec pi, const int iter,
-               arma::cube& Z)
+void updateZ_i(arma::cube& M, arma::mat M_ph, arma::mat& m, arma::vec& m_ph,
+               arma::cube& tilde_M, const arma::mat& tilde_m, const arma::mat& f_obs,
+               const arma::mat& f_star, const arma::vec pi, const int iter,
+               const arma::field<arma::mat>& S_obs, const arma::cube phi,
+               const arma::mat& nu, arma::cube& Z)
 {
+  computeM(S_obs, Z.slice(iter), phi, M);
+  compute_m(S_obs, Z.slice(iter), phi, nu, m);
+
+  for(int i = 0; i < Z.slice(iter).n_rows; i++)
+  {
+
+    for(int l = 0; l < Z.slice(iter).n_cols; l++)
+    {
+      computeMi(S_obs, Z.slice(iter), phi, i, M_ph);
+      compute_mi(S_obs, Z.slice(iter), phi, nu, i, m_ph);
+
+
+    }
+  }
+
 }
 
 

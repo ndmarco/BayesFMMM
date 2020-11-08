@@ -6,6 +6,62 @@
 
 using namespace Rcpp;
 
+// computeMi
+void computeMi(const arma::field<arma::mat>& S_obs, const arma::mat& Z, const arma::cube& phi, const int i, arma::mat& M);
+RcppExport SEXP _BayesFOC_computeMi(SEXP S_obsSEXP, SEXP ZSEXP, SEXP phiSEXP, SEXP iSEXP, SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::field<arma::mat>& >::type S_obs(S_obsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< const int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type M(MSEXP);
+    computeMi(S_obs, Z, phi, i, M);
+    return R_NilValue;
+END_RCPP
+}
+// computeM
+void computeM(const arma::field<arma::mat>& S_obs, const arma::mat& Z, const arma::cube& phi, arma::cube& M);
+RcppExport SEXP _BayesFOC_computeM(SEXP S_obsSEXP, SEXP ZSEXP, SEXP phiSEXP, SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::field<arma::mat>& >::type S_obs(S_obsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type M(MSEXP);
+    computeM(S_obs, Z, phi, M);
+    return R_NilValue;
+END_RCPP
+}
+// compute_mi
+void compute_mi(const arma::field<arma::mat>& S_obs, const arma::mat& Z, const arma::cube& phi, const arma::mat& nu, const int i, arma::vec& m);
+RcppExport SEXP _BayesFOC_compute_mi(SEXP S_obsSEXP, SEXP ZSEXP, SEXP phiSEXP, SEXP nuSEXP, SEXP iSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::field<arma::mat>& >::type S_obs(S_obsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< const int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type m(mSEXP);
+    compute_mi(S_obs, Z, phi, nu, i, m);
+    return R_NilValue;
+END_RCPP
+}
+// compute_m
+void compute_m(const arma::field<arma::mat>& S_obs, const arma::mat& Z, const arma::cube& phi, const arma::mat& nu, arma::mat& m);
+RcppExport SEXP _BayesFOC_compute_m(SEXP S_obsSEXP, SEXP ZSEXP, SEXP phiSEXP, SEXP nuSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::field<arma::mat>& >::type S_obs(S_obsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type m(mSEXP);
+    compute_m(S_obs, Z, phi, nu, m);
+    return R_NilValue;
+END_RCPP
+}
 // updatePi
 void updatePi(const arma::mat& Z, const double alpha, const int K, const int iter, arma::mat& pi);
 RcppExport SEXP _BayesFOC_updatePi(SEXP ZSEXP, SEXP alphaSEXP, SEXP KSEXP, SEXP iterSEXP, SEXP piSEXP) {
@@ -52,29 +108,38 @@ BEGIN_RCPP
 END_RCPP
 }
 // updateZ_i
-void updateZ_i(const arma::mat& M, const arma::vec& m, const arma::mat& tilde_M, const arma::vec& tilde_m, const arma::vec& f_obs, const arma::vec& f_star, const arma::vec pi, const int iter, arma::cube& Z);
-RcppExport SEXP _BayesFOC_updateZ_i(SEXP MSEXP, SEXP mSEXP, SEXP tilde_MSEXP, SEXP tilde_mSEXP, SEXP f_obsSEXP, SEXP f_starSEXP, SEXP piSEXP, SEXP iterSEXP, SEXP ZSEXP) {
+void updateZ_i(arma::cube& M, arma::mat M_ph, arma::mat& m, arma::vec& m_ph, arma::cube& tilde_M, const arma::mat& tilde_m, const arma::mat& f_obs, const arma::mat& f_star, const arma::vec pi, const int iter, const arma::field<arma::mat>& S_obs, const arma::cube phi, const arma::mat& nu, arma::cube& Z);
+RcppExport SEXP _BayesFOC_updateZ_i(SEXP MSEXP, SEXP M_phSEXP, SEXP mSEXP, SEXP m_phSEXP, SEXP tilde_MSEXP, SEXP tilde_mSEXP, SEXP f_obsSEXP, SEXP f_starSEXP, SEXP piSEXP, SEXP iterSEXP, SEXP S_obsSEXP, SEXP phiSEXP, SEXP nuSEXP, SEXP ZSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type m(mSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type tilde_M(tilde_MSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type tilde_m(tilde_mSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type f_obs(f_obsSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type f_star(f_starSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type M_ph(M_phSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type m(mSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type m_ph(m_phSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type tilde_M(tilde_MSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type tilde_m(tilde_mSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type f_obs(f_obsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type f_star(f_starSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type pi(piSEXP);
     Rcpp::traits::input_parameter< const int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::mat>& >::type S_obs(S_obsSEXP);
+    Rcpp::traits::input_parameter< const arma::cube >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type nu(nuSEXP);
     Rcpp::traits::input_parameter< arma::cube& >::type Z(ZSEXP);
-    updateZ_i(M, m, tilde_M, tilde_m, f_obs, f_star, pi, iter, Z);
+    updateZ_i(M, M_ph, m, m_ph, tilde_M, tilde_m, f_obs, f_star, pi, iter, S_obs, phi, nu, Z);
     return R_NilValue;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_BayesFOC_computeMi", (DL_FUNC) &_BayesFOC_computeMi, 5},
+    {"_BayesFOC_computeM", (DL_FUNC) &_BayesFOC_computeM, 4},
+    {"_BayesFOC_compute_mi", (DL_FUNC) &_BayesFOC_compute_mi, 6},
+    {"_BayesFOC_compute_m", (DL_FUNC) &_BayesFOC_compute_m, 5},
     {"_BayesFOC_updatePi", (DL_FUNC) &_BayesFOC_updatePi, 5},
     {"_BayesFOC_g_ldet", (DL_FUNC) &_BayesFOC_g_ldet, 1},
     {"_BayesFOC_lpdf_z", (DL_FUNC) &_BayesFOC_lpdf_z, 10},
-    {"_BayesFOC_updateZ_i", (DL_FUNC) &_BayesFOC_updateZ_i, 9},
+    {"_BayesFOC_updateZ_i", (DL_FUNC) &_BayesFOC_updateZ_i, 14},
     {NULL, NULL, 0}
 };
 

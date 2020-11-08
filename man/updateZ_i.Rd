@@ -4,24 +4,47 @@
 \alias{updateZ_i}
 \title{Updates the ith row of the Z Matrix}
 \usage{
-updateZ_i(M, m, tilde_M, tilde_m, f_obs, f_star, pi, iter, Z)
+updateZ_i(
+  M,
+  M_ph,
+  m,
+  m_ph,
+  tilde_M,
+  tilde_m,
+  f_obs,
+  f_star,
+  pi,
+  iter,
+  S_obs,
+  phi,
+  nu,
+  Z
+)
 }
 \arguments{
-\item{M}{Matrix that contains the M_i variance matrix}
+\item{M}{Cube that contains all M matrices}
 
-\item{m}{Vector that contains the m_i mean vector}
+\item{M_ph}{Matrix that acts as a placeholder for the new M matrix}
+
+\item{m}{Matrix that contains all m mean vectors}
+
+\item{m_ph}{vector that acts as a placeholder for new m vector}
 
 \item{tilde_M}{Matrix that contains the tilde_M_i variance matrix}
 
 \item{tilde_m}{Vector that contains the tilde_M_i mean vector}
 
-\item{f_obs}{Vector containing the observed points n}
+\item{f_obs}{Field of vectors containing f at observed time points}
 
-\item{f_star}{Vector containing the unobserved time points of interest for ith observation}
+\item{f_star}{Field of vectors containing f at unobserved time points}
 
 \item{pi}{Vector containing the sampled pi for this iteration}
 
 \item{iter}{Iteration of MCMC step}
+
+\item{S_obs}{Field of Matrices containing basis functions evaluated at observed time points}
+
+\item{phi}{Cube of current phi paramaters}
 
 \item{Z}{Cube that contains all past, current, and future MCMC draws}
 }

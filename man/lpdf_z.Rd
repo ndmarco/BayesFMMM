@@ -15,9 +15,9 @@ lpdf_z(M, m, tilde_M, tilde_m, f_obs, f_star, pi_l, z_il, pinv_M, pinv_tilde_M)
 
 \item{tilde_m}{Matrix that contains the tilde_M_i mean vectors}
 
-\item{f_obs}{Vector containing the observed points for the ith observation}
+\item{f_obs}{Vector containing f at observed time points}
 
-\item{f_star}{Vector containing the unobserved time points of interest for ith observation}
+\item{f_star}{Vector containing f at unobserved time points}
 
 \item{pi}{Vector containing the sampled pi for this iteration}
 }
