@@ -20,7 +20,36 @@ NULL
 #' @param phi Cube of current phi paramaters
 #' @param i Int indicating which M we are calculating
 #' @param Z_plus Field of Matrices acting as a placeholder for Z_plus.
-#' @param M Field of Matrices acting as a placeholder for M
+#' @param tilde_M Field of Matrices acting as a placeholder for M
+NULL
+
+#' Computes tilde m_i
+#'
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param f_obs vector of current f values at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Cube of current phi paramaters
+#' @param nu Matrix of current nu paramaters
+#' @param i Int indicating which tilde_m we are calculating
+#' @param Z_plus Matrix acting as a placeholder for Z_plus
+#' @param A_plus Matrix acting as a placeholder for A_plus
+#' @param C Matrix acting as a placeholder for C
+#' @param tilde_m vector acting as a placeholder for tilde_m
+NULL
+
+#' Computes all tilde m
+#'
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param f_obs vector of current f values at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Cube of current phi paramaters
+#' @param nu Matrix of current nu paramaters
+#' @param Z_plus Matrix acting as a placeholder for Z_plus
+#' @param A_plus Matrix acting as a placeholder for A_plus
+#' @param C Matrix acting as a placeholder for C
+#' @param tilde_m matrix acting as a placeholder for tilde_m
 NULL
 
 #' Computes M_i
