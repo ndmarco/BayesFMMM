@@ -12,8 +12,11 @@
 //' @param M Matrix acting as a placeholder for M
 //' @export
 // [[Rcpp::export]]
-void computeMi(const arma::field<arma::mat>& S_obs, const arma::mat& Z,
-              const arma::cube& phi, const int i, arma::mat& M)
+void computeMi(const arma::field<arma::mat>& S_obs,
+               const arma::mat& Z,
+               const arma::cube& phi,
+               const int i,
+               arma::mat& M)
 {
   M.zeros();
   for(int j = 0; j < Z.n_cols; j++)
@@ -29,21 +32,23 @@ void computeMi(const arma::field<arma::mat>& S_obs, const arma::mat& Z,
 //' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
 //' @param Z Matrix of current Z parameter
 //' @param phi Cube of current phi paramaters
-//' @param M Cube containing all M matrices
+//' @param M Field of Matrices containing all M matrices
 //' @export
 // [[Rcpp::export]]
-void computeM(const arma::field<arma::mat>& S_obs, const arma::mat& Z,
-             const arma::cube& phi, arma::cube& M)
+void computeM(const arma::field<arma::mat>& S_obs,
+              const arma::mat& Z,
+              const arma::cube& phi,
+              arma::field<arma::mat>& M)
 {
-  M.zeros();
   for(int i = 0; i < Z.n_rows; i++)
   {
+    M(i,1).zeros();
     for(int j = 0; j < Z.n_cols; j++)
     {
-      M.slice(i) = M.slice(i) + Z(i,j) * arma::pinv(S_obs(i,1) * phi.slice(j) *
+      M(i,1) = M(i,1) + Z(i,j) * arma::pinv(S_obs(i,1) * phi.slice(j) *
         phi.slice(j).t() * S_obs(i,1).t());
     }
-    M.slice(i) = arma::pinv(M.slice(i));
+    arma::pinv(M(i,1), M(i,1));
   }
 }
 
@@ -57,9 +62,12 @@ void computeM(const arma::field<arma::mat>& S_obs, const arma::mat& Z,
 //' @param m vector acting as a placeholder for m
 //' @export
 // [[Rcpp::export]]
-void compute_mi(const arma::field<arma::mat>& S_obs, const arma::mat& Z,
-               const arma::cube& phi, const arma::mat& nu, const int i,
-               arma::vec& m)
+void compute_mi(const arma::field<arma::mat>& S_obs,
+                const arma::mat& Z,
+                const arma::cube& phi,
+                const arma::mat& nu,
+                const int i,
+                arma::vec& m)
 {
   m.zeros();
   for(int j = 0; j < Z.n_cols; j++)
@@ -75,18 +83,21 @@ void compute_mi(const arma::field<arma::mat>& S_obs, const arma::mat& Z,
 //' @param Z Matrix of current Z parameter
 //' @param phi Cube of current phi paramaters
 //' @param nu Matrix of current nu parameters
-//' @param m matrix acting as a placeholder for m
+//' @param m Field of vectors acting as a placeholder for m
 //' @export
 // [[Rcpp::export]]
-void compute_m(const arma::field<arma::mat>& S_obs, const arma::mat& Z,
-              const arma::cube& phi, const arma::mat& nu, arma::mat& m)
+void compute_m(const arma::field<arma::mat>& S_obs,
+               const arma::mat& Z,
+               const arma::cube& phi,
+               const arma::mat& nu,
+               arma::field<arma::vec>& m)
 {
-  m.zeros();
   for(int i = 0; i < Z.n_rows; i++)
   {
+    m(i,1).zeros();
     for(int j = 0; j < Z.n_cols; j++)
     {
-      m.row(i) = m.row(i) + Z(i,j) * arma::pinv(S_obs(i,1) * phi.slice(j) *
+      m(i,1) = m(i,1) + Z(i,j) * arma::pinv(S_obs(i,1) * phi.slice(j) *
         phi.slice(j).t() * S_obs(i,1).t())* S_obs(i,1).t() * nu.col(j);
     }
   }
@@ -102,10 +113,13 @@ void compute_m(const arma::field<arma::mat>& S_obs, const arma::mat& Z,
 //' @param i Int indicating which M we are calculating
 //' @param Z_plus Matrix acting as a placeholder for Z_plus.
 //' @param M Matrix acting as a placeholder for M
-void compute_tileMi(const arma::field<arma::mat>& S_star,
-                   const arma::field<arma::mat>& S_obs, const arma::mat& Z,
-                   const arma::cube& phi, const int i, arma::mat& Z_plus,
-                   arma::mat& M)
+void compute_tildeMi(const arma::field<arma::mat>& S_star,
+                    const arma::field<arma::mat>& S_obs,
+                    const arma::mat& Z,
+                    const arma::cube& phi,
+                    const int i,
+                    arma::mat& Z_plus,
+                    arma::mat& M)
 {
   M.zeros();
   for(int j = 0; j < Z.n_cols; j++)
@@ -127,13 +141,14 @@ void compute_tileMi(const arma::field<arma::mat>& S_star,
 //' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
 //' @param Z Matrix of current Z parameter
 //' @param phi Cube of current phi paramaters
-//' @param i Int indicating which M we are calculating
 //' @param Z_plus Field of Matrices acting as a placeholder for Z_plus.
 //' @param tilde_M Field of Matrices acting as a placeholder for M
-void compute_tileM(const arma::field<arma::mat>& S_star,
-                  const arma::field<arma::mat>& S_obs, const arma::mat& Z,
-                  const arma::cube& phi, arma::field<arma::mat>& Z_plus,
-                  arma::field<arma::mat>& tilde_M)
+void compute_tildeM(const arma::field<arma::mat>& S_star,
+                   const arma::field<arma::mat>& S_obs,
+                   const arma::mat& Z,
+                   const arma::cube& phi,
+                   arma::field<arma::mat>& Z_plus,
+                   arma::field<arma::mat>& tilde_M)
 {
   for(int i = 0; i < Z.n_rows; i++)
   {
@@ -165,11 +180,17 @@ void compute_tileM(const arma::field<arma::mat>& S_star,
 //' @param A_plus Matrix acting as a placeholder for A_plus
 //' @param C Matrix acting as a placeholder for C
 //' @param tilde_m vector acting as a placeholder for tilde_m
-void compute_tilemi(const arma::field<arma::mat>& S_star,
-                   const arma::field<arma::mat>& S_obs, const  arma::vec f_obs,
-                   const arma::mat& Z, const arma::cube& phi, const arma::mat nu,
-                   const int i, arma::mat& Z_plus, arma::mat& A_plus,
-                   arma::mat& C,arma::vec& tilde_m)
+void compute_tildemi(const arma::field<arma::mat>& S_star,
+                    const arma::field<arma::mat>& S_obs,
+                    const arma::vec f_obs,
+                    const arma::mat& Z,
+                    const arma::cube& phi,
+                    const arma::mat nu,
+                    const int i,
+                    arma::mat& Z_plus,
+                    arma::mat& A_plus,
+                    arma::mat& C,
+                    arma::vec& tilde_m)
 {
   tilde_m.zeros();
   for(int j = 0; j < Z.n_cols; j++)
@@ -195,31 +216,36 @@ void compute_tilemi(const arma::field<arma::mat>& S_star,
 //' @param Z Matrix of current Z parameter
 //' @param phi Cube of current phi paramaters
 //' @param nu Matrix of current nu paramaters
-//' @param Z_plus Matrix acting as a placeholder for Z_plus
-//' @param A_plus Matrix acting as a placeholder for A_plus
-//' @param C Matrix acting as a placeholder for C
-//' @param tilde_m matrix acting as a placeholder for tilde_m
-void compute_tilem(const arma::field<arma::mat>& S_star,
-                    const arma::field<arma::mat>& S_obs, const  arma::vec f_obs,
-                    const arma::mat& Z, const arma::cube& phi, const arma::mat nu,
-                    arma::mat& Z_plus, arma::mat& A_plus,
-                    arma::mat& C,arma::mat& tilde_m)
+//' @param Z_plus Field of Matrices acting as a placeholder for Z_plus
+//' @param A_plus Field of Matrices acting as a placeholder for A_plus
+//' @param C Field of Matrices acting as a placeholder for C
+//' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
+void compute_tildem(const arma::field<arma::mat>& S_star,
+                   const arma::field<arma::mat>& S_obs,
+                   const arma::field<arma::vec>& f_obs,
+                   const arma::mat& Z,
+                   const arma::cube& phi,
+                   const arma::mat nu,
+                   arma::field<arma::mat>& Z_plus,
+                   arma::field<arma::mat>& A_plus,
+                   arma::field<arma::mat>& C,
+                   arma::field<arma::vec>& tilde_m)
 {
-  tilde_m.zeros();
   for(int i = 0; i < Z.n_rows; i++)
   {
+    tilde_m(i,1).zeros();
     for(int j = 0; j < Z.n_cols; j++)
     {
-      C = S_star(i,1) * phi.slice(j) * phi.slice(j).t() * S_obs(i,1).t();
-      A_plus = arma::pinv(S_obs(i,1) * phi.slice(j) * phi.slice(j).t() *
+      C(i,1) = S_star(i,1) * phi.slice(j) * phi.slice(j).t() * S_obs(i,1).t();
+      A_plus(i,1) = arma::pinv(S_obs(i,1) * phi.slice(j) * phi.slice(j).t() *
         S_obs(i,1).t());
-      Z_plus = (S_star(i,1) * phi.slice(j) * phi.slice(j).t() * S_star(i,1).t()) -
-        (C * A_plus * (S_obs(i,1) * phi.slice(j) * phi.slice(j).t() *
-        S_star(i,1).t()));
+      Z_plus(i,1) = (S_star(i,1) * phi.slice(j) * phi.slice(j).t() *
+        S_star(i,1).t()) - (C(i,1) * A_plus(i,1) * (S_obs(i,1) * phi.slice(j) *
+        phi.slice(j).t() * S_star(i,1).t()));
       // compute M-P inverse
-      arma::pinv(Z_plus, Z_plus);
-      tilde_m.col(i) = tilde_m.col(i) + Z(i,j) * Z_plus * (C * A_plus * f_obs + S_star(i,1) *
-        nu.col(j));
+      arma::pinv(Z_plus(i,1), Z_plus(i,1));
+      tilde_m(i,1) = tilde_m(i,1) + Z(i,j) * Z_plus(i,1) * (C(i,1) *
+        A_plus(i,1) * f_obs(i,1) + S_star(i,1) * nu.col(j));
     }
   }
 }

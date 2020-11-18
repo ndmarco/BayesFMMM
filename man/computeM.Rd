@@ -13,7 +13,7 @@ computeM(S_obs, Z, phi, M)
 
 \item{phi}{Cube of current phi paramaters}
 
-\item{M}{Cube containing all M matrices}
+\item{M}{Field of Matrices containing all M matrices}
 }
 \description{
 Computes all M matrices

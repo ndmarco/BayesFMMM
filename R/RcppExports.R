@@ -18,7 +18,6 @@ NULL
 #' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
 #' @param Z Matrix of current Z parameter
 #' @param phi Cube of current phi paramaters
-#' @param i Int indicating which M we are calculating
 #' @param Z_plus Field of Matrices acting as a placeholder for Z_plus.
 #' @param tilde_M Field of Matrices acting as a placeholder for M
 NULL
@@ -46,10 +45,10 @@ NULL
 #' @param Z Matrix of current Z parameter
 #' @param phi Cube of current phi paramaters
 #' @param nu Matrix of current nu paramaters
-#' @param Z_plus Matrix acting as a placeholder for Z_plus
-#' @param A_plus Matrix acting as a placeholder for A_plus
-#' @param C Matrix acting as a placeholder for C
-#' @param tilde_m matrix acting as a placeholder for tilde_m
+#' @param Z_plus Field of Matrices acting as a placeholder for Z_plus
+#' @param A_plus Field of Matrices acting as a placeholder for A_plus
+#' @param C Field of Matrices acting as a placeholder for C
+#' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
 NULL
 
 #' Computes M_i
@@ -69,7 +68,7 @@ computeMi <- function(S_obs, Z, phi, i, M) {
 #' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
 #' @param Z Matrix of current Z parameter
 #' @param phi Cube of current phi paramaters
-#' @param M Cube containing all M matrices
+#' @param M Field of Matrices containing all M matrices
 #' @export
 computeM <- function(S_obs, Z, phi, M) {
     invisible(.Call('_BayesFOC_computeM', PACKAGE = 'BayesFOC', S_obs, Z, phi, M))
@@ -94,7 +93,7 @@ compute_mi <- function(S_obs, Z, phi, nu, i, m) {
 #' @param Z Matrix of current Z parameter
 #' @param phi Cube of current phi paramaters
 #' @param nu Matrix of current nu parameters
-#' @param m matrix acting as a placeholder for m
+#' @param m Field of vectors acting as a placeholder for m
 #' @export
 compute_m <- function(S_obs, Z, phi, nu, m) {
     invisible(.Call('_BayesFOC_compute_m', PACKAGE = 'BayesFOC', S_obs, Z, phi, nu, m))
@@ -138,21 +137,31 @@ lpdf_z <- function(M, m, tilde_M, tilde_m, f_obs, f_star, pi_l, z_il, pinv_M, pi
 
 #' Updates the ith row of the Z Matrix
 #'
-#' @param M Cube that contains all M matrices
-#' @param M_ph Matrix that acts as a placeholder for the new M matrix
-#' @param m Matrix that contains all m mean vectors
-#' @param m_ph vector that acts as a placeholder for new m vector
-#' @param tilde_M Matrix that contains the tilde_M_i variance matrix
-#' @param tilde_m Vector that contains the tilde_M_i mean vector
 #' @param f_obs Field of vectors containing f at observed time points
 #' @param f_star Field of vectors containing f at unobserved time points
 #' @param pi Vector containing the sampled pi for this iteration
 #' @param iter Iteration of MCMC step
 #' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
 #' @param phi Cube of current phi paramaters
+#' @parma nu Matrix that contains all current nu paramaters
+#' @param M Field of Matrices that contains all M matrices
+#' @param M_ph Field of Matrices that acts as a placeholder for the new M matrix
+#' @param pinv_M Field of Matrices that acts as a placeholder for g-inverse of M
+#' @param Z_ph Matrix that acts as a placeholder for the new Z matrix
+#' @param m Field of Vectors that contains all m mean vectors
+#' @param m_ph Field of Vectors that acts as a placeholder for new m vector
+#' @param z_ph Matrix that acts as a placeholder for Z
+#' @param tilde_M Field of Matrices that contains the tilde_M_i variance matrix
+#' @param tilde_M_ph Field of Matrices that acts as a placeholder for tilde_M
+#' @param pinv_tilde_M Field of Matrices that acts as a placeholder for g-inverse of tilde M
+#' @param tilde_m Vector that contains the tilde_M_i mean vector
+#' @param Z_plus Field of Matrices acting as a placeholder for Z_plus
+#' @param A_plus Matrix acting as a placeholder for A_plus
+#' @param C Matrix acting as a placeholder for C
 #' @param Z Cube that contains all past, current, and future MCMC draws
 #' @export
-updateZ_i <- function(M, M_ph, m, m_ph, tilde_M, tilde_m, f_obs, f_star, pi, iter, S_obs, phi, nu, Z) {
-    invisible(.Call('_BayesFOC_updateZ_i', PACKAGE = 'BayesFOC', M, M_ph, m, m_ph, tilde_M, tilde_m, f_obs, f_star, pi, iter, S_obs, phi, nu, Z))
+updateZ_i <- function(f_obs, f_star, pi, iter, S_obs, S_star, phi, nu, M, M_ph, pinv_M, m, m_ph, Z_ph, tilde_M, tilde_M_ph, pinv_tilde_M, tilde_m, tilde_m_ph, Z_plus, A_plus, C, Z) {
+    invisible(.Call('_BayesFOC_updateZ_i', PACKAGE = 'BayesFOC', f_obs, f_star, pi, iter, S_obs, S_star, phi, nu, M, M_ph, pinv_M, m, m_ph, Z_ph, tilde_M, tilde_M_ph, pinv_tilde_M, tilde_m, tilde_m_ph, Z_plus, A_plus, C, Z))
 }
 

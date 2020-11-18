@@ -5,35 +5,32 @@
 \title{Updates the ith row of the Z Matrix}
 \usage{
 updateZ_i(
-  M,
-  M_ph,
-  m,
-  m_ph,
-  tilde_M,
-  tilde_m,
   f_obs,
   f_star,
   pi,
   iter,
   S_obs,
+  S_star,
   phi,
   nu,
+  M,
+  M_ph,
+  pinv_M,
+  m,
+  m_ph,
+  Z_ph,
+  tilde_M,
+  tilde_M_ph,
+  pinv_tilde_M,
+  tilde_m,
+  tilde_m_ph,
+  Z_plus,
+  A_plus,
+  C,
   Z
 )
 }
 \arguments{
-\item{M}{Cube that contains all M matrices}
-
-\item{M_ph}{Matrix that acts as a placeholder for the new M matrix}
-
-\item{m}{Matrix that contains all m mean vectors}
-
-\item{m_ph}{vector that acts as a placeholder for new m vector}
-
-\item{tilde_M}{Matrix that contains the tilde_M_i variance matrix}
-
-\item{tilde_m}{Vector that contains the tilde_M_i mean vector}
-
 \item{f_obs}{Field of vectors containing f at observed time points}
 
 \item{f_star}{Field of vectors containing f at unobserved time points}
@@ -44,9 +41,39 @@ updateZ_i(
 
 \item{S_obs}{Field of Matrices containing basis functions evaluated at observed time points}
 
+\item{S_star}{Field of Matrices containing basis functions evaluated at unobserved time points}
+
 \item{phi}{Cube of current phi paramaters}
 
+\item{M}{Field of Matrices that contains all M matrices}
+
+\item{M_ph}{Field of Matrices that acts as a placeholder for the new M matrix}
+
+\item{pinv_M}{Field of Matrices that acts as a placeholder for g-inverse of M}
+
+\item{m}{Field of Vectors that contains all m mean vectors}
+
+\item{m_ph}{Field of Vectors that acts as a placeholder for new m vector}
+
+\item{Z_ph}{Matrix that acts as a placeholder for the new Z matrix}
+
+\item{tilde_M}{Field of Matrices that contains the tilde_M_i variance matrix}
+
+\item{tilde_M_ph}{Field of Matrices that acts as a placeholder for tilde_M}
+
+\item{pinv_tilde_M}{Field of Matrices that acts as a placeholder for g-inverse of tilde M}
+
+\item{tilde_m}{Vector that contains the tilde_M_i mean vector}
+
+\item{Z_plus}{Field of Matrices acting as a placeholder for Z_plus}
+
+\item{A_plus}{Matrix acting as a placeholder for A_plus}
+
+\item{C}{Matrix acting as a placeholder for C}
+
 \item{Z}{Cube that contains all past, current, and future MCMC draws}
+
+\item{z_ph}{Matrix that acts as a placeholder for Z}
 }
 \description{
 Updates the ith row of the Z Matrix

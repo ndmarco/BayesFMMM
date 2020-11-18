@@ -15,7 +15,7 @@ compute_m(S_obs, Z, phi, nu, m)
 
 \item{nu}{Matrix of current nu parameters}
 
-\item{m}{matrix acting as a placeholder for m}
+\item{m}{Field of vectors acting as a placeholder for m}
 }
 \description{
 Computes all m vectors
