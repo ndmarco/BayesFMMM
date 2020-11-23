@@ -6,60 +6,26 @@
 
 using namespace Rcpp;
 
-// computeMi
-void computeMi(const arma::field<arma::mat>& S_obs, const arma::mat& Z, const arma::cube& phi, const int i, arma::mat& M);
-RcppExport SEXP _BayesFOC_computeMi(SEXP S_obsSEXP, SEXP ZSEXP, SEXP phiSEXP, SEXP iSEXP, SEXP MSEXP) {
+// Rmvnormal
+arma::vec Rmvnormal(arma::vec mu, arma::mat sigma);
+RcppExport SEXP _BayesFOC_Rmvnormal(SEXP muSEXP, SEXP sigmaSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::field<arma::mat>& >::type S_obs(S_obsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Z(ZSEXP);
-    Rcpp::traits::input_parameter< const arma::cube& >::type phi(phiSEXP);
-    Rcpp::traits::input_parameter< const int >::type i(iSEXP);
-    Rcpp::traits::input_parameter< arma::mat& >::type M(MSEXP);
-    computeMi(S_obs, Z, phi, i, M);
-    return R_NilValue;
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type sigma(sigmaSEXP);
+    rcpp_result_gen = Rcpp::wrap(Rmvnormal(mu, sigma));
+    return rcpp_result_gen;
 END_RCPP
 }
-// computeM
-void computeM(const arma::field<arma::mat>& S_obs, const arma::mat& Z, const arma::cube& phi, arma::field<arma::mat>& M);
-RcppExport SEXP _BayesFOC_computeM(SEXP S_obsSEXP, SEXP ZSEXP, SEXP phiSEXP, SEXP MSEXP) {
+// TestUpdateZ
+arma::field<arma::vec> TestUpdateZ();
+RcppExport SEXP _BayesFOC_TestUpdateZ() {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::field<arma::mat>& >::type S_obs(S_obsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Z(ZSEXP);
-    Rcpp::traits::input_parameter< const arma::cube& >::type phi(phiSEXP);
-    Rcpp::traits::input_parameter< arma::field<arma::mat>& >::type M(MSEXP);
-    computeM(S_obs, Z, phi, M);
-    return R_NilValue;
-END_RCPP
-}
-// compute_mi
-void compute_mi(const arma::field<arma::mat>& S_obs, const arma::mat& Z, const arma::cube& phi, const arma::mat& nu, const int i, arma::vec& m);
-RcppExport SEXP _BayesFOC_compute_mi(SEXP S_obsSEXP, SEXP ZSEXP, SEXP phiSEXP, SEXP nuSEXP, SEXP iSEXP, SEXP mSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::field<arma::mat>& >::type S_obs(S_obsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Z(ZSEXP);
-    Rcpp::traits::input_parameter< const arma::cube& >::type phi(phiSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type nu(nuSEXP);
-    Rcpp::traits::input_parameter< const int >::type i(iSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type m(mSEXP);
-    compute_mi(S_obs, Z, phi, nu, i, m);
-    return R_NilValue;
-END_RCPP
-}
-// compute_m
-void compute_m(const arma::field<arma::mat>& S_obs, const arma::mat& Z, const arma::cube& phi, const arma::mat& nu, arma::field<arma::vec>& m);
-RcppExport SEXP _BayesFOC_compute_m(SEXP S_obsSEXP, SEXP ZSEXP, SEXP phiSEXP, SEXP nuSEXP, SEXP mSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::field<arma::mat>& >::type S_obs(S_obsSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Z(ZSEXP);
-    Rcpp::traits::input_parameter< const arma::cube& >::type phi(phiSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type nu(nuSEXP);
-    Rcpp::traits::input_parameter< arma::field<arma::vec>& >::type m(mSEXP);
-    compute_m(S_obs, Z, phi, nu, m);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateZ());
+    return rcpp_result_gen;
 END_RCPP
 }
 // updatePi
@@ -141,10 +107,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BayesFOC_computeMi", (DL_FUNC) &_BayesFOC_computeMi, 5},
-    {"_BayesFOC_computeM", (DL_FUNC) &_BayesFOC_computeM, 4},
-    {"_BayesFOC_compute_mi", (DL_FUNC) &_BayesFOC_compute_mi, 6},
-    {"_BayesFOC_compute_m", (DL_FUNC) &_BayesFOC_compute_m, 5},
+    {"_BayesFOC_Rmvnormal", (DL_FUNC) &_BayesFOC_Rmvnormal, 2},
+    {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
     {"_BayesFOC_updatePi", (DL_FUNC) &_BayesFOC_updatePi, 5},
     {"_BayesFOC_g_ldet", (DL_FUNC) &_BayesFOC_g_ldet, 1},
     {"_BayesFOC_lpdf_z", (DL_FUNC) &_BayesFOC_lpdf_z, 10},

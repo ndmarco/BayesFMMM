@@ -2,6 +2,7 @@
 #define COMPUTEMM_H
 
 #include <RcppArmadillo.h>
+#include <cmath>
 
 void computeMi(const arma::field<arma::mat>& S_obs,
                const arma::mat& Z,

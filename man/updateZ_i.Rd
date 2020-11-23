@@ -45,6 +45,8 @@ updateZ_i(
 
 \item{phi}{Cube of current phi paramaters}
 
+\item{nu}{Matrix that contains all current nu paramaters}
+
 \item{M}{Field of Matrices that contains all M matrices}
 
 \item{M_ph}{Field of Matrices that acts as a placeholder for the new M matrix}

@@ -9,6 +9,8 @@ Description: More about what it does (maybe more than
       one line)
 License: GPL (>=2)
 Imports: Rcpp (>= 1.0.5)
-LinkingTo: Rcpp, RcppArmadillo
+LinkingTo: Rcpp,
+           RcppArmadillo,
+           splines2 (>= 0.3.0)
 RoxygenNote: 7.1.1
 Encoding: UTF-8

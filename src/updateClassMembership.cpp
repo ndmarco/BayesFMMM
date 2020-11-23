@@ -97,7 +97,7 @@ double lpdf_z(const arma::mat& M,
 //' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
 //' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
 //' @param phi Cube of current phi paramaters
-//' @parma nu Matrix that contains all current nu paramaters
+//' @param nu Matrix that contains all current nu paramaters
 //' @param M Field of Matrices that contains all M matrices
 //' @param M_ph Field of Matrices that acts as a placeholder for the new M matrix
 //' @param pinv_M Field of Matrices that acts as a placeholder for g-inverse of M
