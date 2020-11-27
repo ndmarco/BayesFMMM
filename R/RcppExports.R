@@ -62,8 +62,8 @@ NULL
 #' @param Z Matrix of current Z parameter
 #' @param phi Cube of current phi paramaters
 #' @param i Int indicating which M we are calculating
-#' @param Z_plus Matrix acting as a placeholder for Z_plus.
-#' @param M Matrix acting as a placeholder for M
+#' @param mp_inv Matrix acting as a placeholder for mp-inv of covariance
+#' @param tilde_M Matrix acting as a placeholder for M
 NULL
 
 #' Computes all tilde M
@@ -72,7 +72,7 @@ NULL
 #' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
 #' @param Z Matrix of current Z parameter
 #' @param phi Cube of current phi paramaters
-#' @param Z_plus Field of Matrices acting as a placeholder for Z_plus.
+#' @param mp_inv Field of Matrices acting as a placeholder for mp-inv of covariance
 #' @param tilde_M Field of Matrices acting as a placeholder for M
 NULL
 
@@ -85,9 +85,7 @@ NULL
 #' @param phi Cube of current phi paramaters
 #' @param nu Matrix of current nu paramaters
 #' @param i Int indicating which tilde_m we are calculating
-#' @param Z_plus Matrix acting as a placeholder for Z_plus
-#' @param A_plus Matrix acting as a placeholder for A_plus
-#' @param C Matrix acting as a placeholder for C
+#' @param mp_inv Matrix acting as a placeholder fo mp-inverse of covariance
 #' @param tilde_m vector acting as a placeholder for tilde_m
 NULL
 
@@ -99,9 +97,32 @@ NULL
 #' @param Z Matrix of current Z parameter
 #' @param phi Cube of current phi paramaters
 #' @param nu Matrix of current nu paramaters
-#' @param Z_plus Field of Matrices acting as a placeholder for Z_plus
-#' @param A_plus Field of Matrices acting as a placeholder for A_plus
-#' @param C Field of Matrices acting as a placeholder for C
+#' @param mp_inv Field of Matrices acting as a placeholder fo mp-inverse of covariance
+#' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
+NULL
+
+#' Computes the ith tilde M and tilde m
+#'
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param f_obs vector of current f values at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Cube of current phi paramaters
+#' @param nu Matrix of current nu paramaters
+#' @param i Int corresponding to the M and m matrix to be computed
+#' @param mp_inv Field of Matrices acting as a placeholder fo mp-inverse of covariance
+#' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
+NULL
+
+#' Computes all tilde M and tilde m
+#'
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param f_obs vector of current f values at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Cube of current phi paramaters
+#' @param nu Matrix of current nu paramaters
+#' @param mp_inv Field of Matrices acting as a placeholder fo mp-inverse of covariance
 #' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
 NULL
 
@@ -141,7 +162,7 @@ lpdf_z <- function(M, m, tilde_M, tilde_m, f_obs, f_star, pi_l, z_il, pinv_M, pi
     .Call('_BayesFOC_lpdf_z', PACKAGE = 'BayesFOC', M, m, tilde_M, tilde_m, f_obs, f_star, pi_l, z_il, pinv_M, pinv_tilde_M)
 }
 
-#' Updates the ith row of the Z Matrix
+#' Updates the Z Matrix
 #'
 #' @param f_obs Field of vectors containing f at observed time points
 #' @param f_star Field of vectors containing f at unobserved time points
@@ -167,7 +188,7 @@ lpdf_z <- function(M, m, tilde_M, tilde_m, f_obs, f_star, pi_l, z_il, pinv_M, pi
 #' @param C Matrix acting as a placeholder for C
 #' @param Z Cube that contains all past, current, and future MCMC draws
 #' @export
-updateZ_i <- function(f_obs, f_star, pi, iter, S_obs, S_star, phi, nu, M, M_ph, pinv_M, m, m_ph, Z_ph, tilde_M, tilde_M_ph, pinv_tilde_M, tilde_m, tilde_m_ph, Z_plus, A_plus, C, Z) {
-    invisible(.Call('_BayesFOC_updateZ_i', PACKAGE = 'BayesFOC', f_obs, f_star, pi, iter, S_obs, S_star, phi, nu, M, M_ph, pinv_M, m, m_ph, Z_ph, tilde_M, tilde_M_ph, pinv_tilde_M, tilde_m, tilde_m_ph, Z_plus, A_plus, C, Z))
+updateZ <- function(f_obs, f_star, pi, iter, S_obs, S_star, phi, nu, M, M_ph, pinv_M, m, m_ph, Z_ph, tilde_M, tilde_M_ph, pinv_tilde_M, tilde_m, tilde_m_ph, mp_inv, Z) {
+    invisible(.Call('_BayesFOC_updateZ', PACKAGE = 'BayesFOC', f_obs, f_star, pi, iter, S_obs, S_star, phi, nu, M, M_ph, pinv_M, m, m_ph, Z_ph, tilde_M, tilde_M_ph, pinv_tilde_M, tilde_m, tilde_m_ph, mp_inv, Z))
 }
 

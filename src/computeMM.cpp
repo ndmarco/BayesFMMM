@@ -103,28 +103,33 @@ void compute_m(const arma::field<arma::mat>& S_obs,
 //' @param Z Matrix of current Z parameter
 //' @param phi Cube of current phi paramaters
 //' @param i Int indicating which M we are calculating
-//' @param Z_plus Matrix acting as a placeholder for Z_plus.
-//' @param M Matrix acting as a placeholder for M
+//' @param mp_inv Matrix acting as a placeholder for mp-inv of covariance
+//' @param tilde_M Matrix acting as a placeholder for M
 void compute_tildeMi(const arma::field<arma::mat>& S_star,
                     const arma::field<arma::mat>& S_obs,
                     const arma::mat& Z,
                     const arma::cube& phi,
                     const int i,
-                    arma::mat& Z_plus,
-                    arma::mat& M)
+                    arma::mat& mp_inv,
+                    arma::mat& tilde_M)
 {
-  M.zeros();
+  int n1 = 0;
+  int n2 = 0;
+  tilde_M.zeros();
   for(int j = 0; j < Z.n_cols; j++)
   {
-    Z_plus = (S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t()) -
-      ((S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_obs(i,0).t()) *
-      arma::pinv(S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_obs(i,0).t()) *
-      (S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t()));
+    n1 = S_obs(i,0).n_rows;
+    n2 = S_star(i,0).n_rows;
+    mp_inv.submat(0, 0, n1 - 1, n1 - 1) = S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_obs(i,0).t();
+    mp_inv.submat(0, n1, n1 - 1 , n1 + n2 - 1) =  S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
+    mp_inv.submat(n1, 0, n1 + n2 - 1, n1 - 1) = mp_inv.submat(0, n1, n1 - 1 , n1 + n2 - 1).t();
+    mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
+
     // compute M-P inverse
-    arma::pinv(Z_plus, Z_plus);
-    M = M + Z(i,j) * Z_plus;
+    arma::pinv(mp_inv, mp_inv);
+    tilde_M = tilde_M + Z(i,j) * mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1);
   }
-  arma::pinv(M, M);
+  arma::pinv(tilde_M, tilde_M);
 }
 
 //' Computes all tilde M
@@ -133,27 +138,32 @@ void compute_tildeMi(const arma::field<arma::mat>& S_star,
 //' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
 //' @param Z Matrix of current Z parameter
 //' @param phi Cube of current phi paramaters
-//' @param Z_plus Field of Matrices acting as a placeholder for Z_plus.
+//' @param mp_inv Field of Matrices acting as a placeholder for mp-inv of covariance
 //' @param tilde_M Field of Matrices acting as a placeholder for M
 void compute_tildeM(const arma::field<arma::mat>& S_star,
                    const arma::field<arma::mat>& S_obs,
                    const arma::mat& Z,
                    const arma::cube& phi,
-                   arma::field<arma::mat>& Z_plus,
+                   arma::field<arma::mat>& mp_inv,
                    arma::field<arma::mat>& tilde_M)
 {
+  int n1 = 0;
+  int n2 = 0;
   for(int i = 0; i < Z.n_rows; i++)
   {
     tilde_M(i,0).zeros();
     for(int j = 0; j < Z.n_cols; j++)
     {
-      Z_plus(i,0) = (S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t()) -
-        ((S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_obs(i,0).t()) *
-        arma::pinv(S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_obs(i,0).t()) *
-        (S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t()));
+      n1 = S_obs(i,0).n_rows;
+      n2 = S_star(i,0).n_rows;
+      mp_inv(i,0).submat(0, 0, n1 - 1, n1 - 1) = S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_obs(i,0).t();
+      mp_inv(i,0).submat(0, n1, n1 - 1 , n1 + n2 - 1) =  S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
+      mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) = mp_inv(i,0).submat(0, n1, n1 - 1 , n1 + n2 - 1).t();
+      mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
+
       // compute M-P inverse
-      arma::pinv(Z_plus(i,0), Z_plus(i,0));
-      tilde_M(i,0) = tilde_M(i,0) + Z(i,j) * Z_plus(i,0);
+      arma::pinv(mp_inv(i,0), mp_inv(i,0));
+      tilde_M(i,0) = tilde_M(i,0) + Z(i,j) * mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1);
     }
     arma::pinv(tilde_M(i,0), tilde_M(i,0));
   }
@@ -168,35 +178,34 @@ void compute_tildeM(const arma::field<arma::mat>& S_star,
 //' @param phi Cube of current phi paramaters
 //' @param nu Matrix of current nu paramaters
 //' @param i Int indicating which tilde_m we are calculating
-//' @param Z_plus Matrix acting as a placeholder for Z_plus
-//' @param A_plus Matrix acting as a placeholder for A_plus
-//' @param C Matrix acting as a placeholder for C
+//' @param mp_inv Matrix acting as a placeholder fo mp-inverse of covariance
 //' @param tilde_m vector acting as a placeholder for tilde_m
 void compute_tildemi(const arma::field<arma::mat>& S_star,
                     const arma::field<arma::mat>& S_obs,
                     const arma::vec f_obs,
                     const arma::mat& Z,
                     const arma::cube& phi,
-                    const arma::mat nu,
+                    const arma::mat& nu,
                     const int i,
-                    arma::mat& Z_plus,
-                    arma::mat& A_plus,
-                    arma::mat& C,
+                    arma::mat& mp_inv,
                     arma::vec& tilde_m)
 {
+  int n1 = 0;
+  int n2 = 0;
   tilde_m.zeros();
   for(int j = 0; j < Z.n_cols; j++)
   {
-    C = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_obs(i,0).t();
-    A_plus = arma::pinv(S_obs(i,0) * phi.slice(j) * phi.slice(j).t() *
-      S_obs(i,0).t());
-    Z_plus = (S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t()) -
-      (C * A_plus * (S_obs(i,0) * phi.slice(j) * phi.slice(j).t() *
-      S_star(i,0).t()));
+    n1 = S_obs(i,0).n_rows;
+    n2 = S_star(i,0).n_rows;
+    mp_inv.submat(0, 0, n1 - 1, n1 - 1) = S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_obs(i,0).t();
+    mp_inv.submat(0, n1, n1 - 1 , n1 + n2 - 1) =  S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
+    mp_inv.submat(n1, 0, n1 + n2 - 1, n1 - 1) = mp_inv.submat(0, n1, n1 - 1 , n1 + n2 - 1).t();
+    mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
     // compute M-P inverse
-    arma::pinv(Z_plus, Z_plus);
-    tilde_m = tilde_m + Z(i,j) * Z_plus * (C * A_plus * f_obs + S_star(i,0) *
-      nu.col(j));
+    arma::pinv(mp_inv, mp_inv);
+    tilde_m = tilde_m + Z(i,j) * (mp_inv.submat(n1, 0, n1 + n2 - 1, n1 - 1) * (
+      S_obs(i,0) * nu.col(j) - f_obs) + mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) *
+        S_star(i,0) * nu.col(j));
   }
 }
 
@@ -208,40 +217,127 @@ void compute_tildemi(const arma::field<arma::mat>& S_star,
 //' @param Z Matrix of current Z parameter
 //' @param phi Cube of current phi paramaters
 //' @param nu Matrix of current nu paramaters
-//' @param Z_plus Field of Matrices acting as a placeholder for Z_plus
-//' @param A_plus Field of Matrices acting as a placeholder for A_plus
-//' @param C Field of Matrices acting as a placeholder for C
+//' @param mp_inv Field of Matrices acting as a placeholder fo mp-inverse of covariance
 //' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
 void compute_tildem(const arma::field<arma::mat>& S_star,
                    const arma::field<arma::mat>& S_obs,
                    const arma::field<arma::vec>& f_obs,
                    const arma::mat& Z,
                    const arma::cube& phi,
-                   const arma::mat nu,
-                   arma::field<arma::mat>& Z_plus,
-                   arma::field<arma::mat>& A_plus,
-                   arma::field<arma::mat>& C,
+                   const arma::mat& nu,
+                   arma::field<arma::mat>& mp_inv,
                    arma::field<arma::vec>& tilde_m)
 {
+  int n1 = 0;
+  int n2 = 0;
   for(int i = 0; i < Z.n_rows; i++)
   {
     tilde_m(i,0).zeros();
     for(int j = 0; j < Z.n_cols; j++)
     {
-      C(i,0) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_obs(i,0).t();
-      A_plus(i,0) = arma::pinv(S_obs(i,0) * phi.slice(j) * phi.slice(j).t() *
-        S_obs(i,0).t());
-      Z_plus(i,0) = (S_star(i,0) * phi.slice(j) * phi.slice(j).t() *
-        S_star(i,0).t()) - (C(i,0) * A_plus(i,0) * (S_obs(i,0) * phi.slice(j) *
-        phi.slice(j).t() * S_star(i,0).t()));
+      n1 = S_obs(i,0).n_rows;
+      n2 = S_star(i,0).n_rows;
+      mp_inv(i,0).submat(0, 0, n1 - 1, n1 - 1) = S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_obs(i,0).t();
+      mp_inv(i,0).submat(0, n1, n1 - 1 , n1 + n2 - 1) =  S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
+      mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) = mp_inv(i,0).submat(0, n1, n1 - 1 , n1 + n2 - 1).t();
+      mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
       // compute M-P inverse
-      arma::pinv(Z_plus(i,0), Z_plus(i,0));
-      tilde_m(i,0) = tilde_m(i,0) + Z(i,j) * Z_plus(i,0) * (C(i,0) *
-        A_plus(i,0) * f_obs(i,0) + S_star(i,0) * nu.col(j));
+      arma::pinv(mp_inv(i,0), mp_inv(i,0));
+      tilde_m(i,0) = tilde_m(i,0) + Z(i,j) * (mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) * (
+        S_obs(i,0) * nu.col(j) - f_obs(i,0)) + mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) *
+          S_star(i,0) * nu.col(j));
     }
   }
 }
 
+//' Computes the ith tilde M and tilde m
+//'
+//' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+//' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+//' @param f_obs vector of current f values at observed time points
+//' @param Z Matrix of current Z parameter
+//' @param phi Cube of current phi paramaters
+//' @param nu Matrix of current nu paramaters
+//' @param i Int corresponding to the M and m matrix to be computed
+//' @param mp_inv Field of Matrices acting as a placeholder fo mp-inverse of covariance
+//' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
+void compute_tildeMi_tildemi(const arma::field<arma::mat>& S_star,
+                             const arma::field<arma::mat>& S_obs,
+                             const arma::field<arma::vec>& f_obs,
+                             const arma::mat& Z,
+                             const arma::cube& phi,
+                             const arma::mat& nu,
+                             const int i,
+                             arma::field<arma::mat>& mp_inv,
+                             arma::field<arma::mat>& tilde_M,
+                             arma::field<arma::vec>& tilde_m)
+{
+  int n1 = 0;
+  int n2 = 0;
+  tilde_m(i,0).zeros();
+  tilde_M(i,0).zeros();
+  for(int j = 0; j < Z.n_cols; j++)
+  {
+    n1 = S_obs(i,0).n_rows;
+    n2 = S_star(i,0).n_rows;
+    mp_inv(i,0).submat(0, 0, n1 - 1, n1 - 1) = S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_obs(i,0).t();
+    mp_inv(i,0).submat(0, n1, n1 - 1 , n1 + n2 - 1) =  S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
+    mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) = mp_inv(i,0).submat(0, n1, n1 - 1 , n1 + n2 - 1).t();
+    mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
+    // compute M-P inverse
+    arma::pinv(mp_inv(i,0), mp_inv(i,0));
+    tilde_M(i,0) = tilde_M(i,0) + Z(i,j) * mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1);
+    tilde_m(i,0) = tilde_m(i,0) + Z(i,j) * (mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) * (
+      S_obs(i,0) * nu.col(j) - f_obs(i,0)) + mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) *
+        S_star(i,0) * nu.col(j));
+  }
+  arma::pinv(tilde_M(i,0), tilde_M(i,0));
+}
+
+//' Computes all tilde M and tilde m
+//'
+//' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+//' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+//' @param f_obs vector of current f values at observed time points
+//' @param Z Matrix of current Z parameter
+//' @param phi Cube of current phi paramaters
+//' @param nu Matrix of current nu paramaters
+//' @param mp_inv Field of Matrices acting as a placeholder fo mp-inverse of covariance
+//' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
+void compute_tildeM_tildem(const arma::field<arma::mat>& S_star,
+                           const arma::field<arma::mat>& S_obs,
+                           const arma::field<arma::vec>& f_obs,
+                           const arma::mat& Z,
+                           const arma::cube& phi,
+                           const arma::mat& nu,
+                           arma::field<arma::mat>& mp_inv,
+                           arma::field<arma::mat>& tilde_M,
+                           arma::field<arma::vec>& tilde_m)
+{
+  int n1 = 0;
+  int n2 = 0;
+  for(int i = 0; i < Z.n_rows; i++)
+  {
+    tilde_m(i,0).zeros();
+    tilde_M(i,0).zeros();
+    for(int j = 0; j < Z.n_cols; j++)
+    {
+      n1 = S_obs(i,0).n_rows;
+      n2 = S_star(i,0).n_rows;
+      mp_inv(i,0).submat(0, 0, n1 - 1, n1 - 1) = S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_obs(i,0).t();
+      mp_inv(i,0).submat(0, n1, n1 - 1 , n1 + n2 - 1) =  S_obs(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
+      mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) = mp_inv(i,0).submat(0, n1, n1 - 1 , n1 + n2 - 1).t();
+      mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
+      // compute M-P inverse
+      arma::pinv(mp_inv(i,0), mp_inv(i,0));
+      tilde_M(i,0) = tilde_M(i,0) + Z(i,j) * mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1);
+      tilde_m(i,0) = tilde_m(i,0) + Z(i,j) * (mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) * (
+        S_obs(i,0) * nu.col(j) - f_obs(i,0)) + mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) *
+          S_star(i,0) * nu.col(j));
+    }
+    arma::pinv(tilde_M(i,0), tilde_M(i,0));
+  }
+}
 
 // //' sample p_inv
 // //'
@@ -266,3 +362,4 @@ void compute_tildem(const arma::field<arma::mat>& S_star,
 //                                       Rcpp::Named("S", S));
 //   return mod;
 // }
+
