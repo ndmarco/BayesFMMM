@@ -42,8 +42,6 @@ void updateZ(const arma::field<arma::vec>& f_obs,
                arma::field<arma::mat>& pinv_tilde_M,
                arma::field<arma::vec>& tilde_m,
                arma::field<arma::vec>& tilde_m_ph,
-               arma::field<arma::mat>& Z_plus,
-               arma::field<arma::mat>& A_plus,
-               arma::field<arma::mat>& C,
+               arma::field<arma::mat>& mp_inv,
                arma::cube& Z);
 #endif

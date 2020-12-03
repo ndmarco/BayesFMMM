@@ -20,9 +20,9 @@ void computeMi(const arma::field<arma::mat>& S_obs,
   for(int j = 0; j < Z.n_cols; j++)
   {
     M = M + Z(i,j) * arma::pinv(S_obs(i,0) * phi.slice(j) *
-      phi.slice(j).t() * S_obs(i,0).t());
+      phi.slice(j).t() * S_obs(i,0).t(), arma::datum::eps);
   }
-  M = arma::pinv(M);
+  M = arma::pinv(M, arma::datum::eps);
 }
 
 //' Computes all M matrices
@@ -42,9 +42,9 @@ void computeM(const arma::field<arma::mat>& S_obs,
     for(int j = 0; j < Z.n_cols; j++)
     {
       M(i,0) = M(i,0) + Z(i,j) * arma::pinv(S_obs(i,0) * phi.slice(j) *
-        phi.slice(j).t() * S_obs(i,0).t());
+        phi.slice(j).t() * S_obs(i,0).t(), arma::datum::eps);
     }
-    arma::pinv(M(i,0), M(i,0));
+    arma::pinv(M(i,0), M(i,0), arma::datum::eps);
   }
 }
 
@@ -67,7 +67,7 @@ void compute_mi(const arma::field<arma::mat>& S_obs,
   for(int j = 0; j < Z.n_cols; j++)
   {
     m = m + Z(i,j) * arma::pinv(S_obs(i,0) * phi.slice(j) *
-      phi.slice(j).t() * S_obs(i,0).t())* S_obs(i,0) * nu.col(j);
+      phi.slice(j).t() * S_obs(i,0).t(), arma::datum::eps)* S_obs(i,0) * nu.col(j);
   }
 }
 
@@ -90,7 +90,7 @@ void compute_m(const arma::field<arma::mat>& S_obs,
     for(int j = 0; j < Z.n_cols; j++)
     {
       m(i,0) = m(i,0) + Z(i,j) * arma::pinv(S_obs(i,0) * phi.slice(j) *
-        phi.slice(j).t() * S_obs(i,0).t())* S_obs(i,0) * nu.col(j);
+        phi.slice(j).t() * S_obs(i,0).t(), arma::datum::eps)* S_obs(i,0) * nu.col(j);
     }
   }
 
@@ -126,10 +126,10 @@ void compute_tildeMi(const arma::field<arma::mat>& S_star,
     mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
 
     // compute M-P inverse
-    arma::pinv(mp_inv, mp_inv);
+    arma::pinv(mp_inv, mp_inv, arma::datum::eps);
     tilde_M = tilde_M + Z(i,j) * mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1);
   }
-  arma::pinv(tilde_M, tilde_M);
+  arma::pinv(tilde_M, tilde_M, arma::datum::eps);
 }
 
 //' Computes all tilde M
@@ -162,10 +162,10 @@ void compute_tildeM(const arma::field<arma::mat>& S_star,
       mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
 
       // compute M-P inverse
-      arma::pinv(mp_inv(i,0), mp_inv(i,0));
+      arma::pinv(mp_inv(i,0), mp_inv(i,0), arma::datum::eps);
       tilde_M(i,0) = tilde_M(i,0) + Z(i,j) * mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1);
     }
-    arma::pinv(tilde_M(i,0), tilde_M(i,0));
+    arma::pinv(tilde_M(i,0), tilde_M(i,0), arma::datum::eps);
   }
 }
 
@@ -202,7 +202,7 @@ void compute_tildemi(const arma::field<arma::mat>& S_star,
     mp_inv.submat(n1, 0, n1 + n2 - 1, n1 - 1) = mp_inv.submat(0, n1, n1 - 1 , n1 + n2 - 1).t();
     mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
     // compute M-P inverse
-    arma::pinv(mp_inv, mp_inv);
+    arma::pinv(mp_inv, mp_inv, arma::datum::eps);
     tilde_m = tilde_m + Z(i,j) * (mp_inv.submat(n1, 0, n1 + n2 - 1, n1 - 1) * (
       S_obs(i,0) * nu.col(j) - f_obs) + mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) *
         S_star(i,0) * nu.col(j));
@@ -242,7 +242,7 @@ void compute_tildem(const arma::field<arma::mat>& S_star,
       mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) = mp_inv(i,0).submat(0, n1, n1 - 1 , n1 + n2 - 1).t();
       mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
       // compute M-P inverse
-      arma::pinv(mp_inv(i,0), mp_inv(i,0));
+      arma::pinv(mp_inv(i,0), mp_inv(i,0), arma::datum::eps);
       tilde_m(i,0) = tilde_m(i,0) + Z(i,j) * (mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) * (
         S_obs(i,0) * nu.col(j) - f_obs(i,0)) + mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) *
           S_star(i,0) * nu.col(j));
@@ -285,13 +285,13 @@ void compute_tildeMi_tildemi(const arma::field<arma::mat>& S_star,
     mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) = mp_inv(i,0).submat(0, n1, n1 - 1 , n1 + n2 - 1).t();
     mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
     // compute M-P inverse
-    arma::pinv(mp_inv(i,0), mp_inv(i,0));
+    arma::pinv(mp_inv(i,0), mp_inv(i,0), arma::datum::eps);
     tilde_M(i,0) = tilde_M(i,0) + Z(i,j) * mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1);
     tilde_m(i,0) = tilde_m(i,0) + Z(i,j) * (mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) * (
       S_obs(i,0) * nu.col(j) - f_obs(i,0)) + mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) *
         S_star(i,0) * nu.col(j));
   }
-  arma::pinv(tilde_M(i,0), tilde_M(i,0));
+  arma::pinv(tilde_M(i,0), tilde_M(i,0), arma::datum::eps);
 }
 
 //' Computes all tilde M and tilde m
@@ -329,13 +329,13 @@ void compute_tildeM_tildem(const arma::field<arma::mat>& S_star,
       mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) = mp_inv(i,0).submat(0, n1, n1 - 1 , n1 + n2 - 1).t();
       mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(i,0) * phi.slice(j) * phi.slice(j).t() * S_star(i,0).t();
       // compute M-P inverse
-      arma::pinv(mp_inv(i,0), mp_inv(i,0));
+      arma::pinv(mp_inv(i,0), mp_inv(i,0), arma::datum::eps);
       tilde_M(i,0) = tilde_M(i,0) + Z(i,j) * mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1);
       tilde_m(i,0) = tilde_m(i,0) + Z(i,j) * (mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) * (
         S_obs(i,0) * nu.col(j) - f_obs(i,0)) + mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) *
           S_star(i,0) * nu.col(j));
     }
-    arma::pinv(tilde_M(i,0), tilde_M(i,0));
+    arma::pinv(tilde_M(i,0), tilde_M(i,0), arma::datum::eps);
   }
 }
 

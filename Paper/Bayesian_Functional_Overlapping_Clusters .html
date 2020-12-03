@@ -13177,7 +13177,7 @@ where $det^*(.)$ is the product of all non-zero eigenvalues.</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We will now remove the restriction that $\sum_{l=1}^kz_{il} = 1$. We can see that $$p(f_i(\mathbf{t}_{obs})|\mathbf{z}_i, \boldsymbol{\Theta}) \propto \prod_{l = 1}^K exp\left\{-\frac{z_{il}}{2}\left[f_i(\mathbf{t}_{obs}) - S(\mathbf{t}_{obs})\boldsymbol{\nu}_l\right]'\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+}\left[f_i(\mathbf{t}_{obs}) - S(\mathbf{t}_{obs})\boldsymbol{\nu}_l\right] \right\}$$</p>
+<p>We will now remove the restriction that $\sum_{l=1}^kz_{il} = 1$. We can see that $$p(f_i(\mathbf{t}_{obs})|\mathbf{z}_i, \boldsymbol{\Theta}) \propto \prod_{l = 1}^K exp\left\{-\frac{z_{il}}{2}\left[f_i(\mathbf{t}_{obs}) - S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l\right]'\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+}\left[f_i(\mathbf{t}_{obs}) - S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l\right] \right\}$$</p>
 
 </div>
 </div>
@@ -13185,7 +13185,7 @@ where $det^*(.)$ is the product of all non-zero eigenvalues.</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>$$\propto exp \left\{- \frac{1}{2} f_i(\mathbf{t}_{obs})'\left(\sum_{l=1}^K z_{il}\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+} \right)f_i(\mathbf{t}_{obs}) - 2f_i(\mathbf{t}_{obs}) \left[\sum_{l=1}^K \left(z_{il}\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+}S(\mathbf{t}_{obs})\boldsymbol{\nu}_l \right) \right] \right\}$$</p>
+<p>$$\propto exp \left\{- \frac{1}{2} f_i(\mathbf{t}_{obs})'\left(\sum_{l=1}^K z_{il}\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+} \right)f_i(\mathbf{t}_{obs}) + f_i'(\mathbf{t}_{obs}) \left[\sum_{l=1}^K \left(z_{il}\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+}S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l \right) \right] \right\}$$</p>
 
 </div>
 </div>
@@ -13193,7 +13193,7 @@ where $det^*(.)$ is the product of all non-zero eigenvalues.</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Let $\mathbf{M}^{+}_i = \sum_{l=1}^K z_{il}\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+}$ and $\mathbf{m}_i = \sum_{l=1}^K \left(z_{il}\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+}S(\mathbf{t}_{obs})\boldsymbol{\nu}_l \right)$.</p>
+<p>Let $\mathbf{M}^{+}_i = \sum_{l=1}^K z_{il}\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+}$ and $\mathbf{m}_i = \sum_{l=1}^K \left(z_{il}\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+}S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l \right)$.</p>
 
 </div>
 </div>
@@ -13221,13 +13221,13 @@ $$p\left(\begin{bmatrix}
 f_i(\mathbf{t}_{obs}) \\
 f_i(\mathbf{t}^*)
 \end{bmatrix}| \mathbf{z}_i, \boldsymbol{\Theta}\right) \propto  \prod_{l = 1}^K exp\left\{-\frac{z_{il}}{2}\begin{bmatrix}
-(f_i(\mathbf{t}_{obs}) - S(\mathbf{t}_{obs})\boldsymbol{\nu}_l)' &amp; (f_i(\mathbf{t}^*) - S(\mathbf{t}^*)\boldsymbol{\nu}_l)'\\
+(f_i(\mathbf{t}_{obs}) - S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l)' &amp; (f_i(\mathbf{t}^*) - S'(\mathbf{t}^*)\boldsymbol{\nu}_l)'\\
 \end{bmatrix}\begin{bmatrix}
 S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs}) &amp; S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}^*) \\
 S(\mathbf{t}^*)'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs}) &amp; S(\mathbf{t}^*)'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}^*)
 \end{bmatrix}^{+}\begin{bmatrix}
-f_i(\mathbf{t}_{obs}) - S(\mathbf{t}_{obs})\boldsymbol{\nu}_l\\
-f_i(\mathbf{t}^*) - S(\mathbf{t}^*)\boldsymbol{\nu}_l
+f_i(\mathbf{t}_{obs}) - S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l\\
+f_i(\mathbf{t}^*) - S'(\mathbf{t}^*)\boldsymbol{\nu}_l
 \end{bmatrix}\right\}$$</p>
 
 </div>
@@ -13241,20 +13241,9 @@ $$\begin{bmatrix}
 S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs}) &amp; S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}^*) \\
 S(\mathbf{t}^*)'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs}) &amp; S(\mathbf{t}^*)'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}^*)
 \end{bmatrix}^{+} = \begin{bmatrix}
-\mathbf{A}_l &amp; \mathbf{B}_l \\
-\mathbf{C}_l &amp; \mathbf{D}_l
-\end{bmatrix}^{+}$$</p>
-<p>Using the result from Matrix Algebra - Theory, Computations, and Applications in Statistics by James E. Gentle (2007), we have the following result:
-$$ \begin{bmatrix}
-\mathbf{A} &amp; \mathbf{B} \\
-\mathbf{C} &amp; \mathbf{D}
-\end{bmatrix}^{+} = \begin{bmatrix}
-\mathbf{A}^+ + (\mathbf{A}^+\mathbf{B}\mathbf{Z}^+\mathbf{C}\mathbf{A}^+) &amp; -\mathbf{A}^+\mathbf{B}\mathbf{Z}^+\\
--\mathbf{Z}^+\mathbf{C}\mathbf{A}^+ &amp; \mathbf{Z}^+
-\end{bmatrix}$$ 
-where
-$$\mathbf{Z} = \mathbf{D} - \mathbf{C}\mathbf{A}^+\mathbf{B}$$
-We can see that $-\mathbf{A}^+\mathbf{B}\mathbf{Z}^+ = \left(-\mathbf{Z}^+\mathbf{C}\mathbf{A}^+ \right)'$ if we use the Moore-Penrose inverse for $\mathbf{Z}^+$ and $\mathbf{A}^+$.</p>
+\mathbf{A}_l^+ &amp; \mathbf{B}_l^+ \\
+\mathbf{C}_l^+ &amp; \mathbf{D}_l^+
+\end{bmatrix}$$</p>
 
 </div>
 </div>
@@ -13267,13 +13256,13 @@ $$p\left(\begin{bmatrix}
 f_i(\mathbf{t}_{obs}) \\
 f_i(\mathbf{t}^*)
 \end{bmatrix}| \mathbf{z}_i, \boldsymbol{\Theta}\right) \propto  \prod_{l = 1}^K exp\left\{-\frac{z_{il}}{2}\begin{bmatrix}
-(f_i(\mathbf{t}_{obs}) - S(\mathbf{t}_{obs})\boldsymbol{\nu}_l)' &amp; (f_i(\mathbf{t}^*) - S(\mathbf{t}^*)\boldsymbol{\nu}_l)'\\
+(f_i(\mathbf{t}_{obs}) - S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l)' &amp; (f_i(\mathbf{t}^*) - S'(\mathbf{t}^*)\boldsymbol{\nu}_l)'\\
 \end{bmatrix}\begin{bmatrix}
-\mathbf{A}_l^+ + (\mathbf{A}^+_l\mathbf{B}_l\mathbf{Z}_l^+\mathbf{C}_l\mathbf{A}_l^+) &amp; -\mathbf{A}_l^+\mathbf{B}_l\mathbf{Z}_l^+\\
--\mathbf{Z}_l^+\mathbf{C}_l\mathbf{A}_l^+ &amp; \mathbf{Z}_l^+
+\mathbf{A}_l^+ &amp; \mathbf{B}_l^+ \\
+\mathbf{C}_l^+ &amp; \mathbf{D}_l^+
 \end{bmatrix}\begin{bmatrix}
-f_i(\mathbf{t}_{obs}) - S(\mathbf{t}_{obs})\boldsymbol{\nu}_l\\
-f_i(\mathbf{t}^*) - S(\mathbf{t}^*)\boldsymbol{\nu}_l
+f_i(\mathbf{t}_{obs}) - S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l\\
+f_i(\mathbf{t}^*) - S'(\mathbf{t}^*)\boldsymbol{\nu}_l
 \end{bmatrix}\right\}$$</p>
 
 </div>
@@ -13282,21 +13271,22 @@ f_i(\mathbf{t}^*) - S(\mathbf{t}^*)\boldsymbol{\nu}_l
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-$$\propto exp\left\{-2f_i(\mathbf{t}^*)'\left(\sum_{l=1}^K z_{il}\left(\mathbf{Z}_l^+\mathbf{C}_l\mathbf{A}_l^+\right)\right)f_i(\mathbf{t}_{obs}) - 2f_i(\mathbf{t}^*)'\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\mathbf{S}(\mathbf{t}^*)\boldsymbol{\nu}_l\right) + f_i(\mathbf{t}^*)'\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)f_i(\mathbf{t}^*)\right\}$$
+$$\propto exp\left\{-f_i(\mathbf{t}^*)'\left(\sum_{l=1}^K z_{il}\left(\mathbf{C}_l^+\right)\left(f_i(\mathbf{t}_{obs}) - S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l \right)\right) + f_i(\mathbf{t}^*)'\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+S'(\mathbf{t}^*)\boldsymbol{\nu}_l\right) - \frac{1}{2}
+f_i(\mathbf{t}^*)'\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)f_i(\mathbf{t}^*)\right\}$$
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-$$= exp\left\{f_i(\mathbf{t}^*)'\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)f_i(\mathbf{t}^*) - f_i(\mathbf{t}^*)'\left(\sum_{l =1}^K\left(z_{il}\mathbf{Z}_l^+\left(\mathbf{C}_l\mathbf{A}_l^+f_i(\mathbf{t}_{obs})+ \mathbf{S}(\mathbf{t}^*)\boldsymbol{\nu}_l\right)\right)\right)\right\}$$
+$$= exp\left\{-\frac{1}{2}f_i(\mathbf{t}^*)'\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)f_i(\mathbf{t}^*) + f_i(\mathbf{t}^*)'\left(\sum_{l =1}^K z_{il}\left(\mathbf{C}_l^+\left(S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l - f_i(\mathbf{t}_{obs})\right) + \mathbf{D}_l^+ \left(S'(\mathbf{t}^*)\boldsymbol{\nu}_l \right)\right)\right)\right\}$$
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Thus let $\tilde{\mathbf{M}}_i^+ = \sum_{l=1}^K z_{il}\mathbf{Z}_l^+$ and $\tilde{\mathbf{m}}_i = \sum_{l =1}^K\left(z_{il}\mathbf{Z}_l^+\left(\mathbf{C}_l\mathbf{A}_l^+f_i(\mathbf{t}_{obs})+ \mathbf{S}(\mathbf{t}^*)\boldsymbol{\nu}_l\right)\right)$.
+<p>Thus let $\tilde{\mathbf{M}}_i^+ = \sum_{l=1}^K z_{il}\mathbf{D}_l^+$ and $\tilde{\mathbf{m}}_i = \sum_{l =1}^K z_{il}\left(\mathbf{C}_l^+\left(S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l - f_i(\mathbf{t}_{obs})\right) + \mathbf{D}_l^+ \left(S'(\mathbf{t}^*)\boldsymbol{\nu}_l \right)\right)$.
 Thus we can see that 
 $$f_i(\mathbf{t}^*)|f_i(\mathbf{t}_{obs}), \mathbf{z}_i, \boldsymbol{\Theta} \sim \mathcal{N}(\tilde{\mathbf{M}}_i\tilde{\mathbf{m}}_i, \tilde{\mathbf{M}}_i)$$</p>
 
@@ -13559,7 +13549,7 @@ $$\sigma_{\epsilon}^2|\boldsymbol{\zeta}_{-\sigma_{\epsilon}^2} \sim IG\left(a_0
 <div class="text_cell_render border-box-sizing rendered_html">
 $$f_i(\mathbf{t}_{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_{obs})} = f_i(\mathbf{t}_{obs})|y_i(\mathbf{t}_{obs}), f_i(\mathbf{t}^*),\mathbf{z}_1, \dots, \mathbf{z}_K, \boldsymbol{\phi}_1, \dots, \boldsymbol{\phi}_K, \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K, \sigma^2_\epsilon; \;\;\; i = 1, \dots, K$$$$\begin{aligned}
 \propto &amp; exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_{obs}) - \mathbf{M}_i\mathbf{m}_i\right)'\mathbf{M}^{+}_i\left(f_i(\mathbf{t}_{obs}) - \mathbf{M}_i\mathbf{m}_i\right)\right\} \\
-&amp; \times exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}^*) - \left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)^+\left(\sum_{l =1}^K\left(z_{il}\mathbf{Z}_l^+\left(\mathbf{C}_l\mathbf{A}_l^+f_i(\mathbf{t}_{obs})+ \mathbf{S}(\mathbf{t}^*)'\boldsymbol{\nu}_l\right)\right)\right)\right)'\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)\left(f_i(\mathbf{t}^*) - \left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)^+\left(\sum_{l =1}^K\left(z_{il}\mathbf{Z}_l^+\left(\mathbf{C}_l\mathbf{A}_l^+f_i(\mathbf{t}_{obs})+ \mathbf{S}(\mathbf{t}^*)'\boldsymbol{\nu}_l\right)\right)\right)\right) \right\}\\
+&amp; \times exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}^*) - \left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)^+\left(\sum_{l =1}^K z_{il}\left(\mathbf{C}_l^+\left(S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l - f_i(\mathbf{t}_{obs})\right) + \mathbf{D}_l^+ \left(S'(\mathbf{t}^*)\boldsymbol{\nu}_l \right)\right)\right)\right)'\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)\left(f_i(\mathbf{t}^*) - \left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)^+\left(\sum_{l =1}^K z_{il}\left(\mathbf{C}_l^+\left(S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l - f_i(\mathbf{t}_{obs})\right) + \mathbf{D}_l^+ \left(S'(\mathbf{t}^*)\boldsymbol{\nu}_l \right)\right)\right)\right) \right\}\\
 &amp; \times exp\left\{-\frac{1}{2\sigma^2_\epsilon}(y_i(\mathbf{t}_{obs}) - f_i(\mathbf{t}_{obs}))'(y_i(\mathbf{t}_{obs}) - f_i(\mathbf{t}_{obs})) \right\}
 \end{aligned}$$
 </div>
@@ -13569,10 +13559,10 @@ $$f_i(\mathbf{t}_{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_{obs})} = f_i(\math
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
-\propto exp\left\{-\frac{1}{2}\left[ f_i(\mathbf{t}_{obs})' \left(\mathbf{M}^+_i + \left(\sum_{l = 1}^K z_{il}\mathbf{Z}^+_l \mathbf{C}_l\mathbf{A}_l^+\right)'\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)^+ \left(\sum_{l = 1}^K z_{il}\mathbf{Z}^+_l \mathbf{C}_l\mathbf{A}_l^+\right) + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}}\right) f_i(\mathbf{t}_{obs})\\
-- 2f_i(\mathbf{t}_{obs})'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_{obs}) + \left(\sum_{l = 1}^K z_{il}\mathbf{Z}^+_l \mathbf{C}_l\mathbf{A}_l^+\right)'\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)^+\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)  f_i(\mathbf{t}^*) + \mathbf{M}_i^+\mathbf{M}_i\mathbf{m}_i\right)\right]\right\}
-\end{aligned}$$<p>The above is true because $$\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)'\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)^+ \left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right) = \left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)^+ \left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right) = \left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)$$
-Since $\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)^+$ is symmetric (covariance matrix), we know that $\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)$ is symmetric.</p>
+\propto exp\left\{-\frac{1}{2}\left[ f_i(\mathbf{t}_{obs})' \left(\mathbf{M}^+_i + \left(\sum_{l = 1}^K z_{il}\mathbf{C}_l^+\right)'\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)^+ \left(\sum_{l = 1}^K z_{il}\mathbf{C}_l^+\right) + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}}\right) f_i(\mathbf{t}_{obs})\\
+- 2f_i(\mathbf{t}_{obs})'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_{obs}) + \left(\sum_{l = 1}^K z_{il}\mathbf{C}_l^+\right)'\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)^+\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right) f_i(\mathbf{t}^*) + \mathbf{M}_i^+\mathbf{M}_i\mathbf{m}_i\right)\right]\right\}
+\end{aligned}$$<p>The above is true because $$\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)'\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)^+ \left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right) = \left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)^+ \left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right) = \left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)$$
+Since $\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)^+$ is symmetric (covariance matrix), we know that $\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)$ is symmetric.</p>
 
 </div>
 </div>
@@ -13580,9 +13570,9 @@ Since $\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)^+$ is symmetric (covarianc
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Let $$\mathbf{W}_i = \left(\mathbf{M}^+_i + \left(\sum_{l = 1}^K z_{il}\mathbf{Z}^+_l \mathbf{C}_l\mathbf{A}_l^+\right)'\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)^+ \left(\sum_{l = 1}^K z_{il}\mathbf{Z}^+_l \mathbf{C}_l\mathbf{A}_l^+\right) + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}}\right)^+$$
+<p>Let $$\mathbf{W}_i = \left(\mathbf{M}^+_i + \left(\sum_{l = 1}^K z_{il}\mathbf{C}_l^+\right)'\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)^+ \left(\sum_{l = 1}^K z_{il}\mathbf{C}_l^+\right) + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}}\right)^+$$
 and
-$$\mathbf{w}_i = \frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_{obs}) + \left(\sum_{l = 1}^K z_{il}\mathbf{Z}^+_l \mathbf{C}_l\mathbf{A}_l^+\right)'\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)^+\left(\sum_{l=1}^K z_{il}\mathbf{Z}_l^+\right)  f_i(\mathbf{t}^*) + \mathbf{M}_i^+\mathbf{M}_i\mathbf{m}_i$$</p>
+$$\mathbf{w}_i = \frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_{obs}) + \left(\sum_{l = 1}^K z_{il}\mathbf{C}_l^+\right)'\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right)^+\left(\sum_{l=1}^K z_{il}\mathbf{D}_l^+\right) f_i(\mathbf{t}^*) + \mathbf{M}_i^+\mathbf{M}_i\mathbf{m}_i$$</p>
 
 </div>
 </div>
@@ -13653,8 +13643,8 @@ $$\boldsymbol{\nu}_i| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_i} = \boldsymbol{\nu
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
 \propto &amp; exp\left\{-\frac{1}{2\tau_i^2}\boldsymbol{\nu}_i'\mathbf{P}\boldsymbol{\nu}_i \right\}\\
-&amp;\times \prod_{j=1}^N exp\left\{-\frac{1}{2}\left(f_j(\mathbf{t}_{obs}) - \mathbf{M}_j\sum_{l=1}^K \left(z_{jl}\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+}S(\mathbf{t}_{obs})\boldsymbol{\nu}_l \right)\right)' \mathbf{M}_j^+\left(f_j(\mathbf{t}_{obs}) - \mathbf{M}_j\sum_{l=1}^K \left(z_{jl}\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+}S(\mathbf{t}_{obs})\boldsymbol{\nu}_l \right)\right) \right\}\\
-&amp;\times \prod_{j=1}^N exp\left\{-\frac{1}{2}\left(f_j(\mathbf{t}^*) - \tilde{\mathbf{M}}_j \sum_{l =1}^K\left(z_{jl}\mathbf{Z}_l^+\left(\mathbf{C}_l\mathbf{A}_l^+f_j(\mathbf{t}_{obs})+ \mathbf{S}(\mathbf{t}^*)\boldsymbol{\nu}_l\right)\right)\right)' \tilde{\mathbf{M}}_j^+\left(f_j(\mathbf{t}^*) - \tilde{\mathbf{M}}_j \sum_{l =1}^K\left(z_{jl}\mathbf{Z}_l^+\left(\mathbf{C}_l\mathbf{A}_l^+f_j(\mathbf{t}_{obs})+ \mathbf{S}(\mathbf{t}^*)\boldsymbol{\nu}_l\right)\right)\right)  \right\}
+&amp;\times \prod_{j=1}^N exp\left\{-\frac{1}{2}\left(f_j(\mathbf{t}_{obs}) - \mathbf{M}_j\sum_{l=1}^K \left(z_{jl}\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+}S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l \right)\right)' \mathbf{M}_j^+\left(f_j(\mathbf{t}_{obs}) - \mathbf{M}_j\sum_{l=1}^K \left(z_{jl}\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_l\boldsymbol{\Phi}_l')S(\mathbf{t}_{obs})\right]^{+}S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l \right)\right) \right\}\\
+&amp;\times \prod_{j=1}^N exp\left\{-\frac{1}{2}\left(f_j(\mathbf{t}^*) - \tilde{\mathbf{M}}_j \sum_{l =1}^K z_{jl}\left(\mathbf{C}_l^+\left(S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l - f_j(\mathbf{t}_{obs})\right) + \mathbf{D}_l^+ \left(S'(\mathbf{t}^*)\boldsymbol{\nu}_l \right)\right)\right)' \tilde{\mathbf{M}}_j^+\left(f_j(\mathbf{t}^*) - \tilde{\mathbf{M}}_j \sum_{l =1}^K z_{jl}\left(\mathbf{C}_l^+\left(S'(\mathbf{t}_{obs})\boldsymbol{\nu}_l - f_j(\mathbf{t}_{obs})\right) + \mathbf{D}_l^+ \left(S'(\mathbf{t}^*)\boldsymbol{\nu}_l \right)\right)\right)  \right\}
 \end{aligned}$$
 </div>
 </div>
@@ -13663,8 +13653,8 @@ $$\begin{aligned}
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
-\propto exp\left\{-\frac{1}{2}\boldsymbol{\nu}_i'\left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left[S(\mathbf{t}_{obs})' \left( \left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_i\boldsymbol{\Phi}_i')S(\mathbf{t}_{obs})\right]^{+}\right)'\left( z_{ji}\mathbf{M}_j\right)\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_i\boldsymbol{\Phi}_i')S(\mathbf{t}_{obs})\right]^{+}S(\mathbf{t}_{obs})\right] + \sum_{j=1}^N \left[S(\mathbf{t}^*)'(\mathbf{Z}_i^+)'\left(z_{ji}\tilde{\mathbf{M}}_j\right)\mathbf{Z}_i^+ S(\mathbf{t}^*)\right]\right) \boldsymbol{\nu}_i \\
-+ \boldsymbol{\nu}_i'\left( \sum_{j=1}^N \left[S(\mathbf{t}_{obs})' \left( \left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_i\boldsymbol{\Phi}_i')S(\mathbf{t}_{obs})\right]^{+}\right)'\left( z_{ji}\mathbf{M}_j\right)\mathbf{M}_j^+f_j(\mathbf{t}_{obs})\right]  + \sum_{j = 1}^N \left[S(\mathbf{t}^*)'(\mathbf{Z}_i^+)'\left(z_{ji}\tilde{\mathbf{M}}_j\right)\tilde{\mathbf{M}}_j^+ f_j(\mathbf{t}^*) \right]\right)  \right\}
+\propto exp\left\{-\frac{1}{2}\boldsymbol{\nu}_i'\left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left[S(\mathbf{t}_{obs}) \left( \left[S'(\mathbf{t}_{obs})(\boldsymbol{\Phi}_i\boldsymbol{\Phi}_i')S(\mathbf{t}_{obs})\right]^{+}\right)'\left( z_{ji}\mathbf{M}_j\right)\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_i\boldsymbol{\Phi}_i')S(\mathbf{t}_{obs})\right]^{+}S'(\mathbf{t}_{obs})\right] + \sum_{j=1}^N \left[S(\mathbf{t}^*)(\mathbf{D}_i^+ + \mathbf{C}_i^+)'\left(z_{ji}\tilde{\mathbf{M}}_j\right)(\mathbf{D}_i^+ + \mathbf{C}_i^+)S'(\mathbf{t}^*)\right]\right) \boldsymbol{\nu}_i \\
+- \boldsymbol{\nu}_i'\left( \sum_{j=1}^N \left[S(\mathbf{t}_{obs}) \left( \left[S'(\mathbf{t}_{obs})(\boldsymbol{\Phi}_i\boldsymbol{\Phi}_i')S(\mathbf{t}_{obs})\right]^{+}\right)'\left( z_{ji}\mathbf{M}_j\right)\mathbf{M}_j^+f_j(\mathbf{t}_{obs})\right]  + \sum_{j = 1}^N \left[S(\mathbf{t}^*)(\mathbf{D}_i^+ + \mathbf{C}_i^+)'\left(z_{ji}\tilde{\mathbf{M}}_j\right)\left(\tilde{\mathbf{M}}_j^+ f_j(\mathbf{t}^*)  - \mathbf{C}_i^+f_j(\mathbf{t}_{obs}) \right)\right]\right)  \right\}
 \end{aligned}$$
 </div>
 </div>
@@ -13672,7 +13662,7 @@ $$\begin{aligned}
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Let $$\mathbf{B}_i = \left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left[S(\mathbf{t}_{obs})' \left( \left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_i\boldsymbol{\Phi}_i')S(\mathbf{t}_{obs})\right]^{+}\right)'\left( z_{ji}\mathbf{M}_j\right)\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_i\boldsymbol{\Phi}_i')S(\mathbf{t}_{obs})\right]^{+}S(\mathbf{t}_{obs})\right] + \sum_{j=1}^N \left[S(\mathbf{t}^*)'(\mathbf{Z}_i^+)'\left(z_{ji}\tilde{\mathbf{M}}_j\right)\mathbf{Z}_i^+ S(\mathbf{t}^*)\right]\right)^+$$</p>
+<p>Let $$\mathbf{B}_i = \left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left[S(\mathbf{t}_{obs}) \left( \left[S'(\mathbf{t}_{obs})(\boldsymbol{\Phi}_i\boldsymbol{\Phi}_i')S(\mathbf{t}_{obs})\right]^{+}\right)'\left( z_{ji}\mathbf{M}_j\right)\left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_i\boldsymbol{\Phi}_i')S(\mathbf{t}_{obs})\right]^{+}S'(\mathbf{t}_{obs})\right] + \sum_{j=1}^N \left[S(\mathbf{t}^*)(\mathbf{D}_i^+ + \mathbf{C}_i^+)'\left(z_{ji}\tilde{\mathbf{M}}_j\right)(\mathbf{D}_i^+ + \mathbf{C}_i^+)S'(\mathbf{t}^*)\right]\right)^+$$</p>
 
 </div>
 </div>
@@ -13681,7 +13671,7 @@ $$\begin{aligned}
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>and 
-$$\mathbf{b}_i =  \sum_{j=1}^N \left[S(\mathbf{t}_{obs})' \left( \left[S(\mathbf{t}_{obs})'(\boldsymbol{\Phi}_i\boldsymbol{\Phi}_i')S(\mathbf{t}_{obs})\right]^{+}\right)'\left( z_{ji}\mathbf{M}_j\right)\mathbf{M}_j^+f_j(\mathbf{t}_{obs})\right]  + \sum_{j = 1}^N \left[S(\mathbf{t}^*)'(\mathbf{Z}_i^+)'\left(z_{ji}\tilde{\mathbf{M}}_j\right)\tilde{\mathbf{M}}_j^+ f_j(\mathbf{t}^*) \right]$$</p>
+$$\mathbf{b}_i =  \sum_{j=1}^N \left[S(\mathbf{t}_{obs}) \left( \left[S'(\mathbf{t}_{obs})(\boldsymbol{\Phi}_i\boldsymbol{\Phi}_i')S(\mathbf{t}_{obs})\right]^{+}\right)'\left( z_{ji}\mathbf{M}_j\right)\mathbf{M}_j^+f_j(\mathbf{t}_{obs})\right]  + \sum_{j = 1}^N \left[S(\mathbf{t}^*)(\mathbf{D}_i^+ + \mathbf{C}_i^+)'\left(z_{ji}\tilde{\mathbf{M}}_j\right)\left(\tilde{\mathbf{M}}_j^+ f_j(\mathbf{t}^*)  - \mathbf{C}_i^+f_j(\mathbf{t}_{obs}) \right)\right]$$</p>
 
 </div>
 </div>
@@ -13905,8 +13895,8 @@ $$z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}} = z_{(i,l)} | f_i(\mathbf{t}_{obs})
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
-P(z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}}) &amp; \propto det^*(\mathbf{M})^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_{obs}) - \mathbf{M}_i\mathbf{m}_i\right)'\mathbf{M}_i^+\left(f_i(\mathbf{t}_{obs}) - \mathbf{M}_i\mathbf{m}_i\right)\right\}det^*(\tilde{\mathbf{M}})^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}^*) - \tilde{\mathbf{M}}_i\tilde{\mathbf{m}}_i\right)'\tilde{\mathbf{M}}_i^+\left(f_i(\mathbf{t}^*) - \tilde{\mathbf{M}}_i\tilde{\mathbf{m}}_i\right)\right\}\\
-&amp; \times \pi_l^{z_{(i,l)}}(1-\pi)^{1 - z_{(i,l)}}\\
+P(z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}}) &amp; \propto det^*(\mathbf{M}_i)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_{obs}) - \mathbf{M}_i\mathbf{m}_i\right)'\mathbf{M}_i^+\left(f_i(\mathbf{t}_{obs}) - \mathbf{M}_i\mathbf{m}_i\right)\right\}det^*(\tilde{\mathbf{M}}_i)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}^*) - \tilde{\mathbf{M}}_i\tilde{\mathbf{m}}_i\right)'\tilde{\mathbf{M}}_i^+\left(f_i(\mathbf{t}^*) - \tilde{\mathbf{M}}_i\tilde{\mathbf{m}}_i\right)\right\}\\
+&amp; \times \pi_l^{z_{(i,l)}}(1-\pi_l)^{1 - z_{(i,l)}}\\
 \end{aligned}$$
 </div>
 </div>
@@ -13948,6 +13938,19 @@ $$ \propto \left(\pi_l\right)^{ \left(\alpha/K + \sum_{i=1}^N z_{il}\right) -1} 
 $$\pi_{l}| \boldsymbol{\zeta}_{-\pi_{l}}\sim Beta \left(\alpha/K + \sum_{i=1}^N z_{il}, N - \sum_{i=1}^N z_{il} + 1\right)$$
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
 </div>
     </div>
   </div>

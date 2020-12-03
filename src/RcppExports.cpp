@@ -28,6 +28,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// TestUpdatePi
+Rcpp::List TestUpdatePi();
+RcppExport SEXP _BayesFOC_TestUpdatePi() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdatePi());
+    return rcpp_result_gen;
+END_RCPP
+}
 // updatePi
 void updatePi(const arma::mat& Z, const double alpha, const int K, const int iter, arma::mat& pi);
 RcppExport SEXP _BayesFOC_updatePi(SEXP ZSEXP, SEXP alphaSEXP, SEXP KSEXP, SEXP iterSEXP, SEXP piSEXP) {
@@ -107,6 +117,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_Rmvnormal", (DL_FUNC) &_BayesFOC_Rmvnormal, 2},
     {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
+    {"_BayesFOC_TestUpdatePi", (DL_FUNC) &_BayesFOC_TestUpdatePi, 0},
     {"_BayesFOC_updatePi", (DL_FUNC) &_BayesFOC_updatePi, 5},
     {"_BayesFOC_g_ldet", (DL_FUNC) &_BayesFOC_g_ldet, 1},
     {"_BayesFOC_lpdf_z", (DL_FUNC) &_BayesFOC_lpdf_z, 10},

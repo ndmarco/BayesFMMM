@@ -4,6 +4,7 @@
 #include "computeMM.h"
 #include "Distributions.H"
 #include "UpdateClassMembership.H"
+#include "UpdatePi.H"
 
 //' Tests updating Z
 //'
@@ -82,7 +83,6 @@ Rcpp::List TestUpdateZ(){
   for(int j = 0; j < 100; j++)
   {
     f_obs(j,0) = Rmvnormal(M(j,0) * m(j,0), M(j,0));
-    //f_obs(j,0) = M(j,0) * m(j,0);
   }
 
   // Initialize mp_inv
@@ -128,18 +128,44 @@ Rcpp::List TestUpdateZ(){
   arma::cube Z_samp = arma::ones(100, 3, 100);
   for(int i = 0; i < 100; i++)
   {
-    //updateZ(f_obs, f_star, pi, i, S_obs, S_star, Phi, Nu, M, M_ph, pinv_M, m, m_ph,
-    //        Z_ph, tilde_M, tilde_M_ph, pinv_tilde_M, tilde_m, tilde_m_ph, mp_inv,
-    //        Z_samp);
+    updateZ(f_obs, f_star, pi, i, S_obs, S_star, Phi, Nu, M, M_ph, pinv_M, m, m_ph,
+            Z_ph, tilde_M, tilde_M_ph, pinv_tilde_M, tilde_m, tilde_m_ph, mp_inv,
+            Z_samp);
   }
 
-  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("f_star", tilde_M(1,0) * tilde_m(1,0)),
-                                      Rcpp::Named("f_obs", f_obs(1,0)),
-                                      Rcpp::Named("Z", Z),
-                                      Rcpp::Named("mv", bspline_mat * Nu));
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Z_samp", Z_samp),
+                                      Rcpp::Named("Z", Z));
   return mod;
 
 }
+
+//' Tests updating Pi
+//'
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdatePi()
+{
+  // Make Z matrix
+  arma::mat Z = arma::randi<arma::mat>(1000, 3, arma::distr_param(0,1));
+  double alpha = 1;
+  arma::mat pi = arma::zeros(100, 3);
+
+  for(int i = 0; i < 100; i ++)
+  {
+    update_pi(alpha, i, Z,  pi);
+  }
+  arma::vec prob = arma::zeros(3);
+  for(int i = 0; i < 3; i++)
+  {
+    prob(i) = arma::accu(Z.col(i)) / 1000;
+  }
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("pi", pi),
+                                      Rcpp::Named("prob", prob));
+  return mod;
+}
+
+
+
 
 
 

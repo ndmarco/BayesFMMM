@@ -19,6 +19,13 @@ TestUpdateZ <- function() {
     .Call('_BayesFOC_TestUpdateZ', PACKAGE = 'BayesFOC')
 }
 
+#' Tests updating Pi
+#'
+#' @export
+TestUpdatePi <- function() {
+    .Call('_BayesFOC_TestUpdatePi', PACKAGE = 'BayesFOC')
+}
+
 #' Computes M_i
 #'
 #' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
