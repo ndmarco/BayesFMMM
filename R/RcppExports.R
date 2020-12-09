@@ -26,6 +26,13 @@ TestUpdatePi <- function() {
     .Call('_BayesFOC_TestUpdatePi', PACKAGE = 'BayesFOC')
 }
 
+#' Tests updating Z
+#'
+#' @export
+TestUpdateZSingleMat <- function() {
+    .Call('_BayesFOC_TestUpdateZSingleMat', PACKAGE = 'BayesFOC')
+}
+
 #' Computes M_i
 #'
 #' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
@@ -35,11 +42,28 @@ TestUpdatePi <- function() {
 #' @param M Matrix acting as a placeholder for M
 NULL
 
+#' Computes M_i for single covariance matrix
+#'
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Matrix of current phi paramaters
+#' @param i Int indicating which M we are calculating
+#' @param M Matrix acting as a placeholder for M
+NULL
+
 #' Computes all M matrices
 #'
 #' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
 #' @param Z Matrix of current Z parameter
 #' @param phi Cube of current phi paramaters
+#' @param M Field of Matrices containing all M matrices
+NULL
+
+#' Computes all M matrices for single covariance matrix
+#'
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Matrix of current phi paramaters
 #' @param M Field of Matrices containing all M matrices
 NULL
 
@@ -53,11 +77,30 @@ NULL
 #' @param m vector acting as a placeholder for m
 NULL
 
+#' Computes m_i for single covariance matrix
+#'
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Matrix of current phi paramaters
+#' @param nu Matrix of current nu parameters
+#' @param i Int indicating which M we are calculating
+#' @param m vector acting as a placeholder for m
+NULL
+
 #' Computes all m vectors
 #'
 #' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
 #' @param Z Matrix of current Z parameter
 #' @param phi Cube of current phi paramaters
+#' @param nu Matrix of current nu parameters
+#' @param m Field of vectors acting as a placeholder for m
+NULL
+
+#' Computes all m vectors for single covariance matrix
+#'
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Matrix of current phi paramaters
 #' @param nu Matrix of current nu parameters
 #' @param m Field of vectors acting as a placeholder for m
 NULL
@@ -73,12 +116,33 @@ NULL
 #' @param tilde_M Matrix acting as a placeholder for M
 NULL
 
+#' Computes tilde M_i for single covariance matrix
+#'
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param Matrix Cube of current phi paramaters
+#' @param i Int indicating which M we are calculating
+#' @param mp_inv Matrix acting as a placeholder for mp-inv of covariance
+#' @param tilde_M Matrix acting as a placeholder for M
+NULL
+
 #' Computes all tilde M
 #'
 #' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
 #' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
 #' @param Z Matrix of current Z parameter
 #' @param phi Cube of current phi paramaters
+#' @param mp_inv Field of Matrices acting as a placeholder for mp-inv of covariance
+#' @param tilde_M Field of Matrices acting as a placeholder for M
+NULL
+
+#' Computes all tilde M for single covariance matrix
+#'
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Matrix of current phi paramaters
 #' @param mp_inv Field of Matrices acting as a placeholder for mp-inv of covariance
 #' @param tilde_M Field of Matrices acting as a placeholder for M
 NULL
@@ -90,6 +154,19 @@ NULL
 #' @param f_obs vector of current f values at observed time points
 #' @param Z Matrix of current Z parameter
 #' @param phi Cube of current phi paramaters
+#' @param nu Matrix of current nu paramaters
+#' @param i Int indicating which tilde_m we are calculating
+#' @param mp_inv Matrix acting as a placeholder fo mp-inverse of covariance
+#' @param tilde_m vector acting as a placeholder for tilde_m
+NULL
+
+#' Computes tilde m_i for single covariance matrix
+#'
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param f_obs vector of current f values at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Matrix of current phi paramaters
 #' @param nu Matrix of current nu paramaters
 #' @param i Int indicating which tilde_m we are calculating
 #' @param mp_inv Matrix acting as a placeholder fo mp-inverse of covariance
@@ -108,6 +185,18 @@ NULL
 #' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
 NULL
 
+#' Computes all tilde m for single covariance matrix
+#'
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param f_obs vector of current f values at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Matrix of current phi paramaters
+#' @param nu Matrix of current nu paramaters
+#' @param mp_inv Field of Matrices acting as a placeholder fo mp-inverse of covariance
+#' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
+NULL
+
 #' Computes the ith tilde M and tilde m
 #'
 #' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
@@ -115,6 +204,19 @@ NULL
 #' @param f_obs vector of current f values at observed time points
 #' @param Z Matrix of current Z parameter
 #' @param phi Cube of current phi paramaters
+#' @param nu Matrix of current nu paramaters
+#' @param i Int corresponding to the M and m matrix to be computed
+#' @param mp_inv Field of Matrices acting as a placeholder fo mp-inverse of covariance
+#' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
+NULL
+
+#' Computes the ith tilde M and tilde m for single covariance matrix
+#'
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param f_obs vector of current f values at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Matrix of current phi paramaters
 #' @param nu Matrix of current nu paramaters
 #' @param i Int corresponding to the M and m matrix to be computed
 #' @param mp_inv Field of Matrices acting as a placeholder fo mp-inverse of covariance
@@ -131,6 +233,72 @@ NULL
 #' @param nu Matrix of current nu paramaters
 #' @param mp_inv Field of Matrices acting as a placeholder fo mp-inverse of covariance
 #' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
+NULL
+
+#' Computes all tilde M and tilde m for single covariance matrix
+#'
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param f_obs vector of current f values at observed time points
+#' @param Z Matrix of current Z parameter
+#' @param phi Matrix of current phi paramaters
+#' @param nu Matrix of current nu paramaters
+#' @param mp_inv Field of Matrices acting as a placeholder fo mp-inverse of covariance
+#' @param tilde_m Field of Vectors acting as a placeholder for tilde_m
+NULL
+
+#' Updates the Z Matrix
+#'
+#' @param f_obs Field of vectors containing f at observed time points
+#' @param f_star Field of vectors containing f at unobserved time points
+#' @param pi Vector containing the sampled pi for this iteration
+#' @param iter Iteration of MCMC step
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param phi Cube of current phi paramaters
+#' @param nu Matrix that contains all current nu paramaters
+#' @param M Field of Matrices that contains all M matrices
+#' @param M_ph Field of Matrices that acts as a placeholder for the new M matrix
+#' @param pinv_M Field of Matrices that acts as a placeholder for g-inverse of M
+#' @param Z_ph Matrix that acts as a placeholder for the new Z matrix
+#' @param m Field of Vectors that contains all m mean vectors
+#' @param m_ph Field of Vectors that acts as a placeholder for new m vector
+#' @param z_ph Matrix that acts as a placeholder for Z
+#' @param tilde_M Field of Matrices that contains the tilde_M_i variance matrix
+#' @param tilde_M_ph Field of Matrices that acts as a placeholder for tilde_M
+#' @param pinv_tilde_M Field of Matrices that acts as a placeholder for g-inverse of tilde M
+#' @param tilde_m Vector that contains the tilde_M_i mean vector
+#' @param Z_plus Field of Matrices acting as a placeholder for Z_plus
+#' @param A_plus Matrix acting as a placeholder for A_plus
+#' @param C Matrix acting as a placeholder for C
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
+#' Updates the Z Matrix for single covariance matrix
+#'
+#' @param f_obs Field of vectors containing f at observed time points
+#' @param f_star Field of vectors containing f at unobserved time points
+#' @param pi Vector containing the sampled pi for this iteration
+#' @param iter Iteration of MCMC step
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param phi Matrix of current phi paramaters
+#' @param nu Matrix that contains all current nu paramaters
+#' @param M Field of Matrices that contains all M matrices
+#' @param M_ph Field of Matrices that acts as a placeholder for the new M matrix
+#' @param pinv_M Field of Matrices that acts as a placeholder for g-inverse of M
+#' @param Z_ph Matrix that acts as a placeholder for the new Z matrix
+#' @param m Field of Vectors that contains all m mean vectors
+#' @param m_ph Field of Vectors that acts as a placeholder for new m vector
+#' @param z_ph Matrix that acts as a placeholder for Z
+#' @param tilde_M Field of Matrices that contains the tilde_M_i variance matrix
+#' @param tilde_M_ph Field of Matrices that acts as a placeholder for tilde_M
+#' @param pinv_tilde_M Field of Matrices that acts as a placeholder for g-inverse of tilde M
+#' @param tilde_m Vector that contains the tilde_M_i mean vector
+#' @param Z_plus Field of Matrices acting as a placeholder for Z_plus
+#' @param A_plus Matrix acting as a placeholder for A_plus
+#' @param C Matrix acting as a placeholder for C
+#' @param Z Cube that contains all past, current, and future MCMC draws
 NULL
 
 #' Updates the parameters pi_1 through pi_K
@@ -167,35 +335,5 @@ g_ldet <- function(M) {
 #' @export
 lpdf_z <- function(M, m, tilde_M, tilde_m, f_obs, f_star, pi_l, z_il, pinv_M, pinv_tilde_M) {
     .Call('_BayesFOC_lpdf_z', PACKAGE = 'BayesFOC', M, m, tilde_M, tilde_m, f_obs, f_star, pi_l, z_il, pinv_M, pinv_tilde_M)
-}
-
-#' Updates the Z Matrix
-#'
-#' @param f_obs Field of vectors containing f at observed time points
-#' @param f_star Field of vectors containing f at unobserved time points
-#' @param pi Vector containing the sampled pi for this iteration
-#' @param iter Iteration of MCMC step
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param phi Cube of current phi paramaters
-#' @param nu Matrix that contains all current nu paramaters
-#' @param M Field of Matrices that contains all M matrices
-#' @param M_ph Field of Matrices that acts as a placeholder for the new M matrix
-#' @param pinv_M Field of Matrices that acts as a placeholder for g-inverse of M
-#' @param Z_ph Matrix that acts as a placeholder for the new Z matrix
-#' @param m Field of Vectors that contains all m mean vectors
-#' @param m_ph Field of Vectors that acts as a placeholder for new m vector
-#' @param z_ph Matrix that acts as a placeholder for Z
-#' @param tilde_M Field of Matrices that contains the tilde_M_i variance matrix
-#' @param tilde_M_ph Field of Matrices that acts as a placeholder for tilde_M
-#' @param pinv_tilde_M Field of Matrices that acts as a placeholder for g-inverse of tilde M
-#' @param tilde_m Vector that contains the tilde_M_i mean vector
-#' @param Z_plus Field of Matrices acting as a placeholder for Z_plus
-#' @param A_plus Matrix acting as a placeholder for A_plus
-#' @param C Matrix acting as a placeholder for C
-#' @param Z Cube that contains all past, current, and future MCMC draws
-#' @export
-updateZ <- function(f_obs, f_star, pi, iter, S_obs, S_star, phi, nu, M, M_ph, pinv_M, m, m_ph, Z_ph, tilde_M, tilde_M_ph, pinv_tilde_M, tilde_m, tilde_m_ph, mp_inv, Z) {
-    invisible(.Call('_BayesFOC_updateZ', PACKAGE = 'BayesFOC', f_obs, f_star, pi, iter, S_obs, S_star, phi, nu, M, M_ph, pinv_M, m, m_ph, Z_ph, tilde_M, tilde_M_ph, pinv_tilde_M, tilde_m, tilde_m_ph, mp_inv, Z))
 }
 
