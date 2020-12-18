@@ -4,12 +4,6 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 
-void updatePi(const arma::mat& Z,
-              const double alpha,
-              const int K,
-              const int iter,
-              arma::mat& pi);
-
 double g_ldet(const arma::mat& M);
 
 double lpdf_z(const arma::mat& M,

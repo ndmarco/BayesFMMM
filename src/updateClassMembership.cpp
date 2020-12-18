@@ -4,35 +4,10 @@
 
 // [[Rcpp::depends(RcppArmadillo)]]
 
-//' Updates the parameters pi_1 through pi_K
-//'
-//' @param Z Binary matrix of containing inclusion/exclusion to the various groups
-//' @param alpha Hyperparameter for distribution of pi_i
-//' @param K Number of clusters
-//' @param iter Iteration of MCMC step
-//' @param pi Matrix conatining all past, current, and future MCMC draws
-//' @export
-// [[Rcpp::export]]
-
-void updatePi(const arma::mat& Z,
-              const double alpha,
-              const int K,
-              const int iter,
-              arma::mat& pi)
-{
-  for(int i = 0; i < K; i++)
-  {
-    pi(iter, i) = R::rbeta((alpha/K) + arma::accu(Z.col(i)),
-       Z.n_rows - arma::accu(Z.col(i)) + 1);
-  }
-}
-
 //' Gets generalized log determinant (product of positive eigen values)
 //'
 //' @param M Matrix that we want the determinant of
 //' @return g_ldet Double countaining the generalized determinant
-//' @export
-// [[Rcpp::export]]
 
 double g_ldet(const arma::mat& M)
 {
@@ -63,8 +38,6 @@ double g_ldet(const arma::mat& M)
 //' @param f_star Vector containing f at unobserved time points
 //' @param pi Vector containing the sampled pi for this iteration
 //' @return lpdf_z Double contianing the log-pdf
-//' @export
-// [[Rcpp::export]]
 
 double lpdf_z(const arma::mat& M,
               const arma::vec& m,
@@ -224,8 +197,7 @@ void updateZ(const arma::field<arma::vec>& f_obs,
 //' @param A_plus Matrix acting as a placeholder for A_plus
 //' @param C Matrix acting as a placeholder for C
 //' @param Z Cube that contains all past, current, and future MCMC draws
-
-
+//'
 void updateZ(const arma::field<arma::vec>& f_obs,
              const arma::field<arma::vec>& f_star,
              const arma::vec& pi,

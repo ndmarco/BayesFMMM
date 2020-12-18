@@ -48,60 +48,12 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// updatePi
-void updatePi(const arma::mat& Z, const double alpha, const int K, const int iter, arma::mat& pi);
-RcppExport SEXP _BayesFOC_updatePi(SEXP ZSEXP, SEXP alphaSEXP, SEXP KSEXP, SEXP iterSEXP, SEXP piSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type Z(ZSEXP);
-    Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< const int >::type K(KSEXP);
-    Rcpp::traits::input_parameter< const int >::type iter(iterSEXP);
-    Rcpp::traits::input_parameter< arma::mat& >::type pi(piSEXP);
-    updatePi(Z, alpha, K, iter, pi);
-    return R_NilValue;
-END_RCPP
-}
-// g_ldet
-double g_ldet(const arma::mat& M);
-RcppExport SEXP _BayesFOC_g_ldet(SEXP MSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
-    rcpp_result_gen = Rcpp::wrap(g_ldet(M));
-    return rcpp_result_gen;
-END_RCPP
-}
-// lpdf_z
-double lpdf_z(const arma::mat& M, const arma::vec& m, const arma::mat& tilde_M, const arma::vec& tilde_m, const arma::vec& f_obs, const arma::vec& f_star, const double pi_l, const double z_il, arma::mat pinv_M, arma::mat pinv_tilde_M);
-RcppExport SEXP _BayesFOC_lpdf_z(SEXP MSEXP, SEXP mSEXP, SEXP tilde_MSEXP, SEXP tilde_mSEXP, SEXP f_obsSEXP, SEXP f_starSEXP, SEXP pi_lSEXP, SEXP z_ilSEXP, SEXP pinv_MSEXP, SEXP pinv_tilde_MSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type m(mSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type tilde_M(tilde_MSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type tilde_m(tilde_mSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type f_obs(f_obsSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type f_star(f_starSEXP);
-    Rcpp::traits::input_parameter< const double >::type pi_l(pi_lSEXP);
-    Rcpp::traits::input_parameter< const double >::type z_il(z_ilSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type pinv_M(pinv_MSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type pinv_tilde_M(pinv_tilde_MSEXP);
-    rcpp_result_gen = Rcpp::wrap(lpdf_z(M, m, tilde_M, tilde_m, f_obs, f_star, pi_l, z_il, pinv_M, pinv_tilde_M));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_Rmvnormal", (DL_FUNC) &_BayesFOC_Rmvnormal, 2},
     {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
     {"_BayesFOC_TestUpdatePi", (DL_FUNC) &_BayesFOC_TestUpdatePi, 0},
     {"_BayesFOC_TestUpdateZSingleMat", (DL_FUNC) &_BayesFOC_TestUpdateZSingleMat, 0},
-    {"_BayesFOC_updatePi", (DL_FUNC) &_BayesFOC_updatePi, 5},
-    {"_BayesFOC_g_ldet", (DL_FUNC) &_BayesFOC_g_ldet, 1},
-    {"_BayesFOC_lpdf_z", (DL_FUNC) &_BayesFOC_lpdf_z, 10},
     {NULL, NULL, 0}
 };
 

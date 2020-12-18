@@ -1,6 +1,14 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 
+//' Generates (degenerate) multivariate normal random variable
+//'
+//' @name Rmvnormal
+//' @param mu Vector containing mean vector
+//' @param sigma Matrix containing covariance matrix
+//' @param U Matrix acting as a placeholder for SVD
+//' @param S Vector acting as a placeholder for SVD
+//' @param V Matrix acting as a placeholder for SVD
 arma::vec Rmvnormal(arma::vec mu,
                     arma::mat sigma,
                     arma::mat U,
@@ -25,9 +33,8 @@ arma::vec Rmvnormal(arma::vec mu,
 //' Generates (degenerate) multivariate normal random variable
 //'
 //' @name Rmvnormal
-//' @param n Int containing the number of draws
 //' @param mu Vector containing mean vector
-//' @param sigma matrix containing
+//' @param sigma matrix containing covariance matrix
 //' @export
 // [[Rcpp::export]]
 

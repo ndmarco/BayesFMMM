@@ -9,10 +9,16 @@ Rmvnormal(mu, sigma)
 \arguments{
 \item{mu}{Vector containing mean vector}
 
-\item{sigma}{matrix containing}
+\item{sigma}{matrix containing covariance matrix}
 
-\item{n}{Int containing the number of draws}
+\item{U}{Matrix acting as a placeholder for SVD}
+
+\item{S}{Vector acting as a placeholder for SVD}
+
+\item{V}{Matrix acting as a placeholder for SVD}
 }
 \description{
+Generates (degenerate) multivariate normal random variable
+
 Generates (degenerate) multivariate normal random variable
 }

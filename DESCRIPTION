@@ -11,6 +11,7 @@ License: GPL (>=2)
 Imports: Rcpp (>= 1.0.5)
 LinkingTo: Rcpp,
            RcppArmadillo,
+           RcppDist,
            splines2 (>= 0.3.0)
 RoxygenNote: 7.1.1
 Encoding: UTF-8
