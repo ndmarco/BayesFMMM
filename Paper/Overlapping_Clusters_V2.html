@@ -13144,6 +13144,28 @@ $$X(t) \approx \mathbf{S}(t)'\boldsymbol{\nu} + \sum_{k=1}^M \chi_k \mathbf{S}(t
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p>NOTES</p>
+<ul>
+<li>KL expansion is used because it gives the reader an intuition on why we use the particular form to estimate the covariance<ul>
+<li>$S(t)'\Phi$ can no longer be interpreted as eigen-functions<ul>
+<li>In order for us to interperet it that way, we would need to enforce orthogonality (stiefel manifold) and also enforce that the magnitude is decreasing</li>
+<li>These restrictions are often more trouble than it is worth because we can just estimate the eigenfunctions from the estimated covariance matrix at each MCMC iteration. Theoretically this will be equivalent to estimating the eigen-functions directly<ul>
+<li>By using this method, we do not have to worry about rotations of eigenfunctions, as our estimator is invariant to that. It should also lead to better exploration of the sample space of covariance matrices.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Extension-to-Additive-Mean-Structure">Extension to Additive Mean Structure<a class="anchor-link" href="#Extension-to-Additive-Mean-Structure">&#182;</a></h2>
 </div>
 </div>
@@ -13479,6 +13501,7 @@ and
 $$\mathbf{b}_i = \sum_{j=1}^N\left[z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l\ne i}z_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \right]  + \sum_{j=1}^N z_{ji}\left(\left(S(\mathbf{t}_j^{obs})\mathbf{C}_j' + S(\mathbf{t}_j^*) \mathbf{D}_j\right)\mathbf{D}_j^+\left(\mathbf{D}_j f_j(\mathbf{t}_j^*) + \mathbf{C}_j f_j(\mathbf{t}_j^{obs}) - \mathbf{C}_j \left(\sum_{l \ne i} z_{jl}S(\mathbf{t}_j^{obs})\boldsymbol{\nu}_l \right) - \mathbf{D}_j\sum_{l \ne i}\left(z_{jl}S(\mathbf{t}_j^*)\boldsymbol{\nu}_l \right)\right)\right)$$
 we have that 
 $$\boldsymbol{\nu}_i| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_i} \sim \mathcal{N}\left(\mathbf{B}_i\mathbf{b}_i, \mathbf{B}_i\right)$$</p>
+<hr>
 
 </div>
 </div>
@@ -13486,22 +13509,256 @@ $$\boldsymbol{\nu}_i| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_i} \sim \mathcal{N}\
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+$$\tau^2_i| \boldsymbol{\zeta}_{-\tau^2_i} = \tau^2_i | \boldsymbol{\nu}_i; \;\;\; i = 1, \dots, K$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\propto (\tau^2_i)^{(-a_1 - 1)} exp\left\{-\frac{b_0}{\tau^2_i}\right\} (2\pi\tau^2_i)^{(-P/2)}exp\left\{-\frac{1}{2\tau^2_i}\boldsymbol{\nu}_i'\mathbf{P}\boldsymbol{\nu}_i \right\}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\propto (\tau^2_i)^{-(a_1 + P/2) - 1} exp\left\{- \frac{b_0 + \frac{1}{2}\boldsymbol{\nu}_i'\mathbf{P}\boldsymbol{\nu}_i}{\tau_i^2}\right\}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Thus we have that 
+$$\tau^2_i| \boldsymbol{\zeta}_{-\tau^2_i} \sim IG\left(a_1 + P/2, b_0 + \frac{1}{2}\boldsymbol{\nu}_i'\mathbf{P} \boldsymbol{\nu}_i \right); \;\;\; i = 1, \dots, K$$</p>
 <hr>
-<p>NOTES</p>
-<ul>
-<li>KL expansion is used because it gives the reader an intuition on why we use the particular form to estimate the covariance<ul>
-<li>$S(t)'\Phi$ can no longer be interpreted as eigen-functions<ul>
-<li>In order for us to interperet it that way, we would need to enforce orthogonality (stiefel manifold) and also enforce that the magnitude is decreasing</li>
-<li>These restrictions are often more trouble than it is worth because we can just estimate the eigenfunctions from the estimated covariance matrix at each MCMC iteration. Theoretically this will be equivalent to estimating the eigen-functions directly<ul>
-<li>By using this method, we do not have to worry about rotations of eigenfunctions, as our estimator is invariant to that. It should also lead to better exploration of the sample space of covariance matrices.</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
 
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}} = \phi_{(i,j,l)} | \delta_{1,l}, \dots, \delta_{j,l}, \gamma_{(i,j,l)}, f_1(\mathbf{t}_{obs}), \dots, f_N(\mathbf{t}_{obs}), f_1(\mathbf{t}^*), \dots, f_N(\mathbf{t}^*), \mathbf{z}_1, \dots, \mathbf{z}_K, \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K; \;\;\; i = 1,\dots, P, \;\;\; j = 1, \dots, M,\;\;\; l = 1,\dots, R $$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Due to the complexity of this distribution, we will use a Metropolis-Hastings step. Let $\phi_{(i,j,l)}'$ be the proposed new value, and $\boldsymbol{\phi}_l'$ be the updated matrix (only the $(i,j,l)$ element is updated). Thus we have that</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\begin{align}
+P(\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}})&amp;  \propto exp\left\{-\frac{\gamma_{(i,j,l)} \tilde{\tau}_{(j,l)}}{2}  \phi_{(i,j,l)}^2\right\}\\
+\times &amp; \prod_{j=1}^N \mathbb{1}\left(\Omega(\mathbf{z}_i) = l \right)det^*\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\} \\
+\times &amp; \prod_{j=1}^N det^*(\mathbf{M}_j)^{-1/2} exp\left\{-\frac{1}{2}\left(f_j(\mathbf{t}^*) - \mathbf{M}_j\mathbf{m}_j\right)'\mathbf{M}_j^+\left(f_j(\mathbf{t}^*) - \mathbf{M}_j\mathbf{m}_j\right) \right\}\\
+\end{align}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Consider the proposal distribution $Q\left(\phi_{(i,j,l)}'|\phi_{(i,j,l)}\right) = \mathcal{N}\left(\phi_{(i,j,l)}' | \mu = \phi_{(i,j,l)}, \sigma^2 = \alpha \gamma_{(i,j,l)}^{-1} \tilde{\tau}_{(j,l)}^{-1}\right)$ for some small $\alpha &gt;0$. Thus our probability of accepting any step is 
+$$A(\phi_{(i,j,l)}',\phi_{(i,j,l)}) = \min \left\{1, \frac{P\left(\phi_{(i,j,l)}'| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}'}\right)}{P\left(\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}}\right)} \frac{Q\left(\phi_{(i,j,l)}|\phi_{(i,j,l)}'\right)}{Q\left(\phi_{(i,j,l)}'|\phi_{(i,j,l)}\right)}\right\}$$</p>
+<hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\delta_{(i,j)}| \boldsymbol{\zeta}_{-\delta_{(i,j)}} = \delta_{i,j} | \delta_{(1,j)}, \dots, \delta_{(i-1,j)}, \boldsymbol{\phi}_{(:,i,j)}, \dots, \boldsymbol{\phi}_{(:,M,j)}, \boldsymbol{\gamma}_{(:,i,j)}, \dots, \boldsymbol{\gamma}_{(:,M,j)}, a_{(1,j)}, a_{(2,j)} \;\;\; i = 1, \dots, M  \;\;\; j = 1, \dots, R$$<p>where $\boldsymbol{\phi}_{(:,i,j)} = \{\boldsymbol{\phi}_{(k,i,j)}| 1\le k \le P \}$ and $\boldsymbol{\gamma}_{(:,i,j)} = \{\boldsymbol{\gamma}_{(k,i,j)}| 1\le k \le P \}$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$P(\delta_{(1,j)}| \boldsymbol{\zeta}_{-\delta_i}) \propto \delta_{(1,j)}^{a_1 -1}exp\left\{-\delta_{(1,j)}\right\} \prod_{k=1}^P \prod_{m = 1}^M \left(\gamma_{(k,1,j)}\prod_{n=1}^m\delta_{(n,j)}\right)^{1/2} exp\left\{ -\frac{\gamma_{(k,m,j)}\prod_{n=1}^m\delta_{(n,j)}}{2}\phi_{(k,1,j)}^2\right\}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\propto \delta_{(1,j)}^{(a_{(1,j)} + PM/2) -1} exp\left\{-\delta_{(1,j)}\left(1 + \frac{1}{2}\sum_{k=1}^P\gamma_{(k,1,j)} \phi^2_{(k,1,j)} + \frac{1}{2}\sum_{m=2}^M\sum_{k=1}^P\gamma_{(k,m,j)} \left(\prod_{n=2}^m \delta_{(n,j)}\right)\phi^2_{(k,m,j)}\right)\right\}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Therefore, we have
+$$ \delta_{(1,j)}| \boldsymbol{\zeta}_{-\delta_{(1,j)}} \sim Gamma\left(a_{(1,j)} + PM/2, 1 + \frac{1}{2}\sum_{k=1}^P\gamma_{(k,1,j)} \phi^2_{(k,1,j)} + \frac{1}{2}\sum_{m=2}^M\sum_{k=1}^P\gamma_{(k,m,j)} \left(\prod_{n=2}^m \delta_{(n,j)}\right)\phi^2_{(k,m,j)}\right)$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$P(\delta_{(i,j)}| \boldsymbol{\zeta}_{-\delta_i}) \propto \delta_{(i,j)}^{a_2 -1}exp\left\{-\delta_{(i,j)}\right\} \prod_{k=1}^P \prod_{m = i}^M \left(\gamma_{(k,1,j)}\prod_{n=1}^m\delta_{(n,j)}\right)^{1/2} exp\left\{ -\frac{\gamma_{(k,m,j)}\prod_{n=1}^m\delta_{(n,j)}}{2}\phi_{(k,1,j)}^2\right\}; \;\;\; 2 \le i \le M$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\propto \delta_{(i,j)}^{(a_{(2,j)} + P(M-i+1)/2) -1} exp\left\{-\delta_{(i,j)}\left(1 + \frac{1}{2}\sum_{m=i}^M\sum_{k=1}^P\gamma_{(k,m,j)} \left(\prod_{n=1,n \ne i}^m \delta_{(n,j)}\right)\phi^2_{(k,m,j)}\right)\right\}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Therefore, we have
+$$ \delta_{(i,j)}| \boldsymbol{\zeta}_{-\delta_{(i,j)}} \sim Gamma\left(a_{(2,j)} + P(M-i+1)/2, 1 + \frac{1}{2}\sum_{m=i}^M\sum_{k=1}^P\gamma_{(k,m,j)} \left(\prod_{n=1,n \ne i}^m \delta_{(n,j)}\right)\phi^2_{(k,m,j)}\right); \;\;\; 2 \le i \le M$$</p>
+<hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$a_{(1 ,j)}| \boldsymbol{\zeta}_{-a_{(1,j)}} = a_{(1,j)} | \delta_{(1,j)}; \;\;\; j = 1, \dots, R$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$P(a_{(1,j)}|\delta_{(1,j)}) \propto \frac{1}{\Gamma(a_{(1,j)})}\delta_{(1,j)}^{a_{(1,j)} -1} a_{(1,j)}^{\alpha_{(1,j)} -1} exp \left\{-a_{(1,j)}\beta_{(1,j)} \right\}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Since this is not a known kernal of a distribution, we will have to use Metropolis-Hastings algorithm. Consider the proposal distribution $Q(a_{(1,j)}', a_{(1,j)}) = \mathcal{N}\left(a_{(1,j)}, \epsilon\beta_{(1,j)}^{-1}, 0, + \infty\right)$ (Truncated Normal) for some small $\epsilon &gt; 0$. Thus the probability of accepting any step is</p>
+$$A(a_{(1,j)}',a_{(1,j)}) = \min \left\{1, \frac{P\left(a_{(1,j)}'| \boldsymbol{\zeta}_{-a_{(1,j)}'}\right)}{P\left(a_{(1,j)}| \boldsymbol{\zeta}_{-a_{(1,j)}}\right)} \frac{Q\left(a_{(1,j)}|a_{(1,j)}'\right)}{Q\left(a_{(1,j)}'|a_{(1,j)}\right)}\right\}$$<hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$a_{(2 ,j)}| \boldsymbol{\zeta}_{-a_{(2,j)}} = a_{(2,j)} | \delta_{(2,j)}, \dots, \delta_{(M,j)}; \;\;\; j = 1, \dots, R$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$P(a_{(1,j)}|\delta_{(1,j)}) \propto \frac{1}{\Gamma(a_{(2,j)})^{M-1}}\left(\prod_{i=2}^M\delta_{(i,j)}^{a_{(2,j)} -1}\right) a_{(2,j)}^{\alpha_{(2,j)} -1} exp \left\{-a_{(2,j)}\beta_{(2,j)} \right\}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Since this is not a known kernal of a distribution, we will have to use Metropolis-Hastings algorithm. Consider the proposal distribution $Q(a_{(2,j)}', a_{(2,j)}) = \mathcal{N}\left(a_{(2,j)}, \epsilon\beta_{(2,j)}^{-1}, 0, + \infty\right)$ (Truncated Normal) for some small $\epsilon &gt; 0$. Thus the probability of accepting any step is</p>
+$$A(a_{(2,j)}',a_{(2,j)}) = \min \left\{1, \frac{P\left(a_{(2,j)}'| \boldsymbol{\zeta}_{-a_{(2,j)}'}\right)}{P\left(a_{(2,j)}| \boldsymbol{\zeta}_{-a_{(2,j)}}\right)} \frac{Q\left(a_{(2,j)}|a_{(2,j)}'\right)}{Q\left(a_{(2,j)}'|a_{(2,j)}\right)}\right\}$$<hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\gamma_{(i,j,l)}| \boldsymbol{\zeta}_{-\gamma_{(i,j,l)}} = \gamma_{(i,j,k)} | \phi_{(i,j,l)}, \delta_{(1,l)}, \dots, \delta_{(j,l)}; \;\;\; i = 1, \dots, P;\;\;\; j= 1, \dots, M; \;\;\; l = 1, \dots, R\;\;$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$P(\gamma_{(i,j,l)}| \boldsymbol{\zeta}_{-\gamma_{(i,j,l)}}) \propto \left(\gamma_{(i,j,l)}\prod_{m=1}^j\delta_{(m,l)}\right)^{1/2} exp\left\{-\frac{\gamma_{(i,j,l)}\prod_{m=1}^j\delta_{(m,l)}}{2} \phi_{(i,j,l)}^2 \right\} \gamma_{(i,j,l)}^{\nu/2 - 1}exp\left\{-\gamma_{(i,j,l)}\nu/2 \right\}$$<p></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\propto \gamma_{(i,j,l)}^{( (\nu + 1)/2) -1} exp\left\{-\gamma_{(i,j,l)}\left( \frac{\nu + \prod_{m=1}^j \delta_{(m,l)}\phi^2_{(i,j,l)}}{2}\right)\right\}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Thus we have that
+$$\gamma_{(i,j,l)}| \boldsymbol{\zeta}_{-\gamma_{(i,j,l)}}\sim Gamma\left(\frac{\nu + 1}{2}, \frac{\nu + \prod_{m=1}^j \delta_{(m,l)}\phi^2_{(i,j,l)}}{2}\right)$$</p>
+<hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}} = z_{(i,l)} | f_i(\mathbf{t}_{obs}), f_i(\mathbf{t}^*), \pi_l; \;\;\; i = 1, \dots, N; \;\;\; l = 1, \dots, K$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\begin{aligned}
+P(z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}}) &amp; \propto det^*\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\}\\
+&amp; \times det^*(\mathbf{M}_i)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}^*) - \mathbf{M}_i \mathbf{m}_i\right)'\mathbf{M}_i^+\left(f_i(\mathbf{t}^*) - \mathbf{M}_i \mathbf{m}_i\right)\right\}\\
+&amp; \times \pi_l^{z_{(i,l)}}(1-\pi_l)^{1 - z_{(i,l)}}\\
+\end{aligned}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can see that this is not a known distribution, so we will have to use Metropolis-Hastings algorithm. Let the proposal distribution be $Q(z_{(i,l)}', z_{(i,l)}) = 0.5^{z_{(i,l)}}0.5^{1 - z_{(i,l)}}$ (Bernoulli(0.5)). Thus the probability of accepting any step is:
+$$A(z_{(i,l)}',z_{(i,l)}) = \min \left\{1, \frac{P\left(z_{(i,l)}'| \boldsymbol{\zeta}_{-z_{(i,l)}'}\right)}{P\left(z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}}\right)} \frac{Q\left(z_{(i,l)}|z_{(i,l)}'\right)}{Q\left(z_{(i,l)}'|z_{(i,l)}\right)}\right\}$$</p>
+<hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\pi_{l}| \boldsymbol{\zeta}_{-\pi_{l}} = \pi_{l} | z_{(1,l)}, \dots, z_{(N,l)}; \;\;\;  l = 1, \dots, K$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$P(\pi_{l}| \boldsymbol{\zeta}_{-\pi_{l}}) \propto \prod_{i=1}^N \left[\left(\pi_l\right)^{z_{il}}\left(1 - \pi_l\right)^{1 - z_{il}}\right]  (\pi_l)^{\alpha/K -1}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$ \propto \left(\pi_l\right)^{ \left(\alpha/K + \sum_{i=1}^N z_{il}\right) -1} \left(1 - \pi_l\right)^{N - \sum_{i=1}^N z_{il}}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\pi_{l}| \boldsymbol{\zeta}_{-\pi_{l}}\sim Beta \left(\alpha/K + \sum_{i=1}^N z_{il}, N - \sum_{i=1}^N z_{il} + 1\right)$$
 </div>
 </div>
 </div>
