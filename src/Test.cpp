@@ -41,102 +41,106 @@ Rcpp::List TestUpdateZ(){
   }
 
   // Make nu matrix
-  arma::mat Nu(3,8);
-  Nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
         {1, 3, 0, 2, 0, 0, 3, 0},
         {5, 2, 5, 0, 3, 4, 1, 0}};
-  Nu = Nu.t();
+  nu = nu.t();
 
   // Set random seed
   arma::arma_rng::set_seed(123);
 
-  // Make Phi matrix
-  arma::mat x = arma::randu<arma::mat>(8,8);
-  arma::cube Phi(8,8,3);
-  Phi.slice(0) = x.t() * x;
-  x = arma::randu<arma::mat>(8,8);
-  Phi.slice(1) = x.t() * x;
-  x = arma::randu<arma::mat>(8,8);
-  Phi.slice(2) = x.t() * x;
+  // Make phi matrix
+  arma::cube phi(8,7,7);
+  for(int i=0; i < 7; i++)
+  {
+    phi.slice(i) = arma::randu<arma::mat>(8,7);
+  }
+  // Create mapping
+  std::map<double, int> Map;
+  for(int i=0; i<7; i++)
+  {
+    Map[i+1.0] = i;
+  }
 
   // Make Z matrix
   arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
   Z.col(0) = arma::vec(100, arma::fill::ones);
 
-  // Initialize M, m, tilde_M, tilde_m
+  // Initialize mp_inv, mean_ph_obs, mean_ph_star
+  arma::field<arma::mat> mp_inv(100,1);
+  arma::field<arma::vec> mean_ph_obs(100,1);
+  arma::field<arma::vec> mean_ph_star(100,1);
+  arma::field<arma::vec> m_ph(100,1);
+  arma::field<arma::mat> M_ph(100,1);
+
+  for(int i = 0; i < 100; i++)
+  {
+    // dim of number of unobserved + observed time points
+    mp_inv(i,0) = arma::zeros(120, 120);
+
+    // dim of number of observed time points
+    mean_ph_obs(i,0) = arma::zeros(100);
+
+    // dim of number of unobserved time points
+    mean_ph_star(i,0) = arma::zeros(20);
+
+    // dim of number of unobserved time points
+    m_ph(i,0) = arma::zeros(20);
+
+    // dim of number of unobserved time points
+    M_ph(i,0) = arma::zeros(20, 20);
+  }
+
+  arma::field<arma::vec> f_obs(100, 1);
+  arma::vec mean = arma::zeros(100);
+  for(int j = 0; j < 100; j++)
+  {
+    mean = arma::zeros(100);
+    for(int l = 0; l < 3; l++)
+    {
+      mean = mean + Z(j,l) * S_obs(j,0) * nu.col(l);
+    }
+    f_obs(j,0) = Rmvnormal(mean, S_obs(j,0) * phi.slice(Map.at(get_ind(Z.row(j).t()))) *
+      phi.slice(Map.at(get_ind(Z.row(j).t()))).t() * S_obs(j,0).t());
+  }
+
+  // Initialize M, m
   arma::field<arma::mat> M(100,1);
   arma::field<arma::vec> m(100,1);
-  arma::field<arma::mat> tilde_M(100,1);
-  arma::field<arma::vec> tilde_m(100,1);
   for(int i = 0; i < 100; i ++)
   {
     M(i,0) = arma::zeros(100, 100);
     m(i,0) = arma::zeros(100);
-    tilde_M(i,0) = arma::zeros(20, 20);
-    tilde_m(i,0) = arma::zeros(20);
   }
   // Compute M and m matrices
-  computeM(S_obs, Z, Phi, M);
-  compute_m(S_obs, Z, Phi, Nu, m);
+  compute_M_m(S_obs, S_star, f_obs, Z, phi, Map, nu, mp_inv, mean_ph_obs,
+             mean_ph_star, m, M);
 
-  arma::field<arma::vec> f_obs(100, 1);
-  for(int j = 0; j < 100; j++)
-  {
-    f_obs(j,0) = Rmvnormal(M(j,0) * m(j,0), M(j,0));
-  }
-
-  // Initialize mp_inv
-  arma::field<arma::mat> mp_inv(100,1);
+  // Compute f_star
+  arma::field<arma::vec> f_star(100, 1);
   for(int i = 0; i < 100; i++)
   {
-    // dim of number of unobserved + observeda time points
-    mp_inv(i,0) = arma::zeros(120, 120);
-  }
-
-  // Computer tilde_M and tilde_m matrices
-  compute_tildeM_tildem(S_star, S_obs, f_obs, Z, Phi, Nu, mp_inv,
-                        tilde_M, tilde_m);
-  arma::field<arma::vec> f_star(100, 1);
-  for(int j = 0; j < 100; j++)
-  {
-    f_star(j,0) = Rmvnormal(tilde_M(j,0) * tilde_m(j,0), tilde_M(j,0));
+    f_star(i,0) = Rmvnormal(M(i,0) * m(i,0), M(i,0));
   }
 
   // Initialize pi
   arma::vec pi = {0.95, 0.5, 0.5};
 
-  // Initialize placeholders
-  arma::field<arma::mat> M_ph(100,1);
-  arma::field<arma::mat> pinv_M(100,1);
-  arma::field<arma::vec> m_ph(100,1);
-  arma::field<arma::mat> tilde_M_ph(100,1);
-  arma::field<arma::mat> pinv_tilde_M(100,1);
-  arma::field<arma::vec> tilde_m_ph(100,1);
+  // Initialize placeholder
   arma::mat Z_ph = arma::zeros(100, 3);
-  for(int i = 0; i < 100; i ++)
-  {
-    M_ph(i,0) = arma::zeros(100, 100);
-    m_ph(i,0) = arma::zeros(100);
-    tilde_M_ph(i,0) = arma::zeros(20, 20);
-    tilde_m_ph(i,0) = arma::zeros(20);
-    pinv_tilde_M(i,0) = arma::zeros(20, 20);
-    pinv_M(i,0) = arma::zeros(100, 100);
-  }
-
 
   //Initialize Z_samp
-  arma::cube Z_samp = arma::ones(100, 3, 100);
+   arma::cube Z_samp = arma::ones(100, 3, 100);
   for(int i = 0; i < 100; i++)
   {
-    updateZ(f_obs, f_star, pi, i, S_obs, S_star, Phi, Nu, M, M_ph, pinv_M, m, m_ph,
-            Z_ph, tilde_M, tilde_M_ph, pinv_tilde_M, tilde_m, tilde_m_ph, mp_inv,
-            Z_samp);
+    updateZ(f_obs, f_star, pi, i, S_obs, S_star, phi, nu, Map, M, M_ph, m, m_ph,
+            mean_ph_obs, mean_ph_star, Z_ph, mp_inv, Z_samp);
   }
 
   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Z_samp", Z_samp),
-                                      Rcpp::Named("Z", Z));
+                                      Rcpp::Named("Z",Z));
   return mod;
-
 }
 
 //' Tests updating Pi
@@ -199,98 +203,97 @@ Rcpp::List TestUpdateZSingleMat(){
   }
 
   // Make nu matrix
-  arma::mat Nu(3,8);
-  Nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
   {1, 3, 0, 2, 0, 0, 3, 0},
   {5, 2, 5, 0, 3, 4, 1, 0}};
-  Nu = Nu.t();
+  nu = nu.t();
 
   // Set random seed
   arma::arma_rng::set_seed(123);
 
-  // Make Phi matrix
+  // Make phi matrix
+  arma::mat phi(8,8);
   arma::mat x = arma::randu<arma::mat>(8,8);
-  arma::mat Phi(8,8);
-  Phi = x.t() * x;
+  phi = x.t() * x;
 
   // Make Z matrix
   arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
   Z.col(0) = arma::vec(100, arma::fill::ones);
 
-  // Initialize M, m, tilde_M, tilde_m
+  // Initialize mp_inv, mean_ph_obs, mean_ph_star
+  arma::field<arma::mat> mp_inv(100,1);
+  arma::field<arma::vec> mean_ph_obs(100,1);
+  arma::field<arma::vec> mean_ph_star(100,1);
+  arma::field<arma::vec> m_ph(100,1);
+  arma::field<arma::mat> M_ph(100,1);
+
+  for(int i = 0; i < 100; i++)
+  {
+    // dim of number of unobserved + observed time points
+    mp_inv(i,0) = arma::zeros(120, 120);
+
+    // dim of number of observed time points
+    mean_ph_obs(i,0) = arma::zeros(100);
+
+    // dim of number of unobserved time points
+    mean_ph_star(i,0) = arma::zeros(20);
+
+    // dim of number of unobserved time points
+    m_ph(i,0) = arma::zeros(20);
+
+    // dim of number of unobserved time points
+    M_ph(i,0) = arma::zeros(20, 20);
+  }
+
+  arma::field<arma::vec> f_obs(100, 1);
+  arma::vec mean = arma::zeros(8);
+  for(int j = 0; j < 100; j++)
+  {
+    for(int l = 0; l < 3; l++)
+    {
+      mean = mean + Z(j,l) * nu(l);
+    }
+    f_obs(j,0) = Rmvnormal(mean, phi);
+  }
+
+  // Initialize M, m
   arma::field<arma::mat> M(100,1);
   arma::field<arma::vec> m(100,1);
-  arma::field<arma::mat> tilde_M(100,1);
-  arma::field<arma::vec> tilde_m(100,1);
   for(int i = 0; i < 100; i ++)
   {
     M(i,0) = arma::zeros(100, 100);
     m(i,0) = arma::zeros(100);
-    tilde_M(i,0) = arma::zeros(20, 20);
-    tilde_m(i,0) = arma::zeros(20);
   }
   // Compute M and m matrices
-  computeM(S_obs, Z, Phi, M);
-  compute_m(S_obs, Z, Phi, Nu, m);
+  compute_M_m(S_obs, S_star, f_obs, Z, phi, nu, mp_inv, mean_ph_obs,
+              mean_ph_star, m, M);
 
-  arma::field<arma::vec> f_obs(100, 1);
-  for(int j = 0; j < 100; j++)
-  {
-    f_obs(j,0) = Rmvnormal(M(j,0) * m(j,0), M(j,0));
-  }
-
-  // Initialize mp_inv
-  arma::field<arma::mat> mp_inv(100,1);
+  // Compute f_star
+  arma::field<arma::vec> f_star;
   for(int i = 0; i < 100; i++)
   {
-    // dim of number of unobserved + observeda time points
-    mp_inv(i,0) = arma::zeros(120, 120);
-  }
-
-  // Computer tilde_M and tilde_m matrices
-  compute_tildeM_tildem(S_star, S_obs, f_obs, Z, Phi, Nu, mp_inv,
-                        tilde_M, tilde_m);
-  arma::field<arma::vec> f_star(100, 1);
-  for(int j = 0; j < 100; j++)
-  {
-    f_star(j,0) = Rmvnormal(tilde_M(j,0) * tilde_m(j,0), tilde_M(j,0));
+    f_star(i,0) = Rmvnormal(M(i,0) * m(i,0), M(i,0));
   }
 
   // Initialize pi
   arma::vec pi = {0.95, 0.5, 0.5};
 
-  // Initialize placeholders
-  arma::field<arma::mat> M_ph(100,1);
-  arma::field<arma::mat> pinv_M(100,1);
-  arma::field<arma::vec> m_ph(100,1);
-  arma::field<arma::mat> tilde_M_ph(100,1);
-  arma::field<arma::mat> pinv_tilde_M(100,1);
-  arma::field<arma::vec> tilde_m_ph(100,1);
+  // Initialize placeholder
   arma::mat Z_ph = arma::zeros(100, 3);
-  for(int i = 0; i < 100; i ++)
-  {
-    M_ph(i,0) = arma::zeros(100, 100);
-    m_ph(i,0) = arma::zeros(100);
-    tilde_M_ph(i,0) = arma::zeros(20, 20);
-    tilde_m_ph(i,0) = arma::zeros(20);
-    pinv_tilde_M(i,0) = arma::zeros(20, 20);
-    pinv_M(i,0) = arma::zeros(100, 100);
-  }
 
 
   //Initialize Z_samp
   arma::cube Z_samp = arma::ones(100, 3, 100);
   for(int i = 0; i < 100; i++)
   {
-    updateZ(f_obs, f_star, pi, i, S_obs, S_star, Phi, Nu, M, M_ph, pinv_M, m, m_ph,
-            Z_ph, tilde_M, tilde_M_ph, pinv_tilde_M, tilde_m, tilde_m_ph, mp_inv,
-           Z_samp);
+    updateZ(f_obs, f_star, pi, i, S_obs, S_star, phi, nu, M, M_ph, m, m_ph,
+            mean_ph_obs, mean_ph_star, Z_ph, mp_inv, Z_samp);
   }
 
   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Z_samp", Z_samp),
                                       Rcpp::Named("Z", Z));
   return mod;
-
 }
 
 
