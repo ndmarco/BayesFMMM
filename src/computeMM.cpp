@@ -56,11 +56,10 @@ void compute_Mi(const arma::field<arma::mat>& S_obs,
     S_star(i,0).t();
 
   // Get full precision matrix of observed and unobserved time points
-  arma::pinv(mp_inv, mp_inv, arma::datum::eps);
+  arma::pinv(mp_inv, mp_inv);
 
   // Get covariance matrix of unobserved data
-  arma::pinv(M, mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1),
-             arma::datum::eps);
+  arma::pinv(M, mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1));
 }
 
 //' Computes M_i for single covariance matrix
@@ -94,12 +93,11 @@ void compute_Mi(const arma::field<arma::mat>& S_obs,
     S_star(i,0).t();
 
   // Get full precision matrix of observed and unobserved time points
-  arma::pinv(mp_inv, mp_inv, arma::datum::eps);
+  arma::pinv(mp_inv, mp_inv);
 
   // Get covariance matrix of unobserved data
-  arma::pinv(M, mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1),
-             arma::datum::eps);
-  M = arma::pinv(M, arma::datum::eps);
+  arma::pinv(M, mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1));
+  arma::pinv(M, M);
 }
 
 //' Computes all M matrices
@@ -143,11 +141,10 @@ void compute_M(const arma::field<arma::mat>& S_obs,
       S_star(i,0).t();
 
     // Get full precision matrix of observed and unobserved time points
-    arma::pinv(mp_inv(i,0), mp_inv(i,0), arma::datum::eps);
+    arma::pinv(mp_inv(i,0), mp_inv(i,0));
 
     // Get covariance matrix of unobserved data
-    arma::pinv(M(i,0), mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1),
-               arma::datum::eps);
+    arma::pinv(M(i,0), mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1));
   }
 }
 
@@ -188,11 +185,10 @@ void compute_M(const arma::field<arma::mat>& S_obs,
       phi * phi.t() * S_star(i,0).t();
 
     // Get full precision matrix of observed and unobserved time points
-    arma::pinv(mp_inv(i,0), mp_inv(i,0), arma::datum::eps);
+    arma::pinv(mp_inv(i,0), mp_inv(i,0));
 
     // Get covariance matrix of unobserved data
-    arma::pinv(M(i,0), mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1),
-               arma::datum::eps);
+    arma::pinv(M(i,0), mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1));
   }
 }
 
@@ -240,7 +236,7 @@ void compute_mi(const arma::field<arma::mat>& S_obs,
     S_star(i,0).t();
 
   // Get full precision matrix of observed and unobserved time points
-  arma::pinv(mp_inv, mp_inv, arma::datum::eps);
+  arma::pinv(mp_inv, mp_inv);
 
   mean_ph_obs.zeros();
   mean_ph_star.zeros();
@@ -293,7 +289,7 @@ void compute_mi(const arma::field<arma::mat>& S_obs,
     phi.t() * S_star(i,0).t();
 
   // Get full precision matrix of observed and unobserved time points
-  arma::pinv(mp_inv, mp_inv, arma::datum::eps);
+  arma::pinv(mp_inv, mp_inv);
 
   mean_ph_obs.zeros();
   mean_ph_star.zeros();
@@ -352,7 +348,7 @@ void compute_m(const arma::field<arma::mat>& S_obs,
       S_star(i,0).t();
 
     // Get full precision matrix of observed and unobserved time points
-    arma::pinv(mp_inv(i,0), mp_inv(i,0), arma::datum::eps);
+    arma::pinv(mp_inv(i,0), mp_inv(i,0));
 
     mean_ph_obs(i,0).zeros();
     mean_ph_star(i,0).zeros();
@@ -409,7 +405,7 @@ void compute_m(const arma::field<arma::mat>& S_obs,
       phi * phi.t() * S_star(i,0).t();
 
     // Get full precision matrix of observed and unobserved time points
-    arma::pinv(mp_inv(i,0), mp_inv(i,0), arma::datum::eps);
+    arma::pinv(mp_inv(i,0), mp_inv(i,0));
 
     mean_ph_obs(i,0).zeros();
     mean_ph_star(i,0).zeros();
@@ -472,7 +468,7 @@ void compute_M_m(const arma::field<arma::mat>& S_obs,
       S_star(i,0).t();
 
     // Get full precision matrix of observed and unobserved time points
-    arma::pinv(mp_inv(i,0), mp_inv(i,0), arma::datum::eps);
+    arma::pinv(mp_inv(i,0), mp_inv(i,0));
 
     mean_ph_obs(i,0).zeros();
     mean_ph_star(i,0).zeros();
@@ -482,8 +478,7 @@ void compute_M_m(const arma::field<arma::mat>& S_obs,
         nu.col(j);
     }
     // Get variance
-    arma::pinv(M(i,0), mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1),
-               arma::datum::eps);
+    arma::pinv(M(i,0), mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1));
     // Compute mean
     m(i,0) = mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) * (mean_ph_obs(i,0)
                                                                  - f_obs(i,0)) +
@@ -533,7 +528,7 @@ void compute_M_m(const arma::field<arma::mat>& S_obs,
       phi * phi.t() * S_star(i,0).t();
 
     // Get full precision matrix of observed and unobserved time points
-    arma::pinv(mp_inv(i,0), mp_inv(i,0), arma::datum::eps);
+    arma::pinv(mp_inv(i,0), mp_inv(i,0));
 
     mean_ph_obs(i,0).zeros();
     mean_ph_star(i,0).zeros();
@@ -543,8 +538,7 @@ void compute_M_m(const arma::field<arma::mat>& S_obs,
         nu.col(j);
     }
     // Get variance
-    arma::pinv(M(i,0), mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1),
-               arma::datum::eps);
+    arma::pinv(M(i,0), mp_inv(i,0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1));
     // Compute mean
     m(i,0) = mp_inv(i,0).submat(n1, 0, n1 + n2 - 1, n1 - 1) * (mean_ph_obs(i,0)
                                                                - f_obs(i,0)) +
@@ -599,7 +593,7 @@ void compute_mi_Mi(const arma::field<arma::mat>& S_obs,
     S_star(i,0).t();
 
   // Get full precision matrix of observed and unobserved time points
-  arma::pinv(mp_inv, mp_inv, arma::datum::eps);
+  arma::pinv(mp_inv, mp_inv);
 
   mean_ph_obs.zeros();
   mean_ph_star.zeros();
@@ -608,8 +602,7 @@ void compute_mi_Mi(const arma::field<arma::mat>& S_obs,
     mean_ph_star = mean_ph_star + Z(i,j) * S_star(i,0) * nu.col(j);
   }
   // Compute Covariance
-  arma::pinv(M, mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1),
-             arma::datum::eps);
+  arma::pinv(M, mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1));
   // Compute mean
   m = mp_inv.submat(n1, 0, n1 + n2 - 1, n1 - 1) * (mean_ph_obs - f_obs(i,0)) +
     mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) * mean_ph_star;
@@ -656,7 +649,7 @@ void compute_mi_Mi(const arma::field<arma::mat>& S_obs,
     phi.t() * S_star(i,0).t();
 
   // Get full precision matrix of observed and unobserved time points
-  arma::pinv(mp_inv, mp_inv, arma::datum::eps);
+  arma::pinv(mp_inv, mp_inv);
 
   mean_ph_obs.zeros();
   mean_ph_star.zeros();
@@ -665,8 +658,7 @@ void compute_mi_Mi(const arma::field<arma::mat>& S_obs,
     mean_ph_star = mean_ph_star + Z(i,j) * S_star(i,0) * nu.col(j);
   }
   // Get variance
-  arma::pinv(M, mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1),
-             arma::datum::eps);
+  arma::pinv(M, mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1));
   // Compute mean
   m = mp_inv.submat(n1, 0, n1 + n2 - 1, n1 - 1) * (mean_ph_obs - f_obs(i,0)) +
     mp_inv.submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) * mean_ph_star;

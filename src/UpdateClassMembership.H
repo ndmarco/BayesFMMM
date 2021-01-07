@@ -4,7 +4,8 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 
-double g_ldet(const arma::mat& M);
+double g_ldet(const arma::mat& M,
+              const int rank);
 
 double lpdf_z(const arma::mat& M,
               const arma::vec& m,
@@ -13,10 +14,9 @@ double lpdf_z(const arma::mat& M,
               const arma::mat& S_obs,
               const arma::mat& phi,
               const arma::mat& nu,
-              const double pi_l,
+              const arma::vec& pi_l,
               const arma::mat& Z,
               const int i,
-              const int j,
               arma::vec& mean_ph_obs);
 
 void updateZ(const arma::field<arma::vec>& f_obs,

@@ -48,12 +48,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// g_ldet
+double g_ldet(const arma::mat& M, const int rank);
+RcppExport SEXP _BayesFOC_g_ldet(SEXP MSEXP, SEXP rankSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const int >::type rank(rankSEXP);
+    rcpp_result_gen = Rcpp::wrap(g_ldet(M, rank));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_Rmvnormal", (DL_FUNC) &_BayesFOC_Rmvnormal, 2},
     {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
     {"_BayesFOC_TestUpdatePi", (DL_FUNC) &_BayesFOC_TestUpdatePi, 0},
     {"_BayesFOC_TestUpdateZSingleMat", (DL_FUNC) &_BayesFOC_TestUpdateZSingleMat, 0},
+    {"_BayesFOC_g_ldet", (DL_FUNC) &_BayesFOC_g_ldet, 2},
     {NULL, NULL, 0}
 };
 

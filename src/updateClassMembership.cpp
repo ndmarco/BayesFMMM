@@ -9,20 +9,18 @@
 //' @name g_ldet
 //' @param M Matrix that we want the determinant of
 //' @return g_ldet Double countaining the generalized determinant
-
-double g_ldet(const arma::mat& M)
+// [[Rcpp::export]]
+double g_ldet(const arma::mat& M, const int rank)
 {
-  int N = M.n_rows;
   // initialize vector for eigenvalues
-  arma::vec E = arma::zeros(N);
+  arma::vec E = arma::zeros(M.n_rows);
   // find eigen values
   // make sure M is symmetric
   arma::eig_sym(E, ((M + M.t()) /2));
   double g_ldet = 0;
-  for(int i = 0; i < N; i++)
+  for(int i = E.n_elem - 1; i >= E.n_elem - rank; i--)
   {
-    if(E(i) > 1e-20)
-    {
+    if(E(i) > 0){
       g_ldet = g_ldet + log(E(i));
     }
   }
@@ -53,24 +51,27 @@ double lpdf_z(const arma::mat& M,
               const arma::mat& S_obs,
               const arma::mat& phi,
               const arma::mat& nu,
-              const double pi_l,
+              const arma::vec& pi,
               const arma::mat& Z,
               const int i,
-              const int j,
               arma::vec& mean_ph_obs)
 {
-  double g_ldet1 = g_ldet(S_obs * phi * phi.t() * S_obs.t());
-  double g_ldetM = g_ldet(M);
+  double g_ldet1 = g_ldet(S_obs * phi * phi.t() * S_obs.t(), std::min(phi.n_cols,
+                                              std::min(phi.n_rows, S_obs.n_rows)));
+  double g_ldetM = g_ldet(M, std::min(phi.n_cols, std::min(phi.n_rows, M.n_rows)));
   mean_ph_obs.zeros();
   for(int l = 0; l < nu.n_cols; l++){
     mean_ph_obs = mean_ph_obs + Z(i,l) * S_obs * nu.col(l);
   }
   double lpdf_z = (-0.5 * g_ldet1) - (0.5 * arma::dot((f_obs - mean_ph_obs).t() *
-                   arma::pinv(S_obs * phi * phi.t() * S_obs.t(),
-                              arma::datum::eps), f_obs - mean_ph_obs));
+                   arma::pinv(S_obs * phi * phi.t() * S_obs.t()), f_obs - mean_ph_obs));
   lpdf_z = lpdf_z - (0.5 * g_ldetM) - (0.5 * arma::dot((f_star - M * m).t() *
-    arma::pinv(M, arma::datum::eps),(f_star - M * m)));
-  lpdf_z = lpdf_z + (Z(i,j) * log(pi_l)) + (1- Z(i,j)) * log(1 - pi_l);
+    arma::pinv(M),(f_star - M * m)));
+  for(int j = 0; j < Z.n_cols; j++)
+  {
+    lpdf_z = lpdf_z + (Z(i,j) * log(pi(j))) + (1- Z(i,j)) * log(1 - pi(j));
+  }
+
   return lpdf_z;
 }
 
@@ -131,32 +132,31 @@ void updateZ(const arma::field<arma::vec>& f_obs,
     {
       // Propose new state
       Z_ph(i,l) = R::rbinom(1, 0.5);
-      // Compute lpdf to see if we accept or reject new state
-      if(Z_ph(i,l) != Z.slice(iter)(i,l) && arma::accu(Z_ph.row(i)) > 0)
-      {
-        compute_mi_Mi(S_obs, S_star, f_obs, Z_ph, phi, Map, nu, i, mp_inv(i,0),
-                      mean_ph_obs(i,0), mean_ph_star(i,0), m_ph(i,0), M_ph(i,0));
-        z_lpdf = lpdf_z(M(i,0), m(i,0), f_obs(i,0), f_star(i,0), S_obs(i,0),
-                        phi.slice(Map.at(get_ind(Z.slice(iter).row(i).t()))), nu, pi(l),
-                        Z.slice(iter), i, l, mean_ph_obs(i,0));
-        z_new_lpdf = lpdf_z(M_ph(i,0), m_ph(i,0), f_obs(i,0), f_star(i,0),
-                            S_obs(i,0), phi.slice(Map.at(get_ind(Z_ph.row(i).t()))), nu,
-                            pi(l), Z_ph, i, l, mean_ph_obs(i,0));
-        acceptance_prob = z_new_lpdf - z_lpdf;
-        rand_unif_var = R::runif(0,1);
+    }
+    if(arma::accu(Z_ph.row(i)) > 0)
+    {
+      compute_mi_Mi(S_obs, S_star, f_obs, Z_ph, phi, Map, nu, i, mp_inv(i,0),
+                    mean_ph_obs(i,0), mean_ph_star(i,0), m_ph(i,0), M_ph(i,0));
+      z_lpdf = lpdf_z(M(i,0), m(i,0), f_obs(i,0), f_star(i,0), S_obs(i,0),
+                      phi.slice(Map.at(get_ind(Z.slice(iter).row(i).t()))), nu, pi,
+                      Z.slice(iter), i, mean_ph_obs(i,0));
+      z_new_lpdf = lpdf_z(M_ph(i,0), m_ph(i,0), f_obs(i,0), f_star(i,0),
+                          S_obs(i,0), phi.slice(Map.at(get_ind(Z_ph.row(i).t()))), nu,
+                          pi, Z_ph, i, mean_ph_obs(i,0));
+      acceptance_prob = z_new_lpdf - z_lpdf;
+      rand_unif_var = R::runif(0,1);
 
-        if(log(rand_unif_var) < acceptance_prob)
-        {
-          // Accept new state and update parameters
-          Z.slice(iter)(i,l) = Z_ph(i,l);
-          M(i,0) = M_ph(i,0);
-          m(i,0) = m_ph(i,0);
-        } else
-        {
-          Z_ph(i,l) = Z.slice(iter)(i,l);
-          M_ph(i,0) = M(i,0);
-          m_ph(i,0) = m(i,0);
-        }
+      if(log(rand_unif_var) < acceptance_prob)
+      {
+        // Accept new state and update parameters
+        Z.slice(iter).row(i) = Z_ph.row(i);
+        M(i,0) = M_ph(i,0);
+        m(i,0) = m_ph(i,0);
+      } else
+      {
+        Z_ph.row(i) = Z.slice(iter).row(i);
+        M_ph(i,0) = M(i,0);
+        m_ph(i,0) = m(i,0);
       }
     }
   }
@@ -224,31 +224,31 @@ void updateZ(const arma::field<arma::vec>& f_obs,
     {
       // Propose new state
       Z_ph(i,l) = R::rbinom(1, 0.5);
-      // Compute lpdf to see if we accept or reject new state
-      if(Z_ph(i,l) != Z.slice(iter)(i,l) && arma::accu(Z_ph.row(i)) > 0)
-      {
-        compute_mi_Mi(S_obs, S_star, f_obs, Z_ph, phi, nu, i, mp_inv(i,0),
-                      mean_ph_obs(i,0), mean_ph_star(i,0), m_ph(i,0), M_ph(i,0));
-        z_lpdf = lpdf_z(M(i,0), m(i,0), f_obs(i,0), f_star(i,0), S_obs(i,0),
-                        phi, nu, pi(l), Z.slice(iter), i, l, mean_ph_obs(i,0));
-        z_new_lpdf = lpdf_z(M_ph(i,0), m_ph(i,0), f_obs(i,0), f_star(i,0),
-                            S_obs(i,0), phi, nu, pi(l),
-                            Z_ph, i, l, mean_ph_obs(i,0));
-        acceptance_prob = z_new_lpdf - z_lpdf;
-        rand_unif_var = R::runif(0,1);
+    }
+    if(arma::accu(Z_ph.row(i)) > 0)
+    {
+      compute_mi_Mi(S_obs, S_star, f_obs, Z_ph, phi, nu, i, mp_inv(i,0),
+                    mean_ph_obs(i,0), mean_ph_star(i,0), m_ph(i,0), M_ph(i,0));
+      z_lpdf = lpdf_z(M(i,0), m(i,0), f_obs(i,0), f_star(i,0), S_obs(i,0),
+                      phi, nu, pi,
+                      Z.slice(iter), i, mean_ph_obs(i,0));
+      z_new_lpdf = lpdf_z(M_ph(i,0), m_ph(i,0), f_obs(i,0), f_star(i,0),
+                          S_obs(i,0), phi, nu,
+                          pi, Z_ph, i, mean_ph_obs(i,0));
+      acceptance_prob = z_new_lpdf - z_lpdf;
+      rand_unif_var = R::runif(0,1);
 
-        if(log(rand_unif_var) < acceptance_prob)
-        {
-          // Accept new state and update parameters
-          Z.slice(iter)(i,l) = Z_ph(i,l);
-          M(i,0) = M_ph(i,0);
-          m(i,0) = m_ph(i,0);
-        } else
-        {
-          Z_ph(i,l) = Z.slice(iter)(i,l);
-          M_ph(i,0) = M(i,0);
-          m_ph(i,0) = m(i,0);
-        }
+      if(log(rand_unif_var) < acceptance_prob)
+      {
+        // Accept new state and update parameters
+        Z.slice(iter).row(i) = Z_ph.row(i);
+        M(i,0) = M_ph(i,0);
+        m(i,0) = m_ph(i,0);
+      } else
+      {
+        Z_ph.row(i) = Z.slice(iter).row(i);
+        M_ph(i,0) = M(i,0);
+        m_ph(i,0) = m(i,0);
       }
     }
   }

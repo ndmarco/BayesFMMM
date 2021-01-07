@@ -222,13 +222,6 @@ NULL
 #' @param M Matrix acting as a placeholder for M
 NULL
 
-#' Gets generalized log determinant (product of positive eigen values)
-#'
-#' @name g_ldet
-#' @param M Matrix that we want the determinant of
-#' @return g_ldet Double countaining the generalized determinant
-NULL
-
 #' Gets log-pdf of z given zeta
 #'
 #' @name lpdf_z
@@ -294,4 +287,13 @@ NULL
 #' @param mp_inv Field of matrices that act as a placeholder for joint covariance matrix
 #' @param Z Cube that contains all past, current, and future MCMC draws
 NULL
+
+#' Gets generalized log determinant (product of positive eigen values)
+#'
+#' @name g_ldet
+#' @param M Matrix that we want the determinant of
+#' @return g_ldet Double countaining the generalized determinant
+g_ldet <- function(M, rank) {
+    .Call('_BayesFOC_g_ldet', PACKAGE = 'BayesFOC', M, rank)
+}
 
