@@ -19,6 +19,36 @@ double lpdf_z(const arma::mat& M,
               const int i,
               arma::vec& mean_ph_obs);
 
+double lpdf_z(const arma::vec& f_obs,
+              const arma::mat& S_obs,
+              const arma::mat& phi,
+              const arma::mat& nu,
+              const arma::vec& pi_l,
+              const arma::mat& Z,
+              const int i,
+              arma::vec& mean_ph_obs);
+
+void updateZ(const arma::field<arma::vec>& f_obs,
+             const arma::vec& pi,
+             const int iter,
+             const arma::field<arma::mat>& S_obs,
+             const arma::cube& phi,
+             const arma::mat& nu,
+             const std::map<double, int> Map,
+             arma::field<arma::vec>& mean_ph_obs,
+             arma::mat& Z_ph,
+             arma::cube& Z);
+
+void updateZ(const arma::field<arma::vec>& f_obs,
+             const arma::vec& pi,
+             const int iter,
+             const arma::field<arma::mat>& S_obs,
+             const arma::mat& phi,
+             const arma::mat& nu,
+             arma::field<arma::vec>& mean_ph_obs,
+             arma::mat& Z_ph,
+             arma::cube& Z);
+
 void updateZ(const arma::field<arma::vec>& f_obs,
              const arma::field<arma::vec>& f_star,
              const arma::vec& pi,
@@ -55,4 +85,5 @@ void updateZ(const arma::field<arma::vec>& f_obs,
              arma::mat& Z_ph,
              arma::field<arma::mat>& mp_inv,
              arma::cube& Z);
+
 #endif

@@ -240,6 +240,50 @@ NULL
 #' @return lpdf_z double contianing the log-pdf
 NULL
 
+#' Gets log-pdf of z given zeta without unobserved data
+#'
+#' @name lpdf_z
+#' @param f_obs Vector containing f at observed time points
+#' @param S_obs Matrix containing basis functions evaluated at observed time points
+#' @param phi Matrix containing covariance matrix
+#' @param nu Matrix containing mean vectors as the columns
+#' @param pi_l double containing the lth element of pi
+#' @param Z Matrix containing the elements of Z
+#' @param i int containing row of Z we are finding pdf of
+#' @param j int containing column of Z we are finding the pdf of
+#' @param mean_ph_obs vector containing placeholder for mean of observed data
+#' @return lpdf_z double contianing the log-pdf
+NULL
+
+#' Updates the Z Matrix with no unobserved points
+#'
+#' @name UpdateZ
+#' @param f_obs Field of vectors containing f at observed time points
+#' @param pi Vector containing the sampled pi for this iteration
+#' @param iter Iteration of MCMC step
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param phi Cube of current phi paramaters
+#' @param nu Matrix that contains all current nu paramaters
+#' @param Map a map that contains the index of covariance matrices
+#' @param m Field of Vectors that contains all m mean vectors
+#' @param mean_ph_obs Field of vectors that serve as a placeholder of computations
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
+#' Updates the Z Matrix for single covariance matrix with no unobserved points
+#'
+#' @param f_obs Field of vectors containing f at observed time points
+#' @param pi Vector containing the sampled pi for this iteration
+#' @param iter Iteration of MCMC step
+#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param phi Matrix of current phi paramaters
+#' @param nu Matrix that contains all current nu paramaters
+#' @param Z_ph Matrix that acts as a placeholder for the new Z matrix
+#' @param mean_ph_obs Field of vectors that serve as a placeholder of computations
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
 #' Updates the Z Matrix
 #'
 #' @name UpdateZ
@@ -254,7 +298,6 @@ NULL
 #' @param Map a map that contains the index of covariance matrices
 #' @param M Field of Matrices that contains all M matrices
 #' @param M_ph Field of Matrices that acts as a placeholder for the new M matrix
-#' @param Z_ph Matrix that acts as a placeholder for the new Z matrix
 #' @param m Field of Vectors that contains all m mean vectors
 #' @param m_ph Field of Vectors that acts as a placeholder for new m vector
 #' @param mean_ph_obs Field of vectors that serve as a placeholder of computations
@@ -276,11 +319,8 @@ NULL
 #' @param nu Matrix that contains all current nu paramaters
 #' @param M Field of Matrices that contains all M matrices
 #' @param M_ph Field of Matrices that acts as a placeholder for the new M matrix
-#' @param pinv_M Field of Matrices that acts as a placeholder for g-inverse of M
-#' @param Z_ph Matrix that acts as a placeholder for the new Z matrix
 #' @param m Field of Vectors that contains all m mean vectors
 #' @param m_ph Field of Vectors that acts as a placeholder for new m vector
-#' @param z_ph Matrix that acts as a placeholder for Z
 #' @param mean_ph_obs Field of vectors that serve as a placeholder of computations
 #' @param mean_ph_star Field of vectors that serve as a placeholder of computations
 #' @param Z_ph Matrix that acts as a placeholder for Z

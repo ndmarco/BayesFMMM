@@ -3,6 +3,9 @@
 \name{g_ldet}
 \alias{g_ldet}
 \title{Gets generalized log determinant (product of positive eigen values)}
+\usage{
+g_ldet(M, rank)
+}
 \arguments{
 \item{M}{Matrix that we want the determinant of}
 }

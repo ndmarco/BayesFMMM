@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{UpdateZ}
 \alias{UpdateZ}
-\title{Updates the Z Matrix}
+\title{Updates the Z Matrix with no unobserved points}
 \arguments{
 \item{f_obs}{Field of vectors containing f at observed time points}
 
@@ -41,5 +41,7 @@
 \item{Z}{Cube that contains all past, current, and future MCMC draws}
 }
 \description{
+Updates the Z Matrix with no unobserved points
+
 Updates the Z Matrix
 }

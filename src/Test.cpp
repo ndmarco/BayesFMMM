@@ -134,41 +134,9 @@ Rcpp::List TestUpdateZ(){
     updateZ(f_obs, f_star, pi, i, S_obs, S_star, phi, nu, Map, M, M_ph, m, m_ph,
             mean_ph_obs, mean_ph_star, Z_ph, mp_inv, Z_samp);
   }
-  arma::vec real_z = arma::zeros(100);
-  arma::vec lpdf_0 = arma::zeros(100);
-  arma::vec lpdf_1 = arma::zeros(100);
-  arma::vec ldet_0 = arma::zeros(100);
-  arma::vec ldet_1 = arma::zeros(100);
-  for(int i = 0; i < 100; i++){
-    compute_mi_Mi(S_obs, S_star, f_obs, Z_samp.slice(99), phi, Map, nu, i, mp_inv(i,0),
-                  mean_ph_obs(i,0), mean_ph_star(i,0), m_ph(i,0), M_ph(i,0));
-    lpdf_0(i) = lpdf_z(M_ph(i,0), m_ph(i,0), f_obs(i,0), f_star(i,0), S_obs(i,0),
-                           phi.slice(Map.at(get_ind(Z_samp.slice(99).row(i).t()))), nu, pi,
-                           Z, i, mean_ph_obs(i,0));
-    ldet_0(i) = g_ldet(M_ph(i,0), 7);
-    compute_mi_Mi(S_obs, S_star, f_obs, Z, phi, Map, nu, i, mp_inv(i,0),
-                  mean_ph_obs(i,0), mean_ph_star(i,0), m(i,0), M(i,0));
-    lpdf_1(i) = lpdf_z(M(i,0), m(i,0), f_obs(i,0), f_star(i,0), S_obs(i,0),
-                           phi.slice(Map.at(get_ind(Z.row(i).t()))), nu, pi,
-                           Z, i, mean_ph_obs(i,0));
-    ldet_1(i) = g_ldet(M(i,0), 7);
-  }
 
   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Z_samp", Z_samp),
-                                      Rcpp::Named("Z",Z),
-                                      Rcpp::Named("nu", nu),
-                                      Rcpp::Named("s_obs", S_obs),
-                                      Rcpp::Named("f_obs", f_obs),
-                                      Rcpp::Named("f_star", f_star),
-                                      Rcpp::Named("M", M),
-                                      Rcpp::Named("real_z", real_z),
-                                      Rcpp::Named("lpdf_0",lpdf_0),
-                                      Rcpp::Named("lpdf_1", lpdf_1),
-                                      Rcpp::Named("ldet_0", ldet_0),
-                                      Rcpp::Named("ldet_1", ldet_1),
-                                      Rcpp::Named("M_ph", M_ph),
-                                      Rcpp::Named("M_ph_inv", arma::pinv(M_ph(0,0))),
-                                      Rcpp::Named("m", m));
+                                      Rcpp::Named("Z",Z));
   return mod;
 }
 
@@ -279,6 +247,7 @@ Rcpp::List TestUpdateZSingleMat(){
   arma::vec mean = arma::zeros(8);
   for(int j = 0; j < 100; j++)
   {
+    mean = arma::zeros(8);
     for(int l = 0; l < 3; l++)
     {
       mean = mean + Z(j,l) * nu(l);
@@ -310,7 +279,6 @@ Rcpp::List TestUpdateZSingleMat(){
 
   // Initialize placeholder
   arma::mat Z_ph = arma::zeros(100, 3);
-
 
   //Initialize Z_samp
   arma::cube Z_samp = arma::ones(100, 3, 100);

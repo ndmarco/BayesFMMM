@@ -8,9 +8,9 @@
 
 \item{m}{Matrix that contains the m_i mean vectors}
 
-\item{f_obs}{Vector containing f at observed time points}
-
 \item{f_star}{Vector containing f at unobserved time points}
+
+\item{f_obs}{Vector containing f at observed time points}
 
 \item{S_obs}{Matrix containing basis functions evaluated at observed time points}
 
@@ -30,7 +30,11 @@
 }
 \value{
 lpdf_z double contianing the log-pdf
+
+lpdf_z double contianing the log-pdf
 }
 \description{
 Gets log-pdf of z given zeta
+
+Gets log-pdf of z given zeta without unobserved data
 }
