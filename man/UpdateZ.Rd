@@ -16,11 +16,13 @@
 
 \item{S_star}{Field of Matrices containing basis functions evaluated at unobserved time points}
 
-\item{phi}{Cube of current phi paramaters}
+\item{Phi}{Cube of current Phi paramaters}
+
+\item{Rho}{Matrix with each row containing the elements of the upper triangular matrix}
 
 \item{nu}{Matrix that contains all current nu paramaters}
 
-\item{Map}{a map that contains the index of covariance matrices}
+\item{Cov}{Matrix containing placeholder for covariance matrix}
 
 \item{M}{Field of Matrices that contains all M matrices}
 

@@ -6,6 +6,19 @@
 
 using namespace Rcpp;
 
+// getCov
+void getCov(const arma::rowvec& Z, const arma::cube& Phi, const arma::mat& Rho, arma::mat& Cov);
+RcppExport SEXP _BayesFOC_getCov(SEXP ZSEXP, SEXP PhiSEXP, SEXP RhoSEXP, SEXP CovSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type Phi(PhiSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Rho(RhoSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type Cov(CovSEXP);
+    getCov(Z, Phi, Rho, Cov);
+    return R_NilValue;
+END_RCPP
+}
 // Rmvnormal
 arma::vec Rmvnormal(arma::vec mu, arma::mat sigma);
 RcppExport SEXP _BayesFOC_Rmvnormal(SEXP muSEXP, SEXP sigmaSEXP) {
@@ -25,6 +38,16 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     rcpp_result_gen = Rcpp::wrap(TestUpdateZ());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateZNoUnobs
+Rcpp::List TestUpdateZNoUnobs();
+RcppExport SEXP _BayesFOC_TestUpdateZNoUnobs() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateZNoUnobs());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -48,6 +71,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// TestUpdateZSingleMatNoUnobs
+Rcpp::List TestUpdateZSingleMatNoUnobs();
+RcppExport SEXP _BayesFOC_TestUpdateZSingleMatNoUnobs() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateZSingleMatNoUnobs());
+    return rcpp_result_gen;
+END_RCPP
+}
 // g_ldet
 double g_ldet(const arma::mat& M, const int rank);
 RcppExport SEXP _BayesFOC_g_ldet(SEXP MSEXP, SEXP rankSEXP) {
@@ -62,10 +95,13 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_BayesFOC_getCov", (DL_FUNC) &_BayesFOC_getCov, 4},
     {"_BayesFOC_Rmvnormal", (DL_FUNC) &_BayesFOC_Rmvnormal, 2},
     {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
+    {"_BayesFOC_TestUpdateZNoUnobs", (DL_FUNC) &_BayesFOC_TestUpdateZNoUnobs, 0},
     {"_BayesFOC_TestUpdatePi", (DL_FUNC) &_BayesFOC_TestUpdatePi, 0},
     {"_BayesFOC_TestUpdateZSingleMat", (DL_FUNC) &_BayesFOC_TestUpdateZSingleMat, 0},
+    {"_BayesFOC_TestUpdateZSingleMatNoUnobs", (DL_FUNC) &_BayesFOC_TestUpdateZSingleMatNoUnobs, 0},
     {"_BayesFOC_g_ldet", (DL_FUNC) &_BayesFOC_g_ldet, 2},
     {NULL, NULL, 0}
 };

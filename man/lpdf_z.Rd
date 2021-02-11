@@ -14,7 +14,7 @@
 
 \item{S_obs}{Matrix containing basis functions evaluated at observed time points}
 
-\item{phi}{Matrix containing covariance matrix}
+\item{Phi}{Matrix containing covariance matrix}
 
 \item{nu}{Matrix containing mean vectors as the columns}
 

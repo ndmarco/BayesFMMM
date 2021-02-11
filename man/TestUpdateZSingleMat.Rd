@@ -2,10 +2,10 @@
 % Please edit documentation in R/RcppExports.R
 \name{TestUpdateZSingleMat}
 \alias{TestUpdateZSingleMat}
-\title{Tests updating Z}
+\title{Tests updating Z using single covariance matrix}
 \usage{
 TestUpdateZSingleMat()
 }
 \description{
-Tests updating Z
+Tests updating Z using single covariance matrix
 }

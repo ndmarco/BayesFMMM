@@ -1,5 +1,6 @@
 #include <RcppArmadillo.h>
 #include <cmath>
+#include "computeMM.h"
 
 //' Updates the gamma parameters
 //'
@@ -8,11 +9,13 @@
 //' @param iter int containing MCMC iteration
 //' @param delta Matrix containing current values of delta
 //' @param phi Cube containing current values of phi
+//' @param Z matrix containing current values of class inclusion
 //' @param gamma Field of cubes contianing MCMC samples for gamma
 void updateGamma(const double& nu,
                  const int iter,
                  const arma::mat& delta,
                  const arma::cube& phi,
+                 const arma::mat& Z,
                  arma::field<arma::cube>& gamma)
 {
   double placeholder = 1;

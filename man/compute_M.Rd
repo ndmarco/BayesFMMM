@@ -4,7 +4,9 @@
 \alias{compute_m}
 \title{Computes m for all observations}
 \arguments{
-\item{map}{Map that contains mapping for covariance matrix}
+\item{Rho}{Matrix with each row containing the elements of the upper triangular matrix}
+
+\item{Cov}{Matrix containing placeholder for covariance matrix}
 
 \item{S_obs}{Field of Matrices containing basis functions evaluated at observed time points}
 
@@ -12,11 +14,9 @@
 
 \item{Z}{Matrix of current Z parameter}
 
-\item{phi}{Matrix of current phi paramaters}
+\item{Phi}{Matrix of current Phi paramaters}
 
 \item{nu}{Matrix containing the mean vectors as columns}
-
-\item{i}{Int indicating which M we are calculating}
 
 \item{mp_inv}{Field of Matrices acting as a placeholder for mp inverse}
 

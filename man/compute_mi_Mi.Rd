@@ -2,11 +2,13 @@
 % Please edit documentation in R/RcppExports.R
 \name{compute_mi_Mi}
 \alias{compute_mi_Mi}
-\title{Computes m_i}
+\title{Computes m_i and M_i}
 \arguments{
-\item{map}{Map that contains mapping for covariance matrix}
+\item{Rho}{Matrix with each row containing the elements of the upper triangular matrix}
 
 \item{nu}{Matrix that contains mean vectors as columns}
+
+\item{Cov}{Matrix containing placeholder for covariance matrix}
 
 \item{S_obs}{Field of Matrices containing basis functions evaluated at observed time points}
 
@@ -14,7 +16,7 @@
 
 \item{Z}{Matrix of current Z parameter}
 
-\item{phi}{Matrix of current phi paramaters}
+\item{Phi}{Matrix of current Phi paramaters}
 
 \item{i}{Int indicating which M we are calculating}
 
@@ -29,7 +31,7 @@
 \item{M}{Matrix acting as a placeholder for M}
 }
 \description{
-Computes m_i
+Computes m_i and M_i
 
 Computes m_i under common covariance matrix
 }
