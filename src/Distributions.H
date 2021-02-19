@@ -8,8 +8,10 @@ arma::vec Rmvnormal(arma::vec mu,
                     arma::mat sigma,
                     arma::mat U,
                     arma::vec S,
-                    arma::mat V);
+                    arma::mat V,
+                    const int rank);
 
 arma::vec Rmvnormal(arma::vec mu,
-                    arma::mat sigma);
+                    arma::mat sigma,
+                    const int rank);
 #endif

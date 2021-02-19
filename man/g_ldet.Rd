@@ -4,10 +4,10 @@
 \alias{g_ldet}
 \title{Gets generalized log determinant (product of positive eigen values)}
 \usage{
-g_ldet(M, rank)
+g_ldet(S)
 }
 \arguments{
-\item{M}{Matrix that we want the determinant of}
+\item{S}{Vector of singular values}
 }
 \value{
 g_ldet Double countaining the generalized determinant

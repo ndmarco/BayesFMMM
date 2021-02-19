@@ -29,8 +29,8 @@ NULL
 #' @param mu Vector containing mean vector
 #' @param sigma matrix containing covariance matrix
 #' @export
-Rmvnormal <- function(mu, sigma) {
-    .Call('_BayesFOC_Rmvnormal', PACKAGE = 'BayesFOC', mu, sigma)
+Rmvnormal <- function(mu, sigma, rank) {
+    .Call('_BayesFOC_Rmvnormal', PACKAGE = 'BayesFOC', mu, sigma, rank)
 }
 
 #' Tests updating Z
@@ -38,34 +38,6 @@ Rmvnormal <- function(mu, sigma) {
 #' @export
 TestUpdateZ <- function() {
     .Call('_BayesFOC_TestUpdateZ', PACKAGE = 'BayesFOC')
-}
-
-#' Tests updating Z with no unobserved data points
-#'
-#' @export
-TestUpdateZNoUnobs <- function() {
-    .Call('_BayesFOC_TestUpdateZNoUnobs', PACKAGE = 'BayesFOC')
-}
-
-#' Tests updating Pi
-#'
-#' @export
-TestUpdatePi <- function() {
-    .Call('_BayesFOC_TestUpdatePi', PACKAGE = 'BayesFOC')
-}
-
-#' Tests updating Z using single covariance matrix
-#'
-#' @export
-TestUpdateZSingleMat <- function() {
-    .Call('_BayesFOC_TestUpdateZSingleMat', PACKAGE = 'BayesFOC')
-}
-
-#' Tests updating Z using single covariance matrix with no unobserved Observations
-#'
-#' @export
-TestUpdateZSingleMatNoUnobs <- function() {
-    .Call('_BayesFOC_TestUpdateZSingleMatNoUnobs', PACKAGE = 'BayesFOC')
 }
 
 #' computes the log pdf of a_1j
@@ -399,9 +371,9 @@ NULL
 #' Gets generalized log determinant (product of positive eigen values)
 #'
 #' @name g_ldet
-#' @param M Matrix that we want the determinant of
+#' @param S Vector of singular values
 #' @return g_ldet Double countaining the generalized determinant
-g_ldet <- function(M, rank) {
-    .Call('_BayesFOC_g_ldet', PACKAGE = 'BayesFOC', M, rank)
+g_ldet <- function(S) {
+    .Call('_BayesFOC_g_ldet', PACKAGE = 'BayesFOC', S)
 }
 

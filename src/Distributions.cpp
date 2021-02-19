@@ -13,20 +13,19 @@ arma::vec Rmvnormal(arma::vec mu,
                     arma::mat sigma,
                     arma::mat U,
                     arma::vec S,
-                    arma::mat V)
+                    arma::mat V,
+                    const int rank)
 {
   arma::svd(U, S, V, ((sigma + sigma.t())/2));
-  int m = 0;
-  for(int i = 0; i < S.n_elem; i++){
-    if(S(i) > 0)
+  for(int i = 0; i < rank - 1; i++){
+    if(S(i) < 0)
     {
-      m++;
-    }else{
       S(i) = 0;
     }
   }
-  arma::vec Y = arma::randn(m);
-  return mu + U * arma::sqrt(arma::diagmat(S)) * Y;
+
+  arma::vec Y = arma::randn(rank);
+  return mu + U.submat(0, 0, U.n_rows - 1, rank - 1) * arma::sqrt(arma::diagmat(S.subvec(0, rank - 1))) * Y;
 }
 
 
@@ -39,10 +38,11 @@ arma::vec Rmvnormal(arma::vec mu,
 // [[Rcpp::export]]
 
 arma::vec Rmvnormal(arma::vec mu,
-                    arma::mat sigma)
+                    arma::mat sigma,
+                    const int rank)
 {
   arma::mat U;
   arma::vec S;
   arma::mat V;
-  return Rmvnormal(mu, sigma, U, S, V);
+  return Rmvnormal(mu, sigma, U, S, V, rank);
 }

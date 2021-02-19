@@ -13136,7 +13136,7 @@ $$X(t) = m(t) + \sum_{k=1}^\infty Z_k e_k(t)$$<p>where $Z_k = \int_a^b Y_i(t) e_
 $$X(t) \approx m(t) + \sum_{k=1}^M Z_k e_k(t)$$<p>Let $\chi_k = \frac{1}{\sqrt{\lambda_k}}\int_a^b Y_i(t) e_k(t) dt = \frac{1}{\sqrt{\lambda_k}}Z_k$. Thus we can rewrite our truncated KL expansion as</p>
 $$X(t) \approx m(t) + \sum_{k=1}^M \sqrt{\lambda_k}\chi_k e_k(t)$$<p>where $\chi_k \sim \mathcal{N}(0,1)$. Let $\psi_k(t) = \sqrt{\lambda_k}e_k(t)$. Thus, we have</p>
 $$X(t) \approx m(t) + \sum_{k=1}^M \chi_k \psi_k(t)$$<p>We can approximate $m(t)$ and $\psi_k(t)$ by using a basis expansion. Let $\mathbf{S}(t) \in \mathbb{R}^p$ be a vector of basis functions evaluated at time $t$. Thus we have</p>
-$$X(t) \approx \mathbf{S}(t)'\boldsymbol{\nu} + \sum_{k=1}^M \chi_k \mathbf{S}(t)'\boldsymbol{\phi}_k = S(t)'\boldsymbol{\nu} + S(t)'\boldsymbol{\Phi}\boldsymbol{\chi}$$<p>Using this framework, we have that $\mathbb{E}\{X(t)\} = S(t)'\boldsymbol{\nu}$ and $Cov\{X(t), X(s)\} = S(t)'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(s)$. Due to the normality of $\chi_k$, we have that $X(.) \sim GP\left(S(t)'\boldsymbol{\nu},  S(t)'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(s)\right)$.</p>
+$$X(t) \approx \mathbf{S}(t)'\boldsymbol{\nu} + \sum_{k=1}^M \chi_k \mathbf{S}(t)'\boldsymbol{\phi}_k = S(t)'\boldsymbol{\nu} + S(t)'\boldsymbol{\Phi}\boldsymbol{\chi}$$<p>Using this framework, we have that $\mathbb{E}\{X(t)\} = S(t)'\boldsymbol{\nu}$ and $Cov\{X(t), X(s)\} = S(t)'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(s)$. Due to the normality of $\chi_k$, we have that $X(.) \mathrel{\dot\sim} GP\left(S(t)'\boldsymbol{\nu},  S(t)'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(s)\right)$.</p>
 
 </div>
 </div>
@@ -13174,9 +13174,9 @@ $$X(t) \approx \mathbf{S}(t)'\boldsymbol{\nu} + \sum_{k=1}^M \chi_k \mathbf{S}(t
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Let $m_1(t), \dots, m_K(t)$ be $K$ different square-integrable functions. As in clustering, we can suppose that we have $K$ clusters and $m_1(t), \dots, m_k(t)$ be the mean functions defining each of the $K$ clusters. Let $z_{l}$ be a latent variable that indicates whether or not $X$ belongs to the $k^{th}$ cluster. Unlike in clustering, we will restrict class membership to only one group (i.e. the restriction that $\sum_l z_{l} = 1$ is removed). Assuming that the covariance function is the same regardless of class membership, we have</p>
-$$X(t) \approx \left(\sum_{l=1}^k z_l m_l(t)\right) + \sum_{k=1}^M \chi_k \psi_k(t)$$<p>Using the basis approximation, we have
-$$X(t) \approx \left(\sum_{l=1}^Kz_l\mathbf{S}(t)'\boldsymbol{\nu}_l\right) + \sum_{k=1}^M \chi_k \mathbf{S}(t)'\boldsymbol{\phi}_k = \left(\sum_{l=1}^Kz_l\mathbf{S}(t)'\boldsymbol{\nu}_l\right) + S(t)'\boldsymbol{\Phi}\boldsymbol{\chi}$$</p>
-<p>Thus, we have that $X(.) \sim GP\left(\sum_{l=1}^Kz_l\mathbf{S}(t)'\boldsymbol{\nu}_l,S(t)'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(s)\right)$</p>
+$$X(t)|\mathbf{z} \approx \left(\sum_{l=1}^k z_l m_l(t)\right) + \sum_{k=1}^M \chi_k \psi_k(t)$$<p>Using the basis approximation, we have
+$$X(t)|\mathbf{z} \approx \left(\sum_{l=1}^Kz_l\mathbf{S}(t)'\boldsymbol{\nu}_l\right) + \sum_{k=1}^M \chi_k \mathbf{S}(t)'\boldsymbol{\phi}_k = \left(\sum_{l=1}^Kz_l\mathbf{S}(t)'\boldsymbol{\nu}_l\right) + S(t)'\boldsymbol{\Phi}\boldsymbol{\chi}$$</p>
+<p>Thus, we have that $X(.)|\mathbf{z} \mathrel{\dot\sim} GP\left(\sum_{l=1}^Kz_l\mathbf{S}(t)'\boldsymbol{\nu}_l,S(t)'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(s)\right)$</p>
 
 </div>
 </div>
@@ -13232,6 +13232,125 @@ $$X(t) \approx \left(\sum_{l=1}^Kz_l\mathbf{S}(t)'\boldsymbol{\nu}_l\right) + \s
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Sum-of-Gaussian-Processes">Sum of Gaussian Processes<a class="anchor-link" href="#Sum-of-Gaussian-Processes">&#182;</a></h2><p>Notice in the above case, we did not use the fact that the effects were additive. Consider $K$ Gaussian Processes $X_1(.), \dots, X_K(.)$ with means $m_1(.), \dots, m_K(.)$, and covariances $C_1(.,.), \dots, C_K(.,.)$ (one for each cluster. Letting $\mathbf{z} \in \{0,1\}^K$ be the latent variable that indicates membership to a cluster, we can see that for any $\mathbf{t} \in \mathcal{T}^n$, we have
+$$\mathbb{E}\left(\sum_{i=1}^K z_i X_i(\mathbf{t})\right) = \sum_{i=1}^K z_i m_i(\mathbf{t})$$
+and
+\begin{aligned}
+Cov\left(\sum_{i=1}^K z_i X_i(\mathbf{t})\right) &amp; =\mathbb{E}\left(\left[\sum_{i=1}^K z_i X_i(\mathbf{t})\right]\left[\sum_{i=1}^K z_i X_i(\mathbf{t})\right]'\right) - \left[\mathbb{E}\left(\sum_{i=1}^K z_i X_i(\mathbf{t})\right)\right]\left[\mathbb{E}\left(\sum_{i=1}^K z_i X_i(\mathbf{t})\right)\right]'\\
+&amp; = \sum_{i=1}^n\sum_{j=1}^n z_iz_j\mathbb{E}\left[ X_i(\mathbf{t})X_j(\mathbf{t})'\right] - \sum_{i=1}^n\sum_{j=1}^n z_iz_j\mathbb{E}\left[X_i(\mathbf{t})\right]\mathbb{E}\left[X_j(\mathbf{t})\right]'\\
+&amp; = \sum_{i=1}^n\sum_{j=1}^n z_iz_j \left(\mathbb{E}\left[ X_i(\mathbf{t})X_j(\mathbf{t})'\right] - \mathbb{E}\left[X_i(\mathbf{t})\right]\mathbb{E}\left[X_i(\mathbf{t})\right]' \right)\\
+&amp; = \sum_{i=1}^n\sum_{j=1}^n z_iz_j Cov(X_i(\mathbf{t}),X_j(\mathbf{t})) = \sum_{i=1}^n z_i Var(X_i(\mathbf{t})) + 2\sum_{1 \le i &lt; j \le K} z_iz_jCov(X_i(\mathbf{t}), X_j(\mathbf{t}))
+\end{aligned}</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Since the sum of Gaussian Distributions are Gaussian, we have that
+$$\sum_{i=1}^Kz_iX_i(\mathbf{t}) \sim GP\left(\sum_{i=1}z_i m_i(\mathbf{t}), \sum_{i=1}^n z_i Var(X_i(\mathbf{t})) + 2\sum_{1 \le i &lt; j \le K} z_iz_jCov(X_i(\mathbf{t}), X_j(\mathbf{t}))\right)$$
+Since $Cov(X_i(\mathbf{t}), X_j(\mathbf{t}))$ is the Cross-Covariance matrix for two random vectors $Cov(X_i(\mathbf{t}), X_j(\mathbf{t}))$ need not be positive semi-definite (however $\sum_{i=1}^n\sum_{j=1}^n z_i Cov(X_i(\mathbf{t}),X_j(\mathbf{t}))$ must be positive semi-definite).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Using the basis expansion for $X_i(\mathbf{t}) \approx S(\mathbf{t})'\kappa_i$ for some $\kappa_i \in \mathbb{R}^p$, we have $$\sum_{i=1}^Kz_iX_i(\mathbf{t}) \mathrel{\dot\sim} GP\left(\sum_{i=1}z_i S(\mathbf{t})'\boldsymbol{\nu}_i, \sum_{i=1}^K z_i S(\mathbf{t})'(\boldsymbol{\Phi}_{i}\boldsymbol{\Phi}_{i}')S(\mathbf{t}) + 2\sum_{1 \le i &lt; j \le K} z_iz_jS(\mathbf{t})'Cov(\kappa_i, \kappa_j)S(\mathbf{t})\right)$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Since 
+$$Cov(\kappa_i, \kappa_j) = \begin{bmatrix}
+Cov(\kappa_{(i,1)}, \kappa_{(j,1)}) &amp; Cov(\kappa_{(i,1)}, \kappa_{(j,2)}) &amp; \dots &amp; Cov(\kappa_{(i,1)}, \kappa_{(j,p)})\\
+Cov(\kappa_{(i,2)},\kappa_{(j,1)}) &amp; Cov(\kappa_{(i,2)}, \kappa_{(j,2)}) &amp; \dots &amp; Cov(\kappa_{(i,2)}, \kappa_{(j,p)})\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+Cov(\kappa_{(i,p)}, \kappa_{(j,1)}) &amp; Cov(\kappa_{(i,p)}, \kappa_{(j,2)}) &amp; \dots &amp; Cov(\kappa_{(i,p)}, \kappa_{(j,p)})
+\end{bmatrix}$$
+we can rewrite $Cov(\kappa_{(i,1)}, \kappa_{(j,1)})$ as $Cov(\kappa_{(i,l)}, \kappa_{(j,k)}) = \rho_{(i,j,l,k)}||\boldsymbol{\phi}_l||_2\; ||\boldsymbol{\phi}_k||_2$ where $\boldsymbol{\phi}_k$ is the $k^{th}$ row of $\boldsymbol{\Phi}$. Thus we can see that the Cross-Covariance matrix is
+$$Cov(\kappa_i, \kappa_j) = \begin{bmatrix}
+\rho_{(i,j,1,1)}||\boldsymbol{\phi}_1||_2\; ||\boldsymbol{\phi}_1||_2 &amp; \rho_{(i,j,1,2)}||\boldsymbol{\phi}_1||_2\; ||\boldsymbol{\phi}_2||_2 &amp; \dots &amp; \rho_{(i,j,1,p)}||\boldsymbol{\phi}_1||_2\; ||\boldsymbol{\phi}_p||_2\\
+\rho_{(i,j,1,2)}||\boldsymbol{\phi}_1||_2\; ||\boldsymbol{\phi}_2||_2 &amp; \rho_{(i,j,2,2)}||\boldsymbol{\phi}_2||_2\; ||\boldsymbol{\phi}_2||_2 &amp; \dots &amp; \rho_{(i,j,2,p)}||\boldsymbol{\phi}_2||_2\; ||\boldsymbol{\phi}_p||_2\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\rho_{(i,j,1,p)}||\boldsymbol{\phi}_1||_2\; ||\boldsymbol{\phi}_p||_2 &amp; \rho_{(i,j,2,p)}||\boldsymbol{\phi}_2||_2\; ||\boldsymbol{\phi}_p||_2 &amp; \dots &amp; \rho_{(i,j,p,p)}||\boldsymbol{\phi}_p||_2\; ||\boldsymbol{\phi}_p||_2
+\end{bmatrix}$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Thus we have $K$ $\boldsymbol{\Phi}$ matrices to estimate ($KMP$ variables to estimate) and $K(K-1)/2$ Cross-Covariance matrices to estimate ($K(K-1)P(P+1)/4$ variables to estimate). Using the parameterization above, we would have $2^{K}- 1 $ $\boldsymbol{\Phi}$ matrices to estimate ($(2^K-1)MP$ elements).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Data for plotting</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">elem1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">K</span>  <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">20</span>
+<span class="n">elem2</span> <span class="o">=</span> <span class="p">(</span><span class="n">K</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">K</span> <span class="o">*</span> <span class="p">(</span><span class="n">K</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">20</span> <span class="o">*</span> <span class="p">(</span><span class="mi">20</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">elem1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">elem2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Thus we can see that the number of parameters scales nicely with respect to $K$. In the following, we will refer to $\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}$ as
+$$\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}= \sum_{i=1}^K z_i S(\mathbf{t})'(\boldsymbol{\Phi}_{i}\boldsymbol{\Phi}_{i}')S(\mathbf{t}) + 2\sum_{1 \le i &lt; j \le K} z_iz_jS(\mathbf{t})'Cov(\kappa_i, \kappa_j)S(\mathbf{t})$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Modeling">Modeling<a class="anchor-link" href="#Modeling">&#182;</a></h2>
 </div>
 </div>
@@ -13250,9 +13369,9 @@ where $\epsilon_i(t) \sim \mathcal{N}(0, \sigma^2_\epsilon)$.</p>
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Let $\mathbf{t}_i^{obs} = [t_1, t_2, \dots, t_{\tilde{n}_i}]$ be a vector of observed time points. Let 
-$$f_i(.) \sim GP\left(\sum_{l=1}^Kz_{il}\mathbf{S}(t)'\boldsymbol{\nu}_l,S(t)'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(s)\right)$$
+$$f_i(.)|\mathbf{z}_i, \boldsymbol{\Theta} \sim GP\left(\sum_{l=1}^Kz_{il}\mathbf{S}(t)'\boldsymbol{\nu}_l,S(t)'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(s)\right)$$
 Let $S(\mathbf{t}_i^{obs}) = [S(t_1), \dots, S(t_{\tilde{n}_i})] \in \mathbb{R}^{p \times \tilde{n}_i}$. Thus for $\mathbf{t}_i^{obs}$, $i = 1, \dots, n$, we have that
-$$f_i(\mathbf{t}_i^{obs}) \sim \mathcal{N}\left(\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l,S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right)$$</p>
+$$f_i(\mathbf{t}_i^{obs})| \mathbf{z}_i, \boldsymbol{\Theta} \sim \mathcal{N}\left(\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l,S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right)$$</p>
 <p>Let $\mathbf{t}_i^* = [t_1, \dots, t_{g_i}]$ be a set of unobserved time points such that $t_j \in \mathcal{T},\; j = 1, \dots, g_i$. Suppose we want to find $p(f_i(\mathbf{t}_i^*)|f_i(\mathbf{t}_i^{obs}))$. We know that
 $$p\left(\begin{bmatrix}
 f_i(\mathbf{t}_{obs}) \\
@@ -13281,18 +13400,81 @@ S(\mathbf{t}_i^*)'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi
 \mathbf{C}_i &amp; \mathbf{D}_i \\
 \end{bmatrix}$$</p>
 <p>Thus we have</p>
-$$ p\left(\begin{bmatrix}
-f_i(\mathbf{t}_i^{obs}) \\
-f_i(\mathbf{t}_i^*)
-\end{bmatrix}| \mathbf{z}_i, \boldsymbol{\Theta}\right) \propto exp \left\{-\frac{1}{2}\left[ f_i(\mathbf{t}_i^*)'\mathbf{D}_if_i(\mathbf{t}_i^*) - 2f_i(\mathbf{t}_i^*)' \left(\mathbf{C}_i\left(\sum_{l=1}^Kz_{il}S'(\mathbf{t}_i^{obs})\boldsymbol{\nu}_l - f_i(\mathbf{t}_i^{obs})\right) + \mathbf{D}_i\left(\sum_{l=1}^Kz_{il}S'(\mathbf{t}_i^*)\boldsymbol{\nu}_l \right)\right)\right]\right\}$$
+$$ p\left(
+f_i(\mathbf{t}_i^*)z| \mathbf{z}_i, \boldsymbol{\Theta}\right) \propto exp \left\{-\frac{1}{2}\left[ f_i(\mathbf{t}_i^*)'\mathbf{D}_if_i(\mathbf{t}_i^*) - 2f_i(\mathbf{t}_i^*)' \left(\mathbf{C}_i\left(\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l - f_i(\mathbf{t}_i^{obs})\right) + \mathbf{D}_i\left(\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^*)'\boldsymbol{\nu}_l \right)\right)\right]\right\}$$
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Thus letting $\mathbf{M}_i = \mathbf{D}_i^+$ and $\mathbf{m}_i =  \mathbf{C}_i\left(\sum_{l=1}^Kz_{il}S'(\mathbf{t}_i^{obs})\boldsymbol{\nu}_l - f_i(\mathbf{t}_i^{obs})\right) + \mathbf{D}_i\left(\sum_{l=1}^Kz_{il}S'(\mathbf{t}_i^*)\boldsymbol{\nu}_l \right)$
+<p>Thus letting $\mathbf{M}_i = \mathbf{D}_i^+$ and $\mathbf{m}_i =  \mathbf{C}_i\left(\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l - f_i(\mathbf{t}_i^{obs})\right) + \mathbf{D}_i\left(\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^*)'\boldsymbol{\nu}_l \right)$
 $$f_i(\mathbf{t}_i^*|\mathbf{z}_i, \boldsymbol{\Theta}) \sim \mathcal{N}(\mathbf{M}_i\mathbf{m}_i, \mathbf{M}_i)$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="THE-ABOVE-IS-INCORRECT-(CHANGES-THE-SUPPORT-OF-f)">THE ABOVE IS INCORRECT (CHANGES THE SUPPORT OF f)<a class="anchor-link" href="#THE-ABOVE-IS-INCORRECT-(CHANGES-THE-SUPPORT-OF-f)">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For $\mathbf{t}_i \in \mathbb{R}^\tilde{n}$, notice that we have
+$$f_i(\mathbf{t}_i)|\mathbf{z}_i, \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K,\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}  \sim \mathcal{N}\left(\sum_{l=1}^Kz_{il}S(\mathbf{t}_i)'\boldsymbol{\nu}_l,S(\mathbf{t}_i)'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i)\right)$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Since this is a degenerate normal distribution, the support is not valid over $\mathbb{R}^{\tilde{n}}$. In fact it is only valid over $\mu + \text{span}(\boldsymbol{\Sigma})$. Due to the structure of our mean and covariance kernel, we have that $f_i(\mathbf{t}_i) = S(\mathbf{t}_i)'\mathbf{x}$ for some $\mathbf{x} \in \mathbb{R}^p$. Since the dimension of $\mathbf{x}$ is fixed regardless of the dimension of $\mathbf{t}_i$, consider the case when $\text{dim}(\mathbf{t}_i^{obs}) &gt; p$.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Thus we have that $$\begin{bmatrix}
+f_i(\mathbf{t}_i^{obs})\\
+f_i(\mathbf{t}_i^{*})\\
+\end{bmatrix}\left|\mathbf{z}_i,\boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K,\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}  \right.\sim \mathcal{N}\left(\begin{bmatrix}
+\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \\
+\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^*)'\boldsymbol{\nu}_l
+\end{bmatrix}, \begin{bmatrix}
+S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) &amp; S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^*) \\
+S(\mathbf{t}_i^*)'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) &amp; S(\mathbf{t}_i^*)'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^*) \\
+\end{bmatrix}\right)$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Thus, from above, we know that
+$$\begin{bmatrix}
+f_i(\mathbf{t}_i^{obs})\\
+f_i(\mathbf{t}_i^{*})\\
+\end{bmatrix} = \begin{bmatrix}
+S(\mathbf{t}_i^{obs})' \\
+S(\mathbf{t}_i^{*})' \\
+\end{bmatrix}\mathbf{x}$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Supppose we want to find the distribution $f_i(\mathbf{t}_i^*)|f_i(\mathbf{t}_i^{obs}), \mathbf{z}_i, \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K,\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}$. Thus we are given $f_i(\mathbf{t}_i^{obs}) = S(\mathbf{t}_i^{obs})' \mathbf{x}$, and since $\text{dim}(\mathbf{t}_i^{obs}) &gt; p$ (assuming no repeat time points), we know that $\mathbf{x}$ is unique and completely deterimined by $f_i(\mathbf{t}_i^{obs})$. Therefore, $f_i(\mathbf{t}_i^*)$ is also already determined, and is not random when conditioned on $f_i(\mathbf{t}_i^{obs})$.</p>
+<hr>
 
 </div>
 </div>
@@ -13304,7 +13486,6 @@ $$f_i(\mathbf{t}_i^*|\mathbf{z}_i, \boldsymbol{\Theta}) \sim \mathcal{N}(\mathbf
 $$\left[y_i(\mathbf{t}^*), f_i(\mathbf{t}^*), f_i(\mathbf{t}_{obs}), \boldsymbol{\Theta}|y_i(\mathbf{t}_{obs}) \right] \propto \left[\boldsymbol{\Theta}\right] \times \left[f_i(\mathbf{t}_{obs})|\boldsymbol{\Theta}\right] \times \left[y_i(\mathbf{t}_{obs})| f_i(\mathbf{t}_{obs}), \boldsymbol{\Theta}\right]\times \left[f_i(\mathbf{t}^*)|f_i(\mathbf{t}_{obs}), \boldsymbol{\Theta}\right] \times \left[y_i(\mathbf{t}^*)|f_i(\mathbf{t}^*), \boldsymbol{\Theta}\right]$$<p>We know that
 $$f_i(\mathbf{t}_i^{obs}) \sim \mathcal{N}\left(\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l,S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right); \;\;\; i = 1, \dots, N$$
 $$\left[y_i(\mathbf{t}_{obs})| f_i(\mathbf{t}_i^{obs}), \boldsymbol{\Theta}\right] = \mathcal{N}\left(f_i(\mathbf{t}_{obs}), \sigma^2_\epsilon \mathbf{I}\right); \;\;\; i = 1,\dots, N$$
-$$\left[f_i(\mathbf{t}^*)|f_i(\mathbf{t}_{obs}), \boldsymbol{\Theta}\right] = \mathcal{N}\left(\mathbf{M}_i\mathbf{m}_i, \mathbf{M}_i\right); \;\;\; i = 1, \dots, N$$
 $$\left[y_i(\mathbf{t}_i^*)|f_i(\mathbf{t}^*), \boldsymbol{\Theta}\right] = \mathcal{N}\left(f_i(\mathbf{t}^*),  \sigma^2_\epsilon \mathbf{I}\right); \;\;\; i =1,\dots, N$$</p>
 <p>Thus we are left with just defining the priors on $\boldsymbol{\Theta} = \{ \boldsymbol{\nu}_1,\dots, \boldsymbol{\nu}_K, \boldsymbol{\Phi}_1,\dots, \boldsymbol{\Phi}_R, \sigma^2_\epsilon, \tau^2_1, \dots, \tau^2_K, \mathbf{Z}\}$. We can start with some standard priors for $\sigma^2_\epsilon$ and $\boldsymbol{\nu}_1,\dots, \boldsymbol{\nu}_K$.
 $$\left[\sigma^2_\epsilon\right] = IG(a_0, b_0)$$
@@ -13324,7 +13505,7 @@ where $\mathbf{P}= \begin{bmatrix}
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>From $\textit{Sparse Bayesian infinite factor models}$ (Bhattacharya and Dunson, 2011), we can define a prior of $\boldsymbol{\Phi}_l$. Bhattacharya and Dunson have the following model
+<p>From $\textit{Sparse Bayesian infinite factor models}$ (Bhattacharya and Dunson, 2011), we can define a prior of $\boldsymbol{\Phi}_l$. We can use this prior to adaptively estimate the covariance using a low rank representation. We will start by assuming that there are $M$ columns in the covariance model. The product gamma prior will stochastically shrink the columns of the matrix $\boldsymbol{\Phi}_l$. Then after $t$ time steps, we will truncate the number of columns depending on the magnitude of the elements in the column. Bhattacharya and Dunson have the following model
 $$y_i \sim \mathcal{N}_n(\mathbf{0}, \Omega); \;\;\;\;\; \Omega = \boldsymbol{\Lambda}\boldsymbol{\Lambda}' + \boldsymbol{\Sigma}$$
 where $\boldsymbol{\Sigma}$ is a $n \times n$ diagonal matrix with non-negative entries, and $\boldsymbol{\Lambda} \in \mathbb{R}^{p \times h}$. In this case, we will set $\boldsymbol{\Sigma} = \mathbf{0}$, so we are just left with $\Omega = \boldsymbol{\Lambda}\boldsymbol{\Lambda}'$.</p>
 
@@ -13380,8 +13561,8 @@ $$[\pi_l] = Beta(\alpha/K, 1)\;\; l = 1, \dots, K$$</p>
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Let $\boldsymbol{\zeta}$ be the collection of all the random variables in this model, and let $\boldsymbol{\zeta}_{-\theta}$ be the collection of all random variables in the model minus $\theta$. Thus we have</p>
-$$\sigma_{\epsilon}^2|\boldsymbol{\zeta}_{-\sigma_{\epsilon}^2} = \sigma_{\epsilon}^2|y_1(\mathbf{t}_i^{obs}), \dots, y_N(\mathbf{t}_i^{obs}), y_1(\mathbf{t}_i^*), \dots, y_N(\mathbf{t}_i^*), f_1(\mathbf{t}_i^{obs}), \dots, f_N(\mathbf{t}_{obs}), f_1(\mathbf{t}_i^*), \dots, f_N(\mathbf{t}_i^*)$$$$ \propto (\sigma^2_\epsilon)^{- a_0 -1} exp\left\{-\frac{b_0}{\sigma^2_\epsilon}\right\}\prod_{i=1}^N (2\pi\sigma^2_\epsilon)^{\tilde{n}/2} exp\left\{-\frac{1}{2\sigma^2_\epsilon}||y_i(\mathbf{t}_i^{obs}) - f_i(\mathbf{t}_i^{obs})||^2_2\right\}(2\pi\sigma^2_\epsilon)^{g/2} exp\left\{-\frac{1}{2\sigma^2_\epsilon}||y_i(\mathbf{t}_i^*). - f_i(\mathbf{t}_i^*)||^2_2 \right\}$$$$\propto (\sigma^2_\epsilon)^{-(a_0 + \frac{1}{2}(N\tilde{n} + Ng)) -1} exp\left\{-\frac{b_0 + \frac{1}{2}\sum_{i=1}^N\left(||y_i(\mathbf{t}_i^{obs}) - f_i(\mathbf{t}_i^{obs})||^2_2 + ||y_i(\mathbf{t}_i^*). - f_i(\mathbf{t}_i^*)||^2_2\right)}{\sigma^2_\epsilon} \right\}$$<p>Thus we have
-$$\sigma_{\epsilon}^2|\boldsymbol{\zeta}_{-\sigma_{\epsilon}^2} \sim IG\left(a_0 + \frac{1}{2}(N\tilde{n} + Ng), b_0 + \frac{1}{2}\sum_{i=1}^N\left(||y_i(\mathbf{t}_i^{obs}) - f_i(\mathbf{t}_i^{obs})||^2_2 + ||y_i(\mathbf{t}_i^*). - f_i(\mathbf{t}_i^*)||^2_2\right)\right)$$</p>
+$$\sigma_{\epsilon}^2|\boldsymbol{\zeta}_{-\sigma_{\epsilon}^2} = \sigma_{\epsilon}^2|y_1(\mathbf{t}_i^{obs}), \dots, y_N(\mathbf{t}_i^{obs}), y_1(\mathbf{t}_i^*), \dots, y_N(\mathbf{t}_i^*), f_1(\mathbf{t}_i^{obs}), \dots, f_N(\mathbf{t}_{obs}), f_1(\mathbf{t}_i^*), \dots, f_N(\mathbf{t}_i^*)$$$$ \propto (\sigma^2_\epsilon)^{- a_0 -1} exp\left\{-\frac{b_0}{\sigma^2_\epsilon}\right\}\prod_{i=1}^N (2\pi\sigma^2_\epsilon)^{\tilde{n}_i/2} exp\left\{-\frac{1}{2\sigma^2_\epsilon}||y_i(\mathbf{t}_i^{obs}) - f_i(\mathbf{t}_i^{obs})||^2_2\right\}(2\pi\sigma^2_\epsilon)^{g_i/2} exp\left\{-\frac{1}{2\sigma^2_\epsilon}||y_i(\mathbf{t}_i^*). - f_i(\mathbf{t}_i^*)||^2_2 \right\}$$$$\propto (\sigma^2_\epsilon)^{-(a_0 + \frac{1}{2}\sum_{i=1}^n\tilde{n_i} + \sum_{i=1}^ng_i) -1} exp\left\{-\frac{b_0 + \frac{1}{2}\sum_{i=1}^N\left(||y_i(\mathbf{t}_i^{obs}) - f_i(\mathbf{t}_i^{obs})||^2_2 + ||y_i(\mathbf{t}_i^*). - f_i(\mathbf{t}_i^*)||^2_2\right)}{\sigma^2_\epsilon} \right\}$$<p>Thus we have
+$$\sigma_{\epsilon}^2|\boldsymbol{\zeta}_{-\sigma_{\epsilon}^2} \sim IG\left(a_0 + \frac{1}{2}(\sum_{i=1}^n\tilde{n_i} + \sum_{i=1}^ng_i), b_0 + \frac{1}{2}\sum_{i=1}^N\left(||y_i(\mathbf{t}_i^{obs}) - f_i(\mathbf{t}_i^{obs})||^2_2 + ||y_i(\mathbf{t}_i^*). - f_i(\mathbf{t}_i^*)||^2_2\right)\right)$$</p>
 <hr>
 
 </div>
@@ -13390,9 +13571,8 @@ $$\sigma_{\epsilon}^2|\boldsymbol{\zeta}_{-\sigma_{\epsilon}^2} \sim IG\left(a_0
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-$$f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} = f_i(\mathbf{t}_i^{obs})|y_i(\mathbf{t}_i^{obs}), f_i(\mathbf{t}_i^*),\mathbf{z}_1, \dots, \mathbf{z}_K, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_R, \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K, \sigma^2_\epsilon; \;\;\; i = 1, \dots, N$$$$\begin{aligned}
+$$f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} = f_i(\mathbf{t}_i^{obs})|y_i(\mathbf{t}_i^{obs}), \mathbf{z}_1, \dots, \mathbf{z}_K, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_R, \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K, \sigma^2_\epsilon; \;\;\; i = 1, \dots, N$$$$\begin{aligned}
 \propto &amp; exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\} \\
-&amp; \times exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^*) - \mathbf{D}_i^+\left(\mathbf{C}_i\left(\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l - f_i(\mathbf{t}_i^{obs})\right) + \mathbf{D}_i\left(\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^*)'\boldsymbol{\nu}_l \right) \right)\right)'\mathbf{D}_i\left(f_i(\mathbf{t}_i^*) - \mathbf{D}_i^+\left(\mathbf{C}_i\left(\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l - f_i(\mathbf{t}_i^{obs})\right) + \mathbf{D}_i\left(\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^*)'\boldsymbol{\nu}_l \right) \right)\right)\right\}\\
 &amp; \times exp\left\{-\frac{1}{2\sigma^2_\epsilon}(y_i(\mathbf{t}_i^{obs}) - f_i(\mathbf{t}_i^{obs}))'(y_i(\mathbf{t}_i^{obs}) - f_i(\mathbf{t}_i^{obs})) \right\}
 \end{aligned}$$
 </div>
@@ -13402,8 +13582,8 @@ $$f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} = f_i(\
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
-\propto exp\left\{-\frac{1}{2}\left[ f_i(\mathbf{t}_i^{obs})' \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \mathbf{C}_i'\mathbf{D}_i^+\mathbf{C}_i + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right) f_i(\mathbf{t}_i^{obs})\\
-- 2f_i(\mathbf{t}_i^{obs})'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) + \mathbf{C}_i'\mathbf{D}_i^+\left(\mathbf{C}_i\left[\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^*)'\boldsymbol{\nu}_l\right] + \mathbf{D}_i\left[ \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^*)'\boldsymbol{\nu}_l\right]\right) + \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right] \right)\right]\right\}
+\propto exp\left\{-\frac{1}{2}\left[ f_i(\mathbf{t}_i^{obs})' \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right) f_i(\mathbf{t}_i^{obs})\\
+- 2f_i(\mathbf{t}_i^{obs})'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) +  \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right] \right)\right]\right\}
 \end{aligned}$$
 </div>
 </div>
@@ -13411,9 +13591,9 @@ $$\begin{aligned}
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Let $$\mathbf{W}_i = \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \mathbf{C}_i'\mathbf{D}_i^+\mathbf{C}_i + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right)^+$$
+<p>Let $$\mathbf{W}_i = \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right)^{-1}$$
 and 
-$$\mathbf{w}_i = \frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) + \mathbf{C}_i'\mathbf{D}_i^+\left(\mathbf{C}_i\left[\sum_{l=1}^Kz_{il}S(\mathbf{t}_i^*)'\boldsymbol{\nu}_l\right] + \mathbf{D}_i\left[ \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^*)'\boldsymbol{\nu}_l\right]\right) + \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right]$$</p>
+$$\mathbf{w}_i = \frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) + \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right]$$</p>
 <p>Thus we have that
 $$f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} \sim \mathcal{N}(\mathbf{W}_i\mathbf{w}_i, \mathbf{W}_i); \;\;\; i = 1,\dots, N$$</p>
 <hr>
@@ -13424,7 +13604,18 @@ $$f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} \sim \m
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-$$f_i(\mathbf{t}_i^*)| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^*)} = f_i(\mathbf{t}_i^*)|y_i(\mathbf{t}_i^*), f_i(\mathbf{t}_i^{obs}), \mathbf{z}_1, \dots, \mathbf{z}_K, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_R, \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K,\sigma^2_\epsilon$$$$\propto exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^*) - \mathbf{M}_i\mathbf{m}_i\right)'\mathbf{M}^{+}_i\left(f_i(\mathbf{t}_i^*) - \mathbf{M}_i\mathbf{m}_i\right)\right\} exp\left\{-\frac{1}{2\sigma^2_\epsilon}(y_i(\mathbf{t}_i^*) - f_i(\mathbf{t}_i^*))'(y_i(\mathbf{t}_i^*) - f_i(\mathbf{t}_i^*)) \right\}$$<p></p>
+<h2 id="THE-ABOVE-IS-INCORRECT-(CHANGES-THE-SUPPORT-OF-f)">THE ABOVE IS INCORRECT (CHANGES THE SUPPORT OF f)<a class="anchor-link" href="#THE-ABOVE-IS-INCORRECT-(CHANGES-THE-SUPPORT-OF-f)">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Due to the fact that $f_i(\mathbf{t}_i^{obs})$ must be in $\mathcal{S} = \left\{S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v} \left| \mathbf{v} \in \mathbb{R}^{n_i}\right.\right\}$, we cannot use the above method. We can however use the above pdf with a modification to ensure that $f_i(\mathbf{t}_i^{obs}) \in \mathcal{S}$.
+$$\begin{aligned}
+f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} &amp; \propto \mathbb{1}\left(f_i(\mathbf{t}_i^{obs}) \in \mathcal{S}\right) exp\left\{-\frac{1}{2}\left[ f_i(\mathbf{t}_i^{obs})' \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right) f_i(\mathbf{t}_i^{obs})\right.\right.\\
+&amp; \left.\left.- 2f_i(\mathbf{t}_i^{obs})'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) +  \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right] \right)\right]\right\}
+\end{aligned}$$</p>
 
 </div>
 </div>
@@ -13432,16 +13623,7 @@ $$f_i(\mathbf{t}_i^*)| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^*)} = f_i(\mathbf{t
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-$$\propto exp\left\{-\frac{1}{2}\left[ f_i(\mathbf{t}_i^*)' \left(\mathbf{M}^+_i  + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{g_i}\right) f_i(\mathbf{t}_i^*)
-- 2f_i(\mathbf{t}_i^*)'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^*) + \mathbf{M}_i^+\mathbf{M}_i\mathbf{m}_i\right)\right]\right\}$$
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Let
-$$\tilde{\mathbf{W}}_i = \left(\mathbf{M}^+_i + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{g_i}\right)^+$$</p>
+<p>We can instead let $f_i(\mathbf{t}_i^{obs}) = S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v}$ and find the distribution with respect to $\mathbf{v}$.</p>
 
 </div>
 </div>
@@ -13449,8 +13631,32 @@ $$\tilde{\mathbf{W}}_i = \left(\mathbf{M}^+_i + \frac{1}{\sigma^2_\epsilon}\math
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>and
-$$\tilde{\mathbf{w}}_i = \frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^*) + \mathbf{M}_i^+\mathbf{M}_i\mathbf{m}_i$$</p>
+$$\begin{aligned}
+f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} &amp; \propto exp\left\{-\frac{1}{2}\left[ \left( S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v}\right)' \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right) \left( S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v}\right)\right.\right.\\
+&amp; \left.\left.- 2\left(S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v} \right)'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) +  \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right] \right)\right]\right\}
+\end{aligned}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\begin{aligned}
+\propto exp\left\{ -\frac{1}{2}\left[\mathbf{v}'\left( S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) + \frac{1}{\sigma^2_\epsilon}S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right)\mathbf{v} \right.\right.\\
+\left. \left. -2 \mathbf{v}'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) +  \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right]  \right) \right. \right. \right.\\
+- \left. \left. \left. S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\left( \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right)S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l \right)\right] \right\}\\
+\end{aligned}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Thus lettin $$\mathbf{W}_i = \left( S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) + \frac{1}{\sigma^2_\epsilon}S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right)^+$$
+and 
+$$\begin{aligned}\mathbf{w}_i = &amp; S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) +  \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right]  \right) \\
+&amp; -S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\left( \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right)S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l\\
+\end{aligned}$$</p>
 
 </div>
 </div>
@@ -13458,8 +13664,27 @@ $$\tilde{\mathbf{w}}_i = \frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^*) + \mathb
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Thus we have that 
-$$f_i(\mathbf{t}^*)| \boldsymbol{\zeta}_{-f_i(\mathbf{t}^*)} \sim \mathcal{N}(\tilde{\mathbf{W}}_i\tilde{\mathbf{w}}_i, \tilde{\mathbf{W}}_i); \;\;\; i = 1, \dots, N$$</p>
+<p>Thus we have that $\mathbf{v}| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} \sim \mathcal{N}(\mathbf{W}_i\mathbf{w}_i, \mathbf{W}_i)$. Using the fact that $f_i(\mathbf{t}_i^{obs}) = S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v}$, we can recover $f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})}$.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h3 id="Alternatively">Alternatively<a class="anchor-link" href="#Alternatively">&#182;</a></h3><p>Using the common covariance model, we have</p>
+$$f_i(\mathbf{t}_i^{obs})|y_i(\mathbf{t}_i^{obs}), f_i(\mathbf{t}_i^*),\mathbf{z}_1, \dots, \mathbf{z}_K, \boldsymbol{\Phi}, \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K, \sigma^2_\epsilon; \;\;\; i = 1, \dots, N$$$$\begin{align}
+\propto &amp; exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\} \\
+&amp; \times exp\left\{-\frac{1}{2\sigma^2_\epsilon}(y_i(\mathbf{t}_i^{obs}) - f_i(\mathbf{t}_i^{obs}))'(y_i(\mathbf{t}_i^{obs}) - f_i(\mathbf{t}_i^{obs})) \right\}
+\end{align}$$$$\begin{align}
+\propto exp\left\{-\frac{1}{2}\left[ f_i(\mathbf{t}_i^{obs})' \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right) f_i(\mathbf{t}_i^{obs})\\
+  - 2f_i(\mathbf{t}_i^{obs})'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) + \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right] \right)\right]\right\}
+\end{align}$$<p>Let $$\mathbf{W}_i = \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+  + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right)^+$$
+and 
+$$\mathbf{w}_i = \frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs})  + \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right]$$</p>
+<p>Thus we have that
+$$f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} \sim \mathcal{N}(\mathbf{W}_i\mathbf{w}_i, \mathbf{W}_i); \;\;\; i = 1,\dots, N$$</p>
 <hr>
 
 </div>
@@ -13468,18 +13693,17 @@ $$f_i(\mathbf{t}^*)| \boldsymbol{\zeta}_{-f_i(\mathbf{t}^*)} \sim \mathcal{N}(\t
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-$$\boldsymbol{\nu}_i| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_i} = \boldsymbol{\nu}_i|f_1(\mathbf{t}_1^{obs}), \dots, f_N(\mathbf{t}_N^{obs}), f_1(\mathbf{t}_1^*),\dots, f_N(\mathbf{t}_N^*), \tau_i^2, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_R, \mathbf{z}_1, \dots, \mathbf{z}_k; \;\;\; i = 1, \dots, K$$
+$$\boldsymbol{\nu}_i| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_i} = \boldsymbol{\nu}_i|f_1(\mathbf{t}_1^{obs}), \dots, f_N(\mathbf{t}_N^{obs}), \tau_i^2, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_R, \mathbf{z}_1, \dots, \mathbf{z}_k; \;\;\; i = 1, \dots, K$$
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-$$\begin{aligned}
+$$\begin{align}
 \propto &amp; exp\left\{-\frac{1}{2\tau_i^2}\boldsymbol{\nu}_i'\mathbf{P}\boldsymbol{\nu}_i \right\}\\
 &amp;\times \prod_{j=1}^N exp\left\{-\frac{1}{2}\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right)\right\} \\
-&amp; \times \prod_{j=1}^Nexp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_j^*) - \mathbf{D}_j^+\left(\mathbf{C}_j\left(\sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l - f_j(\mathbf{t}_j^{obs})\right) + \mathbf{D}_j\left(\sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^*)'\boldsymbol{\nu}_l \right) \right)\right)'\mathbf{D}_j\left(f_j(\mathbf{t}_j^*) - \mathbf{D}_j^+\left(\mathbf{C}_j\left(\sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l - f_j(\mathbf{t}_j^{obs})\right) + \mathbf{D}_j\left(\sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^*)'\boldsymbol{\nu}_l \right) \right)\right)\right\}\\
-\end{aligned}$$
+\end{align}$$
 </div>
 </div>
 </div>
@@ -13487,8 +13711,8 @@ $$\begin{aligned}
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
-\propto exp\left\{-\frac{1}{2} \left[\boldsymbol{\nu}_i'\left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left(z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+ S(\mathbf{t}_j^{obs})'\right) + \sum_{j=1}^N \left(z_{ji}\left(S(\mathbf{t}_j^{obs})\mathbf{C}_j' + S(\mathbf{t}_j^*)\mathbf{D}_j'\right)\mathbf{D}_j^+\left( \mathbf{C}_j S(\mathbf{t}_j^{obs})' + \mathbf{D}_j S(\mathbf{t}_j^*)'\right)\right)\right)\boldsymbol{\nu}_i \\
- -2\nu_i' \left(\sum_{j=1}^N\left[z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l\ne i}z_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \right]  + \sum_{j=1}^N z_{ji}\left(\left(S(\mathbf{t}_j^{obs})\mathbf{C}_j' + S(\mathbf{t}_j^*) \mathbf{D}_j\right)\mathbf{D}_j^+\left(\mathbf{D}_j f_j(\mathbf{t}_j^*) + \mathbf{C}_j f_j(\mathbf{t}_j^{obs}) - \mathbf{C}_j \left(\sum_{l \ne i} z_{jl}S(\mathbf{t}_j^{obs})\boldsymbol{\nu}_l \right) - \mathbf{D}_j\sum_{l \ne i}\left(z_{jl}S(\mathbf{t}_j^*)\boldsymbol{\nu}_l \right)\right)\right) \right)\right] \right\}\\
+\propto exp\left\{-\frac{1}{2} \left[\boldsymbol{\nu}_i'\left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left(z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+ S(\mathbf{t}_j^{obs})'\right) \right)\boldsymbol{\nu}_i \\
+ -2\nu_i' \left(\sum_{j=1}^N\left[z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l\ne i}z_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \right] \right) \right] \right\}\\
 \end{aligned}$$
 </div>
 </div>
@@ -13496,9 +13720,9 @@ $$\begin{aligned}
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Thus, letting $$\mathbf{B}_i = \left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left(z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+ S(\mathbf{t}_j^{obs})'\right) + \sum_{j=1}^N \left(z_{ji}\left(S(\mathbf{t}_j^{obs})\mathbf{C}_j' + S(\mathbf{t}_j^*)\mathbf{D}_j'\right)\mathbf{D}_j^+\left( \mathbf{C}_j S(\mathbf{t}_j^{obs})' + \mathbf{D}_j S(\mathbf{t}_j^*)'\right)\right)\right)^+$$
+<p>Thus, letting $$\mathbf{B}_i = \left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left(z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+ S(\mathbf{t}_j^{obs})'\right) \right)^+$$
 and 
-$$\mathbf{b}_i = \sum_{j=1}^N\left[z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l\ne i}z_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \right]  + \sum_{j=1}^N z_{ji}\left(\left(S(\mathbf{t}_j^{obs})\mathbf{C}_j' + S(\mathbf{t}_j^*) \mathbf{D}_j\right)\mathbf{D}_j^+\left(\mathbf{D}_j f_j(\mathbf{t}_j^*) + \mathbf{C}_j f_j(\mathbf{t}_j^{obs}) - \mathbf{C}_j \left(\sum_{l \ne i} z_{jl}S(\mathbf{t}_j^{obs})\boldsymbol{\nu}_l \right) - \mathbf{D}_j\sum_{l \ne i}\left(z_{jl}S(\mathbf{t}_j^*)\boldsymbol{\nu}_l \right)\right)\right)$$
+$$\mathbf{b}_i = \sum_{j=1}^N\left[z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l\ne i}z_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \right]$$
 we have that 
 $$\boldsymbol{\nu}_i| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_i} \sim \mathcal{N}\left(\mathbf{B}_i\mathbf{b}_i, \mathbf{B}_i\right)$$</p>
 <hr>
@@ -13509,6 +13733,35 @@ $$\boldsymbol{\nu}_i| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_i} \sim \mathcal{N}\
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>Since $f_i(\mathbf{t}_i^{obs}) \in \mathcal{S}$, we need to make sure that our MCMC update for $\boldsymbol{\nu}_j$ ensures that $f_i(\mathbf{t}_i^{obs})$ is still in $\mathcal{S}$. Assuming that the current $\boldsymbol{\nu}_j$ is such that $f_i(\mathbf{t}_i^{obs}) \in \mathcal{S}$ for $i = 1, \dots, n$, the update would have to take the form
+$$\boldsymbol{\nu}_j^{(i+1)} = \boldsymbol{\nu}_j^{(i)} + m \;\;\;\; m \in \mathcal{M}$$
+where $\mathcal{M} = \left\{\cap_{\mathcal{H}_i} \text{span}\left(S(\mathbf{t}_j^{obs})'\boldsymbol{\Phi}_{\Omega(\mathcal{H}_i)}\boldsymbol{\Phi}_{\Omega(\mathcal{H}_i)}')S(\mathbf{t}_j^{obs})  \right)\right\}$ and $\mathcal{H}_i$ are all the possible combinations of $\mathbf{z}_i$ containing membership to class $j$. This would also impose restrictions on $\boldsymbol{\Phi}$ as updates to $\phi$ would have to ensure that $f_i(\mathbf{t}_i^{obs})$ is still in $\mathcal{S}$. One way to get rid of these constraints would be to ensure that $\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}'$ is full rank, which is possible if we replace it with $\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p$.</p>
+<p>Note that $S(\mathbf{t}_i^{obs})S(\mathbf{t}_i^{obs})'$ is invertible. Thus if we change the covariance kernel to $S(\mathbf{t}_j^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_j^{obs})$, we will ensure that $\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p$ is invertible. By doing this, we can see that $\boldsymbol{\nu}$ is no longer restricted. Let $\boldsymbol{\nu} \in \mathbb{R}^{p}$. Then we have that
+$$f_i(\mathbf{t}_i^{obs}) = S(\mathbf{t}_i^{obs})'\mathbf{v} = S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}  + S(\mathbf{t}_j^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_j^{obs})S(\mathbf{t}_i^{obs})'\left(S(\mathbf{t}_j^{obs})S(\mathbf{t}_i^{obs})'\right)^{-1}\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)^{-1}\left(\mathbf{v} - \boldsymbol{\nu}\right)$$
+thus we can see that $f_i(\mathbf{t}_i^{obs}) \in \mathcal{S}$, for any $\boldsymbol{\nu} \in \mathbb{R}^p$.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h3 id="Alternatively">Alternatively<a class="anchor-link" href="#Alternatively">&#182;</a></h3><p>Using a common covariance model, we get:
+$$\mathbf{B}_i = \left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left(z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_j^{obs}) \right)^+ S(\mathbf{t}_j^{obs})'\right) \right)^+$$
+and 
+$$\mathbf{b}_i = \sum_{j=1}^N\left[z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l\ne i}z_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \right] $$
+we have that 
+$$\boldsymbol{\nu}_i| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_i} \sim \mathcal{N}\left(\mathbf{B}_i\mathbf{b}_i, \mathbf{B}_i\right)$$</p>
+<hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
 $$\tau^2_i| \boldsymbol{\zeta}_{-\tau^2_i} = \tau^2_i | \boldsymbol{\nu}_i; \;\;\; i = 1, \dots, K$$
 </div>
 </div>
@@ -13540,7 +13793,7 @@ $$\tau^2_i| \boldsymbol{\zeta}_{-\tau^2_i} \sim IG\left(a_1 + P/2, b_0 + \frac{1
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-$$\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}} = \phi_{(i,j,l)} | \delta_{1,l}, \dots, \delta_{j,l}, \gamma_{(i,j,l)}, f_1(\mathbf{t}_{obs}), \dots, f_N(\mathbf{t}_{obs}), f_1(\mathbf{t}^*), \dots, f_N(\mathbf{t}^*), \mathbf{z}_1, \dots, \mathbf{z}_K, \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K; \;\;\; i = 1,\dots, P, \;\;\; j = 1, \dots, M,\;\;\; l = 1,\dots, R $$
+$$\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}} = \phi_{(i,j,l)} | \delta_{1,l}, \dots, \delta_{j,l}, \gamma_{(i,j,l)}, f_1(\mathbf{t}_{obs}), \dots, f_N(\mathbf{t}_{obs}), \mathbf{z}_1, \dots, \mathbf{z}_K, \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K, \boldsymbol{\rho}_{(i,j)}; \;\;\; i = 1,\dots, P, \;\;\; j = 1, \dots, M,\;\;\; l = 1,\dots, R $$
 </div>
 </div>
 </div>
@@ -13555,11 +13808,10 @@ $$\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}} = \phi_{(i,j,l)} | \delta
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-$$\begin{align}
-P(\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}})&amp;  \propto exp\left\{-\frac{\gamma_{(i,j,l)} \tilde{\tau}_{(j,l)}}{2}  \phi_{(i,j,l)}^2\right\}\\
-\times &amp; \prod_{j=1}^N \mathbb{1}\left(\Omega(\mathbf{z}_i) = l \right)det^*\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\} \\
-\times &amp; \prod_{j=1}^N det^*(\mathbf{M}_j)^{-1/2} exp\left\{-\frac{1}{2}\left(f_j(\mathbf{t}^*) - \mathbf{M}_j\mathbf{m}_j\right)'\mathbf{M}_j^+\left(f_j(\mathbf{t}^*) - \mathbf{M}_j\mathbf{m}_j\right) \right\}\\
-\end{align}$$
+$$\begin{aligned}
+log\left(P(\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}})\right)&amp;  \propto -\frac{\gamma_{(i,j,l)} \tilde{\tau}_{(j,l)}}{2}  \phi_{(i,j,l)}^2\\
++ &amp; \sum_{j=1}^N \mathbb{1}\left(z_{jl} = 1 \right)(-1/2)log\left(det^*\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs})\right)\right) -\frac{1}{2}\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \\
+\end{aligned}$$
 </div>
 </div>
 </div>
@@ -13576,6 +13828,22 @@ $$A(\phi_{(i,j,l)}',\phi_{(i,j,l)}) = \min \left\{1, \frac{P\left(\phi_{(i,j,l)}
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Alternatively">Alternatively<a class="anchor-link" href="#Alternatively">&#182;</a></h3><p>Using the common covariance model, we have
+$$\begin{align}
+P(\phi_{(i,j)}| \boldsymbol{\zeta}_{-\phi_{(i,j)}})&amp;  \propto exp\left\{-\frac{\gamma_{(i,j)} \tilde{\tau}_{(j)}}{2}  \phi_{(i,j)}^2\right\}\\
+\times &amp; \prod_{j=1}^N det^*\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs})\right)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\} \\
+\end{align}$$</p>
+<p>Consider the proposal distribution $Q\left(\phi_{(i,j,l)}'|\phi_{(i,j,l)}\right) = \mathcal{N}\left(\phi_{(i,j,l)}' | \mu = \phi_{(i,j,l)}, \sigma^2 = \alpha \gamma_{(i,j,l)}^{-1} \tilde{\tau}_{(j,l)}^{-1}\right)$ for some small $\alpha &gt;0$. Thus our probability of accepting any step is 
+$$A(\phi_{(i,j,l)}',\phi_{(i,j,l)}) = \min \left\{1, \frac{P\left(\phi_{(i,j,l)}'| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}'}\right)}{P\left(\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}}\right)} \frac{Q\left(\phi_{(i,j,l)}|\phi_{(i,j,l)}'\right)}{Q\left(\phi_{(i,j,l)}'|\phi_{(i,j,l)}\right)}\right\}$$</p>
+<hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
 $$\delta_{(i,j)}| \boldsymbol{\zeta}_{-\delta_{(i,j)}} = \delta_{i,j} | \delta_{(1,j)}, \dots, \delta_{(i-1,j)}, \boldsymbol{\phi}_{(:,i,j)}, \dots, \boldsymbol{\phi}_{(:,M,j)}, \boldsymbol{\gamma}_{(:,i,j)}, \dots, \boldsymbol{\gamma}_{(:,M,j)}, a_{(1,j)}, a_{(2,j)} \;\;\; i = 1, \dots, M  \;\;\; j = 1, \dots, R$$<p>where $\boldsymbol{\phi}_{(:,i,j)} = \{\boldsymbol{\phi}_{(k,i,j)}| 1\le k \le P \}$ and $\boldsymbol{\gamma}_{(:,i,j)} = \{\boldsymbol{\gamma}_{(k,i,j)}| 1\le k \le P \}$</p>
 
 </div>
@@ -13661,7 +13929,7 @@ $$a_{(2 ,j)}| \boldsymbol{\zeta}_{-a_{(2,j)}} = a_{(2,j)} | \delta_{(2,j)}, \dot
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-$$P(a_{(1,j)}|\delta_{(1,j)}) \propto \frac{1}{\Gamma(a_{(2,j)})^{M-1}}\left(\prod_{i=2}^M\delta_{(i,j)}^{a_{(2,j)} -1}\right) a_{(2,j)}^{\alpha_{(2,j)} -1} exp \left\{-a_{(2,j)}\beta_{(2,j)} \right\}$$
+$$P(a_{(2,j)}|\delta_{(1,j)}) \propto \frac{1}{\Gamma(a_{(2,j)})^{M-1}}\left(\prod_{i=2}^M\delta_{(i,j)}^{a_{(2,j)} -1}\right) a_{(2,j)}^{\alpha_{(2,j)} -1} exp \left\{-a_{(2,j)}\beta_{(2,j)} \right\}$$
 </div>
 </div>
 </div>
@@ -13709,7 +13977,7 @@ $$\gamma_{(i,j,l)}| \boldsymbol{\zeta}_{-\gamma_{(i,j,l)}}\sim Gamma\left(\frac{
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-$$z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}} = z_{(i,l)} | f_i(\mathbf{t}_{obs}), f_i(\mathbf{t}^*), \pi_l; \;\;\; i = 1, \dots, N; \;\;\; l = 1, \dots, K$$
+$$z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}} = z_{(i,l)} | f_i(\mathbf{t}_{obs}), \pi_l; \;\;\; i = 1, \dots, N; \;\;\; l = 1, \dots, K$$
 </div>
 </div>
 </div>
@@ -13718,7 +13986,6 @@ $$z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}} = z_{(i,l)} | f_i(\mathbf{t}_{obs})
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
 P(z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}}) &amp; \propto det^*\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\}\\
-&amp; \times det^*(\mathbf{M}_i)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}^*) - \mathbf{M}_i \mathbf{m}_i\right)'\mathbf{M}_i^+\left(f_i(\mathbf{t}^*) - \mathbf{M}_i \mathbf{m}_i\right)\right\}\\
 &amp; \times \pi_l^{z_{(i,l)}}(1-\pi_l)^{1 - z_{(i,l)}}\\
 \end{aligned}$$
 </div>
@@ -13737,6 +14004,22 @@ $$A(z_{(i,l)}',z_{(i,l)}) = \min \left\{1, \frac{P\left(z_{(i,l)}'| \boldsymbol{
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h3 id="Alternatively">Alternatively<a class="anchor-link" href="#Alternatively">&#182;</a></h3><p>Using the common covariance model, we have</p>
+$$z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}} = z_{(i,l)} | f_i(\mathbf{t}_{obs}), f_i(\mathbf{t}^*), \pi_l; \;\;\; i = 1, \dots, N; \;\;\; l = 1, \dots, K$$$$\begin{aligned}
+P(z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}}) &amp; \propto det^*\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs})\right)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\}\\
+&amp; \times \pi_l^{z_{(i,l)}}(1-\pi_l)^{1 - z_{(i,l)}}\\
+\end{aligned}$$<p>We can see that this is not a known distribution, so we will have to use Metropolis-Hastings algorithm. Let the proposal distribution be $Q(z_{(i,l)}', z_{(i,l)}) = 0.5^{z_{(i,l)}}0.5^{1 - z_{(i,l)}}$ (Bernoulli(0.5)). Thus the probability of accepting any step is:
+$$A(z_{(i,l)}',z_{(i,l)}) = \min \left\{1, \frac{P\left(z_{(i,l)}'| \boldsymbol{\zeta}_{-z_{(i,l)}'}\right)}{P\left(z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}}\right)} \frac{Q\left(z_{(i,l)}|z_{(i,l)}'\right)}{Q\left(z_{(i,l)}'|z_{(i,l)}\right)}\right\}$$</p>
+<hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
 $$\pi_{l}| \boldsymbol{\zeta}_{-\pi_{l}} = \pi_{l} | z_{(1,l)}, \dots, z_{(N,l)}; \;\;\;  l = 1, \dots, K$$
 </div>
 </div>
@@ -13761,6 +14044,52 @@ $$ \propto \left(\pi_l\right)^{ \left(\alpha/K + \sum_{i=1}^N z_{il}\right) -1} 
 $$\pi_{l}| \boldsymbol{\zeta}_{-\pi_{l}}\sim Beta \left(\alpha/K + \sum_{i=1}^N z_{il}, N - \sum_{i=1}^N z_{il} + 1\right)$$
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+$$\rho_{(i,j,k,l)}| \boldsymbol{\zeta}_{-\rho_{(i,j,k,l)}} = \pi_{l} | z_{(1,l)}, \dots, z_{(N,l)}, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_K, f_1(\mathbf{t}_1^{obs}),\dots, f_N(\mathbf{t}_N^{obs}), f_1(\mathbf{t}_1^*), \dots, f_N(\mathbf{t}_N^*), \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K, ; \;\;\;  l = 1, \dots, K$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Using a uniform prior on $\rho_{(i,j,k,l)}$, we have</p>
+$$\begin{aligned}
+log\left(P(\rho_{(i,j,k,l)}| \boldsymbol{\zeta}_{-\rho_{(i,j,k,l)}})\right) &amp;  \propto 
+\sum_{r=1}^N \left(\mathbb{1}\left(z_{ri} = 1 \right) \mathbb{1}\left(z_{rj} = 1 \right)  \left(-\frac{1}{2}\right)log\left(det^*\left(S(\mathbf{t}_r^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_r)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_r)}')S(\mathbf{t}_r^{obs})\right)\right) \right.\\
+&amp; \left.-\frac{1}{2}\left(f_r(\mathbf{t}_r^{obs}) - \sum_{l=1}^Kz_{rl}S(\mathbf{t}_r^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_r^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_r)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_r)}')S(\mathbf{t}_r^{obs}) \right)^+\left(f_j(\mathbf{t}_r^{obs}) - \sum_{l=1}^Kz_{rl}S(\mathbf{t}_r^{obs})'\boldsymbol{\nu}_l\right)\right)\\
+\end{aligned}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
 </div>
     </div>
   </div>

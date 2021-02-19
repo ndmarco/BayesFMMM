@@ -20,14 +20,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // Rmvnormal
-arma::vec Rmvnormal(arma::vec mu, arma::mat sigma);
-RcppExport SEXP _BayesFOC_Rmvnormal(SEXP muSEXP, SEXP sigmaSEXP) {
+arma::vec Rmvnormal(arma::vec mu, arma::mat sigma, const int rank);
+RcppExport SEXP _BayesFOC_Rmvnormal(SEXP muSEXP, SEXP sigmaSEXP, SEXP rankSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type sigma(sigmaSEXP);
-    rcpp_result_gen = Rcpp::wrap(Rmvnormal(mu, sigma));
+    Rcpp::traits::input_parameter< const int >::type rank(rankSEXP);
+    rcpp_result_gen = Rcpp::wrap(Rmvnormal(mu, sigma, rank));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -41,68 +42,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// TestUpdateZNoUnobs
-Rcpp::List TestUpdateZNoUnobs();
-RcppExport SEXP _BayesFOC_TestUpdateZNoUnobs() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(TestUpdateZNoUnobs());
-    return rcpp_result_gen;
-END_RCPP
-}
-// TestUpdatePi
-Rcpp::List TestUpdatePi();
-RcppExport SEXP _BayesFOC_TestUpdatePi() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(TestUpdatePi());
-    return rcpp_result_gen;
-END_RCPP
-}
-// TestUpdateZSingleMat
-Rcpp::List TestUpdateZSingleMat();
-RcppExport SEXP _BayesFOC_TestUpdateZSingleMat() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(TestUpdateZSingleMat());
-    return rcpp_result_gen;
-END_RCPP
-}
-// TestUpdateZSingleMatNoUnobs
-Rcpp::List TestUpdateZSingleMatNoUnobs();
-RcppExport SEXP _BayesFOC_TestUpdateZSingleMatNoUnobs() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(TestUpdateZSingleMatNoUnobs());
-    return rcpp_result_gen;
-END_RCPP
-}
 // g_ldet
-double g_ldet(const arma::mat& M, const int rank);
-RcppExport SEXP _BayesFOC_g_ldet(SEXP MSEXP, SEXP rankSEXP) {
+double g_ldet(const arma::vec& S);
+RcppExport SEXP _BayesFOC_g_ldet(SEXP SSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type M(MSEXP);
-    Rcpp::traits::input_parameter< const int >::type rank(rankSEXP);
-    rcpp_result_gen = Rcpp::wrap(g_ldet(M, rank));
+    Rcpp::traits::input_parameter< const arma::vec& >::type S(SSEXP);
+    rcpp_result_gen = Rcpp::wrap(g_ldet(S));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_getCov", (DL_FUNC) &_BayesFOC_getCov, 4},
-    {"_BayesFOC_Rmvnormal", (DL_FUNC) &_BayesFOC_Rmvnormal, 2},
+    {"_BayesFOC_Rmvnormal", (DL_FUNC) &_BayesFOC_Rmvnormal, 3},
     {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
-    {"_BayesFOC_TestUpdateZNoUnobs", (DL_FUNC) &_BayesFOC_TestUpdateZNoUnobs, 0},
-    {"_BayesFOC_TestUpdatePi", (DL_FUNC) &_BayesFOC_TestUpdatePi, 0},
-    {"_BayesFOC_TestUpdateZSingleMat", (DL_FUNC) &_BayesFOC_TestUpdateZSingleMat, 0},
-    {"_BayesFOC_TestUpdateZSingleMatNoUnobs", (DL_FUNC) &_BayesFOC_TestUpdateZSingleMatNoUnobs, 0},
-    {"_BayesFOC_g_ldet", (DL_FUNC) &_BayesFOC_g_ldet, 2},
+    {"_BayesFOC_g_ldet", (DL_FUNC) &_BayesFOC_g_ldet, 1},
     {NULL, NULL, 0}
 };
 
