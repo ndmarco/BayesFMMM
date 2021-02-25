@@ -2,19 +2,15 @@
 % Please edit documentation in R/RcppExports.R
 \name{UpdateZ}
 \alias{UpdateZ}
-\title{Updates the Z Matrix with no unobserved points}
+\title{Updates the Z Matrix}
 \arguments{
 \item{f_obs}{Field of vectors containing f at observed time points}
-
-\item{f_star}{Field of vectors containing f at unobserved time points}
 
 \item{pi}{Vector containing the sampled pi for this iteration}
 
 \item{iter}{Iteration of MCMC step}
 
 \item{S_obs}{Field of Matrices containing basis functions evaluated at observed time points}
-
-\item{S_star}{Field of Matrices containing basis functions evaluated at unobserved time points}
 
 \item{Phi}{Cube of current Phi paramaters}
 
@@ -24,26 +20,14 @@
 
 \item{Cov}{Matrix containing placeholder for covariance matrix}
 
-\item{M}{Field of Matrices that contains all M matrices}
-
-\item{M_ph}{Field of Matrices that acts as a placeholder for the new M matrix}
-
 \item{m}{Field of Vectors that contains all m mean vectors}
-
-\item{m_ph}{Field of Vectors that acts as a placeholder for new m vector}
 
 \item{mean_ph_obs}{Field of vectors that serve as a placeholder of computations}
 
-\item{mean_ph_star}{Field of vectors that serve as a placeholder of computations}
-
 \item{Z_ph}{Matrix that acts as a placeholder for Z}
-
-\item{mp_inv}{Field of matrices that act as a placeholder for joint covariance matrix}
 
 \item{Z}{Cube that contains all past, current, and future MCMC draws}
 }
 \description{
-Updates the Z Matrix with no unobserved points
-
 Updates the Z Matrix
 }

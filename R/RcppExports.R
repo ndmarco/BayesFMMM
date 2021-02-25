@@ -9,8 +9,8 @@
 #' @param Rho Matrix with each row containing the elements of the upper triangular matrix
 #' @param Cov Matrix acting as placeholder for covariance matrix
 #' @export
-getCov <- function(Z, Phi, Rho, Cov) {
-    invisible(.Call('_BayesFOC_getCov', PACKAGE = 'BayesFOC', Z, Phi, Rho, Cov))
+getCov <- function(Z, Phi, Rho, sigma_phi, Cov) {
+    invisible(.Call('_BayesFOC_getCov', PACKAGE = 'BayesFOC', Z, Phi, Rho, sigma_phi, Cov))
 }
 
 #' Generates (degenerate) multivariate normal random variable
@@ -86,185 +86,9 @@ NULL
 #' @param a mat containing values of a
 NULL
 
-#' Computes M_i
-#'
-#' @name compute_Mi
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Z Matrix of current Z parameter
-#' @param Phi Cube of current Phi paramaters
-#' @param Rho Matrix with each row containing the elements of the upper triangular matrix
-#' @param i Int indicating which M we are calculating
-#' @param Cov Matrix containing placeholder for covariance matrix
-#' @param mp_inv Matrix acting as a placeholder for mp inverse
-#' @param M Matrix acting as a placeholder for M
-NULL
-
-#' Computes M_i for single covariance matrix
-#'
-#' @name compute_Mi
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param Z Matrix of current Z parameter
-#' @param Phi Matrix of current Phi paramaters
-#' @param i Int indicating which M we are calculating
-#' @param M Matrix acting as a placeholder for M
-NULL
-
-#' Computes all M matrices
-#'
-#' @name compute_M
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Z Matrix of current Z parameter
-#' @param Phi Cube of current Phi paramaters
-#' @param Rho Matrix with each row containing the elements of the upper triangular matrix
-#' @param Cov Matrix containing placeholder for covariance matrix
-#' @param mp_inv Field of Matrices acting as a placeholder for mp inverse
-#' @param M Field of Matrices acting as a placeholder for M
-NULL
-
-#' Computes all M matrices
-#'
-#' @name compute_M
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Z Matrix of current Z parameter
-#' @param Phi Matrix of current Phi paramaters
-#' @param i Int indicating which M we are calculating
-#' @param mp_inv Field of Matrices acting as a placeholder for mp inverse
-#' @param M Field of Matrices acting as a placeholder for M
-NULL
-
-#' Computes m_i
-#'
-#' @name compute_mi
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Z Matrix of current Z parameter
-#' @param Phi Cube of current Phi paramaters
-#' @param Rho Matrix with each row containing the elements of the upper triangular matrix
-#' @param nu Matrix that contains mean vectors as columns
-#' @param i Int indicating which M we are calculating
-#' @param Cov Matrix containing placeholder for covariance matrix
-#' @param mp_inv Matrix acting as a placeholder for mp inverse
-#' @param mean_ph_obs vector acting as placeholder for mean of f_i at observed time points
-#' @param mean_ph_star vector acting as placeholder for vector with length of unobserved time points
-#' @param m Matrix acting as a placeholder for m
-NULL
-
-#' Computes m_i under common covariance matrix
-#'
-#' @name compute_mi
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Z Matrix of current Z parameter
-#' @param Phi Matrix of current Phi paramaters
-#' @param nu Matrix containing mean vectors as the columns
-#' @param i Int indicating which M we are calculating
-#' @param mp_inv Matrix acting as a placeholder for mp inverse
-#' @param mean_ph_obs vector acting as placeholder for mean of f_i at observed time points
-#' @param mean_ph_star vector acting as placeholder for vector with length of unobserved time points
-#' @param m Matrix acting as a placeholder for m
-NULL
-
-#' Computes m for all observations
-#'
-#' @name compute_m
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Z Matrix of current Z parameter
-#' @param Phi Cube of current Phi paramaters
-#' @param Rho Matrix with each row containing the elements of the upper triangular matrix
-#' @param nu Matrix that contains mean vectors as columns
-#' @param Cov Matrix containing placeholder for covariance matrix
-#' @param mp_inv Field of Matrices acting as a placeholder for mp inverse
-#' @param mean_ph_obs Field of Vectors acting as placeholder for mean of f_i at observed time points
-#' @param mean_ph_star Field of Vectors acting as placeholder for vector with length of unobserved time points
-#' @param m Field of Vectors acting as a placeholder for m
-NULL
-
-#' Computes m for all observations under common variance model
-#'
-#' @name compute_m
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Z Matrix of current Z parameter
-#' @param Phi Matrix of current Phi paramaters
-#' @param nu Matrix containing the mean vectors as columns
-#' @param mp_inv Field of Matrices acting as a placeholder for mp inverse
-#' @param mean_ph_obs Field of Vectors acting as placeholder for mean of f_i at observed time points
-#' @param mean_ph_star Field of Vectors acting as placeholder for vector with length of unobserved time points
-#' @param m Field of Vectors acting as a placeholder for m
-NULL
-
-#' Computes M and m for all observations
-#'
-#' @name compute_M_m
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Z Matrix of current Z parameter
-#' @param Phi Cube of current Phi paramaters
-#' @param Rho Matrix with each row containing the elements of the upper triangular matrix
-#' @param nu Matrix that contains mean vectors as columns
-#' @param Cov Matrix containing placeholder for covariance matrix
-#' @param mp_inv Matrix acting as a placeholder for mp inverse
-#' @param mean_ph_obs vector acting as placeholder for mean of f_i at observed time points
-#' @param mean_ph_star vector acting as placeholder for vector with length of unobserved time points
-#' @param M Matrix acting as a placeholder for M
-NULL
-
-#' Computes m and M for all observations under common variance model
-#'
-#' @name compute_M_m
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Z Matrix of current Z parameter
-#' @param Phi Matrix of current Phi paramaters
-#' @param nu Matrix containing the mean vectors as columns
-#' @param mp_inv Matrix acting as a placeholder for mp inverse
-#' @param mean_ph_obs vector acting as placeholder for mean of f_i at observed time points
-#' @param mean_ph_star vector acting as placeholder for vector with length of unobserved time points
-#' @param M Matrix acting as a placeholder for M
-NULL
-
-#' Computes m_i and M_i
-#'
-#' @name compute_mi_Mi
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Z Matrix of current Z parameter
-#' @param Phi Cube of current Phi paramaters
-#' @param Rho Matrix with each row containing the elements of the upper triangular matrix
-#' @param nu Matrix that contains mean vectors as columns
-#' @param i Int indicating which M we are calculating
-#' @param Cov Matrix containing placeholder for covariance matrix
-#' @param mp_inv Matrix acting as a placeholder for mp inverse
-#' @param mean_ph_obs vector acting as placeholder for mean of f_i at observed time points
-#' @param mean_ph_star vector acting as placeholder for vector with length of unobserved time points
-#' @param m Vector acting as a placeholder for m
-#' @param M Matrix acting as a placeholder for M
-NULL
-
-#' Computes m_i under common covariance matrix
-#'
-#' @name compute_mi_Mi
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Z Matrix of current Z parameter
-#' @param Phi Matrix of current Phi paramaters
-#' @param i Int indicating which M we are calculating
-#' @param mp_inv Matrix acting as a placeholder for mp inverse
-#' @param mean_ph_obs vector acting as placeholder for mean of f_i at observed time points
-#' @param mean_ph_star vector acting as placeholder for vector with length of unobserved time points
-#' @param m Vector acting as a placeholder for m
-#' @param M Matrix acting as a placeholder for M
-NULL
-
 #' Gets log-pdf of z given zeta
 #'
 #' @name lpdf_z
-#' @param M Cube that contains the M_i variance matrices
-#' @param m Matrix that contains the m_i mean vectors
 #' @param f_obs Vector containing f at observed time points
 #' @param f_star Vector containing f at unobserved time points
 #' @param S_obs Matrix containing basis functions evaluated at observed time points
@@ -273,27 +97,13 @@ NULL
 #' @param pi_l double containing the lth element of pi
 #' @param Z Matrix containing the elements of Z
 #' @param i int containing row of Z we are finding pdf of
-#' @param j int containing column of Z we are finding the pdf of
+#' @param mean_UV Field of matrices containing placeholder for U and V matrices of SVD of covariance matrix
+#' @param mean_S Field of vectors containg placeholder for S (diag matrix) of SVD of covariance matrix
 #' @param mean_ph_obs vector containing placeholder for mean of observed data
 #' @return lpdf_z double contianing the log-pdf
 NULL
 
-#' Gets log-pdf of z given zeta without unobserved data
-#'
-#' @name lpdf_z
-#' @param f_obs Vector containing f at observed time points
-#' @param S_obs Matrix containing basis functions evaluated at observed time points
-#' @param Phi Matrix containing covariance matrix
-#' @param nu Matrix containing mean vectors as the columns
-#' @param pi_l double containing the lth element of pi
-#' @param Z Matrix containing the elements of Z
-#' @param i int containing row of Z we are finding pdf of
-#' @param j int containing column of Z we are finding the pdf of
-#' @param mean_ph_obs vector containing placeholder for mean of observed data
-#' @return lpdf_z double contianing the log-pdf
-NULL
-
-#' Updates the Z Matrix with no unobserved points
+#' Updates the Z Matrix
 #'
 #' @name UpdateZ
 #' @param f_obs Field of vectors containing f at observed time points
@@ -310,7 +120,7 @@ NULL
 #' @param Z Cube that contains all past, current, and future MCMC draws
 NULL
 
-#' Updates the Z Matrix for single covariance matrix with no unobserved points
+#' Updates the Z Matrix for single covariance matrix
 #'
 #' @param f_obs Field of vectors containing f at observed time points
 #' @param pi Vector containing the sampled pi for this iteration
@@ -320,51 +130,6 @@ NULL
 #' @param nu Matrix that contains all current nu paramaters
 #' @param Z_ph Matrix that acts as a placeholder for the new Z matrix
 #' @param mean_ph_obs Field of vectors that serve as a placeholder of computations
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
-
-#' Updates the Z Matrix
-#'
-#' @name UpdateZ
-#' @param f_obs Field of vectors containing f at observed time points
-#' @param f_star Field of vectors containing f at unobserved time points
-#' @param pi Vector containing the sampled pi for this iteration
-#' @param iter Iteration of MCMC step
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Phi Cube of current Phi paramaters
-#' @param Rho Matrix with each row containing the elements of the upper triangular matrix
-#' @param nu Matrix that contains all current nu paramaters
-#' @param Cov Matrix containing placeholder for covariance matrix
-#' @param M Field of Matrices that contains all M matrices
-#' @param M_ph Field of Matrices that acts as a placeholder for the new M matrix
-#' @param m Field of Vectors that contains all m mean vectors
-#' @param m_ph Field of Vectors that acts as a placeholder for new m vector
-#' @param mean_ph_obs Field of vectors that serve as a placeholder of computations
-#' @param mean_ph_star Field of vectors that serve as a placeholder of computations
-#' @param Z_ph Matrix that acts as a placeholder for Z
-#' @param mp_inv Field of matrices that act as a placeholder for joint covariance matrix
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
-
-#' Updates the Z Matrix for single covariance matrix
-#'
-#' @param f_obs Field of vectors containing f at observed time points
-#' @param f_star Field of vectors containing f at unobserved time points
-#' @param pi Vector containing the sampled pi for this iteration
-#' @param iter Iteration of MCMC step
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param S_star Field of Matrices containing basis functions evaluated at unobserved time points
-#' @param Phi Matrix of current Phi paramaters
-#' @param nu Matrix that contains all current nu paramaters
-#' @param M Field of Matrices that contains all M matrices
-#' @param M_ph Field of Matrices that acts as a placeholder for the new M matrix
-#' @param m Field of Vectors that contains all m mean vectors
-#' @param m_ph Field of Vectors that acts as a placeholder for new m vector
-#' @param mean_ph_obs Field of vectors that serve as a placeholder of computations
-#' @param mean_ph_star Field of vectors that serve as a placeholder of computations
-#' @param Z_ph Matrix that acts as a placeholder for Z
-#' @param mp_inv Field of matrices that act as a placeholder for joint covariance matrix
 #' @param Z Cube that contains all past, current, and future MCMC draws
 NULL
 

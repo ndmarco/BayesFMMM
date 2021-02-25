@@ -18,7 +18,7 @@ double g_ldet(const arma::vec& S)
   for(int i = 0; i < S.n_elem; i++)
   {
     if(S(i) > 0){
-      g_ldet = g_ldet + 2*log(S(i));
+      g_ldet = g_ldet + log(S(i));
     }
   }
   return g_ldet;
@@ -105,6 +105,7 @@ void updateZ(const arma::field<arma::vec>& f_obs,
              const arma::field<arma::mat>& S_obs,
              const arma::cube& Phi,
              const arma::mat& Rho,
+             const double& sigma_phi,
              const arma::mat& nu,
              const int rank,
              arma::field<arma::mat>& mean_UV,
@@ -129,11 +130,11 @@ void updateZ(const arma::field<arma::vec>& f_obs,
     }
     if(arma::accu(Z_ph.row(i)) > 0)
     {
-      getCov(Z.slice(iter).row(i), Phi, Rho, Cov);
+      getCov(Z.slice(iter).row(i), Phi, Rho, sigma_phi, Cov);
       z_lpdf = lpdf_z(f_obs(i,0), S_obs(i,0), Cov, nu, pi,
                       Z.slice(iter), rank, i, mean_UV, mean_S,
                       mean_ph_obs(i,0));
-      getCov(Z_ph.row(i), Phi, Rho, Cov);
+      getCov(Z_ph.row(i), Phi, Rho, sigma_phi, Cov);
       z_new_lpdf = lpdf_z(f_obs(i,0), S_obs(i,0), Cov, nu, pi,
                           Z_ph, rank, i, mean_UV, mean_S, mean_ph_obs(i,0));
       acceptance_prob = z_new_lpdf - z_lpdf;
@@ -174,6 +175,7 @@ void updateZ(const arma::field<arma::vec>& f_obs,
              const int iter,
              const arma::field<arma::mat>& S_obs,
              const arma::mat& Phi,
+             const double& sigma_phi,
              const arma::mat& nu,
              const int rank,
              arma::field<arma::mat>& mean_UV,
@@ -199,6 +201,7 @@ void updateZ(const arma::field<arma::vec>& f_obs,
     if(arma::accu(Z_ph.row(i)) > 0)
     {
       Cov = Phi * Phi.t();
+      Cov.diag() += sigma_phi;
       z_lpdf = lpdf_z(f_obs(i,0), S_obs(i,0), Cov, nu, pi, Z.slice(iter), rank, i,
                       mean_UV, mean_S, mean_ph_obs(i,0));
       z_new_lpdf = lpdf_z(f_obs(i,0), S_obs(i,0), Cov, nu, pi, Z_ph, rank, i,

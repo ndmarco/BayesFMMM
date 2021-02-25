@@ -13611,7 +13611,7 @@ $$f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} \sim \m
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Due to the fact that $f_i(\mathbf{t}_i^{obs})$ must be in $\mathcal{S} = \left\{S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v} \left| \mathbf{v} \in \mathbb{R}^{n_i}\right.\right\}$, we cannot use the above method. We can however use the above pdf with a modification to ensure that $f_i(\mathbf{t}_i^{obs}) \in \mathcal{S}$.
+<p>Due to the fact that $f_i(\mathbf{t}_i^{obs})$ must be in $\mathcal{S} = \left\{S(\mathbf{t}_i^{obs})'\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v} \left| \mathbf{v} \in \mathbb{R}^{n_i}\right.\right\}$, we cannot use the above method. We can however use the above pdf with a modification to ensure that $f_i(\mathbf{t}_i^{obs}) \in \mathcal{S}$.
 $$\begin{aligned}
 f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} &amp; \propto \mathbb{1}\left(f_i(\mathbf{t}_i^{obs}) \in \mathcal{S}\right) exp\left\{-\frac{1}{2}\left[ f_i(\mathbf{t}_i^{obs})' \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right) f_i(\mathbf{t}_i^{obs})\right.\right.\\
 &amp; \left.\left.- 2f_i(\mathbf{t}_i^{obs})'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) +  \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right] \right)\right]\right\}
@@ -13623,7 +13623,7 @@ f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} &amp; \pr
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We can instead let $f_i(\mathbf{t}_i^{obs}) = S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v}$ and find the distribution with respect to $\mathbf{v}$.</p>
+<p>We can instead let $f_i(\mathbf{t}_i^{obs}) = S(\mathbf{t}_i^{obs})'\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v}$ and find the distribution with respect to $\mathbf{v}$.</p>
 
 </div>
 </div>
@@ -13632,8 +13632,8 @@ f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} &amp; \pr
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
-f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} &amp; \propto exp\left\{-\frac{1}{2}\left[ \left( S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v}\right)' \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right) \left( S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v}\right)\right.\right.\\
-&amp; \left.\left.- 2\left(S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v} \right)'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) +  \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right] \right)\right]\right\}
+f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} &amp; \propto exp\left\{-\frac{1}{2}\left[ \left( S(\mathbf{t}_i^{obs})'\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v}\right)' \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right) \left( S(\mathbf{t}_i^{obs})'\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v}\right)\right.\right.\\
+&amp; \left.\left.- 2\left(S(\mathbf{t}_i^{obs})'\sum_{l=1}^k z_{il}\nu_l + S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\mathbf{v} \right)'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) +  \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right] \right)\right]\right\}
 \end{aligned}$$
 </div>
 </div>
@@ -13644,7 +13644,7 @@ f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} &amp; \pr
 $$\begin{aligned}
 \propto exp\left\{ -\frac{1}{2}\left[\mathbf{v}'\left( S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) + \frac{1}{\sigma^2_\epsilon}S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right)\mathbf{v} \right.\right.\\
 \left. \left. -2 \mathbf{v}'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) +  \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right]  \right) \right. \right. \right.\\
-- \left. \left. \left. S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\left( \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right)S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l \right)\right] \right\}\\
+- \left. \left. \left. S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\left( \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right)S(\mathbf{t}_i^{obs})'\sum_{l=1}^k z_{il}\nu_l \right)\right] \right\}\\
 \end{aligned}$$
 </div>
 </div>
@@ -13652,10 +13652,10 @@ $$\begin{aligned}
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Thus lettin $$\mathbf{W}_i = \left( S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) + \frac{1}{\sigma^2_\epsilon}S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right)^+$$
+<p>Thus letting $$\mathbf{W}_i = \left( S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) + \frac{1}{\sigma^2_\epsilon}S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right)^+$$
 and 
 $$\begin{aligned}\mathbf{w}_i = &amp; S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) +  \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right]  \right) \\
-&amp; -S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\left( \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right)S(\mathbf{t}_i^{obs})\sum_{l=1}^k z_{il}\nu_l\\
+&amp; -S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\left( \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right)S(\mathbf{t}_i^{obs})'\sum_{l=1}^k z_{il}\nu_l\\
 \end{aligned}$$</p>
 
 </div>
@@ -13673,18 +13673,30 @@ $$\begin{aligned}\mathbf{w}_i = &amp; S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <hr>
-<h3 id="Alternatively">Alternatively<a class="anchor-link" href="#Alternatively">&#182;</a></h3><p>Using the common covariance model, we have</p>
-$$f_i(\mathbf{t}_i^{obs})|y_i(\mathbf{t}_i^{obs}), f_i(\mathbf{t}_i^*),\mathbf{z}_1, \dots, \mathbf{z}_K, \boldsymbol{\Phi}, \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K, \sigma^2_\epsilon; \;\;\; i = 1, \dots, N$$$$\begin{align}
-\propto &amp; exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\} \\
-&amp; \times exp\left\{-\frac{1}{2\sigma^2_\epsilon}(y_i(\mathbf{t}_i^{obs}) - f_i(\mathbf{t}_i^{obs}))'(y_i(\mathbf{t}_i^{obs}) - f_i(\mathbf{t}_i^{obs})) \right\}
-\end{align}$$$$\begin{align}
-\propto exp\left\{-\frac{1}{2}\left[ f_i(\mathbf{t}_i^{obs})' \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right) f_i(\mathbf{t}_i^{obs})\\
-  - 2f_i(\mathbf{t}_i^{obs})'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) + \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right] \right)\right]\right\}
-\end{align}$$<p>Let $$\mathbf{W}_i = \left(\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+  + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right)^+$$
+<p>Alternatively, if we have have $S(\mathbf{t}_i^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_i^{obs})$ as our covariance kernal, we can see that $\mathcal{S} = \{S(\mathbf{t}_i^{obs}) \mathbf{v}|\mathbf{v} \in \mathbb{R}^p\}$. Thus we have</p>
+$$\begin{aligned}
+f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} &amp; \propto exp\left\{-\frac{1}{2}\left[ \left( S(\mathbf{t}_i^{obs})'\mathbf{v}\right)' \left(\left(S(\mathbf{t}_i^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right) \left( S(\mathbf{t}_i^{obs})'\mathbf{v}\right)\right.\right.\\
+&amp; \left.\left.- 2\left(S(\mathbf{t}_i^{obs})'\mathbf{v} \right)'\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) +  \left(S(\mathbf{t}_i^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right] \right)\right]\right\}
+\end{aligned}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Thus letting 
+$$\mathbf{W}_i = \left( S(\mathbf{t}_i^{obs})\left(\left(S(\mathbf{t}_i^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_i^{obs}) \right)^+ + \frac{1}{\sigma^2_\epsilon}\mathbf{I}_{\tilde{n}_i}\right)S(\mathbf{t}_i^{obs})'\right)^+$$
 and 
-$$\mathbf{w}_i = \frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs})  + \left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right]$$</p>
-<p>Thus we have that
-$$f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} \sim \mathcal{N}(\mathbf{W}_i\mathbf{w}_i, \mathbf{W}_i); \;\;\; i = 1,\dots, N$$</p>
+$$\mathbf{w}_i = S(\mathbf{t}_i^{obs})\left(\frac{1}{\sigma^2_\epsilon}y_i(\mathbf{t}_i^{obs}) +  \left(S(\mathbf{t}_i^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_i^{obs}) \right)^+\left[\sum_{l=1}^Kz_{il}\mathbf{S}(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l \right] \right)$$,
+we have that $f_i(\mathbf{t}_i^{obs})| \boldsymbol{\zeta}_{-f_i(\mathbf{t}_i^{obs})} \sim \mathcal{N}\left(\mathbf{W}_i\mathbf{w}_i, \mathbf{W}_i\right)$.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Under the common covariance model, we can just replace $\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}$ with $\boldsymbol{\Phi}$.</p>
 <hr>
 
 </div>
@@ -13702,7 +13714,7 @@ $$\boldsymbol{\nu}_i| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_i} = \boldsymbol{\nu
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{align}
 \propto &amp; exp\left\{-\frac{1}{2\tau_i^2}\boldsymbol{\nu}_i'\mathbf{P}\boldsymbol{\nu}_i \right\}\\
-&amp;\times \prod_{j=1}^N exp\left\{-\frac{1}{2}\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right)\right\} \\
+&amp;\times \prod_{j=1}^N exp\left\{-\frac{1}{2}\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_j^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right)\right\} \\
 \end{align}$$
 </div>
 </div>
@@ -13711,8 +13723,8 @@ $$\begin{align}
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
-\propto exp\left\{-\frac{1}{2} \left[\boldsymbol{\nu}_i'\left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left(z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+ S(\mathbf{t}_j^{obs})'\right) \right)\boldsymbol{\nu}_i \\
- -2\nu_i' \left(\sum_{j=1}^N\left[z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l\ne i}z_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \right] \right) \right] \right\}\\
+\propto exp\left\{-\frac{1}{2} \left[\boldsymbol{\nu}_i'\left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left(z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_j^{obs}) \right)^+ S(\mathbf{t}_j^{obs})'\right) \right)\boldsymbol{\nu}_i \\
+ -2\boldsymbol{\nu}_i' \left(\sum_{j=1}^N\left[z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l\ne i}z_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \right] \right) \right] \right\}\\
 \end{aligned}$$
 </div>
 </div>
@@ -13720,9 +13732,9 @@ $$\begin{aligned}
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Thus, letting $$\mathbf{B}_i = \left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left(z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+ S(\mathbf{t}_j^{obs})'\right) \right)^+$$
+<p>Thus, letting $$\mathbf{B}_i = \left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left(z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_j^{obs}) \right)^+ S(\mathbf{t}_j^{obs})'\right) \right)^+$$
 and 
-$$\mathbf{b}_i = \sum_{j=1}^N\left[z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l\ne i}z_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \right]$$
+$$\mathbf{b}_i = \sum_{j=1}^N\left[z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l\ne i}z_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \right]$$
 we have that 
 $$\boldsymbol{\nu}_i| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_i} \sim \mathcal{N}\left(\mathbf{B}_i\mathbf{b}_i, \mathbf{B}_i\right)$$</p>
 <hr>
@@ -13746,14 +13758,7 @@ thus we can see that $f_i(\mathbf{t}_i^{obs}) \in \mathcal{S}$, for any $\boldsy
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<hr>
-<h3 id="Alternatively">Alternatively<a class="anchor-link" href="#Alternatively">&#182;</a></h3><p>Using a common covariance model, we get:
-$$\mathbf{B}_i = \left(\frac{1}{\tau_i^2}\mathbf{P} + \sum_{j=1}^N \left(z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_j^{obs}) \right)^+ S(\mathbf{t}_j^{obs})'\right) \right)^+$$
-and 
-$$\mathbf{b}_i = \sum_{j=1}^N\left[z_{ji}S(\mathbf{t}_j^{obs})\left(S(\mathbf{t}_j^{obs})'\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l\ne i}z_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \right] $$
-we have that 
-$$\boldsymbol{\nu}_i| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_i} \sim \mathcal{N}\left(\mathbf{B}_i\mathbf{b}_i, \mathbf{B}_i\right)$$</p>
-<hr>
+<p>Using the common covariance model, we can just replace $\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}$ with $\boldsymbol{\Phi}$.</p>
 
 </div>
 </div>
@@ -13800,7 +13805,7 @@ $$\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}} = \phi_{(i,j,l)} | \delta
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Due to the complexity of this distribution, we will use a Metropolis-Hastings step. Let $\phi_{(i,j,l)}'$ be the proposed new value, and $\boldsymbol{\phi}_l'$ be the updated matrix (only the $(i,j,l)$ element is updated). Thus we have that</p>
+<p>Due to the complexity of this distribution, we will use a Metropolis-Hastings step. Let $\phi_{(i,j,l)}'$ be the proposed new value, and $\boldsymbol{\Phi}_l'$ be the updated matrix (only the $(i,j,l)$ element is updated). Thus we have that</p>
 
 </div>
 </div>
@@ -13810,7 +13815,7 @@ $$\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}} = \phi_{(i,j,l)} | \delta
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
 log\left(P(\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}})\right)&amp;  \propto -\frac{\gamma_{(i,j,l)} \tilde{\tau}_{(j,l)}}{2}  \phi_{(i,j,l)}^2\\
-+ &amp; \sum_{j=1}^N \mathbb{1}\left(z_{jl} = 1 \right)(-1/2)log\left(det^*\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs})\right)\right) -\frac{1}{2}\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_j^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_j)}')S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \\
++ &amp; \sum_{j=1}^N \mathbb{1}\left(z_{jl} = 1 \right)(-1/2)log\left(det^*\left(S(\mathbf{t}_j^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_j^{obs})\right)\right) -\frac{1}{2}\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_j^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_j^{obs}) \right)^+\left(f_j(\mathbf{t}_j^{obs}) - \sum_{l=1}^Kz_{jl}S(\mathbf{t}_j^{obs})'\boldsymbol{\nu}_l\right) \\
 \end{aligned}$$
 </div>
 </div>
@@ -13831,7 +13836,7 @@ $$A(\phi_{(i,j,l)}',\phi_{(i,j,l)}) = \min \left\{1, \frac{P\left(\phi_{(i,j,l)}
 <h3 id="Alternatively">Alternatively<a class="anchor-link" href="#Alternatively">&#182;</a></h3><p>Using the common covariance model, we have
 $$\begin{align}
 P(\phi_{(i,j)}| \boldsymbol{\zeta}_{-\phi_{(i,j)}})&amp;  \propto exp\left\{-\frac{\gamma_{(i,j)} \tilde{\tau}_{(j)}}{2}  \phi_{(i,j)}^2\right\}\\
-\times &amp; \prod_{j=1}^N det^*\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs})\right)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}\boldsymbol{\Phi}')S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\} \\
+\times &amp; \prod_{j=1}^N det^*\left(S(\mathbf{t}_i^{obs})'\left(\boldsymbol{\Phi}\boldsymbol{\Phi}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_i^{obs})\right)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'\left(\boldsymbol{\Phi}\boldsymbol{\Phi}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\} \\
 \end{align}$$</p>
 <p>Consider the proposal distribution $Q\left(\phi_{(i,j,l)}'|\phi_{(i,j,l)}\right) = \mathcal{N}\left(\phi_{(i,j,l)}' | \mu = \phi_{(i,j,l)}, \sigma^2 = \alpha \gamma_{(i,j,l)}^{-1} \tilde{\tau}_{(j,l)}^{-1}\right)$ for some small $\alpha &gt;0$. Thus our probability of accepting any step is 
 $$A(\phi_{(i,j,l)}',\phi_{(i,j,l)}) = \min \left\{1, \frac{P\left(\phi_{(i,j,l)}'| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}'}\right)}{P\left(\phi_{(i,j,l)}| \boldsymbol{\zeta}_{-\phi_{(i,j,l)}}\right)} \frac{Q\left(\phi_{(i,j,l)}|\phi_{(i,j,l)}'\right)}{Q\left(\phi_{(i,j,l)}'|\phi_{(i,j,l)}\right)}\right\}$$</p>
@@ -13985,7 +13990,7 @@ $$z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}} = z_{(i,l)} | f_i(\mathbf{t}_{obs})
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
-P(z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}}) &amp; \propto det^*\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs})\right)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}')S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\}\\
+P(z_{(i,l)}| \boldsymbol{\zeta}_{-z_{(i,l)}}) &amp; \propto det^*\left(S(\mathbf{t}_i^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_i^{obs})\right)^{-1/2} exp\left\{-\frac{1}{2}\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)\right\}\\
 &amp; \times \pi_l^{z_{(i,l)}}(1-\pi_l)^{1 - z_{(i,l)}}\\
 \end{aligned}$$
 </div>
@@ -14049,7 +14054,7 @@ $$\pi_{l}| \boldsymbol{\zeta}_{-\pi_{l}}\sim Beta \left(\alpha/K + \sum_{i=1}^N 
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <hr>
-$$\rho_{(i,j,k,l)}| \boldsymbol{\zeta}_{-\rho_{(i,j,k,l)}} = \pi_{l} | z_{(1,l)}, \dots, z_{(N,l)}, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_K, f_1(\mathbf{t}_1^{obs}),\dots, f_N(\mathbf{t}_N^{obs}), f_1(\mathbf{t}_1^*), \dots, f_N(\mathbf{t}_N^*), \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K, ; \;\;\;  l = 1, \dots, K$$
+$$\rho_{(i,j,k,l)}| \boldsymbol{\zeta}_{-\rho_{(i,j,k,l)}} = \rho_{(i,j,k,l)} | z_{(1,i)}, \dots, z_{(N,i)}, z_{(1,j)}, \dots, z_{(N,j)},\boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_K, f_1(\mathbf{t}_1^{obs}),\dots, f_N(\mathbf{t}_N^{obs}), f_1(\mathbf{t}_1^*), \dots, f_N(\mathbf{t}_N^*), \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K, ; \;\;\;  1 \le k \le l \le P, 1  \le i &lt; j \le K$$
 </div>
 </div>
 </div>
@@ -14059,9 +14064,35 @@ $$\rho_{(i,j,k,l)}| \boldsymbol{\zeta}_{-\rho_{(i,j,k,l)}} = \pi_{l} | z_{(1,l)}
 <p>Using a uniform prior on $\rho_{(i,j,k,l)}$, we have</p>
 $$\begin{aligned}
 log\left(P(\rho_{(i,j,k,l)}| \boldsymbol{\zeta}_{-\rho_{(i,j,k,l)}})\right) &amp;  \propto 
-\sum_{r=1}^N \left(\mathbb{1}\left(z_{ri} = 1 \right) \mathbb{1}\left(z_{rj} = 1 \right)  \left(-\frac{1}{2}\right)log\left(det^*\left(S(\mathbf{t}_r^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_r)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_r)}')S(\mathbf{t}_r^{obs})\right)\right) \right.\\
-&amp; \left.-\frac{1}{2}\left(f_r(\mathbf{t}_r^{obs}) - \sum_{l=1}^Kz_{rl}S(\mathbf{t}_r^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_r^{obs})'(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_r)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_r)}')S(\mathbf{t}_r^{obs}) \right)^+\left(f_j(\mathbf{t}_r^{obs}) - \sum_{l=1}^Kz_{rl}S(\mathbf{t}_r^{obs})'\boldsymbol{\nu}_l\right)\right)\\
+\sum_{r=1}^N \left(\mathbb{1}\left(z_{ri} = 1 \right) \mathbb{1}\left(z_{rj} = 1 \right)  \left(-\frac{1}{2}\right)log\left(det^*\left(S(\mathbf{t}_r^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_r)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_r)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_r^{obs})\right)\right) \right.\\
+&amp; \left.-\frac{1}{2}\left(f_r(\mathbf{t}_r^{obs}) - \sum_{l=1}^Kz_{rl}S(\mathbf{t}_r^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_r^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_r)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_r)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_r^{obs}) \right)^+\left(f_r(\mathbf{t}_r^{obs}) - \sum_{l=1}^Kz_{rl}S(\mathbf{t}_r^{obs})'\boldsymbol{\nu}_l\right)\right)\\
 \end{aligned}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can see that this is not a known distribution, so we will have to use Metropolis-Hastings algorithm. Let the proposal distribution be $Q(\rho_{(i,j,k,l)}', \rho_{(i,j,k,l)}) = \mathcal{N}(\rho_{(i,j,k,l)}, \epsilon_\rho, -1, 1)$ (Truncated Normal). Thus the probability of accepting any step is:
+$$A(\rho_{(i,j,k,l)}',\rho_{(i,j,k,l)}) = \min \left\{1, \frac{P(\rho_{(i,j,k,l)}'| \boldsymbol{\zeta}_{-\rho_{(i,j,k,l)'}})}{P(\rho_{(i,j,k,l)}| \boldsymbol{\zeta}_{-\rho_{(i,j,k,l)}})} \frac{Q(\rho_{(i,j,k,l)}, \rho_{(i,j,k,l)}')}{Q(\rho_{(i,j,k,l)}', \rho_{(i,j,k,l)})}\right\}$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p>$\sigma_{\boldsymbol{\Phi}}^2|\boldsymbol{\zeta}_{-\sigma_{\boldsymbol{\Phi}}^2} = \sigma_{\boldsymbol{\Phi}}^2| f_1(\mathbf{t}_1^{obs}), \dots, f_N(\mathbf{t}_N^{obs}), \boldsymbol{\nu}_1, \dots, \boldsymbol{\nu}_K, \boldsymbol{\phi}_1, \dots, \boldsymbol{\phi}_K, \boldsymbol{\rho}_{(j,k)}\;\; 1 \le j &lt; k \le K $</p>
+<p>Using an inverse gamma prior distribution on $\sigma_{\boldsymbol{\Phi}}^2$ ($\sigma_{\boldsymbol{\Phi}}^2 \sim IG(a_\boldsymbol{\Phi}, b_\boldsymbol{\Phi})$), we have that 
+$$\begin{aligned}
+P(\sigma_{\boldsymbol{\Phi}}^2|\boldsymbol{\zeta}_{-\sigma_{\boldsymbol{\Phi}}^2}) \propto  &amp; \left(\sigma_{\boldsymbol{\Phi}}^2 \right)^{-a_\boldsymbol{\Phi} -1}exp\left(-\frac{b_\boldsymbol{\Phi}}{\left(\sigma_{\boldsymbol{\Phi}}^2 \right)} \right) \\
+ &amp; \times \prod_{i=1}^N \left[det^*\left(S(\mathbf{t}_i^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_i^{obs})\right)^{-\frac{1}{2}}\right.\\
+ &amp; \times \left. exp \left(-\frac{1}{2}\left(f_r(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{rl}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right)'\left(S(\mathbf{t}_i^{obs})'\left(\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}\boldsymbol{\Phi}_{\Omega(\mathbf{z}_i)}' + \sigma_{\boldsymbol{\Phi}}^2\mathbf{I}_p\right)S(\mathbf{t}_i^{obs}) \right)^+\left(f_i(\mathbf{t}_i^{obs}) - \sum_{l=1}^Kz_{il}S(\mathbf{t}_i^{obs})'\boldsymbol{\nu}_l\right) \right)\right] \\
+ \end{aligned}$$
+ We can see that this is not a known distribution, so we will have to use Metropolis-Hastings algorithm. Let the proposal distribution be $Q(\sigma^{2\prime}_{\boldsymbol{\Phi}}, \sigma^2_{\boldsymbol{\Phi}}) = \mathcal{N}(\sigma^2_{\boldsymbol{\Phi}}, \epsilon_{\sigma^2_{\boldsymbol{\Phi}}}, 0, \infty)$ (Truncated Normal). Thus the probability of accepting any step is:
+$$A(\sigma^{2\prime}_{\boldsymbol{\Phi}},\sigma^2_{\boldsymbol{\Phi}}) = \min \left\{1, \frac{P(\sigma^{2\prime}_{\boldsymbol{\Phi}}| \boldsymbol{\zeta}_{\sigma^{2\prime}_{\boldsymbol{\Phi}}})}{P(\sigma^{2}_{\boldsymbol{\Phi}}| \boldsymbol{\zeta}_{\sigma^{2\prime}_{\boldsymbol{\Phi}}}) }\frac{Q(\sigma^{2}_{\boldsymbol{\Phi}}, \sigma^{2\prime}_{\boldsymbol{\Phi}})}{Q(\sigma^{2\prime}_{\boldsymbol{\Phi}}, \sigma^{2}_{\boldsymbol{\Phi}})}\right\}$$</p>
+
 </div>
 </div>
 </div>

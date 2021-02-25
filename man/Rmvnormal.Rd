@@ -4,7 +4,7 @@
 \alias{Rmvnormal}
 \title{Generates (degenerate) multivariate normal random variable}
 \usage{
-Rmvnormal(mu, sigma)
+Rmvnormal(mu, sigma, rank)
 }
 \arguments{
 \item{mu}{Vector containing mean vector}

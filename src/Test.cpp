@@ -49,6 +49,7 @@ Rcpp::List TestUpdateZ(){
   {
     Phi.slice(i) = 0.1 * arma::randu<arma::mat>(8,8);
   }
+  double sigma_phi = 0.1;
   // Rho
   // P = 8 => 8*9/2 = 36
   // K = 3 => 3*2/2 = 3
@@ -63,97 +64,35 @@ Rcpp::List TestUpdateZ(){
   Z.col(0) = arma::vec(100, arma::fill::ones);
 
   // Initialize mp_inv, mean_ph_obs, mean_ph_star
-  arma::field<arma::mat> mp_inv(100,1);
-  arma::field<arma::vec> mean_ph_obs(100,1);
-  arma::field<arma::vec> mean_ph_star(100,1);
-  arma::field<arma::vec> m_ph(100,1);
-  arma::field<arma::mat> M_UV_ph(100,2);
-  arma::field<arma::vec> M_S_ph(100,2);
-  arma::field<arma::mat> M_UV(100,2);
-  arma::field<arma::vec> M_S(100,2);
   arma::field<arma::mat> mean_UV(100,2);
   arma::field<arma::vec> mean_S(100,2);
-  arma::field<arma::mat> UV_big(100,2);
-  arma::field<arma::mat> UV_small(100,2);
-  arma::field<arma::vec> S_big(100,2);
+  arma::field<arma::vec> mean_ph_obs(100,1);
 
   for(int i = 0; i < 100; i++)
   {
-    // dim of number of unobserved + observed time points
-    mp_inv(i,0) = arma::zeros(120, 120);
-
-    // dim of number of observed time points
-    mean_ph_obs(i,0) = arma::zeros(100);
-
-    // dim of number of unobserved time points
-    mean_ph_star(i,0) = arma::zeros(20);
-
-    // dim of number of unobserved time points
-    m_ph(i,0) = arma::zeros(20);
-
-    // dim of number of unobserved time points x rank
-    M_UV_ph(i,0) = arma::zeros(20, 8);
-    M_UV_ph(i,1) = arma::zeros(20, 8);
-    M_UV(i,0) = arma::zeros(20, 8);
-    M_UV(i,1) = arma::zeros(20, 8);
-
     // dim number of observed time points x observed time points
     mean_UV(i,0) = arma::zeros(100, 100);
     mean_UV(i,1) = arma::zeros(100, 100);
     mean_S(i,0) = arma::zeros(100);
     mean_S(i,1) = arma::zeros(100);
-
-    // dim of rank
-    M_S_ph(i,0) = arma::zeros(8);
-    M_S_ph(i,1) = arma::zeros(8);
-    M_S(i,0) = arma::zeros(8);
-    M_S(i,1) = arma::zeros(8);
-
-    // dim number of unobserved time points + observed time points
-    UV_big(i,0) = arma::zeros(120, 120);
-    UV_big(i,1) = arma::zeros(120, 120);
-    S_big(i,0) = arma::zeros(120);
-    S_big(i,1) = arma::zeros(120);
-
-    UV_small(i,0)= arma::zeros(20, 20);
-    UV_small(i,1) = arma::zeros(20, 20);
+    mean_ph_obs(i,0) = arma::zeros(100);
   }
 
   arma::field<arma::vec> f_obs(100, 1);
-  arma::vec mean = arma::zeros(100);
-  arma::vec mean1 = arma::zeros(100);
+  arma::field<arma::vec> f_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+  arma::vec x = arma::zeros(Cov.n_cols);
   for(int j = 0; j < 100; j++)
   {
-    mean = arma::zeros(100);
+    mean = arma::zeros(8);
     for(int l = 0; l < 3; l++)
     {
-      mean = mean + Z(j,l) * S_obs(j,0) * nu.col(l);
+      mean = mean + Z(j,l) * nu.col(l);
     }
-    if(j == 1)
-    {
-      mean1 = mean;
-    }
-    getCov(Z.row(j), Phi, Rho, Cov);
-    f_obs(j,0) = Rmvnormal(mean, S_obs(j,0) * Cov * S_obs(j,0).t(), rank);
-  }
-
-  // Initialize M, m
-  // arma::field<arma::mat> M(100,1);
-  arma::field<arma::vec> m(100,1);
-  for(int i = 0; i < 100; i ++)
-  {
-    //M(i,0) = arma::zeros(100, 100);
-    m(i,0) = arma::zeros(100);
-  }
-  // Compute M and m matrices
-  compute_M_m(S_obs, S_star, f_obs, Z, Phi, Rho, nu, rank, Cov, mp_inv, mean_ph_obs,
-             mean_ph_star, m, UV_big, UV_small, S_big, M_UV, M_S);
-
-  // Compute f_star
-  arma::field<arma::vec> f_star(100, 1);
-  for(int i = 0; i < 100; i++)
-  {
-    f_star(i,0) = Rmvnormal(M_UV(i,1) * arma::diagmat(M_S(i,0)) * M_UV(i,0).t() * m(i,0), M_UV(i,1) * arma::diagmat(M_S(i,0)) * M_UV(i,0).t(), rank);
+    getCov(Z.row(j), Phi, Rho, sigma_phi, Cov);
+    x = Rmvnormal(mean, Cov, rank);
+    f_obs(j, 0) = S_obs(j, 0) * x;
+    f_star(j, 0) = S_star(j, 0) * x;
   }
 
   // Initialize pi
@@ -166,8 +105,8 @@ Rcpp::List TestUpdateZ(){
    arma::cube Z_samp = arma::ones(100, 3, 100);
   for(int i = 0; i < 100; i++)
   {
-    // updateZ(f_obs, f_star, pi, i, S_obs, S_star, Phi, Rho, nu, Cov, M, M_ph, m, m_ph,
-    //        mean_ph_obs, mean_ph_star, Z_ph, mp_inv, Z_samp);
+     updateZ(f_obs, pi, i, S_obs, Phi, Rho, sigma_phi, nu, 8, mean_UV, mean_S, Cov,
+            mean_ph_obs, Z_ph, Z_samp);
   }
 
   // arma::vec lpdf_true = arma::zeros(100);
@@ -220,17 +159,17 @@ Rcpp::List TestUpdateZ(){
   //                       f_obs(i,0) - mean_ph_obs(i,0));
   // }
 
-  int n1 = 100;
-  int n2 = 20;
-  getCov(Z.row(0), Phi, Rho, Cov);
-  mp_inv(0, 0).submat(0, 0, n1 - 1, n1 - 1) = S_obs(0, 0) * Cov *
-    S_obs(0, 0).t();
-  mp_inv(0, 0).submat(0, n1, n1 - 1, n1 + n2 - 1) =  S_obs(0, 0) * Cov *
-    S_star(0, 0).t();
-  mp_inv(0, 0).submat(n1, 0, n1 + n2 - 1, n1 - 1) = mp_inv(0, 0).submat(0, n1, n1 - 1,
-         n1 + n2 - 1).t();
-  mp_inv(0, 0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(0, 0) * Cov *
-    S_star(0, 0).t();
+  // int n1 = 100;
+  // int n2 = 20;
+  // getCov(Z.row(0), Phi, Rho, Cov);
+  // mp_inv(0, 0).submat(0, 0, n1 - 1, n1 - 1) = S_obs(0, 0) * Cov *
+  //   S_obs(0, 0).t();
+  // mp_inv(0, 0).submat(0, n1, n1 - 1, n1 + n2 - 1) =  S_obs(0, 0) * Cov *
+  //   S_star(0, 0).t();
+  // mp_inv(0, 0).submat(n1, 0, n1 + n2 - 1, n1 - 1) = mp_inv(0, 0).submat(0, n1, n1 - 1,
+  //        n1 + n2 - 1).t();
+  // mp_inv(0, 0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) = S_star(0, 0) * Cov *
+  //   S_star(0, 0).t();
 
   // arma::mat M_ph = arma::zeros(20,20);
   // arma::pinv(mp_inv(0, 0), mp_inv(0, 0));
@@ -251,18 +190,10 @@ Rcpp::List TestUpdateZ(){
   //                                                               - f_obs(i, 0)) +
   //     mp_inv(i, 0).submat(n1, n1, n1 + n2 - 1, n1 + n2 - 1) * mean_ph_star(i, 0);
 
-  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Cov", Cov),
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Z_samp", Z_samp),
                                       Rcpp::Named("Z",Z),
                                       Rcpp::Named("f_obs", f_obs),
-                                      Rcpp::Named("f_star", f_star),
-                                      Rcpp::Named("M", M_UV(0,1) * arma::diagmat(M_S(0,0)) * M_UV(0,0).t()),
-                                      Rcpp::Named("M-arma",mp_inv(0,0)),
-                                      Rcpp::Named("m", m),
-                                      Rcpp::Named("S_obs",S_obs),
-                                      Rcpp::Named("S_star",S_star),
-                                      Rcpp::Named("mp_inv_V", M_UV(0,1)),
-                                      Rcpp::Named("mp_inv_S", M_S(0,0)),
-                                      Rcpp::Named("mp_inv_S_inv", M_S(0,1)));
+                                      Rcpp::Named("f_star", f_star));
   return mod;
 }
 

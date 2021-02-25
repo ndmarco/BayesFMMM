@@ -7,15 +7,16 @@
 using namespace Rcpp;
 
 // getCov
-void getCov(const arma::rowvec& Z, const arma::cube& Phi, const arma::mat& Rho, arma::mat& Cov);
-RcppExport SEXP _BayesFOC_getCov(SEXP ZSEXP, SEXP PhiSEXP, SEXP RhoSEXP, SEXP CovSEXP) {
+void getCov(const arma::rowvec& Z, const arma::cube& Phi, const arma::mat& Rho, const double& sigma_phi, arma::mat& Cov);
+RcppExport SEXP _BayesFOC_getCov(SEXP ZSEXP, SEXP PhiSEXP, SEXP RhoSEXP, SEXP sigma_phiSEXP, SEXP CovSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::rowvec& >::type Z(ZSEXP);
     Rcpp::traits::input_parameter< const arma::cube& >::type Phi(PhiSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Rho(RhoSEXP);
+    Rcpp::traits::input_parameter< const double& >::type sigma_phi(sigma_phiSEXP);
     Rcpp::traits::input_parameter< arma::mat& >::type Cov(CovSEXP);
-    getCov(Z, Phi, Rho, Cov);
+    getCov(Z, Phi, Rho, sigma_phi, Cov);
     return R_NilValue;
 END_RCPP
 }
@@ -55,7 +56,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BayesFOC_getCov", (DL_FUNC) &_BayesFOC_getCov, 4},
+    {"_BayesFOC_getCov", (DL_FUNC) &_BayesFOC_getCov, 5},
     {"_BayesFOC_Rmvnormal", (DL_FUNC) &_BayesFOC_Rmvnormal, 3},
     {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
     {"_BayesFOC_g_ldet", (DL_FUNC) &_BayesFOC_g_ldet, 1},

@@ -4,13 +4,9 @@
 \alias{lpdf_z}
 \title{Gets log-pdf of z given zeta}
 \arguments{
-\item{M}{Cube that contains the M_i variance matrices}
-
-\item{m}{Matrix that contains the m_i mean vectors}
+\item{f_obs}{Vector containing f at observed time points}
 
 \item{f_star}{Vector containing f at unobserved time points}
-
-\item{f_obs}{Vector containing f at observed time points}
 
 \item{S_obs}{Matrix containing basis functions evaluated at observed time points}
 
@@ -24,17 +20,15 @@
 
 \item{i}{int containing row of Z we are finding pdf of}
 
-\item{j}{int containing column of Z we are finding the pdf of}
+\item{mean_UV}{Field of matrices containing placeholder for U and V matrices of SVD of covariance matrix}
+
+\item{mean_S}{Field of vectors containg placeholder for S (diag matrix) of SVD of covariance matrix}
 
 \item{mean_ph_obs}{vector containing placeholder for mean of observed data}
 }
 \value{
 lpdf_z double contianing the log-pdf
-
-lpdf_z double contianing the log-pdf
 }
 \description{
 Gets log-pdf of z given zeta
-
-Gets log-pdf of z given zeta without unobserved data
 }
