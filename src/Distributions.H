@@ -5,13 +5,6 @@
 #include <cmath>
 
 arma::vec Rmvnormal(arma::vec mu,
-                    arma::mat sigma,
-                    arma::mat U,
-                    arma::vec S,
-                    arma::mat V,
-                    const int rank);
+                    arma::mat sigma);
 
-arma::vec Rmvnormal(arma::vec mu,
-                    arma::mat sigma,
-                    const int rank);
 #endif

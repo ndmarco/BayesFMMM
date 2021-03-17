@@ -1,231 +1,132 @@
 #include <RcppArmadillo.h>
 #include <cmath>
-#include "computeMM.H"
-#include "CalculateCov.H"
 
 // [[Rcpp::depends(RcppArmadillo)]]
 
-//' Gets generalized log determinant (product of positive eigen values)
-//'
-//' @name g_ldet
-//' @param S Vector of singular values
-//' @return g_ldet Double countaining the generalized determinant
-// [[Rcpp::export]]
-double g_ldet(const arma::vec& S)
-{
 
-  double g_ldet = 0;
-  for(int i = 0; i < S.n_elem; i++)
-  {
-    if(S(i) > 0){
-      g_ldet = g_ldet + log(S(i));
-    }
-  }
-  return g_ldet;
-}
-
-//' Gets log-pdf of z given zeta
+//' Gets log-pdf of z_i given zeta_{-z_i}
 //'
 //' @name lpdf_z
-//' @param f_obs Vector containing f at observed time points
-//' @param f_star Vector containing f at unobserved time points
-//' @param S_obs Matrix containing basis functions evaluated at observed time points
-//' @param Phi Matrix containing covariance matrix
-//' @param nu Matrix containing mean vectors as the columns
-//' @param pi_l double containing the lth element of pi
-//' @param Z Matrix containing the elements of Z
-//' @param i int containing row of Z we are finding pdf of
-//' @param mean_UV Field of matrices containing placeholder for U and V matrices of SVD of covariance matrix
-//' @param mean_S Field of vectors containg placeholder for S (diag matrix) of SVD of covariance matrix
-//' @param mean_ph_obs vector containing placeholder for mean of observed data
+//' @param y_obs Vector containing y at observed time points
+//' @param y_star Vector containing y at unobserved time points
+//' @param B_obs Matrix containing basis functions evaluated at observed time points
+//' @param B_star Matrix containing basis functions evaluated at unobserved time points
+//' @param Phi Cube containing Phi parameters
+//' @param nu Matrix containing nu parameters
+//' @param pi vector containing the elements of pi
+//' @param Z Vector containing the ith row of Z
+//' @param sigma_sq double containing the sigma_sq variable
 //' @return lpdf_z double contianing the log-pdf
 
-double lpdf_z(const arma::vec& f_obs,
-              const arma::mat& S_obs,
-              const arma::mat& Cov,
+double lpdf_z(const arma::vec& y_obs,
+              const arma::rowvec& y_star,
+              const arma::mat& B_obs,
+              const arma::mat& B_star,
+              const arma::cube& Phi,
               const arma::mat& nu,
+              const arma::rowvec& chi,
               const arma::vec& pi,
-              const arma::mat& Z,
-              const int rank,
-              const int i,
-              arma::field<arma::mat>& mean_UV,
-              arma::field<arma::vec>& mean_S,
-              arma::vec& mean_ph_obs)
-{
-  arma::svd(mean_UV(i,0), mean_S(i,0), mean_UV(i,1), S_obs * Cov * S_obs.t());
-  for(int j = 0; j < rank; j++)
-  {
-    if(mean_S(i,0)(j) <= 0)
-    {
-      mean_S(i,0)(j) = 0;
-      mean_S(i,1)(j) = 0;
+              const arma::rowvec& Z,
+              const double& sigma_sq){
+  double lpdf = 0;
+  double mean = 0;
 
-    }else
-    {
-      mean_S(i,1)(j) = 1 /  mean_S(i,0)(j);
+  for(int l = 0; l < pi.n_elem; l++){
+    lpdf = lpdf + Z(l) * log(pi(l)) + (1 - Z(l)) *  log(1 - pi(l));
+  }
+
+  for(int l = 0; l < B_obs.n_rows; l++){
+    mean = 0;
+    for(int k = 0; k < pi.n_elem; k++){
+      mean = mean + Z(k) * arma::dot(nu.row(k), B_obs.row(l).t());
+      for(int n = 0; n < Phi.n_slices; n++){
+         mean = mean + Z(k) * chi(n) * arma::dot(Phi.slice(n).row(k),
+                         B_obs.row(l).t());
+      }
+    }
+    lpdf = lpdf - (std::pow(y_obs(l) - mean, 2.0) / (2 * sigma_sq));
+  }
+
+  // Check to see if there are unobserved time points of interest
+  if(B_star.n_elem > 0){
+    for(int l = 0; l < B_star.n_rows; l++){
+      mean = 0;
+      for(int k = 0; k < pi.n_elem; k++){
+        mean = mean + Z(k) * arma::dot(nu.row(k), B_star.row(l).t());
+        for(int n = 0; n < Phi.n_slices; n++){
+          mean = mean + Z(k) * chi(n) * arma::dot(Phi.slice(n).row(k),
+                          B_star.row(l).t());
+        }
+      }
+      lpdf = lpdf - (std::pow(y_star(l) - mean, 2.0) / (2 * sigma_sq));
     }
   }
-  double g_ldet1 = g_ldet(mean_S(i,0));
-  mean_ph_obs.zeros();
-  for(int l = 0; l < nu.n_cols; l++){
-    mean_ph_obs = mean_ph_obs + Z(i,l) * S_obs * nu.col(l);
-  }
 
-  double lpdf_z = (-0.5 * g_ldet1) - (0.5 * arma::dot(mean_UV(i,1) *
-                   arma::diagmat(mean_S(i,1)) * mean_UV(i,0).t() *
-                   (f_obs - mean_ph_obs), f_obs - mean_ph_obs));
-  for(int j = 0; j < Z.n_cols; j++)
-  {
-    lpdf_z = lpdf_z + (Z(i,j) * log(pi(j))) + (1- Z(i,j)) * log(1 - pi(j));
-  }
-
-  return lpdf_z;
+  return lpdf;
 }
 
 
 //' Updates the Z Matrix
 //'
 //' @name UpdateZ
-//' @param f_obs Field of vectors containing f at observed time points
-//' @param pi Vector containing the sampled pi for this iteration
-//' @param iter Iteration of MCMC step
-//' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-//' @param Phi Cube of current Phi paramaters
-//' @param Rho Matrix with each row containing the elements of the upper triangular matrix
-//' @param nu Matrix that contains all current nu paramaters
-//' @param Cov Matrix containing placeholder for covariance matrix
-//' @param m Field of Vectors that contains all m mean vectors
-//' @param mean_ph_obs Field of vectors that serve as a placeholder of computations
+//' @param y_obs Field of Vectors containing y at observed time points
+//' @param y_star Field of Matrices containing y at unobserved time points at all mcmc iterations
+//' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+//' @param B_star Field of Matrices containing basis functions evaluated at unobserved time points
+//' @param Phi Cube containing Phi parameters
+//' @param nu Matrix containing nu parameters
+//' @param pi vector containing the elements of pi
+//' @param sigma_sq double containing the sigma_sq variable
+//' @param rho double containing hyperparameter for proposal of new z_i state
+//' @param iter int containing current mcmc iteration
 //' @param Z_ph Matrix that acts as a placeholder for Z
 //' @param Z Cube that contains all past, current, and future MCMC draws
 
-void updateZ(const arma::field<arma::vec>& f_obs,
-             const arma::vec& pi,
-             const int iter,
-             const arma::field<arma::mat>& S_obs,
+void updateZ(const arma::field<arma::vec>& y_obs,
+             const arma::field<arma::mat>& y_star,
+             const arma::field<arma::mat>& B_obs,
+             const arma::field<arma::mat>& B_star,
              const arma::cube& Phi,
-             const arma::mat& Rho,
-             const double& sigma_phi,
              const arma::mat& nu,
-             const int rank,
-             arma::field<arma::mat>& mean_UV,
-             arma::field<arma::vec>& mean_S,
-             arma::mat& Cov,
-             arma::field<arma::vec>& mean_ph_obs,
-             arma::mat& Z_ph,
-             arma::cube& Z)
-{
-  double z_lpdf = 0;
-  double z_new_lpdf = 0;
-  double acceptance_prob = 0;
-  double rand_unif_var = 0;
-
-  Z_ph = Z.slice(iter);
-  for(int i = 0; i < Z.slice(iter).n_rows; i++)
-  {
-    for(int l = 0; l < Z.slice(iter).n_cols; l++)
-    {
-      // Propose new state
-      Z_ph(i,l) = R::rbinom(1, 0.5);
-    }
-    if(arma::accu(Z_ph.row(i)) > 0)
-    {
-      getCov(Z.slice(iter).row(i), Phi, Rho, sigma_phi, Cov);
-      z_lpdf = lpdf_z(f_obs(i,0), S_obs(i,0), Cov, nu, pi,
-                      Z.slice(iter), rank, i, mean_UV, mean_S,
-                      mean_ph_obs(i,0));
-      getCov(Z_ph.row(i), Phi, Rho, sigma_phi, Cov);
-      z_new_lpdf = lpdf_z(f_obs(i,0), S_obs(i,0), Cov, nu, pi,
-                          Z_ph, rank, i, mean_UV, mean_S, mean_ph_obs(i,0));
-      acceptance_prob = z_new_lpdf - z_lpdf;
-      rand_unif_var = R::runif(0,1);
-
-      if(log(rand_unif_var) < acceptance_prob)
-      {
-        // Accept new state and update parameters
-        Z.slice(iter).row(i) = Z_ph.row(i);
-      } else
-      {
-        Z_ph.row(i) = Z.slice(iter).row(i);
-      }
-    }
-  }
-  // Update next iteration
-  if(iter < (Z.n_slices - 1))
-  {
-    Z.slice(iter + 1) = Z.slice(iter);
-  }
-}
-
-
-//' Updates the Z Matrix for single covariance matrix
-//'
-//' @param f_obs Field of vectors containing f at observed time points
-//' @param pi Vector containing the sampled pi for this iteration
-//' @param iter Iteration of MCMC step
-//' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-//' @param Phi Matrix of current Phi paramaters
-//' @param nu Matrix that contains all current nu paramaters
-//' @param Z_ph Matrix that acts as a placeholder for the new Z matrix
-//' @param mean_ph_obs Field of vectors that serve as a placeholder of computations
-//' @param Z Cube that contains all past, current, and future MCMC draws
-
-void updateZ(const arma::field<arma::vec>& f_obs,
+             const arma::mat& chi,
              const arma::vec& pi,
-             const int iter,
-             const arma::field<arma::mat>& S_obs,
-             const arma::mat& Phi,
-             const double& sigma_phi,
-             const arma::mat& nu,
-             const int rank,
-             arma::field<arma::mat>& mean_UV,
-             arma::field<arma::vec>& mean_S,
-             arma::mat& Cov,
-             arma::field<arma::vec>& mean_ph_obs,
+             const double& sigma_sq,
+             const double& rho,
+             const int& iter,
              arma::mat& Z_ph,
-             arma::cube& Z)
-{
+             arma::cube& Z){
   double z_lpdf = 0;
   double z_new_lpdf = 0;
   double acceptance_prob = 0;
   double rand_unif_var = 0;
 
   Z_ph = Z.slice(iter);
-  for(int i = 0; i < Z.slice(iter).n_rows; i++)
-  {
-    for(int l = 0; l < Z.slice(iter).n_cols; l++)
-    {
+  for(int i = 0; i < Z.n_rows; i++){
+    for(int l = 0; l < Z.n_cols; l++){
       // Propose new state
-      Z_ph(i,l) = R::rbinom(1, 0.5);
+      Z_ph(i,l) = R::rbinom(1, Z.slice(iter)(i,l) * rho +
+        ((1 - Z.slice(iter)(i,l)) * (1 -rho)));
     }
-    if(arma::accu(Z_ph.row(i)) > 0)
-    {
-      Cov = Phi * Phi.t();
-      Cov.diag() += sigma_phi;
-      z_lpdf = lpdf_z(f_obs(i,0), S_obs(i,0), Cov, nu, pi, Z.slice(iter), rank, i,
-                      mean_UV, mean_S, mean_ph_obs(i,0));
-      z_new_lpdf = lpdf_z(f_obs(i,0), S_obs(i,0), Cov, nu, pi, Z_ph, rank, i,
-                          mean_UV, mean_S, mean_ph_obs(i,0));
-      acceptance_prob = z_new_lpdf - z_lpdf;
-      rand_unif_var = R::runif(0,1);
+    // Get old state log pdf
+    z_lpdf = lpdf_z(y_obs(i,0), y_star(i,0).row(iter), B_obs(i,0), B_star(i,0),
+                    Phi, nu, chi.row(i), pi, Z.slice(iter).row(i), sigma_sq);
 
-      if(log(rand_unif_var) < acceptance_prob)
-      {
-        // Accept new state and update parameters
-        Z.slice(iter).row(i) = Z_ph.row(i);
-      } else
-      {
-        Z_ph.row(i) = Z.slice(iter).row(i);
-      }
+    // Get new state log pdf
+    z_new_lpdf = lpdf_z(y_obs(i,0), y_star(i,0).row(iter), B_obs(i,0),
+                        B_star(i,0), Phi,  nu, chi.row(i), pi, Z_ph.row(i),
+                        sigma_sq);
+    acceptance_prob = z_new_lpdf - z_lpdf;
+    rand_unif_var = R::runif(0,1);
+
+    if(log(rand_unif_var) < acceptance_prob){
+      // Accept new state and update parameters
+      Z.slice(iter).row(i) = Z_ph.row(i);
+    } else{
+      Z_ph.row(i) = Z.slice(iter).row(i);
     }
   }
   // Update next iteration
-  if(iter < (Z.n_slices - 1))
-  {
+  if(iter < (Z.n_slices - 1)){
     Z.slice(iter + 1) = Z.slice(iter);
   }
 }
-
-
-
-

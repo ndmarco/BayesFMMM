@@ -1,6 +1,5 @@
 #include <RcppArmadillo.h>
 #include <cmath>
-#include "computeMM.h"
 
 //' Updates the gamma parameters
 //'

@@ -2,33 +2,29 @@
 % Please edit documentation in R/RcppExports.R
 \name{lpdf_z}
 \alias{lpdf_z}
-\title{Gets log-pdf of z given zeta}
+\title{Gets log-pdf of z_i given zeta_{-z_i}}
 \arguments{
-\item{f_obs}{Vector containing f at observed time points}
+\item{y_obs}{Vector containing y at observed time points}
 
-\item{f_star}{Vector containing f at unobserved time points}
+\item{y_star}{Vector containing y at unobserved time points}
 
-\item{S_obs}{Matrix containing basis functions evaluated at observed time points}
+\item{B_obs}{Matrix containing basis functions evaluated at observed time points}
 
-\item{Phi}{Matrix containing covariance matrix}
+\item{B_star}{Matrix containing basis functions evaluated at unobserved time points}
 
-\item{nu}{Matrix containing mean vectors as the columns}
+\item{Phi}{Cube containing Phi parameters}
 
-\item{pi_l}{double containing the lth element of pi}
+\item{nu}{Matrix containing nu parameters}
 
-\item{Z}{Matrix containing the elements of Z}
+\item{pi}{vector containing the elements of pi}
 
-\item{i}{int containing row of Z we are finding pdf of}
+\item{Z}{Vector containing the ith row of Z}
 
-\item{mean_UV}{Field of matrices containing placeholder for U and V matrices of SVD of covariance matrix}
-
-\item{mean_S}{Field of vectors containg placeholder for S (diag matrix) of SVD of covariance matrix}
-
-\item{mean_ph_obs}{vector containing placeholder for mean of observed data}
+\item{sigma_sq}{double containing the sigma_sq variable}
 }
 \value{
 lpdf_z double contianing the log-pdf
 }
 \description{
-Gets log-pdf of z given zeta
+Gets log-pdf of z_i given zeta_{-z_i}
 }

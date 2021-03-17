@@ -4,25 +4,25 @@
 \alias{UpdateZ}
 \title{Updates the Z Matrix}
 \arguments{
-\item{f_obs}{Field of vectors containing f at observed time points}
+\item{y_obs}{Field of Vectors containing y at observed time points}
 
-\item{pi}{Vector containing the sampled pi for this iteration}
+\item{y_star}{Field of Matrices containing y at unobserved time points at all mcmc iterations}
 
-\item{iter}{Iteration of MCMC step}
+\item{B_obs}{Field of Matrices containing basis functions evaluated at observed time points}
 
-\item{S_obs}{Field of Matrices containing basis functions evaluated at observed time points}
+\item{B_star}{Field of Matrices containing basis functions evaluated at unobserved time points}
 
-\item{Phi}{Cube of current Phi paramaters}
+\item{Phi}{Cube containing Phi parameters}
 
-\item{Rho}{Matrix with each row containing the elements of the upper triangular matrix}
+\item{nu}{Matrix containing nu parameters}
 
-\item{nu}{Matrix that contains all current nu paramaters}
+\item{pi}{vector containing the elements of pi}
 
-\item{Cov}{Matrix containing placeholder for covariance matrix}
+\item{sigma_sq}{double containing the sigma_sq variable}
 
-\item{m}{Field of Vectors that contains all m mean vectors}
+\item{rho}{double containing hyperparameter for proposal of new z_i state}
 
-\item{mean_ph_obs}{Field of vectors that serve as a placeholder of computations}
+\item{iter}{int containing current mcmc iteration}
 
 \item{Z_ph}{Matrix that acts as a placeholder for Z}
 

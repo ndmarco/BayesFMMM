@@ -3,53 +3,31 @@
 
 #include <RcppArmadillo.h>
 #include <cmath>
-#include "computeMM.H"
-#include "CalculateCov.H"
 
-double g_ldet(const arma::vec& S);
-
-double lpdf_z(const arma::vec& f_obs,
-              const arma::mat& S_obs,
-              const arma::mat& Cov,
+double lpdf_z(const arma::vec& y_obs,
+              const arma::rowvec& y_star,
+              const arma::mat& B_obs,
+              const arma::mat& B_star,
+              const arma::cube& Phi,
               const arma::mat& nu,
+              const arma::rowvec& chi,
               const arma::vec& pi,
-              const arma::mat& Z,
-              const int rank,
-              const int i,
-              arma::field<arma::mat>& mean_UV,
-              arma::field<arma::vec>& mean_S,
-              arma::vec& mean_ph_obs);
+              const arma::rowvec& Z,
+              const double& sigma_sq);
 
-
-void updateZ(const arma::field<arma::vec>& f_obs,
-             const arma::vec& pi,
-             const int iter,
-             const arma::field<arma::mat>& S_obs,
+void updateZ(const arma::field<arma::vec>& y_obs,
+             const arma::field<arma::mat>& y_star,
+             const arma::field<arma::mat>& B_obs,
+             const arma::field<arma::mat>& B_star,
              const arma::cube& Phi,
-             const arma::mat& Rho,
-             const double& sigma_phi,
              const arma::mat& nu,
-             const int rank,
-             arma::field<arma::mat>& mean_UV,
-             arma::field<arma::vec>& mean_S,
-             arma::mat& Cov,
-             arma::field<arma::vec>& mean_ph_obs,
+             const arma::mat& chi,
+             const arma::vec& pi,
+             const double& sigma_sq,
+             const double& rho,
+             const int& iter,
              arma::mat& Z_ph,
              arma::cube& Z);
 
-void updateZ(const arma::field<arma::vec>& f_obs,
-             const arma::vec& pi,
-             const int iter,
-             const arma::field<arma::mat>& S_obs,
-             const arma::mat& Phi,
-             const double& sigma_phi,
-             const arma::mat& nu,
-             const int rank,
-             arma::field<arma::mat>& mean_UV,
-             arma::field<arma::vec>& mean_S,
-             arma::mat& Cov,
-             arma::field<arma::vec>& mean_ph_obs,
-             arma::mat& Z_ph,
-             arma::cube& Z);
 
 #endif

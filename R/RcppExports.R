@@ -13,31 +13,25 @@ getCov <- function(Z, Phi, Rho, sigma_phi, Cov) {
     invisible(.Call('_BayesFOC_getCov', PACKAGE = 'BayesFOC', Z, Phi, Rho, sigma_phi, Cov))
 }
 
-#' Generates (degenerate) multivariate normal random variable
-#'
-#' @name Rmvnormal
-#' @param mu Vector containing mean vector
-#' @param sigma Matrix containing covariance matrix
-#' @param U Matrix acting as a placeholder for SVD
-#' @param S Vector acting as a placeholder for SVD
-#' @param V Matrix acting as a placeholder for SVD
-NULL
-
-#' Generates (degenerate) multivariate normal random variable
-#'
-#' @name Rmvnormal
-#' @param mu Vector containing mean vector
-#' @param sigma matrix containing covariance matrix
-#' @export
-Rmvnormal <- function(mu, sigma, rank) {
-    .Call('_BayesFOC_Rmvnormal', PACKAGE = 'BayesFOC', mu, sigma, rank)
-}
-
 #' Tests updating Z
 #'
 #' @export
 TestUpdateZ <- function() {
     .Call('_BayesFOC_TestUpdateZ', PACKAGE = 'BayesFOC')
+}
+
+#' Tests updating Pi
+#'
+#' @export
+TestUpdatePi <- function() {
+    .Call('_BayesFOC_TestUpdatePi', PACKAGE = 'BayesFOC')
+}
+
+#' Tests updating Z
+#'
+#' @export
+TestField <- function() {
+    .Call('_BayesFOC_TestField', PACKAGE = 'BayesFOC')
 }
 
 #' computes the log pdf of a_1j
@@ -86,59 +80,35 @@ NULL
 #' @param a mat containing values of a
 NULL
 
-#' Gets log-pdf of z given zeta
+#' Gets log-pdf of z_i given zeta_{-z_i}
 #'
 #' @name lpdf_z
-#' @param f_obs Vector containing f at observed time points
-#' @param f_star Vector containing f at unobserved time points
-#' @param S_obs Matrix containing basis functions evaluated at observed time points
-#' @param Phi Matrix containing covariance matrix
-#' @param nu Matrix containing mean vectors as the columns
-#' @param pi_l double containing the lth element of pi
-#' @param Z Matrix containing the elements of Z
-#' @param i int containing row of Z we are finding pdf of
-#' @param mean_UV Field of matrices containing placeholder for U and V matrices of SVD of covariance matrix
-#' @param mean_S Field of vectors containg placeholder for S (diag matrix) of SVD of covariance matrix
-#' @param mean_ph_obs vector containing placeholder for mean of observed data
+#' @param y_obs Vector containing y at observed time points
+#' @param y_star Vector containing y at unobserved time points
+#' @param B_obs Matrix containing basis functions evaluated at observed time points
+#' @param B_star Matrix containing basis functions evaluated at unobserved time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi vector containing the elements of pi
+#' @param Z Vector containing the ith row of Z
+#' @param sigma_sq double containing the sigma_sq variable
 #' @return lpdf_z double contianing the log-pdf
 NULL
 
 #' Updates the Z Matrix
 #'
 #' @name UpdateZ
-#' @param f_obs Field of vectors containing f at observed time points
-#' @param pi Vector containing the sampled pi for this iteration
-#' @param iter Iteration of MCMC step
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param Phi Cube of current Phi paramaters
-#' @param Rho Matrix with each row containing the elements of the upper triangular matrix
-#' @param nu Matrix that contains all current nu paramaters
-#' @param Cov Matrix containing placeholder for covariance matrix
-#' @param m Field of Vectors that contains all m mean vectors
-#' @param mean_ph_obs Field of vectors that serve as a placeholder of computations
+#' @param y_obs Field of Vectors containing y at observed time points
+#' @param y_star Field of Matrices containing y at unobserved time points at all mcmc iterations
+#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param B_star Field of Matrices containing basis functions evaluated at unobserved time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi vector containing the elements of pi
+#' @param sigma_sq double containing the sigma_sq variable
+#' @param rho double containing hyperparameter for proposal of new z_i state
+#' @param iter int containing current mcmc iteration
 #' @param Z_ph Matrix that acts as a placeholder for Z
 #' @param Z Cube that contains all past, current, and future MCMC draws
 NULL
-
-#' Updates the Z Matrix for single covariance matrix
-#'
-#' @param f_obs Field of vectors containing f at observed time points
-#' @param pi Vector containing the sampled pi for this iteration
-#' @param iter Iteration of MCMC step
-#' @param S_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param Phi Matrix of current Phi paramaters
-#' @param nu Matrix that contains all current nu paramaters
-#' @param Z_ph Matrix that acts as a placeholder for the new Z matrix
-#' @param mean_ph_obs Field of vectors that serve as a placeholder of computations
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
-
-#' Gets generalized log determinant (product of positive eigen values)
-#'
-#' @name g_ldet
-#' @param S Vector of singular values
-#' @return g_ldet Double countaining the generalized determinant
-g_ldet <- function(S) {
-    .Call('_BayesFOC_g_ldet', PACKAGE = 'BayesFOC', S)
-}
 

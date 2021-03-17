@@ -11,10 +11,8 @@
 void update_pi(const double& alpha,
                  const int& iter,
                  const arma::mat& Z,
-                 arma::mat& pi)
-{
-  for(int l = 0; l < Z.n_cols; l++)
-  {
+                 arma::mat& pi){
+  for(int l = 0; l < Z.n_cols; l++){
     pi(iter, l) = R::rbeta((alpha/ Z.n_cols) + arma::accu(Z.col(l)), Z.n_rows -
       arma::accu(Z.col(l)) + 1);
   }

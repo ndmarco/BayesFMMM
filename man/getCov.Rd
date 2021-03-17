@@ -4,7 +4,7 @@
 \alias{getCov}
 \title{Calculates covariance matrix}
 \usage{
-getCov(Z, Phi, Rho, Cov)
+getCov(Z, Phi, Rho, sigma_phi, Cov)
 }
 \arguments{
 \item{Z}{Vector that conatins the class memebership}
