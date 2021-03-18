@@ -40,13 +40,13 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// TestField
-Rcpp::List TestField();
-RcppExport SEXP _BayesFOC_TestField() {
+// TestUpdatePhi
+Rcpp::List TestUpdatePhi();
+RcppExport SEXP _BayesFOC_TestUpdatePhi() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(TestField());
+    rcpp_result_gen = Rcpp::wrap(TestUpdatePhi());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -55,7 +55,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_getCov", (DL_FUNC) &_BayesFOC_getCov, 5},
     {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
     {"_BayesFOC_TestUpdatePi", (DL_FUNC) &_BayesFOC_TestUpdatePi, 0},
-    {"_BayesFOC_TestField", (DL_FUNC) &_BayesFOC_TestField, 0},
+    {"_BayesFOC_TestUpdatePhi", (DL_FUNC) &_BayesFOC_TestUpdatePhi, 0},
     {NULL, NULL, 0}
 };
 

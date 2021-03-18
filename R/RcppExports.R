@@ -27,11 +27,11 @@ TestUpdatePi <- function() {
     .Call('_BayesFOC_TestUpdatePi', PACKAGE = 'BayesFOC')
 }
 
-#' Tests updating Z
+#' Tests updating Phi
 #'
 #' @export
-TestField <- function() {
-    .Call('_BayesFOC_TestField', PACKAGE = 'BayesFOC')
+TestUpdatePhi <- function() {
+    .Call('_BayesFOC_TestUpdatePhi', PACKAGE = 'BayesFOC')
 }
 
 #' computes the log pdf of a_1j
