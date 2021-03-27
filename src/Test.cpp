@@ -5,6 +5,7 @@
 #include "UpdateClassMembership.H"
 #include "UpdatePi.H"
 #include "UpdatePhi.H"
+#include "UpdateDelta.H"
 
 //' Tests updating Z
 //'
@@ -93,18 +94,10 @@ Rcpp::List TestUpdateZ()
   for(int i = 0; i < 100; i++)
   {
     updateZ(y_obs, y_star, B_obs, B_star, Phi, nu, chi, pi,
-            sigma_sq, 0.6, i, Z_ph, Z_samp);
+            sigma_sq, 0.6, i, 100, Z_ph, Z_samp);
   }
-  double lpdf_1 = lpdf_z(y_obs(0,0), y_star(0,0).row(1), B_obs(0,0), B_star(0,0),
-                         Phi, nu, chi.row(0), pi, Z.row(0), sigma_sq);
-  double lpdf_2 = lpdf_z(y_obs(0,0), y_star(0,0).row(1), B_obs(0,0), B_star(0,0),
-                         Phi, nu, chi.row(0), pi, Z.row(1), sigma_sq);
-  double lpdf_3 = lpdf_z(y_obs(0,0), y_star(0,0).row(1), B_obs(0,0), B_star(0,0),
-                         Phi, nu, chi.row(0), pi, Z.row(2), sigma_sq);
-  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("lpdf1", lpdf_1),
-                                      Rcpp::Named("lpdf2", lpdf_2),
-                                      Rcpp::Named("lpdf3", lpdf_3),
-                                      Rcpp::Named("Z_samp", Z_samp),
+
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Z_samp", Z_samp),
                                       Rcpp::Named("Z",Z),
                                       Rcpp::Named("f_obs", y_obs),
                                       Rcpp::Named("f_star", y_star));
@@ -230,5 +223,50 @@ Rcpp::List TestUpdatePhi()
   }
   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Phi", Phi),
                                       Rcpp::Named("Phi_samp", Phi_samp));
+  return mod;
+}
+
+
+//' Tests updating Phi
+//'
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdateDelta(){
+  // Specify hyperparameters
+  arma::vec a_12 = {2, 2};
+  // Make Delta vector
+  arma::vec Delta = arma::zeros(5);
+  for(int i=0; i < 5; i++){
+    Delta(i) = R::rgamma(4, 1);
+  }
+  // Make Gamma cube
+  arma::cube Gamma(3,8,5);
+  for(int i=0; i < 5; i++){
+    for(int j = 0; j < 3; j++){
+      for(int k = 0; k < 8; k++){
+        Gamma(j,k,i) =  R::rgamma(1.5, 1/1.5);
+      }
+    }
+  }
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,5);
+  arma::mat delta = arma::ones(5,10000);
+  for(int m = 0; m < 10000; m++){
+    double tau  = 1;
+    for(int i=0; i < 5; i++){
+      tau = tau * Delta(i);
+      for(int j=0; j < 3; j++){
+        for(int k=0; k < 8; k++){
+          Phi(j,k,i) = R::rnorm(0, (1/ std::pow(Gamma(j,k,i)*tau, 0.5)));
+        }
+      }
+    }
+    updateDelta(Phi, Gamma, a_12, m, 10000, delta);
+  }
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("delta", Delta),
+                                      Rcpp::Named("gamma", Gamma),
+                                      Rcpp::Named("phi", Phi),
+                                      Rcpp::Named("delta_samp", delta));
   return mod;
 }

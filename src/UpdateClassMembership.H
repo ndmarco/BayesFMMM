@@ -26,6 +26,7 @@ void updateZ(const arma::field<arma::vec>& y_obs,
              const double& sigma_sq,
              const double& rho,
              const int& iter,
+             const int& tot_mcmc_iters,
              arma::mat& Z_ph,
              arma::cube& Z);
 

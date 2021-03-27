@@ -75,10 +75,11 @@ double lpdf_z(const arma::vec& y_obs,
 //' @param B_star Field of Matrices containing basis functions evaluated at unobserved time points
 //' @param Phi Cube containing Phi parameters
 //' @param nu Matrix containing nu parameters
-//' @param pi vector containing the elements of pi
-//' @param sigma_sq double containing the sigma_sq variable
-//' @param rho double containing hyperparameter for proposal of new z_i state
-//' @param iter int containing current mcmc iteration
+//' @param pi Vector containing the elements of pi
+//' @param sigma_sq Double containing the sigma_sq variable
+//' @param rho Double containing hyperparameter for proposal of new z_i state
+//' @param iter Int containing current mcmc iteration
+//' @param tot_mcmc_iters Int containing total number of mcmc iterations
 //' @param Z_ph Matrix that acts as a placeholder for Z
 //' @param Z Cube that contains all past, current, and future MCMC draws
 
@@ -93,6 +94,7 @@ void updateZ(const arma::field<arma::vec>& y_obs,
              const double& sigma_sq,
              const double& rho,
              const int& iter,
+             const int& tot_mcmc_iters,
              arma::mat& Z_ph,
              arma::cube& Z){
   double z_lpdf = 0;
@@ -126,7 +128,7 @@ void updateZ(const arma::field<arma::vec>& y_obs,
     }
   }
   // Update next iteration
-  if(iter < (Z.n_slices - 1)){
+  if(iter < (tot_mcmc_iters - 1)){
     Z.slice(iter + 1) = Z.slice(iter);
   }
 }

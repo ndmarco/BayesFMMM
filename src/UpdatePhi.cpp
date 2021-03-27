@@ -105,10 +105,10 @@ void UpdatePhi(const arma::field<arma::vec>& y_obs,
       m_1 = m_1 * (1 / sigma_sq);
       M_1 = M_1 * (1 / sigma_sq);
 
-      // Add on diagonal component
-      // for(int k = 0; k < M_1.n_rows; k++){
-      //   M_1(k,k) = M_1(k,k) + tilde_tau(m) * gamma.slice(m)(j,k);
-      // }
+      //Add on diagonal component
+      for(int k = 0; k < M_1.n_rows; k++){
+        M_1(k,k) = M_1(k,k) + tilde_tau(m) * gamma.slice(m)(j,k);
+      }
       arma::inv(M_1, M_1);
 
       //generate new sample
