@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 
-//' Generates (degenerate) multivariate normal random variable
+//' Generates multivariate normal random variable
 //'
 //' @name Rmvnormal
 //' @param mu Vector containing mean vector
@@ -12,3 +12,11 @@ arma::vec Rmvnormal(arma::vec mu,
   return mu + arma::chol(sigma) * Y;
 }
 
+//' Calculates log gamma of a double
+//'
+//' @name logGamma
+//' @param x Double
+//' @return log(x)
+double logGamma(double x){
+  return log(tgamma(x));
+}

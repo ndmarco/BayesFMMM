@@ -16,13 +16,15 @@
 
 \item{nu}{Matrix containing nu parameters}
 
-\item{pi}{vector containing the elements of pi}
+\item{pi}{Vector containing the elements of pi}
 
-\item{sigma_sq}{double containing the sigma_sq variable}
+\item{sigma_sq}{Double containing the sigma_sq variable}
 
-\item{rho}{double containing hyperparameter for proposal of new z_i state}
+\item{rho}{Double containing hyperparameter for proposal of new z_i state}
 
-\item{iter}{int containing current mcmc iteration}
+\item{iter}{Int containing current mcmc iteration}
+
+\item{tot_mcmc_iters}{Int containing total number of mcmc iterations}
 
 \item{Z_ph}{Matrix that acts as a placeholder for Z}
 

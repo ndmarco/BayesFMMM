@@ -3,6 +3,7 @@
 
 #' Tests updating Z
 #'
+#' @name TestUpdateZ
 #' @export
 TestUpdateZ <- function() {
     .Call('_BayesFOC_TestUpdateZ', PACKAGE = 'BayesFOC')
@@ -10,6 +11,7 @@ TestUpdateZ <- function() {
 
 #' Tests updating Pi
 #'
+#' @name TestUpdatePi
 #' @export
 TestUpdatePi <- function() {
     .Call('_BayesFOC_TestUpdatePi', PACKAGE = 'BayesFOC')
@@ -22,11 +24,28 @@ TestUpdatePhi <- function() {
     .Call('_BayesFOC_TestUpdatePhi', PACKAGE = 'BayesFOC')
 }
 
-#' Tests updating Phi
+#' Tests updating Delta
 #'
+#' @name TestUpdateDelta
 #' @export
 TestUpdateDelta <- function() {
     .Call('_BayesFOC_TestUpdateDelta', PACKAGE = 'BayesFOC')
+}
+
+#' Tests updating A
+#'
+#' @name TestUpdateA
+#' @export
+TestUpdateA <- function() {
+    .Call('_BayesFOC_TestUpdateA', PACKAGE = 'BayesFOC')
+}
+
+#' Tests updating A
+#'
+#' @name lgamma
+#' @export
+lgamma1 <- function(x) {
+    .Call('_BayesFOC_lgamma1', PACKAGE = 'BayesFOC', x)
 }
 
 #' computes the log pdf of a_1j
@@ -49,30 +68,16 @@ NULL
 
 #' updates the a parameters for individualized covariance matrix
 #'
-#' @name UpdateA
-#' @param alpha_1l Vector containing hyperparameters for a
-#' @param beta_1l Vector containing hyperparameters for a
-#' @param alpha_2l Vector containing hyperparameters for a
-#' @param beta_2l Vector containing hyperparameters for a
-#' @param delta mat contianing value of delta
-#' @param var_epsilon1 double containing hyperparameter epsilon1
-#' @param var_epsilon2 double containing hyperparameter epsilon2
-#' @param iter double containing MCMC iteration
-#' @param a Cube containing values of a
-NULL
-
-#' updates the a parameters for single covariance matrix
-#'
-#' @name UpdateA
-#' @param alpha_1l double containing hyperparameters for a
-#' @param beta_1l double containing hyperparameters for a
-#' @param alpha_2l double containing hyperparameters for a
-#' @param beta_2l double containing hyperparameters for a
-#' @param delta vec contianing value of delta
-#' @param var_epsilon1 double containing hyperparameter epsilon1
-#' @param var_epsilon2 double containing hyperparameter epsilon2
-#' @param iter int containing MCMC iteration
-#' @param a mat containing values of a
+#' @name updateA
+#' @param alpha_1l Double containing hyperparameters for a
+#' @param beta_1l Double containing hyperparameters for a
+#' @param alpha_2l Double containing hyperparameters for a
+#' @param beta_2l Double containing hyperparameters for a
+#' @param delta Vector contianing value of delta
+#' @param var_epsilon1 Double containing hyperparameter epsilon1
+#' @param var_epsilon2 Double containing hyperparameter epsilon2
+#' @param iter Double containing MCMC iteration
+#' @param a Mat containing values of a
 NULL
 
 #' Gets log-pdf of z_i given zeta_{-z_i}
@@ -99,10 +104,11 @@ NULL
 #' @param B_star Field of Matrices containing basis functions evaluated at unobserved time points
 #' @param Phi Cube containing Phi parameters
 #' @param nu Matrix containing nu parameters
-#' @param pi vector containing the elements of pi
-#' @param sigma_sq double containing the sigma_sq variable
-#' @param rho double containing hyperparameter for proposal of new z_i state
-#' @param iter int containing current mcmc iteration
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
 #' @param Z_ph Matrix that acts as a placeholder for Z
 #' @param Z Cube that contains all past, current, and future MCMC draws
 NULL

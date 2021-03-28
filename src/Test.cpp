@@ -6,9 +6,11 @@
 #include "UpdatePi.H"
 #include "UpdatePhi.H"
 #include "UpdateDelta.H"
+#include "UpdateA.H"
 
 //' Tests updating Z
 //'
+//' @name TestUpdateZ
 //' @export
 // [[Rcpp::export]]
 Rcpp::List TestUpdateZ()
@@ -104,8 +106,10 @@ Rcpp::List TestUpdateZ()
   return mod;
 }
 
+
 //' Tests updating Pi
 //'
+//' @name TestUpdatePi
 //' @export
 // [[Rcpp::export]]
 Rcpp::List TestUpdatePi()
@@ -113,11 +117,11 @@ Rcpp::List TestUpdatePi()
   // Make Z matrix
   arma::mat Z = arma::randi<arma::mat>(1000, 3, arma::distr_param(0,1));
   double alpha = 1;
-  arma::mat pi = arma::zeros(100, 3);
+  arma::mat pi = arma::zeros(3, 100);
 
   for(int i = 0; i < 100; i ++)
   {
-    update_pi(alpha, i, Z,  pi);
+    update_pi(alpha, Z, i, 100,  pi);
   }
   arma::vec prob = arma::zeros(3);
   for(int i = 0; i < 3; i++)
@@ -128,6 +132,7 @@ Rcpp::List TestUpdatePi()
                                       Rcpp::Named("prob", prob));
   return mod;
 }
+
 
 //' Tests updating Phi
 //'
@@ -227,8 +232,9 @@ Rcpp::List TestUpdatePhi()
 }
 
 
-//' Tests updating Phi
+//' Tests updating Delta
 //'
+//' @name TestUpdateDelta
 //' @export
 // [[Rcpp::export]]
 Rcpp::List TestUpdateDelta(){
@@ -269,4 +275,61 @@ Rcpp::List TestUpdateDelta(){
                                       Rcpp::Named("phi", Phi),
                                       Rcpp::Named("delta_samp", delta));
   return mod;
+}
+
+//' Tests updating A
+//'
+//' @name TestUpdateA
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdateA(){
+  double a_1 = 2;
+  double a_2 = 3;
+  arma::vec delta = arma::zeros(5);
+  double alpha1 = 2;
+  double beta1 = 1;
+  double alpha2 = 3;
+  double beta2 = 1;
+  arma::mat A = arma::ones(2, 1000);
+  for(int i = 0; i < 1000; i++){
+    for(int j = 0; j < 5; j++){
+      if(j == 0){
+        delta(j) = R::rgamma(a_1, 1);
+      }else{
+        delta(j) = R::rgamma(a_2, 1);
+      }
+    }
+    updateA(alpha1, beta1, alpha2, beta2, delta, sqrt(1), sqrt(1), i, 1000, A);
+  }
+
+  double lpdf_true = lpdf_a2(alpha2, beta2, 2.0, delta);
+  double lpdf_false = lpdf_a2(alpha2, beta2, 1.0, delta);
+  double lpdf_true1 = lpdf_a1(alpha1, beta1, 3.0, delta(0));
+  double lpdf_false1 = lpdf_a1(alpha1, beta1, 2.0, delta(0));
+  double sum = 0;
+  for(int i = 1; i < delta.n_elem; i++){
+    sum = sum + (0.05 - 1) * log(delta(i));
+  }
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("a_1", a_1),
+                                      Rcpp::Named("a_2", a_2),
+                                      Rcpp::Named("A", A),
+                                      Rcpp::Named("delta", delta.n_elem - 1),
+                                      Rcpp::Named("lpdf_1", (delta.n_elem - 1)),
+                                      Rcpp::Named("lpdf_2", (alpha2 - 1) * log(0.05)),
+                                      Rcpp::Named("lpdf_3", -(0.05 * beta2)),
+                                      Rcpp::Named("lpdf_4", sum),
+                                      Rcpp::Named("lpdf_true", lpdf_true),
+                                      Rcpp::Named("lpdf_false", lpdf_false),
+                                      Rcpp::Named("lpdf_true1", lpdf_true1),
+                                      Rcpp::Named("lpdf_false1", lpdf_false1));
+  return mod;
+}
+
+//' Tests updating A
+//'
+//' @name lgamma
+//' @export
+// [[Rcpp::export]]
+double lgamma1(double x){
+  return logGamma(x);
 }

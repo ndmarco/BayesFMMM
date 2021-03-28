@@ -7,4 +7,6 @@
 arma::vec Rmvnormal(arma::vec mu,
                     arma::mat sigma);
 
+double logGamma(double x);
+
 #endif
