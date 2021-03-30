@@ -7,6 +7,7 @@
 #include "UpdatePhi.H"
 #include "UpdateDelta.H"
 #include "UpdateA.H"
+#include "UpdateGamma.H"
 
 //' Tests updating Z
 //'
@@ -330,6 +331,47 @@ Rcpp::List TestUpdateA(){
 //' @name lgamma
 //' @export
 // [[Rcpp::export]]
-double lgamma1(double x){
-  return logGamma(x);
+Rcpp::List TestUpdateGamma(){
+  // Specify hyperparameters
+  double nu = 3;
+  // Make Delta vector
+  arma::vec Delta = arma::zeros(5);
+  for(int i=0; i < 5; i++){
+    Delta(i) = R::rgamma(4, 1);
+  }
+  // Make Gamma cube
+  arma::cube Gamma(3,8,5);
+  for(int i=0; i < 5; i++){
+    for(int j = 0; j < 3; j++){
+      for(int k = 0; k < 8; k++){
+        Gamma(j,k,i) =  R::rgamma(nu, 1/nu);
+      }
+    }
+  }
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,5);
+  arma::field<arma::cube> gamma(1000,1);
+  for(int i = 0; i < 1000; i++){
+    gamma(i,0) = arma::zeros(3,8,5);
+  }
+  for(int m = 0; m < 1000; m++){
+    double tau  = 1;
+    for(int i=0; i < 5; i++){
+      tau = tau * Delta(i);
+      for(int j=0; j < 3; j++){
+        for(int k=0; k < 8; k++){
+          Phi(j,k,i) = R::rnorm(0, (1/ std::pow(Gamma(j,k,i)*tau, 0.5)));
+        }
+      }
+    }
+    updateGamma(nu, Delta, Phi, m, 1000, gamma);
+  }
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("gamma", Gamma),
+                                      Rcpp::Named("gamma_iter", gamma),
+                                      Rcpp::Named("phi", Phi),
+                                      Rcpp::Named("delta", Delta));
+  return mod;
 }
+
+

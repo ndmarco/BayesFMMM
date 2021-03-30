@@ -56,14 +56,13 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// lgamma1
-double lgamma1(double x);
-RcppExport SEXP _BayesFOC_lgamma1(SEXP xSEXP) {
+// TestUpdateGamma
+Rcpp::List TestUpdateGamma();
+RcppExport SEXP _BayesFOC_TestUpdateGamma() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(lgamma1(x));
+    rcpp_result_gen = Rcpp::wrap(TestUpdateGamma());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -74,7 +73,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_TestUpdatePhi", (DL_FUNC) &_BayesFOC_TestUpdatePhi, 0},
     {"_BayesFOC_TestUpdateDelta", (DL_FUNC) &_BayesFOC_TestUpdateDelta, 0},
     {"_BayesFOC_TestUpdateA", (DL_FUNC) &_BayesFOC_TestUpdateA, 0},
-    {"_BayesFOC_lgamma1", (DL_FUNC) &_BayesFOC_lgamma1, 1},
+    {"_BayesFOC_TestUpdateGamma", (DL_FUNC) &_BayesFOC_TestUpdateGamma, 0},
     {NULL, NULL, 0}
 };
 

@@ -44,8 +44,8 @@ TestUpdateA <- function() {
 #'
 #' @name lgamma
 #' @export
-lgamma1 <- function(x) {
-    .Call('_BayesFOC_lgamma1', PACKAGE = 'BayesFOC', x)
+TestUpdateGamma <- function() {
+    .Call('_BayesFOC_TestUpdateGamma', PACKAGE = 'BayesFOC')
 }
 
 #' computes the log pdf of a_1j

@@ -5,13 +5,9 @@
 #include <cmath>
 
 void updateGamma(const double& nu,
-                 const int iter,
-                 const arma::mat& delta,
-                 const arma::cube& phi,
-                 arma::field<arma::cube>& gamma);
-void updateGamma(const double& nu,
-                 const int iter,
                  const arma::vec& delta,
-                 const arma::mat& phi,
-                 arma::field<arma::mat>& gamma);
+                 const arma::cube& phi,
+                 const int& iter,
+                 const int& tot_mcmc_iters,
+                 arma::field<arma::cube>& gamma);
 #endif

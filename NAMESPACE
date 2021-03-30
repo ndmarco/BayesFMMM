@@ -2,6 +2,7 @@
 
 export(TestUpdateA)
 export(TestUpdateDelta)
+export(TestUpdateGamma)
 export(TestUpdatePhi)
 export(TestUpdatePi)
 export(TestUpdateZ)
