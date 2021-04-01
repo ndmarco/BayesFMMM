@@ -4,13 +4,13 @@
 //' Updates the gamma parameters
 //'
 //' @name updateGamma
-//' @param nu double containing hyperparameter
+//' @param nu_gamma double containing hyperparameter
 //' @param iter int containing MCMC iteration
 //' @param delta Matrix containing current values of delta
 //' @param phi Cube containing current values of phi
 //' @param Z matrix containing current values of class inclusion
 //' @param gamma Field of cubes contianing MCMC samples for gamma
-void updateGamma(const double& nu,
+void updateGamma(const double& nu_gamma,
                  const arma::vec& delta,
                  const arma::cube& phi,
                  const int& iter,
@@ -22,7 +22,7 @@ void updateGamma(const double& nu,
       placeholder = 1;
       for(int j = 0; j < phi.n_slices; j++){
         placeholder = placeholder * delta(j);
-        gamma(iter,0)(i,l,j) = R::rgamma((nu + 1)/2, 2/(nu + placeholder *
+        gamma(iter,0)(i,l,j) = R::rgamma((nu_gamma + 1)/2, 2/(nu_gamma + placeholder *
           (phi(i,l,j) * phi(i,l,j))));
       }
     }

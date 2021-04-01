@@ -4,7 +4,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 
-void updateGamma(const double& nu,
+void updateGamma(const double& nu_gamma,
                  const arma::vec& delta,
                  const arma::cube& phi,
                  const int& iter,

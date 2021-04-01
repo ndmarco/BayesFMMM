@@ -3,10 +3,15 @@
 \name{lgamma}
 \alias{lgamma}
 \alias{TestUpdateGamma}
+\alias{TestUpdateNu}
 \title{Tests updating A}
 \usage{
 TestUpdateGamma()
+
+TestUpdateNu()
 }
 \description{
+Tests updating A
+
 Tests updating A
 }

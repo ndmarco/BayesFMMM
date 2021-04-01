@@ -8,6 +8,7 @@
 #include "UpdateDelta.H"
 #include "UpdateA.H"
 #include "UpdateGamma.H"
+#include "UpdateNu.H"
 
 //' Tests updating Z
 //'
@@ -374,4 +375,97 @@ Rcpp::List TestUpdateGamma(){
   return mod;
 }
 
+//' Tests updating A
+//'
+//' @name lgamma
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdateNu(){
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,5);
+  for(int i=0; i < 5; i++)
+  {
+    Phi.slice(i) = (5-i) * 0.1 * arma::randu<arma::mat>(3,8);
+  }
+  double sigma_sq = 0.01;
+
+  // Make chi matrix
+  arma::mat chi(100, 5, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
+  Z.col(0) = arma::vec(100, arma::fill::ones);
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    y_star(j,0) = arma::zeros(100, B_star(j,0).n_rows);
+    mean = arma::zeros(8);
+    for(int l = 0; l < 3; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = Rmvnormal(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+    y_star(j, 0).row(0) = Rmvnormal(B_star(j, 0) * mean, sigma_sq *
+      arma::eye(B_star(j,0).n_rows, B_star(j,0).n_rows)).t();
+    for(int i = 1; i < 100; i++){
+      y_star(j, 0).row(i) = y_star(j, 0).row(0);
+    }
+  }
+
+  // Initialize pi
+  arma::vec pi = {0.95, 0.5, 0.5};
+
+  arma::cube Nu_samp(nu.n_rows, nu.n_cols, 100);
+  arma::vec b_1(nu.n_cols, arma::fill::zeros);
+  arma::mat B_1(nu.n_cols, nu.n_cols, arma::fill::zeros);
+  arma::mat P(nu.n_cols, nu.n_cols, arma::fill::zeros);
+  arma::vec tau(nu.n_rows, arma::fill::ones);
+  tau = tau * 10;
+  for(int i = 0; i < 100; i++){
+    updateNu(y_obs, y_star, B_obs, B_star, tau, Phi, Z, chi, sigma_sq, i, 100,
+             b_1, B_1, P, Nu_samp);
+  }
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("nu_samp", Nu_samp),
+                                      Rcpp::Named("nu", nu));
+  return mod;
+}
 
