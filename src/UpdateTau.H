@@ -8,7 +8,8 @@ void updateTau(const double& alpha,
                const double& beta,
                const arma::mat& nu,
                const int& iter,
-               arma::mat& P,
+               const int& tot_mcmc_iters,
+               const arma::mat& P,
                arma::mat& tau);
 
 #endif

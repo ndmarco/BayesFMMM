@@ -20,7 +20,7 @@
 //' @param M_1 Matrix acting as a placeholder for M in covariance
 //' @param Phi Field of Cubes containing all mcmc samples of Phi
 
-void UpdatePhi(const arma::field<arma::vec>& y_obs,
+void updatePhi(const arma::field<arma::vec>& y_obs,
                const arma::field<arma::mat>& y_star,
                const arma::field<arma::mat>& B_obs,
                const arma::field<arma::mat>& B_star,
@@ -112,7 +112,7 @@ void UpdatePhi(const arma::field<arma::vec>& y_obs,
       arma::inv(M_1, M_1);
 
       //generate new sample
-      Phi(iter,0).slice(m).row(j) =  Rmvnormal(M_1 * m_1, M_1).t();
+      Phi(iter,0).slice(m).row(j) =  arma::mvnrnd(M_1 * m_1, M_1).t();
     }
   }
   // Update next iteration

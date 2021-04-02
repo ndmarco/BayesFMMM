@@ -16,9 +16,9 @@ void updateNu(const arma::field<arma::vec>& y_obs,
               const double& sigma,
               const int& iter,
               const int& tot_mcmc_iters,
+              const arma::mat& P,
               arma::vec& b_1,
               arma::mat& B_1,
-              arma::mat& P,
               arma::cube& nu);
 
 #endif

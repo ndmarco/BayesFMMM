@@ -40,20 +40,36 @@ TestUpdateA <- function() {
     .Call('_BayesFOC_TestUpdateA', PACKAGE = 'BayesFOC')
 }
 
-#' Tests updating A
+#' Tests updating Gamma
 #'
-#' @name lgamma
+#' @name TestUpdateGamma
 #' @export
 TestUpdateGamma <- function() {
     .Call('_BayesFOC_TestUpdateGamma', PACKAGE = 'BayesFOC')
 }
 
-#' Tests updating A
+#' Tests updating Nu
 #'
-#' @name lgamma
+#' @name TestUpdateNu
 #' @export
 TestUpdateNu <- function() {
     .Call('_BayesFOC_TestUpdateNu', PACKAGE = 'BayesFOC')
+}
+
+#' Tests updating Tau
+#'
+#' @name TestUpdateTau
+#' @export
+TestUpdateTau <- function() {
+    .Call('_BayesFOC_TestUpdateTau', PACKAGE = 'BayesFOC')
+}
+
+#' Tests updating Sigma
+#'
+#' @name TestUpdateSigma
+#' @export
+TestUpdateSigma <- function() {
+    .Call('_BayesFOC_TestUpdateSigma', PACKAGE = 'BayesFOC')
 }
 
 #' computes the log pdf of a_1j

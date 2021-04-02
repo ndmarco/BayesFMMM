@@ -2,15 +2,23 @@
 #include <cmath>
 #include "Distributions.H"
 
-//' Updates the gamma parameters
+//' Updates the nu parameters
 //'
-//' @name updateGamma
-//' @param nu double containing hyperparameter
-//' @param iter int containing MCMC iteration
-//' @param delta Matrix containing current values of delta
-//' @param phi Cube containing current values of phi
-//' @param Z matrix containing current values of class inclusion
-//' @param gamma Field of cubes contianing MCMC samples for gamma
+//' @name updateNu
+//' @param y_obs Field of vectors containing observed time points
+//' @param y_obs Field of matrices containing unobserved time points for all iterations
+//' @param B_obs Field of matrices containing basis functions evaluated at observed time points
+//' @param B_star Field of matrices containing basis functions evaluated at unobserved time points
+//' @param tau Vector containing current tau parameters
+//' @param Phi Cube containing current Phi parameters
+//' @param Z Matrix containing current Z parameters
+//' @param chi Matrix containing current chi parameters
+//' @param iter Int containing MCMC iteration
+//' @param tot_mcmc_iters Int containing total number of MCMC iterations
+//' @param P Matrix contiaing tridiagonal P matrix
+//' @param b_1 Vector acting as a placeholder for mean vector
+//' @param B_1 Matrix acting as placeholder for covariance matrix
+//' @param nu Cube contianing MCMC samples for nu
 void updateNu(const arma::field<arma::vec>& y_obs,
               const arma::field<arma::mat>& y_star,
               const arma::field<arma::mat>& B_obs,
@@ -22,11 +30,12 @@ void updateNu(const arma::field<arma::vec>& y_obs,
               const double& sigma,
               const int& iter,
               const int& tot_mcmc_iters,
+              const arma::mat& P,
               arma::vec& b_1,
               arma::mat& B_1,
-              arma::mat& P,
               arma::cube& nu){
   double ph = 0;
+  // initialize P matrix
   for(int j = 0; j < nu.n_rows; j++){
     b_1.zeros();
     B_1.zeros();
@@ -74,19 +83,9 @@ void updateNu(const arma::field<arma::vec>& y_obs,
     }
     b_1 = b_1 / sigma;
     B_1 = B_1 / sigma;
-    P.zeros();
-    for(int j = 0; j < nu.n_rows; j++){
-      P(0,0) = 1;
-      P(nu.n_rows - 1, nu.n_rows - 1) = 1;
-      if(j > 0){
-        P(j,j) = 2;
-        P(j-1,j) = -1;
-        P(j,j-1) = -1;
-      }
-    }
     B_1 = B_1 + tau(j) * P;
     arma::inv(B_1, B_1);
-    nu.slice(iter).row(j) = Rmvnormal(B_1 * b_1, B_1).t();
+    nu.slice(iter).row(j) = arma::mvnrnd(B_1 * b_1, B_1).t();
   }
   if(iter < (tot_mcmc_iters - 1)){
     nu.slice(iter + 1) = nu.slice(iter);

@@ -5,7 +5,7 @@
 #include <cmath>
 #include "Distributions.H"
 
-void UpdatePhi(const arma::field<arma::vec>& y_obs,
+void updatePhi(const arma::field<arma::vec>& y_obs,
                const arma::field<arma::mat>& y_star,
                const arma::field<arma::mat>& B_obs,
                const arma::field<arma::mat>& B_star,
