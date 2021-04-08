@@ -13,6 +13,7 @@
 //' @param Phi Cube containing current Phi parameters
 //' @param Z Matrix containing current Z parameters
 //' @param chi Matrix containing current chi parameters
+//' @param sigma Double containing current sigma parameter
 //' @param iter Int containing MCMC iteration
 //' @param tot_mcmc_iters Int containing total number of MCMC iterations
 //' @param P Matrix contiaing tridiagonal P matrix

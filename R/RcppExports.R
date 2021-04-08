@@ -72,6 +72,14 @@ TestUpdateSigma <- function() {
     .Call('_BayesFOC_TestUpdateSigma', PACKAGE = 'BayesFOC')
 }
 
+#' Tests updating chi
+#'
+#' @name TestUpdateChi
+#' @export
+TestUpdateChi <- function() {
+    .Call('_BayesFOC_TestUpdateChi', PACKAGE = 'BayesFOC')
+}
+
 #' computes the log pdf of a_1j
 #'
 #' @name lpdf_a1

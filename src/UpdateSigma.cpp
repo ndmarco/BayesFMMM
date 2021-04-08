@@ -1,16 +1,22 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 
-//' Updates the Tau parameters
+//' Updates the Sigma parameters
 //'
-//' @name updateTau
-//' @param alpha Double containing hyperparameter
-//' @param beta Double containing hyperparameter
-//' @param nu Matrix contianing nu parameters
+//' @name updateSigma
+//' @param y_obs Field of vectors containing observed time points
+//' @param y_obs Field of matrices containing unobserved time points for all iterations
+//' @param B_obs Field of matrices containing basis functions evaluated at observed time points
+//' @param B_star Field of matrices containing basis functions evaluated at unobserved time points
+//' @param alpha_0 Double containing hyperparameter
+//' @param beta_0 Double containing hyperparameter
+//' @param nu Matrix contianing current nu parameters
+//' @param Phi Cube containing current Phi parameters
+//' @param Z Matrix containing current Z parameters
+//' @param chi Matrix containing current chi parameters
 //' @param iter Int containing current MCMC iteration
 //' @param tot_mcmc_iters Int containing total number of MCMC iterations
-//' @param P Matrix that acts as a placeholder for P
-//' @param tau Matrix containing tau for all mcmc iterations
+//' @param sigma Vector containing sigma for all mcmc iterations
 void updateSigma(const arma::field<arma::vec>& y_obs,
                  const arma::field<arma::mat>& y_star,
                  const arma::field<arma::mat>& B_obs,

@@ -96,6 +96,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// TestUpdateChi
+Rcpp::List TestUpdateChi();
+RcppExport SEXP _BayesFOC_TestUpdateChi() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateChi());
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
@@ -107,6 +117,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_TestUpdateNu", (DL_FUNC) &_BayesFOC_TestUpdateNu, 0},
     {"_BayesFOC_TestUpdateTau", (DL_FUNC) &_BayesFOC_TestUpdateTau, 0},
     {"_BayesFOC_TestUpdateSigma", (DL_FUNC) &_BayesFOC_TestUpdateSigma, 0},
+    {"_BayesFOC_TestUpdateChi", (DL_FUNC) &_BayesFOC_TestUpdateChi, 0},
     {NULL, NULL, 0}
 };
 
