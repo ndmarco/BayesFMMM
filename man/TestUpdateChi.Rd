@@ -2,10 +2,15 @@
 % Please edit documentation in R/RcppExports.R
 \name{TestUpdateChi}
 \alias{TestUpdateChi}
+\alias{TestUpdateYStar}
 \title{Tests updating chi}
 \usage{
 TestUpdateChi()
+
+TestUpdateYStar()
 }
 \description{
+Tests updating chi
+
 Tests updating chi
 }

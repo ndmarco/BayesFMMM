@@ -8,7 +8,7 @@
 //' @param l Int  containing element of pi to update
 //' @param Z Matrix that contains the current values of the binary matrix
 //' @param pi Matrix containg all samples of Pi
-void update_pi(const double& alpha,
+void updatePi(const double& alpha,
                const arma::mat& Z,
                const int& iter,
                const int& tot_mcmc_iters,

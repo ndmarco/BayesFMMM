@@ -25,7 +25,7 @@ void updateYStar(const arma::field<arma::mat>& B_star,
   double mean = 0;
   for(int i = 0; i < Z.n_rows; i++){
     if(B_star(i,0).n_elem > 0){
-      for(int l = 0; l < B_star(i,0).n_cols; l++){
+      for(int l = 0; l < B_star(i,0).n_rows; l++){
         mean = 0;
         for(int k = 0; k < Z.n_cols; k++){
           if(Z(i,k) != 0){

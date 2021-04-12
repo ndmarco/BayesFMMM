@@ -85,7 +85,8 @@ void updateNu(const arma::field<arma::vec>& y_obs,
     b_1 = b_1 / sigma;
     B_1 = B_1 / sigma;
     B_1 = B_1 + tau(j) * P;
-    arma::inv(B_1, B_1);
+    B_1 = arma::pinv(B_1);
+    B_1 = (B_1 + B_1.t())/2;
     nu.slice(iter).row(j) = arma::mvnrnd(B_1 * b_1, B_1).t();
   }
   if(iter < (tot_mcmc_iters - 1)){

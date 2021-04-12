@@ -69,50 +69,50 @@ void updateA(const double& alpha_1l,
   double new_a = 0;
 
   // caluclate first lpdf
-  for(int i = 0; i < a.n_rows; i++){
+  for(int i = 0; i < a.n_cols; i++){
     if(i == 0){
-      a_lpdf = lpdf_a1(alpha_1l, beta_1l, a(i, iter), delta(i));
-      new_a = r_truncnorm(a(i, iter), var_epsilon1 / beta_1l, 0,
+      a_lpdf = lpdf_a1(alpha_1l, beta_1l, a(iter, i), delta(i));
+      new_a = r_truncnorm(a(iter, i), var_epsilon1 / beta_1l, 0,
                       std::numeric_limits<double>::infinity());
 
       a_new_lpdf = lpdf_a1(alpha_1l, beta_1l, new_a, delta(i));
 
       acceptance_prob = (a_new_lpdf +
-        d_truncnorm(a(i, iter), new_a, var_epsilon1 / beta_1l, 0,
+        d_truncnorm(a(iter, i), new_a, var_epsilon1 / beta_1l, 0,
                     std::numeric_limits<double>::infinity(), 1)) - a_lpdf -
-                      d_truncnorm(new_a, a(i, iter),
+                      d_truncnorm(new_a, a(iter, i),
                                   var_epsilon1 / beta_1l, 0,
                                   std::numeric_limits<double>::infinity(), 1);
       rand_unif_var = R::runif(0,1);
 
       if(log(rand_unif_var) < acceptance_prob){
         // Accept new state and update parameters
-        a(i, iter) = new_a;
+        a(iter, i) = new_a;
       }
     }else{
-      a_lpdf = lpdf_a2(alpha_2l, beta_2l, a(i, iter), delta);
-      new_a = r_truncnorm(a(i, iter), var_epsilon2 / beta_2l, 0,
+      a_lpdf = lpdf_a2(alpha_2l, beta_2l, a(iter, i), delta);
+      new_a = r_truncnorm(a(iter, i), var_epsilon2 / beta_2l, 0,
                           std::numeric_limits<double>::infinity());
 
       a_new_lpdf = lpdf_a2(alpha_2l, beta_2l, new_a, delta);
 
       acceptance_prob = (a_new_lpdf +
-        d_truncnorm(a(i, iter), new_a, var_epsilon2 / beta_2l, 0,
+        d_truncnorm(a(iter, i), new_a, var_epsilon2 / beta_2l, 0,
                     std::numeric_limits<double>::infinity(), 1)) - a_lpdf -
-                      d_truncnorm(new_a, a(i, iter),
+                      d_truncnorm(new_a, a(iter, i),
                                   var_epsilon2 / beta_2l, 0,
                                   std::numeric_limits<double>::infinity(), 1);
       rand_unif_var = R::runif(0,1);
 
       if(log(rand_unif_var) < acceptance_prob){
         // Accept new state and update parameters
-        a(i, iter) = new_a;
+        a(iter, i) = new_a;
       }
     }
   }
   // update next iteration
   if(iter < (tot_mcmc_iters - 1)){
-    a.col(iter + 1) = a.col(iter);
+    a.row(iter + 1) = a.row(iter);
   }
 }
 

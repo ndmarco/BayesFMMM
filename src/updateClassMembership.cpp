@@ -19,7 +19,7 @@
 //' @return lpdf_z double contianing the log-pdf
 
 double lpdf_z(const arma::vec& y_obs,
-              const arma::rowvec& y_star,
+              const arma::mat& y_star,
               const arma::mat& B_obs,
               const arma::mat& B_star,
               const arma::cube& Phi,
@@ -27,6 +27,7 @@ double lpdf_z(const arma::vec& y_obs,
               const arma::rowvec& chi,
               const arma::vec& pi,
               const arma::rowvec& Z,
+              const int& num,
               const double& sigma_sq){
   double lpdf = 0;
   double mean = 0;
@@ -48,7 +49,7 @@ double lpdf_z(const arma::vec& y_obs,
   }
 
   // Check to see if there are unobserved time points of interest
-  if(B_star.n_elem > 0){
+  if(B_star.n_rows > 0){
     for(int l = 0; l < B_star.n_rows; l++){
       mean = 0;
       for(int k = 0; k < pi.n_elem; k++){
@@ -58,7 +59,7 @@ double lpdf_z(const arma::vec& y_obs,
                           B_star.row(l).t());
         }
       }
-      lpdf = lpdf - (std::pow(y_star(l) - mean, 2.0) / (2 * sigma_sq));
+      lpdf = lpdf - (std::pow(y_star(num,l) - mean, 2.0) / (2 * sigma_sq));
     }
   }
 
@@ -110,12 +111,12 @@ void updateZ(const arma::field<arma::vec>& y_obs,
         ((1 - Z.slice(iter)(i,l)) * (1 -rho)));
     }
     // Get old state log pdf
-    z_lpdf = lpdf_z(y_obs(i,0), y_star(i,0).row(iter), B_obs(i,0), B_star(i,0),
-                    Phi, nu, chi.row(i), pi, Z.slice(iter).row(i), sigma_sq);
+    z_lpdf = lpdf_z(y_obs(i,0), y_star(i,0), B_obs(i,0), B_star(i,0),
+                    Phi, nu, chi.row(i), pi, Z.slice(iter).row(i), i, sigma_sq);
 
     // Get new state log pdf
-    z_new_lpdf = lpdf_z(y_obs(i,0), y_star(i,0).row(iter), B_obs(i,0),
-                        B_star(i,0), Phi,  nu, chi.row(i), pi, Z_ph.row(i),
+    z_new_lpdf = lpdf_z(y_obs(i,0), y_star(i,0), B_obs(i,0),
+                        B_star(i,0), Phi,  nu, chi.row(i), pi, Z_ph.row(i), i,
                         sigma_sq);
     acceptance_prob = z_new_lpdf - z_lpdf;
     rand_unif_var = R::runif(0,1);
