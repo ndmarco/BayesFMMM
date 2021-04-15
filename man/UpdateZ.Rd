@@ -22,6 +22,8 @@
 
 \item{rho}{Double containing hyperparameter for proposal of new z_i state}
 
+\item{n_known}{Int containing number of observations with known membership}
+
 \item{iter}{Int containing current mcmc iteration}
 
 \item{tot_mcmc_iters}{Int containing total number of mcmc iterations}
@@ -32,4 +34,6 @@
 }
 \description{
 Updates the Z Matrix
+
+Updates the Z Matrix when we have a subset of known class memberships
 }

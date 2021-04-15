@@ -2,6 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFOC}
 \alias{BFOC}
+\alias{BFOC_SS}
 \title{Run the Bayesian Functional Overlapping Clusters model}
 \usage{
 BFOC(
@@ -16,7 +17,6 @@ BFOC(
   nu_1,
   rho,
   alpha_3,
-  a_12,
   alpha1l,
   alpha2l,
   beta1l,
@@ -27,6 +27,33 @@ BFOC(
   beta,
   alpha_0,
   beta_0
+)
+
+BFOC_SS(
+  known_Z,
+  y_obs,
+  t_obs,
+  n_funct,
+  K,
+  P,
+  M,
+  tot_mcmc_iters,
+  r_stored_iters,
+  t_star,
+  nu_1,
+  rho,
+  alpha_3,
+  alpha1l,
+  alpha2l,
+  beta1l,
+  beta2l,
+  var_epsilon1,
+  var_epsilon2,
+  alpha,
+  beta,
+  alpha_0,
+  beta_0,
+  directory
 )
 }
 \arguments{
@@ -48,8 +75,6 @@ BFOC(
 
 \item{alpha_3}{Double hyperparameter for sampling from pi}
 
-\item{a_12}{Vec containing hyperparameters for sampling from delta}
-
 \item{alpha1l}{Double containing hyperparameters for sampling from A}
 
 \item{alpha2l}{Double containing hyperparameters for sampling from A}
@@ -65,6 +90,8 @@ BFOC(
 \item{alpha_0}{Double containing hyperparameters for sampling from sigma}
 
 \item{beta_0}{Double containing hyperparameters for sampling from sigma}
+
+\item{a_12}{Vec containing hyperparameters for sampling from delta}
 
 \item{var_epslion1}{Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm}
 

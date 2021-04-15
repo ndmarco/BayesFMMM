@@ -2,10 +2,15 @@
 % Please edit documentation in R/RcppExports.R
 \name{TestBFOC}
 \alias{TestBFOC}
+\alias{TestBFOC_SS}
 \title{Tests BFOC function}
 \usage{
-TestBFOC()
+TestBFOC(tot_mcmc_iters)
+
+TestBFOC_SS(tot_mcmc_iters, directory, r_stored_iters)
 }
 \description{
+Tests BFOC function
+
 Tests BFOC function
 }

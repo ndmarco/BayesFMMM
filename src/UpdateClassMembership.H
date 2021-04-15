@@ -30,5 +30,20 @@ void updateZ(const arma::field<arma::vec>& y_obs,
              arma::mat& Z_ph,
              arma::cube& Z);
 
+void updateZ(const arma::field<arma::vec>& y_obs,
+             const arma::field<arma::mat>& y_star,
+             const arma::field<arma::mat>& B_obs,
+             const arma::field<arma::mat>& B_star,
+             const arma::cube& Phi,
+             const arma::mat& nu,
+             const arma::mat& chi,
+             const arma::vec& pi,
+             const double& sigma_sq,
+             const double& rho,
+             const int& n_known,
+             const int& iter,
+             const int& tot_mcmc_iters,
+             arma::mat& Z_ph,
+             arma::cube& Z);
 
 #endif
