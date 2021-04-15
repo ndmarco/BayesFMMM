@@ -38,8 +38,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // BFOC_SS
-Rcpp::List BFOC_SS(const arma::mat known_Z, const arma::field<arma::vec> y_obs, const arma::field<arma::vec> t_obs, const double n_funct, const int K, const int P, const int M, const int tot_mcmc_iters, const int r_stored_iters, const arma::field<arma::vec> t_star, const double nu_1, const double rho, const double alpha_3, const double alpha1l, const double alpha2l, const double beta1l, const double beta2l, const double var_epsilon1, const double var_epsilon2, const double alpha, const double beta, const double alpha_0, const double beta_0, const std::string directory, const arma::cube Phi1);
-RcppExport SEXP _BayesFOC_BFOC_SS(SEXP known_ZSEXP, SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP, SEXP Phi1SEXP) {
+Rcpp::List BFOC_SS(const arma::mat known_Z, const arma::field<arma::vec> y_obs, const arma::field<arma::vec> t_obs, const double n_funct, const int K, const int P, const int M, const int tot_mcmc_iters, const int r_stored_iters, const arma::field<arma::vec> t_star, const double nu_1, const double rho, const double alpha_3, const double alpha1l, const double alpha2l, const double beta1l, const double beta2l, const double var_epsilon1, const double var_epsilon2, const double alpha, const double beta, const double alpha_0, const double beta_0, const std::string directory);
+RcppExport SEXP _BayesFOC_BFOC_SS(SEXP known_ZSEXP, SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -67,8 +67,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type alpha_0(alpha_0SEXP);
     Rcpp::traits::input_parameter< const double >::type beta_0(beta_0SEXP);
     Rcpp::traits::input_parameter< const std::string >::type directory(directorySEXP);
-    Rcpp::traits::input_parameter< const arma::cube >::type Phi1(Phi1SEXP);
-    rcpp_result_gen = Rcpp::wrap(BFOC_SS(known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Phi1));
+    rcpp_result_gen = Rcpp::wrap(BFOC_SS(known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -242,7 +241,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_BFOC", (DL_FUNC) &_BayesFOC_BFOC, 21},
-    {"_BayesFOC_BFOC_SS", (DL_FUNC) &_BayesFOC_BFOC_SS, 25},
+    {"_BayesFOC_BFOC_SS", (DL_FUNC) &_BayesFOC_BFOC_SS, 24},
     {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
     {"_BayesFOC_TestUpdatePi", (DL_FUNC) &_BayesFOC_TestUpdatePi, 0},
     {"_BayesFOC_TestUpdatePhi", (DL_FUNC) &_BayesFOC_TestUpdatePhi, 0},

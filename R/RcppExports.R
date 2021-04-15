@@ -52,8 +52,8 @@ BFOC <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, t_star, nu_1, r
 #' @param alpha_0 Double containing hyperparameters for sampling from sigma
 #' @param beta_0 Double containing hyperparameters for sampling from sigma
 #' @export
-BFOC_SS <- function(known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Phi1) {
-    .Call('_BayesFOC_BFOC_SS', PACKAGE = 'BayesFOC', known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Phi1)
+BFOC_SS <- function(known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory) {
+    .Call('_BayesFOC_BFOC_SS', PACKAGE = 'BayesFOC', known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory)
 }
 
 #' Tests updating Z

@@ -77,7 +77,7 @@ void updateChi(const arma::field<arma::vec>& y_obs,
       w = w / sigma;
       W = 1 + (W / sigma);
       W = 1 / W;
-      chi(i, m, iter) = R::rnorm(W*w, W);
+      chi(i, m, iter) = R::rnorm(W*w, std::sqrt(W));
     }
   }
   if(iter < (tot_mcmc_iters - 1)){

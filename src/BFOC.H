@@ -62,8 +62,7 @@ Rcpp::List BFOC_SS(const arma::mat known_Z,
                    const double beta,
                    const double alpha_0,
                    const double beta_0,
-                   const std::string directory,
-                   const arma::cube Phi);
+                   const std::string directory);
 
 
 #endif

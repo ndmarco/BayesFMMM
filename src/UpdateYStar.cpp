@@ -36,7 +36,7 @@ void updateYStar(const arma::field<arma::mat>& B_star,
             }
           }
         }
-        y_star(i,0)(iter, l) = R::rnorm(mean, sigma);
+        y_star(i,0)(iter, l) = R::rnorm(mean, std::sqrt(sigma));
       }
     }
     if(iter < (tot_mcmc_iters - 1)){

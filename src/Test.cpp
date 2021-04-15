@@ -947,15 +947,15 @@ Rcpp::List TestBFOC_SS(int tot_mcmc_iters, const std::string directory,
 
 
   // Make Phi matrix
-  arma::cube Phi(3,8,5);
-  for(int i=0; i < 5; i++)
+  arma::cube Phi(3,8,3);
+  for(int i=0; i < 3; i++)
   {
-    Phi.slice(i) = (5-i) * 0.1 * arma::randu<arma::mat>(3,8);
+    Phi.slice(i) = (3-i) * 0.1 * arma::randu<arma::mat>(3,8);
   }
   double sigma_sq = 0.005;
 
   // Make chi matrix
-  arma::mat chi(100, 5, arma::fill::randn);
+  arma::mat chi(100, 3, arma::fill::randn);
 
 
   // Make Z matrix
@@ -990,7 +990,7 @@ Rcpp::List TestBFOC_SS(int tot_mcmc_iters, const std::string directory,
     }
   }
   arma::vec a_12 = {2, 2};
-  Rcpp::List mod1 = BFOC_SS(known_Z, y_obs, t_obs1, n_funct, 3, 8, 5, tot_mcmc_iters,
+  Rcpp::List mod1 = BFOC_SS(known_Z, y_obs, t_obs1, n_funct, 3, 8, 3, tot_mcmc_iters,
                             r_stored_iters, t_star1, 3, 0.7, 1, 2, 3, 1, 1,
                             sqrt(1), sqrt(1), 1, 1, 1, 1, directory);
 
