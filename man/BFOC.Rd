@@ -2,7 +2,6 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFOC}
 \alias{BFOC}
-\alias{BFOC_SS}
 \title{Run the Bayesian Functional Overlapping Clusters model}
 \usage{
 BFOC(
@@ -27,33 +26,6 @@ BFOC(
   beta,
   alpha_0,
   beta_0
-)
-
-BFOC_SS(
-  known_Z,
-  y_obs,
-  t_obs,
-  n_funct,
-  K,
-  P,
-  M,
-  tot_mcmc_iters,
-  r_stored_iters,
-  t_star,
-  nu_1,
-  rho,
-  alpha_3,
-  alpha1l,
-  alpha2l,
-  beta1l,
-  beta2l,
-  var_epsilon1,
-  var_epsilon2,
-  alpha,
-  beta,
-  alpha_0,
-  beta_0,
-  directory
 )
 }
 \arguments{

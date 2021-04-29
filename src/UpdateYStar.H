@@ -9,7 +9,7 @@ void updateYStar(const arma::field<arma::mat>& B_star,
                  const arma::cube& Phi,
                  const arma::mat& Z,
                  const arma::mat& chi,
-                 double& sigma,
+                 const double& sigma,
                  const int& iter,
                  const int& tot_mcmc_iters,
                  arma::field<arma::mat>& y_star);

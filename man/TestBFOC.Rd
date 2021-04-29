@@ -3,13 +3,18 @@
 \name{TestBFOC}
 \alias{TestBFOC}
 \alias{TestBFOC_SS}
+\alias{TestBFOC_SS_nu_Z}
 \title{Tests BFOC function}
 \usage{
 TestBFOC(tot_mcmc_iters)
 
 TestBFOC_SS(tot_mcmc_iters, directory, r_stored_iters)
+
+TestBFOC_SS_nu_Z(tot_mcmc_iters, directory, r_stored_iters)
 }
 \description{
+Tests BFOC function
+
 Tests BFOC function
 
 Tests BFOC function

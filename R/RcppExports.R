@@ -30,7 +30,7 @@ BFOC <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, t_star, nu_1, r
 }
 
 #'
-#' @name BFOC
+#' @name BFOC_SS
 #' @param y_obs Field (list) of vectors containing the observed values
 #' @param t_obs Field (list) of vectors containing time points of observed values
 #' @param n_funct Double containing number of functions observed
@@ -54,6 +54,60 @@ BFOC <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, t_star, nu_1, r
 #' @export
 BFOC_SS <- function(known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory) {
     .Call('_BayesFOC_BFOC_SS', PACKAGE = 'BayesFOC', known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory)
+}
+
+#'
+#' @name BFOC_SS
+#' @param y_obs Field (list) of vectors containing the observed values
+#' @param t_obs Field (list) of vectors containing time points of observed values
+#' @param n_funct Double containing number of functions observed
+#' @param P Int that indicates the number of b-spline basis functions
+#' @param M int that indicates the number of slices used in Phi parameter
+#' @param tot_mcmc_iters Int containing total number of MCMC iterations
+#' @param t_star Field (list) of vectors containing time points of interest that are not observed (optional)
+#' @param rho Double containing hyperparmater for sampling from Z
+#' @param alpha_3 Double hyperparameter for sampling from pi
+#' @param a_12 Vec containing hyperparameters for sampling from delta
+#' @param alpha1l Double containing hyperparameters for sampling from A
+#' @param alpha2l Double containing hyperparameters for sampling from A
+#' @param beta1l Double containing hyperparameters for sampling from A
+#' @param beta2l Double containing hyperparameters for sampling from A
+#' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param alpha Double containing hyperparameters for sampling from tau
+#' @param beta Double containing hyperparameters for sampling from tau
+#' @param alpha_0 Double containing hyperparameters for sampling from sigma
+#' @param beta_0 Double containing hyperparameters for sampling from sigma
+#' @export
+BFOC_U <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, sigma_est) {
+    .Call('_BayesFOC_BFOC_U', PACKAGE = 'BayesFOC', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, sigma_est)
+}
+
+#'
+#' @name GetPhiChi
+#' @param y_obs Field (list) of vectors containing the observed values
+#' @param t_obs Field (list) of vectors containing time points of observed values
+#' @param n_funct Double containing number of functions observed
+#' @param P Int that indicates the number of b-spline basis functions
+#' @param M int that indicates the number of slices used in Phi parameter
+#' @param tot_mcmc_iters Int containing total number of MCMC iterations
+#' @param t_star Field (list) of vectors containing time points of interest that are not observed (optional)
+#' @param rho Double containing hyperparmater for sampling from Z
+#' @param alpha_3 Double hyperparameter for sampling from pi
+#' @param a_12 Vec containing hyperparameters for sampling from delta
+#' @param alpha1l Double containing hyperparameters for sampling from A
+#' @param alpha2l Double containing hyperparameters for sampling from A
+#' @param beta1l Double containing hyperparameters for sampling from A
+#' @param beta2l Double containing hyperparameters for sampling from A
+#' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param alpha Double containing hyperparameters for sampling from tau
+#' @param beta Double containing hyperparameters for sampling from tau
+#' @param alpha_0 Double containing hyperparameters for sampling from sigma
+#' @param beta_0 Double containing hyperparameters for sampling from sigma
+#' @export
+PhiChiInitialState <- function(known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, nu, sigma) {
+    .Call('_BayesFOC_PhiChiInitialState', PACKAGE = 'BayesFOC', known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, nu, sigma)
 }
 
 #' Tests updating Z
@@ -159,6 +213,14 @@ TestBFOC_SS <- function(tot_mcmc_iters, directory, r_stored_iters) {
     .Call('_BayesFOC_TestBFOC_SS', PACKAGE = 'BayesFOC', tot_mcmc_iters, directory, r_stored_iters)
 }
 
+#' Tests BFOC function
+#'
+#' @name TestBFOC
+#' @export
+TestBFOC_SS_nu_Z <- function(tot_mcmc_iters, directory, r_stored_iters) {
+    .Call('_BayesFOC_TestBFOC_SS_nu_Z', PACKAGE = 'BayesFOC', tot_mcmc_iters, directory, r_stored_iters)
+}
+
 #' Tests Reading Matrix
 #'
 #' @name TestReadMat
@@ -181,6 +243,30 @@ TestReadCube <- function(directory) {
 #' @export
 TestReadField <- function(directory) {
     .Call('_BayesFOC_TestReadField', PACKAGE = 'BayesFOC', directory)
+}
+
+#' Tests BFOC function
+#'
+#' @name GetStuff
+#' @export
+GetStuff <- function() {
+    .Call('_BayesFOC_GetStuff', PACKAGE = 'BayesFOC')
+}
+
+#' Tests BFOC function
+#'
+#' @name GetStuff
+#' @export
+TestEstimateInitialZ <- function() {
+    .Call('_BayesFOC_TestEstimateInitialZ', PACKAGE = 'BayesFOC')
+}
+
+#' Tests BFOC function
+#'
+#' @name GetStuff
+#' @export
+TestEstimateInitial <- function(tot_mcmc_iters, r_stored_iters, directory) {
+    .Call('_BayesFOC_TestEstimateInitial', PACKAGE = 'BayesFOC', tot_mcmc_iters, r_stored_iters, directory)
 }
 
 #' computes the log pdf of a_1j
