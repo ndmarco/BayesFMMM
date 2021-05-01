@@ -1394,8 +1394,10 @@ Rcpp::List TestEstimateInitial(const int tot_mcmc_iters, const int r_stored_iter
   }
 
   // Make nu matrix
-  arma::mat nu(3,8, arma::fill::randn);
-  nu = 2 * nu;
+  arma::mat nu;
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {2, 0, 1, 0, 1, 0, 1, 3},
+  {2, 0, 1, 1, 1, 0, 1, 3}};
 
   // Make Phi matrix
   arma::cube Phi(3,8,3);
