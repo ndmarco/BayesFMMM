@@ -83,8 +83,61 @@ BFOC_U <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iter
     .Call('_BayesFOC_BFOC_U', PACKAGE = 'BayesFOC', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, sigma_est)
 }
 
+#' Returns the weights for the smoothed observed functions
+#'
+#' @name BasisExpansion
+#' @param y_obs Field of Vectors containing the observed values
+#' @param B_obs Field of Matrices containing the basis functions evaluated at the observed time points
+#' @param n_funct Int containing the number of observed functions
+#' @param K Int containing the number of clusters
+#' @param P Int containing the number of Basis Functions
+NULL
+
+#' Returns the estimated variance used for initial state of MCMC
+#'
+#' @name SigmaInitialState
+#' @param y_obs Field of Vectors containing the observed values
+#' @param B_obs Field of Matrices containing the basis functions evaluated at the observed time points
+#' @param theta Matrix containing weights for basis expansion
+#' @param n_funct Int containing the number of observed functions
+#' @returns sigma Double containing initial starting state of sigma for MCMC
+NULL
+
+#' Returns the estimated variance used for initial state of MCMC
+#'
+#' @name NuInitialState
+#' @param B_obs Field of Matrices containing the basis functions evaluated at the observed time points
+#' @param z_known Matrix containing the Z values for known (or estimated) functions
+#' @param theta Matrix containing weights for basis expansion
+#' @param n_funct Int containing the number of observed functions
+#' @returns nu Matrix conating intial starting state for nu parameter in MCMC
+NULL
+
+#' Gets the distance used in ZInitialState
+#'
+#' @name GetDistance
+#' @param means Vector containing the mean of the cluster of interest
+#' @param theta Matrix containing the weights for the smoothed observations
+#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param dist Vector acting as a placeholder for the returned distances
+NULL
+
+#' Estimates the initial state for Z matrix in MCMC
+#'
+#' @name ZInitialState
+#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param theta Matrix containing the weights for the smoothed observations
+#' @param max_iter Int containing max number of iterations of algorithm
+#' @param K Int containing number of clusters
+#' @param n_funct Int containing the number of functions
+#' @param convergence Double containing the criterion for convergence
+#' @returns Z Matrix that contains the initial starting stae for Z matrix in MCMC
+NULL
+
+#' Runs small MCMC chain to get initial starting states for the rest of our parameters
 #'
 #' @name GetPhiChi
+#' @param known_Z Matrix containing the known (or estimated) Z parameters
 #' @param y_obs Field (list) of vectors containing the observed values
 #' @param t_obs Field (list) of vectors containing time points of observed values
 #' @param n_funct Double containing number of functions observed
@@ -105,6 +158,8 @@ BFOC_U <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iter
 #' @param beta Double containing hyperparameters for sampling from tau
 #' @param alpha_0 Double containing hyperparameters for sampling from sigma
 #' @param beta_0 Double containing hyperparameters for sampling from sigma
+#' @param nu Matrix containing initial starting state of Nu parameters
+#' @param sigma Double containing initial starting state of sigma squared parameter
 #' @export
 PhiChiInitialState <- function(known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, nu, sigma) {
     .Call('_BayesFOC_PhiChiInitialState', PACKAGE = 'BayesFOC', known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, nu, sigma)

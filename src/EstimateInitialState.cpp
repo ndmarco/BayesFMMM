@@ -1,5 +1,5 @@
 #include <RcppArmadillo.h>
-#include<cmath>
+#include <cmath>
 #include <splines2Armadillo.h>
 #include "UpdateClassMembership.H"
 #include "UpdatePi.H"
@@ -14,6 +14,15 @@
 #include "UpdateYStar.H"
 #include "CalculateLikelihood.H"
 
+//' Returns the weights for the smoothed observed functions
+//'
+//' @name BasisExpansion
+//' @param y_obs Field of Vectors containing the observed values
+//' @param B_obs Field of Matrices containing the basis functions evaluated at the observed time points
+//' @param n_funct Int containing the number of observed functions
+//' @param K Int containing the number of clusters
+//' @param P Int containing the number of Basis Functions
+
 arma::mat BasisExpansion(const arma::field<arma::vec>& y_obs,
                          const arma::field<arma::mat>& B_obs,
                          const int& n_funct,
@@ -27,6 +36,15 @@ arma::mat BasisExpansion(const arma::field<arma::vec>& y_obs,
 
   return theta;
 }
+
+//' Returns the estimated variance used for initial state of MCMC
+//'
+//' @name SigmaInitialState
+//' @param y_obs Field of Vectors containing the observed values
+//' @param B_obs Field of Matrices containing the basis functions evaluated at the observed time points
+//' @param theta Matrix containing weights for basis expansion
+//' @param n_funct Int containing the number of observed functions
+//' @returns sigma Double containing initial starting state of sigma for MCMC
 
 double SigmaInitialState(const arma::field<arma::vec>& y_obs,
                          const arma::field<arma::mat>& B_obs,
@@ -46,6 +64,15 @@ double SigmaInitialState(const arma::field<arma::vec>& y_obs,
   return sigma;
 }
 
+//' Returns the estimated variance used for initial state of MCMC
+//'
+//' @name NuInitialState
+//' @param B_obs Field of Matrices containing the basis functions evaluated at the observed time points
+//' @param z_known Matrix containing the Z values for known (or estimated) functions
+//' @param theta Matrix containing weights for basis expansion
+//' @param n_funct Int containing the number of observed functions
+//' @returns nu Matrix conating intial starting state for nu parameter in MCMC
+
 arma::mat NuInitialState(const arma::field<arma::mat>& B_obs,
                          const arma::mat& Z_known,
                          const arma::mat& theta,
@@ -62,6 +89,14 @@ arma::mat NuInitialState(const arma::field<arma::mat>& B_obs,
   return nu;
 }
 
+//' Gets the distance used in ZInitialState
+//'
+//' @name GetDistance
+//' @param means Vector containing the mean of the cluster of interest
+//' @param theta Matrix containing the weights for the smoothed observations
+//' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+//' @param dist Vector acting as a placeholder for the returned distances
+
 void GetDistance(const arma::vec& means,
                  const arma::mat& theta,
                  const arma::field<arma::mat>& B_obs,
@@ -76,9 +111,19 @@ void GetDistance(const arma::vec& means,
   }
 }
 
+//' Estimates the initial state for Z matrix in MCMC
+//'
+//' @name ZInitialState
+//' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+//' @param theta Matrix containing the weights for the smoothed observations
+//' @param max_iter Int containing max number of iterations of algorithm
+//' @param K Int containing number of clusters
+//' @param n_funct Int containing the number of functions
+//' @param convergence Double containing the criterion for convergence
+//' @returns Z Matrix that contains the initial starting stae for Z matrix in MCMC
+
 arma::mat ZInitialState(const arma::field<arma::mat>& B_obs,
                         const arma::mat& theta,
-                        const double& alpha,
                         const int& max_iter,
                         const int& K,
                         const int& n_funct,
@@ -135,8 +180,10 @@ arma::mat ZInitialState(const arma::field<arma::mat>& B_obs,
   return Z;
 }
 
+//' Runs small MCMC chain to get initial starting states for the rest of our parameters
 //'
 //' @name GetPhiChi
+//' @param known_Z Matrix containing the known (or estimated) Z parameters
 //' @param y_obs Field (list) of vectors containing the observed values
 //' @param t_obs Field (list) of vectors containing time points of observed values
 //' @param n_funct Double containing number of functions observed
@@ -157,6 +204,8 @@ arma::mat ZInitialState(const arma::field<arma::mat>& B_obs,
 //' @param beta Double containing hyperparameters for sampling from tau
 //' @param alpha_0 Double containing hyperparameters for sampling from sigma
 //' @param beta_0 Double containing hyperparameters for sampling from sigma
+//' @param nu Matrix containing initial starting state of Nu parameters
+//' @param sigma Double containing initial starting state of sigma squared parameter
 //' @export
 // [[Rcpp::export]]
 Rcpp::List PhiChiInitialState(const arma::mat& known_Z,

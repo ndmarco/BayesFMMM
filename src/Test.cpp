@@ -1341,7 +1341,7 @@ Rcpp::List TestEstimateInitialZ(){
 
   arma::mat theta = BasisExpansion(y_obs, B_obs, 100, 3, 8);
 
-  arma::mat Z_est = ZInitialState(B_obs, theta, 0.5, 50, 3, 100, 0.001);
+  arma::mat Z_est = ZInitialState(B_obs, theta, 50, 3, 100, 0.001);
 
 
   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Z", Z),
@@ -1446,7 +1446,7 @@ Rcpp::List TestEstimateInitial(const int tot_mcmc_iters, const int r_stored_iter
   // estimate B-spline expansion
   arma::mat theta = BasisExpansion(y_obs, B_obs, 100, 3, 8);
   //estimate Z matrix
-  arma::mat Z_est = ZInitialState(B_obs, theta, 0.5, 50, 3, 100, 0.001);
+  arma::mat Z_est = ZInitialState(B_obs, theta, 50, 3, 100, 0.001);
   // estimate sigma
   double sigma_est = SigmaInitialState(y_obs, B_obs, theta, 100);
   // estimate nu

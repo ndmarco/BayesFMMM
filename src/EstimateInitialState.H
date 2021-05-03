@@ -22,7 +22,6 @@ arma::mat NuInitialState(const arma::field<arma::mat>& B_obs,
 
 arma::mat ZInitialState(const arma::field<arma::mat>& B_obs,
                         const arma::mat& theta,
-                        const double& alpha,
                         const int& max_iter,
                         const int& K,
                         const int& n_funct,
