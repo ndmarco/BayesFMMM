@@ -13155,10 +13155,10 @@ div#notebook {
 
 
 
-<div id="cb386c16-d3ea-4219-99f9-ab6bac79e841"></div>
+<div id="acb46084-0315-423b-825d-7c412da2445c"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#cb386c16-d3ea-4219-99f9-ab6bac79e841');
+var element = $('#acb46084-0315-423b-825d-7c412da2445c');
 MathJax.Hub.Config({
     TeX: { equationNumbers: { autoNumber: "AMS" } }
 });
@@ -13356,10 +13356,11 @@ $$Cov(\mathbf{y}_i(\mathbf{t})|\mathbf{z}_i, \boldsymbol{\Phi}_m', \boldsymbol{\
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Let $\phi_{jrm}$ be the $r^{th}$ element of $\boldsymbol{\phi}_{jm}$ for $j = 1, \dots, K$, $r = 1, \dots, P$, and $m = 1, \dots, P$.
+<p>Let $\phi_{jrm}$ be the $r^{th}$ element of $\boldsymbol{\phi}_{jm}$ for $j = 1, \dots, K$, $r = 1, \dots, P$, and $m = 1, \dots, M$.
  Thus we have the following:</p>
 $$\phi_{jrm}|\gamma_{jrm}, \tilde{\tau}_{m} \sim \mathcal{N}(0, \gamma_{jrm}^{-1} \tilde{\tau}_{m}^{-1}); \;\;\; j = 1, \dots, K, \;\;\;r = 1, \dots, P,
-\;\;\; m = 1, \dots, M$$$$\gamma_{jrm} \sim Gamma(\nu_{\gamma}/2, \nu_{\gamma}/2); \;\;\; i = 1,\dots, P, \;\;\; j = 1, \dots, M,\;\;\; l = 1,\dots, R$$$$\tilde{\tau}_{m} = \prod_{n=1}^m \delta_{n}$$$$\delta_{1} \sim Gamma(a_{1}, 1)$$$$\delta_{j} \sim Gamma(a_{2}, 1); \;\;\; j = 2, \dots, M$$$$a_{1} \sim Gamma(\alpha_{1}, \beta_{1})$$$$a_{2} \sim Gamma(\alpha_{2}, \beta_{2})$$<p>In Dunson, $\alpha_{i}= \alpha_{i}^*= 2$, $\beta_{i} = \beta_{i}^* = 1$, and $\nu_{\gamma} = 3$.</p>
+\;\;\; m = 1, \dots, M$$$$\gamma_{jrm} \sim Gamma(\nu_{\gamma}/2, \nu_{\gamma}/2); \;\;\; j = 1, \dots, K, \;\;\;r = 1, \dots, P,
+\;\;\; m = 1, \dots, M$$$$\tilde{\tau}_{m} = \prod_{n=1}^m \delta_{n}$$$$\delta_{1} \sim Gamma(a_{1}, 1)$$$$\delta_{j} \sim Gamma(a_{2}, 1); \;\;\; j = 2, \dots, M$$$$a_{1} \sim Gamma(\alpha_{1}, \beta_{1})$$$$a_{2} \sim Gamma(\alpha_{2}, \beta_{2})$$<p>In Dunson, $\alpha_{i}= \alpha_{i}^*= 2$, $\beta_{i} = \beta_{i}^* = 1$, and $\nu_{\gamma} = 3$.</p>
 
 </div>
 </div>
@@ -13419,9 +13420,9 @@ p\left(\boldsymbol{\phi}_{jm} | \boldsymbol{\zeta}_{-\boldsymbol{\phi}_{jm}}\rig
 &amp; \times \prod_{i = 1}^N \prod_{l=1}^{n_i^*} exp\left\{-\frac{1}{2\sigma^2}\left(y_i(t_{li}^*) -  \sum_{k=1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)^2\right\}\\
 &amp; \times exp \left\{-\frac{1}{2}\boldsymbol{\phi}_{jm}'\mathbf{D}_{jm}^{-1}\boldsymbol{\phi}_{jm} \right\}\\
 &amp; \propto \prod_{i = 1}^N \prod_{l=1}^{n_i} exp\left\{-\frac{1}{2\sigma^2}\left(\boldsymbol{\phi}_{jm}'\left(z_{ij}\chi^2_{im} B(t_{il})B'(t_{il}) \right)\boldsymbol{\phi}_{jm}  \right. \right.  \\
- &amp; \left. \left.-2\boldsymbol{\phi}'_{jm}B(t_{il})\chi_{im} \left(y_i(t_l)z_{ij} -  z_{ij} \boldsymbol{\nu}_{j}'B(t_{il}) - z_{ij}\sum_{n \ne m}\left[\chi_{in} \boldsymbol{\phi}_{kn}' B(t_{il})\right] - \sum_{k \ne j} \left[z_{ik}\boldsymbol{\nu}_{k}' B(t_{il}) + \sum_{n=1}^M \chi_n \boldsymbol{\phi}_{kn}'B(t_{il}) \right] \right)\right)\right\}\\
+ &amp; \left. \left.-2\boldsymbol{\phi}'_{jm}B(t_{il})\chi_{im} \left(y_i(t_l)z_{ij} -  z_{ij} \boldsymbol{\nu}_{j}'B(t_{il}) - z_{ij}\sum_{n \ne m}\left[\chi_{in} \boldsymbol{\phi}_{kn}' B(t_{il})\right] - \sum_{k \ne j}z_{ij}z_{ik} \left[\boldsymbol{\nu}_{k}' B(t_{il}) + \sum_{n=1}^M \chi_{in} \boldsymbol{\phi}_{kn}'B(t_{il}) \right] \right)\right)\right\}\\
  &amp; \times \prod_{i = 1}^N \prod_{l=1}^{n_i^*} exp\left\{-\frac{1}{2\sigma^2}\left(\boldsymbol{\phi}_{jm}'\left(z_{ij}\chi^2_{im} B(t_{il}^*)B'(t_{il}^*) \right)\boldsymbol{\phi}_{jm}  \right. \right.  \\
- &amp; \left. \left.-2\boldsymbol{\phi}'_{jm}B(t_{il}^*)\chi_{im} \left(y_i(t_{il}^*)z_{ij} -  z_{ij} \boldsymbol{\nu}_{j}'B(t_{il}^*) - z_{ij}\sum_{n \ne m}\left[\chi_{in} \boldsymbol{\phi}_{kn}' B(t_{il}^*)\right] - \sum_{k \ne j} \left[z_{ik}\boldsymbol{\nu}_{k}' B(t_{il}^*) + \sum_{n=1}^M \chi_{in} \boldsymbol{\phi}_{kn}'B(t_{il}^*) \right] \right)\right)\right\}\\
+ &amp; \left. \left.-2\boldsymbol{\phi}'_{jm}B(t_{il}^*)\chi_{im} \left(y_i(t_{il}^*)z_{ij} -  z_{ij} \boldsymbol{\nu}_{j}'B(t_{il}^*) - z_{ij}\sum_{n \ne m}\left[\chi_{in} \boldsymbol{\phi}_{kn}' B(t_{il}^*)\right] - \sum_{k \ne j}z_{ij}z_{ik} \left[\boldsymbol{\nu}_{k}' B(t_{il}^*) + \sum_{n=1}^M \chi_{in} \boldsymbol{\phi}_{kn}'B(t_{il}^*) \right] \right)\right)\right\}\\
 &amp; \times exp \left\{-\frac{1}{2}\boldsymbol{\phi}_{jm}'\mathbf{D}_{jm}^{-1}\boldsymbol{\phi}_{jm} \right\}\\
 \end{aligned}$$
 </div>
@@ -13432,8 +13433,8 @@ p\left(\boldsymbol{\phi}_{jm} | \boldsymbol{\zeta}_{-\boldsymbol{\phi}_{jm}}\rig
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>where $\mathbf{D}_{jm} = \tilde{\tau}_m^{-1} diag\left(\gamma_{j1m}^{-1}, \dots, \gamma_{jPm}^{-1}\right)$.
 Letting 
-$$\mathbf{m}_1 = \frac{1}{\sigma^2} \sum_{i=1}^N \sum_{l = 1}^{n_i}\left(B(t_{il})\chi_{im} \left(y_i(t_{il})z_{ij} -  z_{ij} \boldsymbol{\nu}_{j}'B(t_{il}) - z_{ij}\sum_{n \ne m}\left[\chi_{in} \boldsymbol{\phi}_{kn}' B(t_{il})\right] - \sum_{k \ne j} \left[z_{ik}\boldsymbol{\nu}_{k}' B(t_{il}) + \sum_{n=1}^M \chi_{in} \boldsymbol{\phi}_{kn}'B(t_{il}) \right] \right) \right)$$
-$$\mathbf{m}_2 = \frac{1}{\sigma^2} \sum_{i=1}^N \sum_{l = 1}^{n_i^*}\left(B(t_{il}^*)\chi_{im} \left(y_i(t_{il}^*)z_{ij} -  z_{ij} \boldsymbol{\nu}_{j}'B(t_{il}^*) - z_{ij}\sum_{n \ne m}\left[\chi_{in} \boldsymbol{\phi}_{kn}' B(t_{il}^*)\right] - \sum_{k \ne j} \left[z_{ik}\boldsymbol{\nu}_{k}' B(t_{il}^*) + \sum_{n=1}^M \chi_{in} \boldsymbol{\phi}_{kn}'B(t_{il}^*) \right] \right) \right)$$ 
+$$\mathbf{m}_1 = \frac{1}{\sigma^2} \sum_{i=1}^N \sum_{l = 1}^{n_i}\left(B(t_{il})\chi_{im} \left(y_i(t_{il})z_{ij} -  z_{ij} \boldsymbol{\nu}_{j}'B(t_{il}) - z_{ij}\sum_{n \ne m}\left[\chi_{in} \boldsymbol{\phi}_{kn}' B(t_{il})\right] - \sum_{k \ne j} z_{ij}z_{ik}\left[\boldsymbol{\nu}_{k}' B(t_{il}) + \sum_{n=1}^M \chi_{in} \boldsymbol{\phi}_{kn}'B(t_{il}) \right] \right) \right)$$
+$$\mathbf{m}_2 = \frac{1}{\sigma^2} \sum_{i=1}^N \sum_{l = 1}^{n_i^*}\left(B(t_{il}^*)\chi_{im} \left(y_i(t_{il}^*)z_{ij} -  z_{ij} \boldsymbol{\nu}_{j}'B(t_{il}^*) - z_{ij}\sum_{n \ne m}\left[\chi_{in} \boldsymbol{\phi}_{kn}' B(t_{il}^*)\right] - \sum_{k \ne j} z_{ij}z_{ik}\left[\boldsymbol{\nu}_{k}' B(t_{il}^*) + \sum_{n=1}^M \chi_{in} \boldsymbol{\phi}_{kn}'B(t_{il}^*) \right] \right) \right)$$ 
 $$\mathbf{M}^{-1} = \frac{1}{\sigma^2}\sum_{i=1}^N \sum_{l = 1 }^{n_i} \left(z_{ij}\chi_{im}^2B(t_{il})B'(t_{il})\right) + \frac{1}{\sigma^2}\sum_{i=1}^N \sum_{l = 1 }^{n_i^*} \left(z_{ij}\chi_{im}^2B(t_{il}^*)B'(t_{il}^*)\right) + \mathbf{D}_{jm}^{-1}$$
 and $\mathbf{m} = \mathbf{m}_1 + \mathbf{m}_2$, we have
 $$\boldsymbol{\phi}_{jm} | \boldsymbol{\zeta}_{-\boldsymbol{\phi}_{jm}} \sim \mathcal{N}(\mathbf{M}\mathbf{m}, \mathbf{M})$$</p>
@@ -13456,7 +13457,7 @@ $$\delta_1 | \boldsymbol{\zeta}_{-\delta_1} = \delta_1| \delta_{2}, \dots, \delt
 $$\begin{aligned}
 \delta_1 | \boldsymbol{\zeta}_{-\delta_1} &amp; \propto \delta_1^{a_1 -1}exp\{-\delta_1\}  \\
 &amp; \times \prod_{k =1}^K \prod_{r = 1}^{P} \prod_{m =1}^M (\gamma_{k,r,m}\prod_{i=1}^m\delta_i)^{1/2} exp \left\{ -\frac{\gamma_{k,r,m}\prod_{i=1}^m\delta_i}{2}(\phi_{k,r, m})^2\right\} \\
-&amp; \propto \delta_1^{a_1 -1}exp\{-\delta_1\} (\delta_i)^{(PMK/ 2)}exp \left\{-\delta_1\left(\frac{1}{2}\sum_{k = 1}^K \sum_{r=1}^P \gamma_{k,r,1}\phi_{k,r,1}^2 + \frac{1}{2}\sum_{m=2}^M\sum_{k=1}^K \sum_{r=1}^P \gamma_{k,r,m}\phi_{k,r,m}^2\left( \prod_{j=2}^m \delta_{j} \right)\right) \right\}
+&amp; \propto \delta_1^{a_1 -1}exp\{-\delta_1\} (\delta_1)^{(PMK/ 2)}exp \left\{-\delta_1\left(\frac{1}{2}\sum_{k = 1}^K \sum_{r=1}^P \gamma_{k,r,1}\phi_{k,r,1}^2 + \frac{1}{2}\sum_{m=2}^M\sum_{k=1}^K \sum_{r=1}^P \gamma_{k,r,m}\phi_{k,r,m}^2\left( \prod_{j=2}^m \delta_{j} \right)\right) \right\}
 \end{aligned}$$
 </div>
 </div>
@@ -13482,7 +13483,7 @@ $$\delta_i | \boldsymbol{\zeta}_{-\delta_i} = \delta_i| \delta_{1}, \delta_{i-1}
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
 \delta_i | \boldsymbol{\zeta}_{-\delta_i} &amp; \propto \delta_i^{a_2 -1}exp\{-\delta_i\}  \\
-&amp; \times \prod_{k =1}^K \prod_{r = 1}^{P} \prod_{m =i}^M (\gamma_{k,r,m}\prod_{i=1}^m\delta_i)^{1/2} exp \left\{ -\frac{\gamma_{k,r,m}\prod_{i=1}^m\delta_i}{2}(\phi_{k,r, m})^2\right\} \\
+&amp; \times \prod_{k =1}^K \prod_{r = 1}^{P} \prod_{m =i}^M (\gamma_{k,r,m}\prod_{j=1}^m\delta_i)^{1/2} exp \left\{ -\frac{\gamma_{k,r,m}\prod_{j=1}^m\delta_i}{2}(\phi_{k,r, m})^2\right\} \\
 &amp; \propto \delta_i^{a_2 -1}exp\{-\delta_i\} (\delta_i)^{(P(M-i+1)K/ 2)}exp \left\{-\delta_i\left(\frac{1}{2}\sum_{m = i}^M\sum_{k=1}^K \sum_{r=1}^P \gamma_{k,r,m}\phi_{k,r,m}^2\left( \prod_{j=1; j \ne i}^m \delta_{j} \right)\right) \right\}
 \end{aligned}$$<p>Thus we can see that $$\delta_i | \boldsymbol{\zeta}_{-\delta_i} \sim Gamma\left(a_2 + (P(M - i + 1)K/2), 1 + \frac{1}{2}\sum_{m = i}^M\sum_{k=1}^K \sum_{r=1}^P \gamma_{k,r,m}\phi_{k,r,m}^2\left( \prod_{j=1; j \ne i}^m \delta_{j} \right)\right)$$</p>
 
@@ -13507,7 +13508,7 @@ $$P(a_{1}|\delta_{1}) \propto \frac{1}{\Gamma(a_{1})}\delta_{1}^{a_{1} -1} a_{1}
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Since this is not a known kernel of a distribution, we will have to use Metropolis-Hastings algorithm. Consider the proposal distribution $Q(a_{1}', a_{1}) = \mathcal{N}\left(a_{1}, \epsilon\beta_{1}^{-1}, 0, + \infty\right)$ (Truncated Normal) for some small $\epsilon &gt; 0$. Thus the probability of accepting any step is</p>
+<p>Since this is not a known kernel of a distribution, we will have to use Metropolis-Hastings algorithm. Consider the proposal distribution $Q(a_{1}', a_{1}) = \mathcal{N}\left(a_{1}, \epsilon_1\beta_{1}^{-1}, 0, + \infty\right)$ (Truncated Normal) for some small $\epsilon_1 &gt; 0$. Thus the probability of accepting any step is</p>
 $$A(a_{1)}',a_{1}) = \min \left\{1, \frac{P\left(a_{1}'| \boldsymbol{\zeta}_{-a_{1}'}\right)}{P\left(a_{1}| \boldsymbol{\zeta}_{-a_{1}}\right)} \frac{Q\left(a_{1}|a_{1}'\right)}{Q\left(a_{1}'|a_{1}\right)}\right\}$$
 </div>
 </div>
@@ -13530,7 +13531,7 @@ $$a_{2}| \boldsymbol{\zeta}_{-a_{2}} = a_{2}| \delta_{2}, \dots, \delta_{M}$$$$P
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Since this is not a known kernel of a distribution, we will have to use Metropolis-Hastings algorithm. Consider the proposal distribution $Q(a_{2}', a_{2}) = \mathcal{N}\left(a_{2}, \epsilon\beta_{2}^{-1}, 0, + \infty\right)$ (Truncated Normal) for some small $\epsilon &gt; 0$. Thus the probability of accepting any step is</p>
+<p>Since this is not a known kernel of a distribution, we will have to use Metropolis-Hastings algorithm. Consider the proposal distribution $Q(a_{2}', a_{2}) = \mathcal{N}\left(a_{2}, \epsilon_2\beta_{2}^{-1}, 0, + \infty\right)$ (Truncated Normal) for some small $\epsilon_2 &gt; 0$. Thus the probability of accepting any step is</p>
 $$A(a_{(2,j)}',a_{(2,j)}) = \min \left\{1, \frac{P\left(a_{(2,j)}'| \boldsymbol{\zeta}_{-a_{(2,j)}'}\right)}{P\left(a_{(2,j)}| \boldsymbol{\zeta}_{-a_{(2,j)}}\right)} \frac{Q\left(a_{(2,j)}|a_{(2,j)}'\right)}{Q\left(a_{(2,j)}'|a_{(2,j)}\right)}\right\}$$<hr>
 
 </div>
@@ -13629,7 +13630,7 @@ $$\pi_{l}| \boldsymbol{\zeta}_{-\pi_{l}}\sim Beta \left(\alpha_3/K + \sum_{i=1}^
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <hr>
-$$\boldsymbol{\nu}_j| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_j} = \boldsymbol{\nu}_j|\boldsymbol{\nu}_1, \dots , \boldsymbol{\nu}_{j-1}, \boldsymbol{\nu}_{j+1}, \boldsymbol{\nu}_k, y_1(\mathbf{t}_1), \dots y_N(\mathbf{t}_N), y_1(\mathbf{t}^*_1), \dots, y_N(\mathbf{t}^*_N), \tau_i^2, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_M, \mathbf{z}_1, \dots, \mathbf{z}_N, \sigma^2; \;\;\; j= 1, \dots, K$$
+$$\boldsymbol{\nu}_j| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_j} = \boldsymbol{\nu}_j|\boldsymbol{\nu}_1, \dots , \boldsymbol{\nu}_{j-1}, \boldsymbol{\nu}_{j+1}, \boldsymbol{\nu}_k, y_1(\mathbf{t}_1), \dots y_N(\mathbf{t}_N), y_1(\mathbf{t}^*_1), \dots, y_N(\mathbf{t}^*_N), \tau_i^2, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_M, \mathbf{z}_1, \dots, \mathbf{z}_N, \sigma^2, \boldsymbol{\chi}_1, \dots, \boldsymbol{\chi}_M; \;\;\; j= 1, \dots, K$$
 </div>
 </div>
 </div>
@@ -13638,11 +13639,11 @@ $$\boldsymbol{\nu}_j| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_j} = \boldsymbol{\nu
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
 P(\boldsymbol{\nu}_j| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_j}) &amp; \propto exp\left(-\frac{\tau_j}{2}\boldsymbol{\nu}_j'\mathbf{P}\boldsymbol{\nu}_j\right)\\
-&amp; \times \prod_{i = 1}^N \prod_{l=1}^{n_i} exp\left\{-\frac{1}{2\sigma^2}\left(y_i(t_{il}) -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{l})\right)\right)^2\right\}\\
-&amp; \times \prod_{i = 1}^N \prod_{l=1}^{n_i^*} exp\left\{-\frac{1}{2\sigma^2}\left(y_i(t_{il}^*) -  \sum_{k=1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)^2\right\}\\
+&amp; \times \prod_{i = 1}^N \prod_{l=1}^{n_i} exp\left\{-\frac{1}{2\sigma^2}\left(y_i(t_{il}) -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}) + \sum_{n=1}^Mz_{ik}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{l})\right)\right)^2\right\}\\
+&amp; \times \prod_{i = 1}^N \prod_{l=1}^{n_i^*} exp\left\{-\frac{1}{2\sigma^2}\left(y_i(t_{il}^*) -  \sum_{k=1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*) + \sum_{n=1}^Mz_{ik}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)^2\right\}\\
 &amp; \propto exp\left\{- \frac{1}{2}\left(\boldsymbol{\nu}_j'\left(\tau_j\mathbf{P} + \frac{1}{\sigma^2} \sum_{i =1}^N \sum_{l=1}^{n_i}z_{ij}B(t_{il})B'(t_{il}) + \frac{1}{\sigma^2} \sum_{i =1}^N \sum_{l=1}^{n_i^*}z_{ij}B(t_{il}^*)B'(t_{il}^*) \right)\boldsymbol{\nu}_j \right. \right.\\
-&amp; \left.\left. -2\boldsymbol{\nu}_j'\left(\frac{1}{\sigma^2}\sum_{i=1}^N\sum_{l=1}^{n_i}z_{ij}B(t_{il})\left(y_i(t_{il}) - \left(\sum_{k\ne j}z_{ik}\boldsymbol{\nu}'_{k}B(t_{il})\right)  - \left(\sum_{k=1}^K \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{l}) \right)\right)\right) \right.\right.\\
-&amp; \left.\left. -2\boldsymbol{\nu}_j'\left(\frac{1}{\sigma^2}\sum_{i=1}^N\sum_{l=1}^{n_i}z_{ij}B(t_{il}^*)\left(y_i(t_{il}^*) - \left(\sum_{k\ne j}z_{ik}\boldsymbol{\nu}'_{k}B(t_{il}^*)\right)  - \left(\sum_{k=1}^K \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{l}^*) \right)\right)\right) \right)\right\}
+&amp; \left.\left. -2\boldsymbol{\nu}_j'\left(\frac{1}{\sigma^2}\sum_{i=1}^N\sum_{l=1}^{n_i}z_{ij}B(t_{il})\left(y_i(t_{il}) - \left(\sum_{k\ne j}z_{ik}\boldsymbol{\nu}'_{k}B(t_{il})\right)  - \left(\sum_{k=1}^K \sum_{n=1}^Mz_{ik}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{l}) \right)\right)\right) \right.\right.\\
+&amp; \left.\left. -2\boldsymbol{\nu}_j'\left(\frac{1}{\sigma^2}\sum_{i=1}^N\sum_{l=1}^{n_i}z_{ij}B(t_{il}^*)\left(y_i(t_{il}^*) - \left(\sum_{k\ne j}z_{ik}\boldsymbol{\nu}'_{k}B(t_{il}^*)\right)  - \left(\sum_{k=1}^K \sum_{n=1}^Mz_{ik}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{l}^*) \right)\right)\right) \right)\right\}
 \end{aligned}$$
 </div>
 </div>
@@ -13652,8 +13653,8 @@ P(\boldsymbol{\nu}_j| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_j}) &amp; \propto ex
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Letting 
 $$\mathbf{B}_j = \left( \tau_j\mathbf{P} + \frac{1}{\sigma^2} \sum_{i =1}^N \sum_{l=1}^{n_i}z_{ij}B(t_{il})B'(t_{il}) + \frac{1}{\sigma^2} \sum_{i =1}^N \sum_{l=1}^{n_i^*}z_{ij}B(t_{il}^*)B'(t_{il}^*)  \right)^{-1},$$
-$$\mathbf{b}_{1j} = \frac{1}{\sigma^2}\sum_{i=1}^N\sum_{l=1}^{n_i}z_{ij}B(t_{il})\left(y_i(t_{il}) - \left(\sum_{k\ne j}z_{ik}\boldsymbol{\nu}'_{k}B(t_{il})\right)  - \left(\sum_{k=1}^K \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{l}) \right)\right),$$
-$$\mathbf{b}_{2j} = \frac{1}{\sigma^2}\sum_{i=1}^N\sum_{l=1}^{n_i}z_{ij}B(t_{il}^*)\left(y_i(t_{il}^*) - \left(\sum_{k\ne j}z_{ik}\boldsymbol{\nu}'_{k}B(t_{il}^*)\right)  - \left(\sum_{k=1}^K \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{l}^*) \right)\right),$$
+$$\mathbf{b}_{1j} = \frac{1}{\sigma^2}\sum_{i=1}^N\sum_{l=1}^{n_i}z_{ij}B(t_{il})\left(y_i(t_{il}) - \left(\sum_{k\ne j}z_{ik}\boldsymbol{\nu}'_{k}B(t_{il})\right)  - \left(\sum_{k=1}^K \sum_{n=1}^Mz_{ik}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{l}) \right)\right),$$
+$$\mathbf{b}_{2j} = \frac{1}{\sigma^2}\sum_{i=1}^N\sum_{l=1}^{n_i}z_{ij}B(t_{il}^*)\left(y_i(t_{il}^*) - \left(\sum_{k\ne j}z_{ik}\boldsymbol{\nu}'_{k}B(t_{il}^*)\right)  - \left(\sum_{k=1}^K \sum_{n=1}^M z_{ik}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{l}^*) \right)\right),$$
 and $\mathbf{b}_j = \mathbf{b}_{1j} + \mathbf{b}_{2j}$, then we have that 
 $$\boldsymbol{\nu}_j| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_j} \sim \mathcal{N}(\mathbf{B}_j\mathbf{b}_j, \mathbf{B}_j)$$</p>
 
@@ -13681,7 +13682,7 @@ $$\tau_l| \boldsymbol{\zeta}_{-\tau_l} = \tau_l | \boldsymbol{\nu}_l; \;\;\; l =
 $$\begin{aligned}
 P(\tau^2_i| \boldsymbol{\zeta}_{-\tau^2_i}) &amp; \propto \tau_l^{\alpha - 1} exp\left\{-\tau_l\beta\right\}\\
 &amp; \times |\tau_l \mathbf{P}|^{1/2} exp\left\{-\frac{\tau_l}{2}\boldsymbol{\nu}'_l\mathbf{P}\boldsymbol{\nu}_l\right\}\\
-&amp; \propto \tau_l^{(\alpha +  K / 2) - 1} exp \left\{-\tau_l\left( \beta + \frac{1}{2}\boldsymbol{\nu}'_l\mathbf{P}\boldsymbol{\nu}_l\right) \right\}\\
+&amp; \propto \tau_l^{(\alpha +  P / 2) - 1} exp \left\{-\tau_l\left( \beta + \frac{1}{2}\boldsymbol{\nu}'_l\mathbf{P}\boldsymbol{\nu}_l\right) \right\}\\
 \end{aligned}$$
 </div>
 </div>
@@ -13689,7 +13690,7 @@ P(\tau^2_i| \boldsymbol{\zeta}_{-\tau^2_i}) &amp; \propto \tau_l^{\alpha - 1} ex
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Thus we have that $$\tau_l| \boldsymbol{\zeta}_{-\tau_l} \sim Gamma\left(\alpha + K/2, \beta + \frac{1}{2}\boldsymbol{\nu}'_l\mathbf{P}\boldsymbol{\nu}_l\right)$$</p>
+<p>Thus we have that $$\tau_l| \boldsymbol{\zeta}_{-\tau_l} \sim Gamma\left(\alpha + P/2, \beta + \frac{1}{2}\boldsymbol{\nu}'_l\mathbf{P}\boldsymbol{\nu}_l\right)$$</p>
 
 </div>
 </div>
@@ -13698,7 +13699,7 @@ P(\tau^2_i| \boldsymbol{\zeta}_{-\tau^2_i}) &amp; \propto \tau_l^{\alpha - 1} ex
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <hr>
-$$\sigma^2| \boldsymbol{\zeta}_{-\sigma^2} = \sigma^2 | y_1(\mathbf{t}_1), \dots, y_N(\mathbf{t}_N), y_1(\mathbf{t}_1^*), \dots, y_N(\mathbf{t}_N^*),  \boldsymbol{\nu}, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_M, \mathbf{Z},\chi_1, \dots \chi_M$$
+$$\sigma^2| \boldsymbol{\zeta}_{-\sigma^2} = \sigma^2 | y_1(\mathbf{t}_1), \dots, y_N(\mathbf{t}_N), y_1(\mathbf{t}_1^*), \dots, y_N(\mathbf{t}_N^*),  \boldsymbol{\nu}, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_M, \mathbf{Z},\boldsymbol{\chi}_1, \dots ,\boldsymbol{\chi}_M$$
 </div>
 </div>
 </div>
@@ -13706,10 +13707,10 @@ $$\sigma^2| \boldsymbol{\zeta}_{-\sigma^2} = \sigma^2 | y_1(\mathbf{t}_1), \dots
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 $$\begin{aligned}
-P(\sigma^2| \boldsymbol{\zeta}_{-\sigma^2}) &amp; \propto (\sigma^2)^{-\alpha_0 - 1}exp \left\{- \frac{\sigma^2}{\beta_0}\right\}\\
+P(\sigma^2| \boldsymbol{\zeta}_{-\sigma^2}) &amp; \propto (\sigma^2)^{-\alpha_0 - 1}exp \left\{- \frac{\beta_0}{\sigma^2}\right\}\\
 &amp; \times \prod_{i = 1}^N \prod_{l=1}^{n_i}\frac{1}{(\sigma^2)^{1/2}} exp\left\{-\frac{1}{2\sigma^2}\left(y_i(t_{il}) -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il})\right)\right)^2\right\}\\
 &amp; \times \prod_{i = 1}^N \prod_{l=1}^{n_i^*}\frac{1}{(\sigma^2)^{1/2}} exp\left\{-\frac{1}{2\sigma^2}\left(y_i(t_{li}^*) -  \sum_{k=1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)^2\right\}\\
-&amp; \propto (\sigma^2)^{-\left(\alpha_0 + \left(\sum_{i=1}^N n_i\right)/2 + \left(\sum_{i=1}^N n_i^*\right)/2\right)  - 1}exp \left\{- \frac{\sigma^2}{\beta_0 + \beta_{01} +\beta_{02}}\right\}\\
+&amp; \propto (\sigma^2)^{-\left(\alpha_0 + \left(\sum_{i=1}^N n_i\right)/2 + \left(\sum_{i=1}^N n_i^*\right)/2\right)  - 1}exp \left\{- \frac{\beta_0 + \beta_{01} +\beta_{02}}{\sigma^2}\right\}\\
 \end{aligned}$$<p>where $$\beta_{01} =\frac{1}{2}\sum_{i=1}^N\sum_{l=1}^{n_i}\left(y_i(t_{il}) -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il})\right)\right)^2$$</p>
 $$\beta_{02} = \frac{1}{2}\sum_{i=1}^N\sum_{l=1}^{n_i^*}\left(y_i(t_{il}^*) -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)^2$$
 </div>
@@ -13718,7 +13719,7 @@ $$\beta_{02} = \frac{1}{2}\sum_{i=1}^N\sum_{l=1}^{n_i^*}\left(y_i(t_{il}^*) -  \
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Thus we  can see that 
+<p>Thus we have that 
 $$\sigma^2| \boldsymbol{\zeta}_{-\sigma^2}  \sim  IG\left(\alpha_0 + \frac{\sum_{i=1}^N n_i}{2} +\frac{\sum_{i=1}^N n_i^*}{2}, \beta_0 +\beta_{01} + \beta_{02}\right)$$</p>
 
 </div>
@@ -13728,7 +13729,179 @@ $$\sigma^2| \boldsymbol{\zeta}_{-\sigma^2}  \sim  IG\left(\alpha_0 + \frac{\sum_
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <hr>
-$$y_i(t_{il}^*)| \boldsymbol{\zeta}_{-y_i(t_{il}^*)} = y_i(t_{il}^*) | \sigma^2,  \boldsymbol{\nu}, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_M, \mathbf{z}_i,\chi_1, \dots \chi_M$$$$y_i(t_{il}^*)| \boldsymbol{\zeta}_{-y_i(t_{il}^*)}  \sim \mathcal{N}\left(\sum_{k=1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right),\sigma^2\right)$$
+$$y_i(t_{il}^*)| \boldsymbol{\zeta}_{-y_i(t_{il}^*)} = y_i(t_{il}^*) | \sigma^2,  \boldsymbol{\nu}, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_M, \mathbf{z}_i,\boldsymbol{\chi}_1, \dots \boldsymbol{\chi}_M$$$$y_i(t_{il}^*)| \boldsymbol{\zeta}_{-y_i(t_{il}^*)}  \sim \mathcal{N}\left(\sum_{k=1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right),\sigma^2\right)$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+$$\chi_{im}| \boldsymbol{\zeta}_{-\chi_{im}} = \chi_{im} | y(\mathbf{t}_i), y(\mathbf{t}_i^*), \sigma^2,  \boldsymbol{\nu}, \boldsymbol{\Phi}_1, \dots, \boldsymbol{\Phi}_M, \mathbf{z}_i,\chi_{i1}, \dots,\chi_{i(m-1)}, \chi_{i(m+1)}, \dots, \chi_{iM}; \;\;\; i = 1, \dots, N; \;\;\; m = 1, \dots, M$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\begin{aligned}
+p\left(\chi_{im}| \boldsymbol{\zeta}_{-\chi_{im}}\right) &amp; \propto \prod_{l=1}^{n_i} exp\left\{-\frac{1}{2\sigma^2}\left(y_i(t_{il}) -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il})\right)\right)^2\right\}\\
+&amp; \times \prod_{l=1}^{n_i^*} exp\left\{-\frac{1}{2\sigma^2}\left(y_i(t_{li}^*) -  \sum_{k=1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)^2\right\}\\
+&amp; \times exp \left\{-\frac{1}{2}\chi_{im}^2 \right\}\\
+&amp; \propto exp \left\{ -\frac{1}{2}\left(\chi_{im}^2\left(1 + \frac{1}{\sigma^2} \sum_{l=1}^{n_i}\left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il})\right)^2 + \frac{1}{\sigma^2} \sum_{l=1}^{n_i^*}\left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il}^*)\right)^2\right)\right. \right. \\
+&amp; \left. \left. -2\chi_{im}\frac{1}{\sigma^2}\left(\sum_{l=1}^{n_i} \left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il})\right)\left(y_i(t_{il}) - \sum_{k = 1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il})  + \sum_{n\ne m}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il})\right)\right)\right) \right. \right.\\
+&amp; \left. \left. -2\chi_{im}\frac{1}{\sigma^2}\left(\sum_{l=1}^{n_i} \left(\sum_{k = 1}^Kz_{ik}\boldsymbol{\phi}_{km}'B(t_{il}^*)\right)\left(y_i(t_{il}^*) - \sum_{k = 1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*)  + \sum_{n\ne m}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)\right)\right)\right\}
+\end{aligned}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>letting 
+$$w_1 = \frac{1}{\sigma^2}\left(\sum_{l=1}^{n_i} \left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il})\right)\left(y_i(t_{il}) - \sum_{k = 1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t_{il})  + \sum_{n\ne m}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il})\right)\right)\right)$$
+$$w_2 = \frac{1}{\sigma^2}\left(\sum_{l=1}^{n_i} \left(\sum_{k = 1}^Kz_{ik}\boldsymbol{\phi}_{km}'B(t_{il}^*)\right)\left(y_i(t_{il}^*) - \sum_{k = 1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*)  + \sum_{n\ne m}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)\right)$$
+$$W^{-1} = 1 + \frac{1}{\sigma^2} \sum_{l=1}^{n_i}\left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il})\right)^2 + \frac{1}{\sigma^2} \sum_{l=1}^{n_i^*}\left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il}^*)\right)^2$$
+and $w = w_1 + w_2$, we have that $$\chi_{im}| \boldsymbol{\zeta}_{-\chi_{im}} \sim \mathcal{N}(Ww, W)$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<hr>
+<h2 id="Tempered-Transitions">Tempered Transitions<a class="anchor-link" href="#Tempered-Transitions">&#182;</a></h2><p>Following Behrens, Friel, and Hurn as well as Celeux, Hurn, and Robert (2000), we will only temper the likelihood and not any of the priors. The target distribution is usually assumed to be written as:
+$$p(x) \propto \pi(x)exp\left(-\beta_0 h(x)\right).$$
+Thus we can rewrite our likelihood as:
+\begin{aligned}
+p(y_i(t)|\boldsymbol{\zeta)} &amp; \propto \frac{1}{\sqrt{2\pi\sigma^2}}exp\left\{-\frac{1}{2\sigma^2}\left(y_i(t) -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t)\right)\right)^2\right\} \\
+&amp; \propto exp\left\{-\left(\frac{1}{2}log(\sigma^2)\right) + \frac{1}{2\sigma^2}\left(y_i(t_{il}) -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t)\right)\right)^2\right\}
+\end{aligned}</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Thus for $h^{th}$ tempered likelihood, we have that:
+\begin{aligned}
+p_h(y_i(t)|\boldsymbol{\zeta}) &amp; \propto exp\left\{- \beta_h\left(\frac{1}{2}log(\sigma^2) + \frac{1}{2\sigma^2} \left(y_i(t) -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t)\right)\right)^2\right)\right\} \\
+&amp; =\left(\sigma^2\right)^{-\beta_h / 2}exp\left\{-\frac{\beta_h}{2\sigma^2}\left(y_i(t) -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t)\right)\right)^2\right\}
+\end{aligned}</p>
+<p>for $1 = \beta_0 &lt; \dots &lt; \beta_h &lt; \dots &lt; \beta_{N_t}$. We will let $\beta_{N_t}$ and $N_t$ be user-chosen parameters, and assume a geometric scheme (i.e., $\beta_{h}/\beta_{h+1} = c$, for some constant $c$).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Transitions">Transitions<a class="anchor-link" href="#Transitions">&#182;</a></h3><p>By tempering only the likelihood, the only changes to our proposals are the following:</p>
+<p>Letting 
+$$\mathbf{m}_{1h} = \frac{\beta_h}{\sigma^2} \sum_{i=1}^N \sum_{l = 1}^{n_i}\left(B(t_{il})\chi_{im} \left(y_i(t_{il})z_{ij} -  z_{ij} \boldsymbol{\nu}_{j}'B(t_{il}) - z_{ij}\sum_{n \ne m}\left[\chi_{in} \boldsymbol{\phi}_{kn}' B(t_{il})\right] - \sum_{k \ne j} z_{ij}z_{ik}\left[\boldsymbol{\nu}_{k}' B(t_{il}) + \sum_{n=1}^M \chi_{in} \boldsymbol{\phi}_{kn}'B(t_{il}) \right] \right) \right)$$
+$$\mathbf{m}_{2h} = \frac{\beta_h}{\sigma^2} \sum_{i=1}^N \sum_{l = 1}^{n_i^*}\left(B(t_{il}^*)\chi_{im} \left(y_i(t_{il}^*)z_{ij} -  z_{ij} \boldsymbol{\nu}_{j}'B(t_{il}^*) - z_{ij}\sum_{n \ne m}\left[\chi_{in} \boldsymbol{\phi}_{kn}' B(t_{il}^*)\right] - \sum_{k \ne j} z_{ij}z_{ik}\left[\boldsymbol{\nu}_{k}' B(t_{il}^*) + \sum_{n=1}^M \chi_{in} \boldsymbol{\phi}_{kn}'B(t_{il}^*) \right] \right) \right)$$ 
+$$\mathbf{M}^{-1}_h = \frac{\beta_h}{\sigma^2}\sum_{i=1}^N \sum_{l = 1 }^{n_i} \left(z_{ij}\chi_{im}^2B(t_{il})B'(t_{il})\right) + \frac{\beta_h}{\sigma^2}\sum_{i=1}^N \sum_{l = 1 }^{n_i^*} \left(z_{ij}\chi_{im}^2B(t_{il}^*)B'(t_{il}^*)\right) + \mathbf{D}_{jm}^{-1}$$
+and $\mathbf{m}_h = \mathbf{m}_{1h} + \mathbf{m}_{2h}$, we have
+$$(\boldsymbol{\phi}_{jm} | \boldsymbol{\zeta}_{-\boldsymbol{\phi}_{jm}})_h \sim \mathcal{N}(\mathbf{M}_h\mathbf{m}_h, \mathbf{M}_h)$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Letting 
+$$w_{1h} = \frac{\beta_h}{\sigma^2}\left(\sum_{l=1}^{n_i} \left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il})\right)\left(y_i(t_{il}) - \sum_{k = 1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t_{il})  + \sum_{n\ne m}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il})\right)\right)\right)$$
+$$w_{2h} = \frac{1}{\sigma^2}\left(\sum_{l=1}^{n_i} \left(\sum_{k = 1}^Kz_{ik}\boldsymbol{\phi}_{km}'B(t_{il}^*)\right)\left(y_i(t_{il}^*) - \sum_{k = 1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*)  + \sum_{n\ne m}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)\right)$$
+$$W^{-1}_h = 1 + \frac{\beta_h}{\sigma^2} \sum_{l=1}^{n_i}\left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il})\right)^2 + \frac{1}{\sigma^2} \sum_{l=1}^{n_i^*}\left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il}^*)\right)^2$$
+and $w_h = w_{1h} + w_{2h}$, we have that $$(\chi_{im})_h| \boldsymbol{\zeta}_{-(\chi_{im})_h} \sim \mathcal{N}(W_hw_h, W_h)$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Letting $$(\beta_{01})_h =\frac{\beta_h}{2}\sum_{i=1}^N\sum_{l=1}^{n_i}\left(y_i(t_{il}) -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il})\right)\right)^2$$</p>
+$$(\beta_{02})_h = \frac{\beta_h}{2}\sum_{i=1}^N\sum_{l=1}^{n_i^*}\left(y_i(t_{il}^*) -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)^2$$<p>Thus we have that 
+$$(\sigma^2_h| \boldsymbol{\zeta}_{-\sigma^2_h})  \sim  IG\left(\alpha_0 + \frac{\beta_h\sum_{i=1}^N  n_i}{2} +\frac{\beta_h\sum_{i=1}^N n_i^*}{2}, \beta_0 +(\beta_{01})_h + (\beta_{02})_h\right)$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$\begin{aligned}
+P((\mathbf{z}_{i})_h| \boldsymbol{\zeta}_{-(\mathbf{z}_{i})_h}) &amp; \propto \prod_{k=1}^K \pi_k^{(z_{ik})_h} (1-\pi_k)^{(1 - (z_{ik})_h)}\\
+&amp; \times \prod_{l=1}^{n_i} exp\left\{-\frac{\beta_h}{2\sigma^2}\left(y_i(t_{il}) -  \sum_{k=1}^K (z_{ik})_h\left(\boldsymbol{\nu}_k'B(t_{il}) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il})\right)\right)^2\right\}\\
+&amp; \times \prod_{l=1}^{n_i^*} exp\left\{-\frac{\beta_h}{2\sigma^2}\left(y_i(t_{il}^*) -  \sum_{k=1}^K(z_{ik})_h\left(\boldsymbol{\nu}_k'B(t_{il}^*) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)^2\right\}
+\end{aligned}$$<p>Since this is not proportional to a known distribution, we will perform a Metropolis-Hastings update. Thus let the proposal distribution of $(z_{ik})_h$ to be $Q((z_{ik})_h'|(z_{ik})_{h-1}) = Bin((z_{ik})_h|p = (z_{ik})_{h-1} \rho + (1-(z_{ik})_{h-1})(1-\rho))$, where $(z_{ik})_h$'s are independent. Thus the probability of accepting  $(\mathbf{z}_{i})_h'$ is 
+$$A((\mathbf{z}_i)_h', (\mathbf{z}_i)_{h-1})= \min\left\{\frac{P\left((\mathbf{z}_i)_h'| \boldsymbol{\zeta}_{-(\mathbf{z}_{i})_h'}\right)}{P\left((\mathbf{z}_i)_{h-1}| \boldsymbol{\zeta}_{-(\mathbf{z}_{i})_{h-1}}\right)} \right\}$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Letting 
+$$(\mathbf{B}_j)_h = \left( \tau_j\mathbf{P} + \frac{\beta_h}{\sigma^2} \sum_{i =1}^N \sum_{l=1}^{n_i}z_{ij}B(t_{il})B'(t_{il}) + \frac{\beta_h}{\sigma^2} \sum_{i =1}^N \sum_{l=1}^{n_i^*}z_{ij}B(t_{il}^*)B'(t_{il}^*)  \right)^{-1},$$
+$$(\mathbf{b}_{1j})_h = \frac{\beta_h}{\sigma^2}\sum_{i=1}^N\sum_{l=1}^{n_i}z_{ij}B(t_{il})\left(y_i(t_{il}) - \left(\sum_{k\ne j}z_{ik}\boldsymbol{\nu}'_{k}B(t_{il})\right)  - \left(\sum_{k=1}^K \sum_{n=1}^Mz_{ik}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{l}) \right)\right),$$
+$$(\mathbf{b}_{2j})_h = \frac{\beta_h}{\sigma^2}\sum_{i=1}^N\sum_{l=1}^{n_i}z_{ij}B(t_{il}^*)\left(y_i(t_{il}^*) - \left(\sum_{k\ne j}z_{ik}\boldsymbol{\nu}'_{k}B(t_{il}^*)\right)  - \left(\sum_{k=1}^K \sum_{n=1}^M z_{ik}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{l}^*) \right)\right),$$
+and $(\mathbf{b}_j)_h = (\mathbf{b}_{1j})_h + (\mathbf{b}_{2j})_h$, then we have that 
+$$(\boldsymbol{\nu}_j| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_j})_h \sim \mathcal{N}((\mathbf{B}_j)_h(\mathbf{b}_j)_h, (\mathbf{B}_j)_h)$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+$$p_h((y_i(t^*_j))_h|\boldsymbol{\zeta}_{(y_i(t^*_j))_h}) \propto \left(\sigma^2\right)^{-\beta_h / 2}exp\left\{-\frac{\beta_h}{2\sigma^2}\left((y_i(t^*_j))_h -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t)\right)\right)^2\right\}$$<p>Since this is not proportional to a known distribution, we will perform a Metropolis-Hastings update. Thus let the proposal distribution of $y_i(t^*_j))_h$ to be $$Q((y_i(t^*_j))_h'|(y_i(t^*_j))_{h-1}) = \mathcal{N}\left((y_i(t^*_j))_h'|\sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t)\right), \sigma^2/\beta_h\right)$$ Thus the probability of accepting  $(\mathbf{z}_{i})_h'$ is 
+$$A((y_i(t^*_j))_h',(y_i(t^*_j))_{h-1})= \min\left\{\frac{P\left((\mathbf{z}_i)_h'| \boldsymbol{\zeta}_{-(\mathbf{z}_{i})_h'}\right)Q\left((y_i(t^*_j))_{h-1}|(y_i(t^*_j))_{h}'\right)}{P\left((\mathbf{z}_i)_{h-1}| \boldsymbol{\zeta}_{-(\mathbf{z}_{i})_{h-1}}\right)Q\left((y_i(t^*_j))_h'|(y_i(t^*_j))_{h-1}\right)} \right\}$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Steps for Tempered Transitions MCMC:</p>
+<p>1) Start with initial state $\zeta_0$.</p>
+<p>2) Transition from initial state $\zeta_0$ to $\zeta_1$ using $\beta_1$.</p>
+<p>3) Continue with transitions in an increasing manner until we transition from $\zeta_{N_t - 1}$ to $\zeta_{N_t}$ using $\beta_{N_t}$.</p>
+<p>4) Transition from $\zeta_{N_t}$ to $\zeta_{N_t + 1}$ using $\beta_{N_t}$.</p>
+<p>5) Continue with transitions in a decreasing manner unit we transition from $\zeta_{2N_t -1}$ to $\zeta_{2N_t}$ using $\beta_1$.</p>
+<p>6) Accept transition from $\zeta_0$ to $\zeta_{2N_t}$ with probability $\min \left\{1, \prod_{i=0}^{N_t-1}\frac{p_{i+1}(\boldsymbol{\zeta}_{i})}{p_i(\boldsymbol{\zeta}_i)} \prod_{N_t+1}^{2N_t}\frac{p_{i}(\boldsymbol{\zeta}_{i-1})}{p_i(\boldsymbol{\zeta}_i)}\right\}$.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<hr>
+<h2 id="Extension">Extension<a class="anchor-link" href="#Extension">&#182;</a></h2><p>Extension to higher order dimensions (images/video) should be straight forward, and still very  computationally efficient. We can represent the spline approximation to $f_i(t), t \in \mathcal{T} \subseteq \mathbb{R}^m$ (where $\mathcal{T}$ is compact) using the following tensor product of one-dimensional splines:
+$$f^{(i)}(\mathbf{t}) = \sum_{k_1=1}^{P_1} \dots \sum_{k_m=1}^{P_m} b_{(k_1, \dots, k_p)}B_{k_1}(t_{i1})\times \dots \times B_{k_m}(t_{im})$$</p>
+
 </div>
 </div>
 </div>
