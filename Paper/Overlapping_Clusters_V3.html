@@ -13155,10 +13155,10 @@ div#notebook {
 
 
 
-<div id="acb46084-0315-423b-825d-7c412da2445c"></div>
+<div id="84241976-658e-4868-92d7-9bfa470b252a"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#acb46084-0315-423b-825d-7c412da2445c');
+var element = $('#84241976-658e-4868-92d7-9bfa470b252a');
 MathJax.Hub.Config({
     TeX: { equationNumbers: { autoNumber: "AMS" } }
 });
@@ -13881,18 +13881,17 @@ $$A((y_i(t^*_j))_h',(y_i(t^*_j))_{h-1})= \min\left\{\frac{P\left((\mathbf{z}_i)_
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can pick a better sampling scheme if we follow Behrens, Friel, and Hurn and estimate $g(\beta)$ in order to find the optimal temperature ladder. Given $N_t, \beta_0,$ and $\beta_{N_t}$, we can estimate $g(\beta)$ and $g'(\beta)$ in the following way:</p>
+<p>1)  Use importance sampling to estimate $g(\tilde{\beta}_i) = \mathbb{E}_{\tilde{\beta}_i}(h(x))$ across a uniform set of $\beta_0 \le \tilde{\beta}_i \le \beta_{N_t}$ and $g'(\tilde{\beta}_i) = \mathbb{E}_{\tilde{\beta}_i}(h(x)^2) - \mathbb{E}_{\tilde{\beta}_i}(h(x))^2$</p>
+<p>2) Use a basis to approximate $g(\beta)$ and $g'(\beta)$</p>
+<p>3) Find $\beta_1, \dots, \beta_{N_t - 1}$ by minimizing $S_{N_t} = \sum_{i=0}^{N_t - 1}(\beta_i - \beta_{i+1})g(\beta_{i+1}) - \sum_{i=0}^{N_t - 1} (\beta_i - \beta_{i+1})g(\beta_{i})$</p>
+<p>3.1) We can use the gradient to speed up the optimization $$\frac{\partial S_{N_t}}{\partial\beta_i} = \left(g(\beta_{i-1}) - 2g(\beta_i) + g(\beta_{i+1})\right) + \left(\beta_{i-1}- 2\beta_{i} + \beta_{i+1}\right)g'(\beta_i)$$</p>
 
-    </div>
 </div>
 </div>
-
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
