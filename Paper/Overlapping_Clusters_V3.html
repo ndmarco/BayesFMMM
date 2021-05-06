@@ -13155,10 +13155,10 @@ div#notebook {
 
 
 
-<div id="84241976-658e-4868-92d7-9bfa470b252a"></div>
+<div id="3afa8a96-004c-4d15-b03e-5360e22c25f5"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#84241976-658e-4868-92d7-9bfa470b252a');
+var element = $('#3afa8a96-004c-4d15-b03e-5360e22c25f5');
 MathJax.Hub.Config({
     TeX: { equationNumbers: { autoNumber: "AMS" } }
 });
@@ -13815,8 +13815,8 @@ $$(\boldsymbol{\phi}_{jm} | \boldsymbol{\zeta}_{-\boldsymbol{\phi}_{jm}})_h \sim
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Letting 
 $$w_{1h} = \frac{\beta_h}{\sigma^2}\left(\sum_{l=1}^{n_i} \left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il})\right)\left(y_i(t_{il}) - \sum_{k = 1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t_{il})  + \sum_{n\ne m}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il})\right)\right)\right)$$
-$$w_{2h} = \frac{1}{\sigma^2}\left(\sum_{l=1}^{n_i} \left(\sum_{k = 1}^Kz_{ik}\boldsymbol{\phi}_{km}'B(t_{il}^*)\right)\left(y_i(t_{il}^*) - \sum_{k = 1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*)  + \sum_{n\ne m}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)\right)$$
-$$W^{-1}_h = 1 + \frac{\beta_h}{\sigma^2} \sum_{l=1}^{n_i}\left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il})\right)^2 + \frac{1}{\sigma^2} \sum_{l=1}^{n_i^*}\left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il}^*)\right)^2$$
+$$w_{2h} = \frac{\beta_h}{\sigma^2}\left(\sum_{l=1}^{n_i} \left(\sum_{k = 1}^Kz_{ik}\boldsymbol{\phi}_{km}'B(t_{il}^*)\right)\left(y_i(t_{il}^*) - \sum_{k = 1}^Kz_{ik}\left(\boldsymbol{\nu}_k'B(t_{il}^*)  + \sum_{n\ne m}\chi_{in}\boldsymbol{\phi}_{kn}'B(t_{il}^*)\right)\right)\right)$$
+$$W^{-1}_h = 1 + \frac{\beta_h}{\sigma^2} \sum_{l=1}^{n_i}\left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il})\right)^2 + \frac{\beta_i}{\sigma^2} \sum_{l=1}^{n_i^*}\left(\sum_{k = 1}^K z_{ik}\boldsymbol{\phi}_{km}'B(t_{il}^*)\right)^2$$
 and $w_h = w_{1h} + w_{2h}$, we have that $$(\chi_{im})_h| \boldsymbol{\zeta}_{-(\chi_{im})_h} \sim \mathcal{N}(W_hw_h, W_h)$$</p>
 
 </div>
@@ -13876,7 +13876,19 @@ $$A((y_i(t^*_j))_h',(y_i(t^*_j))_{h-1})= \min\left\{\frac{P\left((\mathbf{z}_i)_
 <p>3) Continue with transitions in an increasing manner until we transition from $\zeta_{N_t - 1}$ to $\zeta_{N_t}$ using $\beta_{N_t}$.</p>
 <p>4) Transition from $\zeta_{N_t}$ to $\zeta_{N_t + 1}$ using $\beta_{N_t}$.</p>
 <p>5) Continue with transitions in a decreasing manner unit we transition from $\zeta_{2N_t -1}$ to $\zeta_{2N_t}$ using $\beta_1$.</p>
-<p>6) Accept transition from $\zeta_0$ to $\zeta_{2N_t}$ with probability $\min \left\{1, \prod_{i=0}^{N_t-1}\frac{p_{i+1}(\boldsymbol{\zeta}_{i})}{p_i(\boldsymbol{\zeta}_i)} \prod_{N_t+1}^{2N_t}\frac{p_{i}(\boldsymbol{\zeta}_{i-1})}{p_i(\boldsymbol{\zeta}_i)}\right\}$.</p>
+<p>6) Accept transition from $\zeta_0$ to $\zeta_{2N_t}$ with probability $\min \left\{1, \prod_{i=0}^{N_t-1}\frac{p_{i+1}(\boldsymbol{\zeta}_{i})}{p_i(\boldsymbol{\zeta}_i)} \prod_{i=N_t+1}^{2N_t}\frac{p_{i}(\boldsymbol{\zeta}_{i})}{p_{i-1}(\boldsymbol{\zeta}_{i})}\right\}$.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Note that $P_{r+1}(\boldsymbol{\zeta}_r)$ can be reduced down to 
+$$\begin{aligned}
+P_{r+1}(\boldsymbol{\zeta}_r) &amp; \propto \prod_{i=1}^N\prod_{l=1}^{n_i} exp\left\{-\frac{\beta_{r+1}}{2(\sigma^{(r)})^2}\left(y_i(t_{il}) -  \sum_{k=1}^K (z_{ik}^{(r)})_h\left(\left(\boldsymbol{\nu}_k^{(r)}\right)'B(t_{il}) + \sum_{n=1}^M\chi_{in}^{(r)}\left(\boldsymbol{\phi}_{kn}^{(r)}\right)'B(t_{il})\right)\right)^2\right\}\\
+&amp; \times \prod_{i=1}^N\prod_{l=1}^{n_i^*} exp\left\{-\frac{\beta_{r+1}}{2(\sigma^{(r)})^2}\left(y_i^{(r)}(t_{il}^*) -  \sum_{k=1}^K(z^{(r)}_{ik})_h\left(\left(\boldsymbol{\nu}^{(r)}_k\right)'B(t_{il}^*) + \sum_{n=1}^M\chi_{in}^{(r)}\left(\boldsymbol{\phi}_{kn}^{(r)}\right)'B(t_{il}^*)\right)\right)^2\right\}
+\end{aligned}$$</p>
 
 </div>
 </div>
@@ -13885,7 +13897,7 @@ $$A((y_i(t^*_j))_h',(y_i(t^*_j))_{h-1})= \min\left\{\frac{P\left((\mathbf{z}_i)_
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>We can pick a better sampling scheme if we follow Behrens, Friel, and Hurn and estimate $g(\beta)$ in order to find the optimal temperature ladder. Given $N_t, \beta_0,$ and $\beta_{N_t}$, we can estimate $g(\beta)$ and $g'(\beta)$ in the following way:</p>
-<p>1)  Use importance sampling to estimate $g(\tilde{\beta}_i) = \mathbb{E}_{\tilde{\beta}_i}(h(x))$ across a uniform set of $\beta_0 \le \tilde{\beta}_i \le \beta_{N_t}$ and $g'(\tilde{\beta}_i) = \mathbb{E}_{\tilde{\beta}_i}(h(x)^2) - \mathbb{E}_{\tilde{\beta}_i}(h(x))^2$</p>
+<p>1)  Use importance sampling to estimate $g(\tilde{\beta}_i) = \mathbb{E}_{\tilde{\beta}_i}(h(\boldsymbol{\zeta}))$ across a uniform set of $\beta_0 \le \tilde{\beta}_i \le \beta_{N_t}$ and $g'(\tilde{\beta}_i) = \mathbb{E}_{\tilde{\beta}_i}(h(\boldsymbol{\zeta})^2) - \mathbb{E}_{\tilde{\beta}_i}(h(\boldsymbol{\zeta}))^2$</p>
 <p>2) Use a basis to approximate $g(\beta)$ and $g'(\beta)$</p>
 <p>3) Find $\beta_1, \dots, \beta_{N_t - 1}$ by minimizing $S_{N_t} = \sum_{i=0}^{N_t - 1}(\beta_i - \beta_{i+1})g(\beta_{i+1}) - \sum_{i=0}^{N_t - 1} (\beta_i - \beta_{i+1})g(\beta_{i})$</p>
 <p>3.1) We can use the gradient to speed up the optimization $$\frac{\partial S_{N_t}}{\partial\beta_i} = \left(g(\beta_{i-1}) - 2g(\beta_i) + g(\beta_{i+1})\right) + \left(\beta_{i-1}- 2\beta_{i} + \beta_{i+1}\right)g'(\beta_i)$$</p>
