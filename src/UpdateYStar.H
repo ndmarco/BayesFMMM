@@ -4,6 +4,11 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 
+double lpdfYStar(const double& beta_i,
+                 const double& y_star,
+                 const double& mean,
+                 const double& sigma);
+
 void updateYStar(const arma::field<arma::mat>& B_star,
                  const arma::mat& nu,
                  const arma::cube& Phi,
@@ -13,5 +18,16 @@ void updateYStar(const arma::field<arma::mat>& B_star,
                  const int& iter,
                  const int& tot_mcmc_iters,
                  arma::field<arma::mat>& y_star);
+
+void updateYStarTempered(const double& beta_i,
+                         const arma::field<arma::mat>& B_star,
+                         const arma::mat& nu,
+                         const arma::cube& Phi,
+                         const arma::mat& Z,
+                         const arma::mat& chi,
+                         const double& sigma,
+                         const int& iter,
+                         const int& tot_mcmc_iters,
+                         arma::field<arma::mat>& y_star);
 
 #endif
