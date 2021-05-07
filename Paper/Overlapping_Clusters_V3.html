@@ -13155,10 +13155,10 @@ div#notebook {
 
 
 
-<div id="048f3421-c820-465a-bd44-d95234cc3b60"></div>
+<div id="f0dfd095-9a56-4389-95be-abb3b0ae8c67"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#048f3421-c820-465a-bd44-d95234cc3b60');
+var element = $('#f0dfd095-9a56-4389-95be-abb3b0ae8c67');
 MathJax.Hub.Config({
     TeX: { equationNumbers: { autoNumber: "AMS" } }
 });
@@ -13862,7 +13862,7 @@ $$(\boldsymbol{\nu}_j| \boldsymbol{\zeta}_{-\boldsymbol{\nu}_j})_h \sim \mathcal
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 $$p_h((y_i(t^*_j))_h|\boldsymbol{\zeta}_{(y_i(t^*_j))_h}) \propto \left(\sigma^2\right)^{-\beta_h / 2}exp\left\{-\frac{\beta_h}{2\sigma^2}\left((y_i(t^*_j))_h -  \sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t)\right)\right)^2\right\}$$<p>Since this is not proportional to a known distribution, we will perform a Metropolis-Hastings update. Thus let the proposal distribution of $y_i(t^*_j))_h$ to be $$Q((y_i(t^*_j))_h'|(y_i(t^*_j))_{h-1}) = \mathcal{N}\left((y_i(t^*_j))_h'|\sum_{k=1}^K z_{ik}\left(\boldsymbol{\nu}_k'B(t) + \sum_{n=1}^M\chi_{in}\boldsymbol{\phi}_{kn}'B(t)\right), \sigma^2/\beta_h\right)$$ Thus the probability of accepting  $(\mathbf{z}_{i})_h'$ is 
-$$A((y_i(t^*_j))_h',(y_i(t^*_j))_{h-1})= \min\left\{\frac{P\left((\mathbf{z}_i)_h'| \boldsymbol{\zeta}_{-(\mathbf{z}_{i})_h'}\right)Q\left((y_i(t^*_j))_{h-1}|(y_i(t^*_j))_{h}'\right)}{P\left((\mathbf{z}_i)_{h-1}| \boldsymbol{\zeta}_{-(\mathbf{z}_{i})_{h-1}}\right)Q\left((y_i(t^*_j))_h'|(y_i(t^*_j))_{h-1}\right)} \right\}$$</p>
+$$A(y_i(t^*_j)_h',(y_i(t^*_j)_{h-1})= \min\left\{\frac{P\left(y_i(t^*_j)_{h}'| \boldsymbol{\zeta}_{-y_i(t^*_j)_{h}'}\right)Q\left(y_i(t^*_j)_{h-1}|(y_i(t^*_j)_{h}'\right)}{P\left(y_i(t^*_j)_{h-1}| \boldsymbol{\zeta}_{-y_i(t^*_j)_{h-1}}\right)Q\left(y_i(t^*_j)_h'|y_i(t^*_j)_{h-1}\right)} \right\}$$</p>
 
 </div>
 </div>
