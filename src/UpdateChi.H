@@ -26,7 +26,6 @@ void updateChiTempered(const double& beta_i,
                        const double& sigma,
                        const int& iter,
                        const int& tot_mcmc_iters,
-                       arma::cube& chi,
-                       double& LP_zeta);
+                       arma::cube& chi);
 
 #endif

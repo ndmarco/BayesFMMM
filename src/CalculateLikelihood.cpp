@@ -5,7 +5,7 @@
 //'
 //' @name calcLikelihood
 //' @param y_obs Field of vectors containing observed time points
-//' @param y_obs Field of matrices containing unobserved time points for all iterations
+//' @param y_star Field of matrices containing unobserved time points for all iterations
 //' @param B_obs Field of matrices containing basis functions evaluated at observed time points
 //' @param B_star Field of matrices containing basis functions evaluated at unobserved time points
 //' @param nu Matrix containing current nu parameters

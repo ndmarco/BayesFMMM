@@ -14,6 +14,7 @@
 //' @param iter Int containing MCMC iteration
 //' @param tot_mcmc_iters Int containing total number of MCMC iterations
 //' @param chi Cube contianing MCMC samples for chi
+
 void updateChi(const arma::field<arma::vec>& y_obs,
               const arma::field<arma::mat>& y_star,
               const arma::field<arma::mat>& B_obs,
@@ -99,8 +100,8 @@ void updateChi(const arma::field<arma::vec>& y_obs,
 //' @param sigma double containing current sigma parameter
 //' @param iter Int containing MCMC iteration
 //' @param tot_mcmc_iters Int containing total number of MCMC iterations
-//' @param chi Cube contianing MCMC samples for chi
-//' @param LP_zeta double containing probability of accepting the final state
+//' @param chi Cube containing MCMC samples for chi
+
 void updateChiTempered(const double& beta_i,
                        const arma::field<arma::vec>& y_obs,
                        const arma::field<arma::mat>& y_star,
@@ -112,8 +113,7 @@ void updateChiTempered(const double& beta_i,
                        const double& sigma,
                        const int& iter,
                        const int& tot_mcmc_iters,
-                       arma::cube& chi,
-                       double& LP_zeta){
+                       arma::cube& chi){
   double w = 0;
   double W = 0;
   double ph = 0;

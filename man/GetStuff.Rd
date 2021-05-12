@@ -4,6 +4,7 @@
 \alias{GetStuff}
 \alias{TestEstimateInitialZ}
 \alias{TestEstimateInitial}
+\alias{TestEstimateInitialTT}
 \title{Tests BFOC function}
 \usage{
 GetStuff()
@@ -11,8 +12,12 @@ GetStuff()
 TestEstimateInitialZ()
 
 TestEstimateInitial(tot_mcmc_iters, r_stored_iters, directory)
+
+TestEstimateInitialTT(tot_mcmc_iters, r_stored_iters, directory)
 }
 \description{
+Tests BFOC function
+
 Tests BFOC function
 
 Tests BFOC function

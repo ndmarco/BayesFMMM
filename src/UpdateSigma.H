@@ -31,5 +31,5 @@ void updateSigmaTempered(const double& beta_i,
                          const arma::mat& chi,
                          const int& iter,
                          const int& tot_mcmc_iters,
-                         arma::vec& sigma)
+                         arma::vec& sigma);
 #endif
