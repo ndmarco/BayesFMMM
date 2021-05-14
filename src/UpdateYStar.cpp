@@ -114,7 +114,7 @@ void updateYStarTempered(const double& beta_i,
         lpdf_proposal = lpdfYStar(beta_i, y_star_proposal, mean, sigma);
         q_old = R::dnorm(y_star(i,0)(iter, l), mean, std::sqrt(sigma / beta_i),
                          true);
-        q_new = R::dnorm4(y_star_proposal, mean, std::sqrt(sigma / beta_i),
+        q_new = R::dnorm(y_star_proposal, mean, std::sqrt(sigma / beta_i),
                           true);
         A = lpdf_proposal + q_old - lpdf_old - q_new;
         rand_unif_var = R::runif(0,1);

@@ -1,11 +1,11 @@
 library(BayesFOC)
 
 ## Get Z estimates
-Z <- array(0,dim=c(100,3,6000))
-dir = "/Users/nicholasmarco/Projects/FDA/Trace/rstudio-export4/Trace3/Z"
-for(i in 0:149){
+Z <- array(0,dim=c(3,8,4000))
+dir = "C:\\Projects\\Trace\\nu"
+for(i in 0:9){
   Z_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
-  Z[,,(40*(i) + 1):(40*(i+1))] <- Z_i
+  Z[,,(400*(i) + 1):(400*(i+1))] <- Z_i
 }
 
 
