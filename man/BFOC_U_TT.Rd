@@ -2,6 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFOC_U_TT}
 \alias{BFOC_U_TT}
+\alias{BFOC_U_Temp}
 \title{Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.}
 \usage{
 BFOC_U_TT(
@@ -40,6 +41,44 @@ BFOC_U_TT(
   y_star_est,
   beta_N_t,
   N_t,
+  sigma_est
+)
+
+BFOC_U_Temp(
+  y_obs,
+  t_obs,
+  n_funct,
+  K,
+  P,
+  M,
+  tot_mcmc_iters,
+  r_stored_iters,
+  t_star,
+  nu_1,
+  rho,
+  alpha_3,
+  alpha1l,
+  alpha2l,
+  beta1l,
+  beta2l,
+  var_epsilon1,
+  var_epsilon2,
+  alpha,
+  beta,
+  alpha_0,
+  beta_0,
+  directory,
+  Z_est,
+  A_est,
+  pi_est,
+  tau_est,
+  delta_est,
+  nu_est,
+  Phi_est,
+  gamma_est,
+  chi_est,
+  y_star_est,
+  temp,
   sigma_est
 )
 }
@@ -112,7 +151,11 @@ BFOC_U_TT(
 }
 \value{
 params List of objects containing the MCMC samples from the last batch
+
+params List of objects containing the MCMC samples from the last batch
 }
 \description{
+Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
+
 Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
 }

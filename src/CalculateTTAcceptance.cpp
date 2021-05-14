@@ -43,8 +43,8 @@ double calculatePZeta(const double& beta_i,
           }
         }
       }
-      logAcceptance = logAcceptance + (((beta_i/2) * std::log(sigma)) -
-        (beta_i / ( 2 * sigma)) * std::pow(y_obs(i,0)(l) - mean, 2));
+      logAcceptance = logAcceptance + ((-(beta_i/2) * std::log(sigma)) -
+        (beta_i / (2 * sigma)) * std::pow(y_obs(i,0)(l) - mean, 2.0));
     }
     if(y_star(i,0).n_elem > 0){
       for(int l = 0; l < y_star(i,0).n_cols; l++){
@@ -58,8 +58,8 @@ double calculatePZeta(const double& beta_i,
             }
           }
         }
-        logAcceptance = logAcceptance + (((beta_i/2) * std::log(sigma)) -
-          (beta_i / ( 2 * sigma)) * std::pow(y_star(i,0)(l, iter) - mean, 2));
+        logAcceptance = logAcceptance + ((-(beta_i/2) * std::log(sigma)) -
+          (beta_i / ( 2 * sigma)) * std::pow(y_star(i,0)(iter, l) - mean, 2.0));
       }
     }
   }
@@ -93,7 +93,7 @@ double CalculateTTAcceptance(const arma::vec& beta,
                              const arma::vec& sigma){
   double logAcceptance = 0;
   int m = sigma.n_elem - 1;
-  for(int i = 0; i < (beta.n_elem - 1); i++){
+  for(int i = 0; i < (beta.n_elem - 2); i++){
     // calculate for heating up
     logAcceptance = logAcceptance + calculatePZeta(beta(i+1), y_obs, y_star,
                                                    B_obs, B_star, nu.slice(i),

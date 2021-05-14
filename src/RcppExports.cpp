@@ -161,6 +161,51 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// BFOC_U_Temp
+Rcpp::List BFOC_U_Temp(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::field<arma::vec>& t_star, const double& nu_1, const double& rho, const double& alpha_3, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory, const arma::mat& Z_est, const arma::vec& A_est, const arma::vec& pi_est, const arma::vec& tau_est, const arma::vec& delta_est, const arma::mat& nu_est, const arma::cube& Phi_est, const arma::cube& gamma_est, const arma::mat& chi_est, const arma::field<arma::vec>& y_star_est, const double& temp, const double& sigma_est);
+RcppExport SEXP _BayesFOC_BFOC_U_Temp(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP, SEXP Z_estSEXP, SEXP A_estSEXP, SEXP pi_estSEXP, SEXP tau_estSEXP, SEXP delta_estSEXP, SEXP nu_estSEXP, SEXP Phi_estSEXP, SEXP gamma_estSEXP, SEXP chi_estSEXP, SEXP y_star_estSEXP, SEXP tempSEXP, SEXP sigma_estSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type y_obs(y_obsSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type t_obs(t_obsSEXP);
+    Rcpp::traits::input_parameter< const double& >::type n_funct(n_functSEXP);
+    Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
+    Rcpp::traits::input_parameter< const int& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const int& >::type tot_mcmc_iters(tot_mcmc_itersSEXP);
+    Rcpp::traits::input_parameter< const int& >::type r_stored_iters(r_stored_itersSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type t_star(t_starSEXP);
+    Rcpp::traits::input_parameter< const double& >::type nu_1(nu_1SEXP);
+    Rcpp::traits::input_parameter< const double& >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< const double& >::type alpha_3(alpha_3SEXP);
+    Rcpp::traits::input_parameter< const double& >::type alpha1l(alpha1lSEXP);
+    Rcpp::traits::input_parameter< const double& >::type alpha2l(alpha2lSEXP);
+    Rcpp::traits::input_parameter< const double& >::type beta1l(beta1lSEXP);
+    Rcpp::traits::input_parameter< const double& >::type beta2l(beta2lSEXP);
+    Rcpp::traits::input_parameter< const double& >::type var_epsilon1(var_epsilon1SEXP);
+    Rcpp::traits::input_parameter< const double& >::type var_epsilon2(var_epsilon2SEXP);
+    Rcpp::traits::input_parameter< const double& >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type alpha_0(alpha_0SEXP);
+    Rcpp::traits::input_parameter< const double& >::type beta_0(beta_0SEXP);
+    Rcpp::traits::input_parameter< const std::string >::type directory(directorySEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Z_est(Z_estSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type A_est(A_estSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type pi_est(pi_estSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type tau_est(tau_estSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type delta_est(delta_estSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type nu_est(nu_estSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type Phi_est(Phi_estSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type gamma_est(gamma_estSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type chi_est(chi_estSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type y_star_est(y_star_estSEXP);
+    Rcpp::traits::input_parameter< const double& >::type temp(tempSEXP);
+    Rcpp::traits::input_parameter< const double& >::type sigma_est(sigma_estSEXP);
+    rcpp_result_gen = Rcpp::wrap(BFOC_U_Temp(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, temp, sigma_est));
+    return rcpp_result_gen;
+END_RCPP
+}
 // PhiChiInitialState
 Rcpp::List PhiChiInitialState(const arma::mat& known_Z, const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::field<arma::vec>& t_star, const double& nu_1, const double& rho, const double& alpha_3, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const arma::mat& nu, const double& sigma);
 RcppExport SEXP _BayesFOC_PhiChiInitialState(SEXP known_ZSEXP, SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP nuSEXP, SEXP sigmaSEXP) {
@@ -410,15 +455,31 @@ BEGIN_RCPP
 END_RCPP
 }
 // TestEstimateInitialTT
-Rcpp::List TestEstimateInitialTT(const int tot_mcmc_iters, const int r_stored_iters, const std::string directory);
-RcppExport SEXP _BayesFOC_TestEstimateInitialTT(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP directorySEXP) {
+Rcpp::List TestEstimateInitialTT(const int tot_mcmc_iters, const int r_stored_iters, const double beta_N_t, const int N_t, const std::string directory);
+RcppExport SEXP _BayesFOC_TestEstimateInitialTT(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP directorySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const int >::type tot_mcmc_iters(tot_mcmc_itersSEXP);
     Rcpp::traits::input_parameter< const int >::type r_stored_iters(r_stored_itersSEXP);
+    Rcpp::traits::input_parameter< const double >::type beta_N_t(beta_N_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type N_t(N_tSEXP);
     Rcpp::traits::input_parameter< const std::string >::type directory(directorySEXP);
-    rcpp_result_gen = Rcpp::wrap(TestEstimateInitialTT(tot_mcmc_iters, r_stored_iters, directory));
+    rcpp_result_gen = Rcpp::wrap(TestEstimateInitialTT(tot_mcmc_iters, r_stored_iters, beta_N_t, N_t, directory));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestEstimateInitialTemp
+Rcpp::List TestEstimateInitialTemp(const int tot_mcmc_iters, const int r_stored_iters, const double temp, const std::string directory);
+RcppExport SEXP _BayesFOC_TestEstimateInitialTemp(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP tempSEXP, SEXP directorySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type tot_mcmc_iters(tot_mcmc_itersSEXP);
+    Rcpp::traits::input_parameter< const int >::type r_stored_iters(r_stored_itersSEXP);
+    Rcpp::traits::input_parameter< const double >::type temp(tempSEXP);
+    Rcpp::traits::input_parameter< const std::string >::type directory(directorySEXP);
+    rcpp_result_gen = Rcpp::wrap(TestEstimateInitialTemp(tot_mcmc_iters, r_stored_iters, temp, directory));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -428,6 +489,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_BFOC_SS", (DL_FUNC) &_BayesFOC_BFOC_SS, 24},
     {"_BayesFOC_BFOC_U", (DL_FUNC) &_BayesFOC_BFOC_U, 34},
     {"_BayesFOC_BFOC_U_TT", (DL_FUNC) &_BayesFOC_BFOC_U_TT, 36},
+    {"_BayesFOC_BFOC_U_Temp", (DL_FUNC) &_BayesFOC_BFOC_U_Temp, 35},
     {"_BayesFOC_PhiChiInitialState", (DL_FUNC) &_BayesFOC_PhiChiInitialState, 25},
     {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
     {"_BayesFOC_TestUpdatePi", (DL_FUNC) &_BayesFOC_TestUpdatePi, 0},
@@ -449,7 +511,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_GetStuff", (DL_FUNC) &_BayesFOC_GetStuff, 0},
     {"_BayesFOC_TestEstimateInitialZ", (DL_FUNC) &_BayesFOC_TestEstimateInitialZ, 0},
     {"_BayesFOC_TestEstimateInitial", (DL_FUNC) &_BayesFOC_TestEstimateInitial, 3},
-    {"_BayesFOC_TestEstimateInitialTT", (DL_FUNC) &_BayesFOC_TestEstimateInitialTT, 3},
+    {"_BayesFOC_TestEstimateInitialTT", (DL_FUNC) &_BayesFOC_TestEstimateInitialTT, 5},
+    {"_BayesFOC_TestEstimateInitialTemp", (DL_FUNC) &_BayesFOC_TestEstimateInitialTemp, 4},
     {NULL, NULL, 0}
 };
 
