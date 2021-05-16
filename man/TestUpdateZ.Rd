@@ -2,10 +2,15 @@
 % Please edit documentation in R/RcppExports.R
 \name{TestUpdateZ}
 \alias{TestUpdateZ}
+\alias{TestUpdateZTempered}
 \title{Tests updating Z}
 \usage{
 TestUpdateZ()
+
+TestUpdateZTempered(beta)
 }
 \description{
+Tests updating Z
+
 Tests updating Z
 }

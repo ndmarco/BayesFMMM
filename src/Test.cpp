@@ -1396,8 +1396,9 @@ Rcpp::List TestEstimateInitial(const int tot_mcmc_iters, const int r_stored_iter
   // Make nu matrix
   arma::mat nu;
   nu = {{2, 0, 1, 0, 0, 0, 1, 3},
-  {2, 0, 1, 0, 1, 0, 1, 3},
-  {2, 0, 1, 1, 1, 0, 1, 3}};
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+;
 
   // Make Phi matrix
   arma::cube Phi(3,8,3);
@@ -1530,8 +1531,9 @@ Rcpp::List TestEstimateInitialTT(const int tot_mcmc_iters, const int r_stored_it
   // Make nu matrix
   arma::mat nu;
   nu = {{2, 0, 1, 0, 0, 0, 1, 3},
-  {2, 0, 1, 0, 1, 0, 1, 3},
-  {2, 0, 1, 1, 1, 0, 1, 3}};
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
 
   // Make Phi matrix
   arma::cube Phi(3,8,3);
@@ -1625,6 +1627,137 @@ Rcpp::List TestEstimateInitialTT(const int tot_mcmc_iters, const int r_stored_it
 //' @name GetStuff
 //' @export
 // [[Rcpp::export]]
+Rcpp::List TestEstimateInitialTempladder(const double beta_N_t, const int N_t){
+  arma::field<arma::vec> t_obs1(100,1);
+  arma::field<arma::vec> t_star1(100,1);
+  int n_funct = 100;
+  for(int i = 0; i < n_funct; i++){
+    t_obs1(i,0) =  arma::regspace(0, 10, 990);
+    t_star1(i,0) = arma::regspace(0, 50, 950);
+  }
+
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu;
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,3);
+  for(int i=0; i < 3; i++)
+  {
+    Phi.slice(i) = (3-i) * 0.1 * arma::randu<arma::mat>(3,8);
+  }
+  double sigma_sq = 0.005;
+
+  // Make chi matrix
+  arma::mat chi(100, 3, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
+  for(int i = 0; i < 100; i++){
+    if(i < 10){
+      Z.row(i) = {1, 0, 0};
+    }else if(i < 20){
+      Z.row(i) = {0, 1, 0};
+    }else if(i < 30){
+      Z.row(i) = {0, 0, 1};
+    }
+
+    while(arma::accu(Z.row(i)) == 0){
+      Z.row(i) = arma::randi<arma::rowvec>(3, arma::distr_param(0,1));
+    }
+  }
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    mean = arma::zeros(8);
+    for(int l = 0; l < nu.n_rows; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+  }
+
+  // estimate B-spline expansion
+  // arma::mat theta = BasisExpansion(y_obs, B_obs, 100, 3, 8);
+  // //estimate Z matrix
+  // arma::mat Z_est = ZInitialState(B_obs, theta, 50, 3, 100, 0.001);
+  // // estimate sigma
+  // double sigma_est = SigmaInitialState(y_obs, B_obs, theta, 100);
+  // // estimate nu
+  // arma::mat nu_est = NuInitialState(B_obs, Z_est, theta, 100);
+  // get rest of estimates
+  Rcpp::List output = PhiChiInitialState(Z, y_obs, t_obs1, 100, 3, 8, 3,
+                                         1000, 200, t_star1, 3, 0.7, 1, 2, 3,
+                                         1, 1, sqrt(1), sqrt(1), 1, 1, 1, 1,
+                                         nu, sigma_sq);
+
+  // start MCMC sampling
+  Rcpp::List mod1 = BFOC_U_Templadder(y_obs, t_obs1, n_funct, 3, 8, 3,10, 10, t_star1, 3, 0.7, 1, 2, 3, 1, 1,
+                              sqrt(1), sqrt(1), 1, 1, 1, 1, Z,
+                              output["A_est"], output["pi_est"], output["tau_est"],
+                                     output["delta_est"], nu, Phi,
+                                     output["gamma_est"], chi,
+                                     output["y_star_est"], beta_N_t, N_t, sigma_sq);
+
+  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
+                                        Rcpp::Named("y_obs", y_obs),
+                                        Rcpp::Named("nu_true", nu),
+                                        Rcpp::Named("Phi_true", Phi),
+                                        Rcpp::Named("nu", mod1["nu"]),
+                                        Rcpp::Named("y_star", mod1["y_star"]),
+                                        Rcpp::Named("chi", mod1["chi"]),
+                                        Rcpp::Named("pi", mod1["pi"]),
+                                        Rcpp::Named("A", mod1["A"]),
+                                        Rcpp::Named("delta", mod1["delta"]),
+                                        Rcpp::Named("sigma", mod1["sigma"]),
+                                        Rcpp::Named("tau", mod1["tau"]),
+                                        Rcpp::Named("gamma", mod1["gamma"]),
+                                        Rcpp::Named("Phi", mod1["Phi"]),
+                                        Rcpp::Named("Z", mod1["Z"]));
+
+  return mod2;
+}
+
+//' Tests BFOC function
+//'
+//' @name GetStuff
+//' @export
+// [[Rcpp::export]]
 Rcpp::List TestEstimateInitialTemp(const int tot_mcmc_iters, const int r_stored_iters,
                                    const double temp, const std::string directory){
   arma::field<arma::vec> t_obs1(100,1);
@@ -1663,8 +1796,9 @@ Rcpp::List TestEstimateInitialTemp(const int tot_mcmc_iters, const int r_stored_
   // Make nu matrix
   arma::mat nu;
   nu = {{2, 0, 1, 0, 0, 0, 1, 3},
-  {2, 0, 1, 0, 1, 0, 1, 3},
-  {2, 0, 1, 1, 1, 0, 1, 3}};
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
 
   // Make Phi matrix
   arma::cube Phi(3,8,3);
@@ -1752,4 +1886,573 @@ Rcpp::List TestEstimateInitialTemp(const int tot_mcmc_iters, const int r_stored_
 
   return mod2;
 }
+//' Tests updating Z
+//'
+//' @name TestUpdateZ
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdateZTempered(const double beta)
+{
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
 
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,5);
+  for(int i=0; i < 5; i++)
+  {
+    Phi.slice(i) = (5-i) * 0.1 * arma::randu<arma::mat>(3,8);
+  }
+  double sigma_sq = 0.001;
+
+  // Make chi matrix
+  arma::mat chi(100, 5, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
+  Z.col(0) = arma::vec(100, arma::fill::ones);
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    y_star(j,0) = arma::zeros(100, B_star(j,0).n_rows);
+    mean = arma::zeros(8);
+    for(int l = 0; l < 3; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+    y_star(j, 0).row(0) = arma::mvnrnd(B_star(j, 0) * mean, sigma_sq *
+      arma::eye(B_star(j,0).n_rows, B_star(j,0).n_rows)).t();
+    for(int i = 1; i < 100; i++){
+      y_star(j, 0).row(i) = y_star(j, 0).row(0);
+    }
+  }
+
+  // Initialize pi
+  arma::vec pi = {0.95, 0.5, 0.5};
+
+  // Initialize placeholder
+  arma::mat Z_ph = arma::zeros(100, 3);
+
+  //Initialize Z_samp
+  arma::cube Z_samp = arma::ones(100, 3, 100);
+  for(int i = 0; i < 100; i++)
+  {
+    updateZTempered(beta, y_obs, y_star, B_obs, B_star, Phi, nu, chi, pi,
+            sigma_sq, 0.6, i, 100, Z_ph, Z_samp);
+  }
+
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Z_samp", Z_samp),
+                                      Rcpp::Named("Z",Z),
+                                      Rcpp::Named("f_obs", y_obs),
+                                      Rcpp::Named("f_star", y_star));
+  return mod;
+}
+
+//' Tests updating Phi using temperature
+//'
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdatePhiTempered(const double beta)
+{
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,5);
+  for(int i=0; i < 5; i++)
+  {
+    Phi.slice(i) = (5-i) * 0.1 * arma::randu<arma::mat>(3,8);
+  }
+  double sigma_sq = 0.001;
+
+  // Make chi matrix
+  arma::mat chi(100, 5, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
+  Z.col(0) = arma::vec(100, arma::fill::ones);
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    y_star(j,0) = arma::zeros(100, B_star(j,0).n_rows);
+    mean = arma::zeros(8);
+    for(int l = 0; l < 3; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+    y_star(j, 0).row(0) = arma::mvnrnd(B_star(j, 0) * mean, sigma_sq *
+      arma::eye(B_star(j,0).n_rows, B_star(j,0).n_rows)).t();
+    for(int i = 1; i < 100; i++){
+      y_star(j, 0).row(i) = y_star(j, 0).row(0);
+    }
+  }
+
+  // Initialize pi
+  arma::vec pi = {0.95, 0.5, 0.5};
+
+  arma::field<arma::cube> Phi_samp(100, 1);
+  for(int i = 0; i < 100 ; i++){
+    Phi_samp(i,0) = arma::zeros(Phi.n_rows, Phi.n_cols, Phi.n_slices);
+  }
+  arma::vec m_1(Phi.n_cols, arma::fill::zeros);
+  arma::mat M_1(Phi.n_cols, Phi.n_cols, arma::fill::zeros);
+  arma::cube gamma(Phi.n_rows, Phi.n_cols, Phi.n_slices, arma::fill::ones);
+  gamma = gamma * 10;
+  arma::vec tilde_tau = {2, 2.5, 3, 5, 10};
+  for(int i = 0; i < 100; i++){
+    updatePhiTempered(beta, y_obs, y_star, B_obs, B_star, nu, gamma, tilde_tau, Z, chi,
+              sigma_sq, i, 100, m_1, M_1, Phi_samp);
+  }
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Phi", Phi),
+                                      Rcpp::Named("Phi_samp", Phi_samp));
+  return mod;
+}
+
+//' Tests updating Nu
+//'
+//' @name TestUpdateNuTemperd
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdateNuTempered(const double beta){
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,5);
+  for(int i=0; i < 5; i++)
+  {
+    Phi.slice(i) = (5-i) * 0.1 * arma::randu<arma::mat>(3,8);
+  }
+  double sigma_sq = 0.01;
+
+  // Make chi matrix
+  arma::mat chi(100, 5, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
+  Z.col(0) = arma::vec(100, arma::fill::ones);
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    y_star(j,0) = arma::zeros(100, B_star(j,0).n_rows);
+    mean = arma::zeros(8);
+    for(int l = 0; l < 3; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+    y_star(j, 0).row(0) = arma::mvnrnd(B_star(j, 0) * mean, sigma_sq *
+      arma::eye(B_star(j,0).n_rows, B_star(j,0).n_rows)).t();
+    for(int i = 1; i < 100; i++){
+      y_star(j, 0).row(i) = y_star(j, 0).row(0);
+    }
+  }
+
+  // Initialize pi
+  arma::vec pi = {0.95, 0.5, 0.5};
+
+  arma::cube Nu_samp(nu.n_rows, nu.n_cols, 100);
+  arma::vec b_1(nu.n_cols, arma::fill::zeros);
+  arma::mat B_1(nu.n_cols, nu.n_cols, arma::fill::zeros);
+  arma::mat P(nu.n_cols, nu.n_cols, arma::fill::zeros);
+  P.zeros();
+  for(int j = 0; j < P.n_rows; j++){
+    P(0,0) = 1;
+    if(j > 0){
+      P(j,j) = 2;
+      P(j-1,j) = -1;
+      P(j,j-1) = -1;
+    }
+    P(P.n_rows - 1, P.n_rows - 1) = 1;
+  }
+  arma::vec tau(nu.n_rows, arma::fill::ones);
+  tau = tau * 10;
+  arma::vec log_lik = arma::zeros(100);
+  for(int i = 0; i < 100; i++){
+    updateNuTempered(beta, y_obs, y_star, B_obs, B_star, tau, Phi, Z, chi, sigma_sq, i, 100,
+             P, b_1, B_1, Nu_samp);
+    log_lik(i) = calcLikelihood(y_obs, y_star, B_obs, B_star, Nu_samp.slice(i),
+            Phi, Z, chi,i, sigma_sq);
+  }
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("nu_samp", Nu_samp),
+                                      Rcpp::Named("nu", nu),
+                                      Rcpp::Named("log_lik", log_lik));
+  return mod;
+}
+
+//' Tests updating Sigma
+//'
+//' @name TestUpdateSigmaTempered
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdateSigmaTempered(const double beta){
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,5);
+  for(int i=0; i < 5; i++)
+  {
+    Phi.slice(i) = (5-i) * 0.1 * arma::randu<arma::mat>(3,8);
+  }
+  double sigma_sq = 0.5;
+
+  // Make chi matrix
+  arma::mat chi(100, 5, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
+  Z.col(0) = arma::vec(100, arma::fill::ones);
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    y_star(j,0) = arma::zeros(100, B_star(j,0).n_rows);
+    mean = arma::zeros(8);
+    for(int l = 0; l < 3; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+    y_star(j, 0).row(0) = arma::mvnrnd(B_star(j, 0) * mean, sigma_sq *
+      arma::eye(B_star(j,0).n_rows, B_star(j,0).n_rows)).t();
+    for(int i = 1; i < 100; i++){
+      y_star(j, 0).row(i) = y_star(j, 0).row(0);
+    }
+  }
+  double alpha_0 = 1;
+  double beta_0 = 1;
+  arma::vec sigma_samp(100, arma::fill::zeros);
+  for(int i = 0; i < 100; i++){
+    updateSigmaTempered(beta, y_obs, y_star, B_obs, B_star, alpha_0, beta_0, nu, Phi, Z, chi,
+                i, 100, sigma_samp);
+  }
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("sigma_samp", sigma_samp),
+                                      Rcpp::Named("sigma", sigma_sq));
+  return mod;
+}
+
+//' Tests updating chi
+//'
+//' @name TestUpdateChiTempered
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdateChiTempered(const double beta){
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,5);
+  for(int i=0; i < 5; i++)
+  {
+    Phi.slice(i) = (5-i) * arma::randu<arma::mat>(3,8);
+  }
+  double sigma_sq = 0.5;
+
+  // Make chi matrix
+  arma::mat chi(100, 5, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
+  Z.col(0) = arma::vec(100, arma::fill::ones);
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+
+
+  arma::cube chi_samp(100, 5, 10000, arma::fill::zeros);
+  chi_samp.slice(0) = chi;
+  for(int i = 0; i < 10000; i++){
+    for(int j = 0; j < 100; j++){
+      y_star(j,0) = arma::zeros(10000, B_star(j,0).n_rows);
+      mean = arma::zeros(8);
+      for(int l = 0; l < 3; l++){
+        mean = mean + Z(j,l) * nu.row(l).t();
+        for(int m = 0; m < Phi.n_slices; m++){
+          mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+        }
+      }
+      y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+        arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+      y_star(j, 0).row(0) = arma::mvnrnd(B_star(j, 0) * mean, sigma_sq *
+        arma::eye(B_star(j,0).n_rows, B_star(j,0).n_rows)).t();
+      for(int k = 1; k < 10000; k++){
+        y_star(j, 0).row(k) = y_star(j, 0).row(0);
+      }
+    }
+    updateChiTempered(beta, y_obs, y_star, B_obs, B_star, Phi, nu, Z, sigma_sq, i, 10000,
+              chi_samp);
+  }
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("chi_samp", chi_samp),
+                                      Rcpp::Named("chi", chi),
+                                      Rcpp::Named("Z", Z));
+  return mod;
+}
+
+//' Tests updating YstarTempered
+//'
+//' @name TestUpdateYStarTempered
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdateYStarTempered(const double beta){
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,5);
+  for(int i=0; i < 5; i++)
+  {
+    Phi.slice(i) = (5-i) * 0.1 * arma::randu<arma::mat>(3,8);
+  }
+  double sigma_sq = 0.01;
+
+  // Make chi matrix
+  arma::mat chi(100, 5, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
+  Z.col(0) = arma::vec(100, arma::fill::ones);
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    y_star(j,0) = arma::zeros(1000, B_star(j,0).n_rows);
+    mean = arma::zeros(8);
+    for(int l = 0; l < 3; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+    y_star(j, 0).row(0) = arma::mvnrnd(B_star(j, 0) * mean, sigma_sq *
+      arma::eye(B_star(j,0).n_rows, B_star(j,0).n_rows)).t();
+    for(int k = 1; k < 1000; k++){
+      y_star(j, 0).row(k) = y_star(j, 0).row(0);
+    }
+  }
+
+  arma::field<arma::mat> y_star_samp(100, 1);
+
+  for(int i = 0; i < 100; i++){
+    y_star_samp(i,0) = arma::zeros(1000, B_star(i,0).n_rows);
+  }
+
+  for(int i = 0; i < 1000; i++){
+    updateYStarTempered(beta, B_star, nu, Phi, Z, chi, sigma_sq, i, 1000, y_star_samp);
+  }
+
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("y_star_samp", y_star_samp),
+                                      Rcpp::Named("y_star", y_star),
+                                      Rcpp::Named("y_obs", y_obs));
+  return mod;
+}
