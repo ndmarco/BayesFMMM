@@ -93,7 +93,7 @@ double CalculateTTAcceptance(const arma::vec& beta,
                              const arma::vec& sigma){
   double logAcceptance = 0;
   int m = sigma.n_elem - 1;
-  for(int i = 0; i < (beta.n_elem - 2); i++){
+  for(int i = 0; i < (beta.n_elem - 1); i++){
     // calculate for heating up
     logAcceptance = logAcceptance + calculatePZeta(beta(i+1), y_obs, y_star,
                                                    B_obs, B_star, nu.slice(i),

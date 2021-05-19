@@ -1579,15 +1579,15 @@ Rcpp::List TestEstimateInitialTT(const int tot_mcmc_iters, const int r_stored_it
       arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
   }
 
-  // estimate B-spline expansion
-  // arma::mat theta = BasisExpansion(y_obs, B_obs, 100, 3, 8);
-  // //estimate Z matrix
-  // arma::mat Z_est = ZInitialState(B_obs, theta, 50, 3, 100, 0.001);
-  // // estimate sigma
-  // double sigma_est = SigmaInitialState(y_obs, B_obs, theta, 100);
-  // // estimate nu
-  // arma::mat nu_est = NuInitialState(B_obs, Z_est, theta, 100);
-  // get rest of estimates
+  //estimate B-spline expansion
+  arma::mat theta = BasisExpansion(y_obs, B_obs, 100, 3, 8);
+  //estimate Z matrix
+  arma::mat Z_est = ZInitialState(B_obs, theta, 50, 3, 100, 0.001);
+  // estimate sigma
+  double sigma_est = SigmaInitialState(y_obs, B_obs, theta, 100);
+  // estimate nu
+  arma::mat nu_est = NuInitialState(B_obs, Z_est, theta, 100);
+  //get rest of estimates
   Rcpp::List output = PhiChiInitialState(Z, y_obs, t_obs1, 100, 3, 8, 3,
                                          1000, 200, t_star1, 3, 0.7, 1, 2, 3,
                                          1, 1, sqrt(1), sqrt(1), 1, 1, 1, 1,
@@ -1601,6 +1601,141 @@ Rcpp::List TestEstimateInitialTT(const int tot_mcmc_iters, const int r_stored_it
                           output["delta_est"], nu, Phi,
                           output["gamma_est"], chi,
                           output["y_star_est"], beta_N_t, N_t, sigma_sq);
+
+  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
+                                        Rcpp::Named("y_obs", y_obs),
+                                        Rcpp::Named("nu_true", nu),
+                                        Rcpp::Named("Phi_true", Phi),
+                                        Rcpp::Named("nu", mod1["nu"]),
+                                        Rcpp::Named("y_star", mod1["y_star"]),
+                                        Rcpp::Named("chi", mod1["chi"]),
+                                        Rcpp::Named("pi", mod1["pi"]),
+                                        Rcpp::Named("A", mod1["A"]),
+                                        Rcpp::Named("delta", mod1["delta"]),
+                                        Rcpp::Named("sigma", mod1["sigma"]),
+                                        Rcpp::Named("tau", mod1["tau"]),
+                                        Rcpp::Named("gamma", mod1["gamma"]),
+                                        Rcpp::Named("Phi", mod1["Phi"]),
+                                        Rcpp::Named("Z", mod1["Z"]),
+                                        Rcpp::Named("loglik", mod1["loglik"]));
+
+  return mod2;
+}
+
+//' Tests BFOC function
+//'
+//' @name GetStuff
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestEstimateInitialMTT(const int tot_mcmc_iters, const int r_stored_iters, const int n_temp_trans,
+                                 const double beta_N_t, const int N_t,
+                                 const std::string directory){
+  arma::field<arma::vec> t_obs1(100,1);
+  arma::field<arma::vec> t_star1(100,1);
+  int n_funct = 100;
+  for(int i = 0; i < n_funct; i++){
+    t_obs1(i,0) =  arma::regspace(0, 10, 990);
+    t_star1(i,0) = arma::regspace(0, 50, 950);
+  }
+
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu;
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,3);
+  for(int i=0; i < 3; i++)
+  {
+    Phi.slice(i) = (3-i) * 0.1 * arma::randu<arma::mat>(3,8);
+  }
+  double sigma_sq = 0.005;
+
+  // Make chi matrix
+  arma::mat chi(100, 3, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
+  for(int i = 0; i < 100; i++){
+    if(i < 10){
+      Z.row(i) = {1, 0, 0};
+    }else if(i < 20){
+      Z.row(i) = {0, 1, 0};
+    }else if(i < 30){
+      Z.row(i) = {0, 0, 1};
+    }
+
+    while(arma::accu(Z.row(i)) == 0){
+      Z.row(i) = arma::randi<arma::rowvec>(3, arma::distr_param(0,1));
+    }
+  }
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    mean = arma::zeros(8);
+    for(int l = 0; l < nu.n_rows; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+  }
+
+  // estimate B-spline expansion
+    arma::mat theta = BasisExpansion(y_obs, B_obs, 100, 3, 8);
+  //estimate Z matrix
+  arma::mat Z_est = ZInitialState(B_obs, theta, 50, 3, 100, 0.001);
+  // estimate sigma
+  double sigma_est = SigmaInitialState(y_obs, B_obs, theta, 100);
+  // estimate nu
+  arma::mat nu_est = NuInitialState(B_obs, Z_est, theta, 100);
+  // get rest of estimates
+    Rcpp::List output = PhiChiInitialState(Z, y_obs, t_obs1, 100, 3, 8, 3,
+                                           1000, 200, t_star1, 3, 0.7, 1, 2, 3,
+                                           1, 1, sqrt(1), sqrt(1), 1, 1, 1, 1,
+                                           nu, sigma_sq);
+
+  // start MCMC sampling
+  Rcpp::List mod1 = BFOC_U_MTT(y_obs, t_obs1, n_funct, 3, 8, 3, tot_mcmc_iters,
+                               r_stored_iters, n_temp_trans, t_star1, 3, 0.7, 1, 2, 3, 1, 1,
+                               sqrt(1), sqrt(1), 1, 1, 1, 1, directory, Z_est,
+                               output["A_est"], output["pi_est"], output["tau_est"],
+                                      output["delta_est"], nu_est, output["Phi_est"],
+                                                                         output["gamma_est"], output["chi_est"],
+                                                                                                    output["y_star_est"], beta_N_t, N_t, sigma_est);
 
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
                                         Rcpp::Named("y_obs", y_obs),
