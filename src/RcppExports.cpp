@@ -333,6 +333,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// LabelSwitch
+Rcpp::List LabelSwitch(arma::mat& Z_ref, arma::cube& Z, arma::cube& nu, arma::mat& pi, arma::field<arma::cube>& gamma, arma::field<arma::cube>& Phi, arma::mat& tau, arma::mat& perm_mat);
+RcppExport SEXP _BayesFOC_LabelSwitch(SEXP Z_refSEXP, SEXP ZSEXP, SEXP nuSEXP, SEXP piSEXP, SEXP gammaSEXP, SEXP PhiSEXP, SEXP tauSEXP, SEXP perm_matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat& >::type Z_ref(Z_refSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type pi(piSEXP);
+    Rcpp::traits::input_parameter< arma::field<arma::cube>& >::type gamma(gammaSEXP);
+    Rcpp::traits::input_parameter< arma::field<arma::cube>& >::type Phi(PhiSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type perm_mat(perm_matSEXP);
+    rcpp_result_gen = Rcpp::wrap(LabelSwitch(Z_ref, Z, nu, pi, gamma, Phi, tau, perm_mat));
+    return rcpp_result_gen;
+END_RCPP
+}
 // TestUpdateZ
 Rcpp::List TestUpdateZ();
 RcppExport SEXP _BayesFOC_TestUpdateZ() {
@@ -514,12 +532,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // GetStuff
-Rcpp::List GetStuff();
-RcppExport SEXP _BayesFOC_GetStuff() {
+Rcpp::List GetStuff(double sigma_sq);
+RcppExport SEXP _BayesFOC_GetStuff(SEXP sigma_sqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(GetStuff());
+    Rcpp::traits::input_parameter< double >::type sigma_sq(sigma_sqSEXP);
+    rcpp_result_gen = Rcpp::wrap(GetStuff(sigma_sq));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -562,8 +581,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // TestEstimateInitialMTT
-Rcpp::List TestEstimateInitialMTT(const int tot_mcmc_iters, const int r_stored_iters, const int n_temp_trans, const double beta_N_t, const int N_t, const std::string directory);
-RcppExport SEXP _BayesFOC_TestEstimateInitialMTT(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP n_temp_transSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP directorySEXP) {
+Rcpp::List TestEstimateInitialMTT(const int tot_mcmc_iters, const int r_stored_iters, const int n_temp_trans, const double beta_N_t, const int N_t, const std::string directory, const double sigma_sq);
+RcppExport SEXP _BayesFOC_TestEstimateInitialMTT(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP n_temp_transSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP directorySEXP, SEXP sigma_sqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -573,7 +592,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type beta_N_t(beta_N_tSEXP);
     Rcpp::traits::input_parameter< const int >::type N_t(N_tSEXP);
     Rcpp::traits::input_parameter< const std::string >::type directory(directorySEXP);
-    rcpp_result_gen = Rcpp::wrap(TestEstimateInitialMTT(tot_mcmc_iters, r_stored_iters, n_temp_trans, beta_N_t, N_t, directory));
+    Rcpp::traits::input_parameter< const double >::type sigma_sq(sigma_sqSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestEstimateInitialMTT(tot_mcmc_iters, r_stored_iters, n_temp_trans, beta_N_t, N_t, directory, sigma_sq));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -669,6 +689,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getparms
+void getparms();
+RcppExport SEXP _BayesFOC_getparms() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    getparms();
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_BFOC", (DL_FUNC) &_BayesFOC_BFOC, 21},
@@ -679,6 +708,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_BFOC_U_Templadder", (DL_FUNC) &_BayesFOC_BFOC_U_Templadder, 35},
     {"_BayesFOC_BFOC_U_MTT", (DL_FUNC) &_BayesFOC_BFOC_U_MTT, 37},
     {"_BayesFOC_PhiChiInitialState", (DL_FUNC) &_BayesFOC_PhiChiInitialState, 25},
+    {"_BayesFOC_LabelSwitch", (DL_FUNC) &_BayesFOC_LabelSwitch, 8},
     {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
     {"_BayesFOC_TestUpdatePi", (DL_FUNC) &_BayesFOC_TestUpdatePi, 0},
     {"_BayesFOC_TestUpdatePhi", (DL_FUNC) &_BayesFOC_TestUpdatePhi, 0},
@@ -696,11 +726,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_TestReadMat", (DL_FUNC) &_BayesFOC_TestReadMat, 1},
     {"_BayesFOC_TestReadCube", (DL_FUNC) &_BayesFOC_TestReadCube, 1},
     {"_BayesFOC_TestReadField", (DL_FUNC) &_BayesFOC_TestReadField, 1},
-    {"_BayesFOC_GetStuff", (DL_FUNC) &_BayesFOC_GetStuff, 0},
+    {"_BayesFOC_GetStuff", (DL_FUNC) &_BayesFOC_GetStuff, 1},
     {"_BayesFOC_TestEstimateInitialZ", (DL_FUNC) &_BayesFOC_TestEstimateInitialZ, 0},
     {"_BayesFOC_TestEstimateInitial", (DL_FUNC) &_BayesFOC_TestEstimateInitial, 3},
     {"_BayesFOC_TestEstimateInitialTT", (DL_FUNC) &_BayesFOC_TestEstimateInitialTT, 5},
-    {"_BayesFOC_TestEstimateInitialMTT", (DL_FUNC) &_BayesFOC_TestEstimateInitialMTT, 6},
+    {"_BayesFOC_TestEstimateInitialMTT", (DL_FUNC) &_BayesFOC_TestEstimateInitialMTT, 7},
     {"_BayesFOC_TestEstimateInitialTempladder", (DL_FUNC) &_BayesFOC_TestEstimateInitialTempladder, 2},
     {"_BayesFOC_TestEstimateInitialTemp", (DL_FUNC) &_BayesFOC_TestEstimateInitialTemp, 4},
     {"_BayesFOC_TestUpdateZTempered", (DL_FUNC) &_BayesFOC_TestUpdateZTempered, 1},
@@ -709,6 +739,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_TestUpdateSigmaTempered", (DL_FUNC) &_BayesFOC_TestUpdateSigmaTempered, 1},
     {"_BayesFOC_TestUpdateChiTempered", (DL_FUNC) &_BayesFOC_TestUpdateChiTempered, 1},
     {"_BayesFOC_TestUpdateYStarTempered", (DL_FUNC) &_BayesFOC_TestUpdateYStarTempered, 1},
+    {"_BayesFOC_getparms", (DL_FUNC) &_BayesFOC_getparms, 0},
     {NULL, NULL, 0}
 };
 

@@ -1167,7 +1167,7 @@ arma::field<arma::cube> TestReadField(std::string directory){
 //' @name GetStuff
 //' @export
 // [[Rcpp::export]]
-Rcpp::List GetStuff(){
+Rcpp::List GetStuff(double sigma_sq){
   arma::field<arma::vec> t_obs1(100,1);
   arma::field<arma::vec> t_star1(100,1);
   int n_funct = 100;
@@ -1213,7 +1213,7 @@ Rcpp::List GetStuff(){
   {
     Phi.slice(i) = (3-i) * 0.1 * arma::randu<arma::mat>(2,8);
   }
-  double sigma_sq = 0.005;
+  // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi(100, 3, arma::fill::randn);
@@ -1239,7 +1239,8 @@ Rcpp::List GetStuff(){
         mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
       }
     }
-    y_obs(j, 0) = B_obs(j, 0) * mean;
+    y_obs(j, 0) =arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
   }
 
 
@@ -1629,7 +1630,7 @@ Rcpp::List TestEstimateInitialTT(const int tot_mcmc_iters, const int r_stored_it
 // [[Rcpp::export]]
 Rcpp::List TestEstimateInitialMTT(const int tot_mcmc_iters, const int r_stored_iters, const int n_temp_trans,
                                  const double beta_N_t, const int N_t,
-                                 const std::string directory){
+                                 const std::string directory, const double sigma_sq){
   arma::field<arma::vec> t_obs1(100,1);
   arma::field<arma::vec> t_star1(100,1);
   int n_funct = 100;
@@ -1665,38 +1666,22 @@ Rcpp::List TestEstimateInitialMTT(const int tot_mcmc_iters, const int r_stored_i
 
   // Make nu matrix
   arma::mat nu;
-  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
-  {1, 3, 0, 2, 0, 0, 3, 0},
-  {5, 2, 5, 0, 3, 4, 1, 0}};
+  nu.load("c:\\Projects\\BayesFOC\\data\\nu.txt");
 
 
   // Make Phi matrix
-  arma::cube Phi(3,8,3);
-  for(int i=0; i < 3; i++)
-  {
-    Phi.slice(i) = (3-i) * 0.1 * arma::randu<arma::mat>(3,8);
-  }
-  double sigma_sq = 0.005;
+  arma::cube Phi;
+  Phi.load("c:\\Projects\\BayesFOC\\data\\Phi.txt");
+  // double sigma_sq = 0.005;
 
   // Make chi matrix
-  arma::mat chi(100, 3, arma::fill::randn);
+  arma::mat chi;
+  chi.load("c:\\Projects\\BayesFOC\\data\\chi.txt");
 
 
   // Make Z matrix
-  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
-  for(int i = 0; i < 100; i++){
-    if(i < 10){
-      Z.row(i) = {1, 0, 0};
-    }else if(i < 20){
-      Z.row(i) = {0, 1, 0};
-    }else if(i < 30){
-      Z.row(i) = {0, 0, 1};
-    }
-
-    while(arma::accu(Z.row(i)) == 0){
-      Z.row(i) = arma::randi<arma::rowvec>(3, arma::distr_param(0,1));
-    }
-  }
+  arma::mat Z;
+  Z.load("c:\\Projects\\BayesFOC\\data\\Z.txt");
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -1723,10 +1708,10 @@ Rcpp::List TestEstimateInitialMTT(const int tot_mcmc_iters, const int r_stored_i
   // estimate nu
   arma::mat nu_est = NuInitialState(B_obs, Z_est, theta, 100);
   // get rest of estimates
-    Rcpp::List output = PhiChiInitialState(Z, y_obs, t_obs1, 100, 3, 8, 3,
-                                           1000, 200, t_star1, 3, 0.7, 1, 2, 3,
-                                           1, 1, sqrt(1), sqrt(1), 1, 1, 1, 1,
-                                           nu, sigma_sq);
+  Rcpp::List output = PhiChiInitialState(Z_est, y_obs, t_obs1, 100, 3, 8, 3,
+                                         1000, 200, t_star1, 3, 0.7, 1, 2, 3,
+                                         1, 1, sqrt(1), sqrt(1), 1, 1, 1, 1,
+                                         nu, sigma_est);
 
   // start MCMC sampling
   Rcpp::List mod1 = BFOC_U_MTT(y_obs, t_obs1, n_funct, 3, 8, 3, tot_mcmc_iters,
@@ -1796,40 +1781,23 @@ Rcpp::List TestEstimateInitialTempladder(const double beta_N_t, const int N_t){
            t_obs.n_elem + t_star.n_elem - 1, 7);
   }
 
-  // Make nu matrix
   arma::mat nu;
-  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
-  {1, 3, 0, 2, 0, 0, 3, 0},
-  {5, 2, 5, 0, 3, 4, 1, 0}};
+  nu.load("c:\\Projects\\BayesFOC\\data\\nu.txt");
 
 
   // Make Phi matrix
-  arma::cube Phi(3,8,3);
-  for(int i=0; i < 3; i++)
-  {
-    Phi.slice(i) = (3-i) * 0.1 * arma::randu<arma::mat>(3,8);
-  }
+  arma::cube Phi;
+  Phi.load("c:\\Projects\\BayesFOC\\data\\Phi.txt");
   double sigma_sq = 0.005;
 
   // Make chi matrix
-  arma::mat chi(100, 3, arma::fill::randn);
+  arma::mat chi;
+  chi.load("c:\\Projects\\BayesFOC\\data\\chi.txt");
 
 
   // Make Z matrix
-  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
-  for(int i = 0; i < 100; i++){
-    if(i < 10){
-      Z.row(i) = {1, 0, 0};
-    }else if(i < 20){
-      Z.row(i) = {0, 1, 0};
-    }else if(i < 30){
-      Z.row(i) = {0, 0, 1};
-    }
-
-    while(arma::accu(Z.row(i)) == 0){
-      Z.row(i) = arma::randi<arma::rowvec>(3, arma::distr_param(0,1));
-    }
-  }
+  arma::mat Z;
+  Z.load("c:\\Projects\\BayesFOC\\data\\Z.txt");
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -2590,4 +2558,83 @@ Rcpp::List TestUpdateYStarTempered(const double beta){
                                       Rcpp::Named("y_star", y_star),
                                       Rcpp::Named("y_obs", y_obs));
   return mod;
+}
+
+//' simulates parameters
+//'
+//' @name getparams
+//' @export
+// [[Rcpp::export]]
+void getparms(){
+  arma::field<arma::vec> t_obs1(100,1);
+  arma::field<arma::vec> t_star1(100,1);
+  int n_funct = 100;
+  for(int i = 0; i < n_funct; i++){
+    t_obs1(i,0) =  arma::regspace(0, 10, 990);
+    t_star1(i,0) = arma::regspace(0, 50, 950);
+  }
+
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat {bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu(3,8, arma::fill::randn);
+  nu = 2 * nu;
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,3);
+  for(int i=0; i < 3; i++)
+  {
+    Phi.slice(i) = (3-i) * 0.1 * arma::randu<arma::mat>(3,8);
+  }
+  double sigma_sq = 0.005;
+
+  // Make chi matrix
+  arma::mat chi(100, 3, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
+  for(int i = 0; i < 100; i++){
+    if(i < 10){
+      Z.row(i) = {1, 0, 0};
+    }else if(i < 20){
+      Z.row(i) = {0, 1, 0};
+    }else if(i < 30){
+      Z.row(i) = {0, 0, 1};
+    }
+
+    while(arma::accu(Z.row(i)) == 0){
+      Z.row(i) = arma::randi<arma::rowvec>(3, arma::distr_param(0,1));
+    }
+  }
+
+  //save parameters
+  nu.save("c:\\Projects\\BayesFOC\\data\\nu.txt", arma::arma_ascii);
+  chi.save("c:\\Projects\\BayesFOC\\data\\chi.txt", arma::arma_ascii);
+  Phi.save("c:\\Projects\\BayesFOC\\data\\Phi.txt", arma::arma_ascii);
+  Z.save("c:\\Projects\\BayesFOC\\data\\Z.txt", arma::arma_ascii);
+
 }

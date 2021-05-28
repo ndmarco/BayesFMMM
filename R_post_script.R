@@ -1,28 +1,28 @@
 library(BayesFOC)
 
 ## Get Z estimates
-Z <- array(0,dim=c(3,8,2000))
-dir = "C:\\Projects\\Trace2\\nu"
-for(i in 0:9){
+Z <- array(0,dim=c(100,3,4000))
+dir = "c:\\Projects\\High_Variance_Simulation\\Z"
+for(i in 0:19){
   Z_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
   Z[,,(200*(i) + 1):(200*(i+1))] <- Z_i
 }
 
 
 ## Get nu estimates
-nu <- array(0,dim=c(3,8,6000))
-dir = "/Users/nicholasmarco/Projects/FDA/Trace/rstudio-export4/Trace3/nu"
-for(i in 0:149){
+nu <- array(0,dim=c(3,8,4000))
+dir = "c:\\Projects\\High_Variance_Simulation\\nu"
+for(i in 0:19){
   nu_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
-  nu[,,(40*(i) + 1):(40*(i+1))] <- nu_i
+  nu[,,(200*(i) + 1):(200*(i+1))] <- nu_i
 }
 ## Get rid of burn-in
-nu <- nu[,,961:3960]
-x <- GetStuff()
-
-f_obs1 <- matrix(0, 3000, 100)
-for(i in 1:3000){
-  f_obs1[i,] <- t(x$B[[1]] %*% t(t(nu[1,,i])))
+nu <- nu[,,2000:4000]
+y <- GetStuff(0.001)
+x <- readRDS("c:\\Projects\\High_Variance_Simulation\\x_results.RDS")
+f_obs1 <- matrix(0, 2000, 100)
+for(i in 1:2000){
+  f_obs1[i,] <- t(y$B[[1]] %*% t(t(nu[1,,i])))
 }
 f1_97_5 <- rep(0,100)
 f1_2_5 <- rep(0,100)
@@ -32,7 +32,7 @@ for(i in 1:100){
   f1_97_5[i] <- z[2]
 }
 f1_true <- rep(0,100)
-f1_true <- x$nu_true[1,] %*% t(x$B[[1]])
+f1_true <- x$nu_true[3,] %*% t(y$B[[1]])
 
 plot(f1_true[1,], type = 'l', ylab = "function 1")
 lines(f1_2_5, col = "red")

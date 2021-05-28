@@ -349,6 +349,14 @@ PhiChiInitialState <- function(known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc
     .Call('_BayesFOC_PhiChiInitialState', PACKAGE = 'BayesFOC', known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, nu, sigma)
 }
 
+#' Corrects for possible label switching
+#'
+#' @name LabelSwitch
+#' @export
+LabelSwitch <- function(Z_ref, Z, nu, pi, gamma, Phi, tau, perm_mat) {
+    .Call('_BayesFOC_LabelSwitch', PACKAGE = 'BayesFOC', Z_ref, Z, nu, pi, gamma, Phi, tau, perm_mat)
+}
+
 #' Tests updating Z
 #'
 #' @name TestUpdateZ
@@ -488,8 +496,8 @@ TestReadField <- function(directory) {
 #'
 #' @name GetStuff
 #' @export
-GetStuff <- function() {
-    .Call('_BayesFOC_GetStuff', PACKAGE = 'BayesFOC')
+GetStuff <- function(sigma_sq) {
+    .Call('_BayesFOC_GetStuff', PACKAGE = 'BayesFOC', sigma_sq)
 }
 
 #' Tests BFOC function
@@ -520,8 +528,8 @@ TestEstimateInitialTT <- function(tot_mcmc_iters, r_stored_iters, beta_N_t, N_t,
 #'
 #' @name GetStuff
 #' @export
-TestEstimateInitialMTT <- function(tot_mcmc_iters, r_stored_iters, n_temp_trans, beta_N_t, N_t, directory) {
-    .Call('_BayesFOC_TestEstimateInitialMTT', PACKAGE = 'BayesFOC', tot_mcmc_iters, r_stored_iters, n_temp_trans, beta_N_t, N_t, directory)
+TestEstimateInitialMTT <- function(tot_mcmc_iters, r_stored_iters, n_temp_trans, beta_N_t, N_t, directory, sigma_sq) {
+    .Call('_BayesFOC_TestEstimateInitialMTT', PACKAGE = 'BayesFOC', tot_mcmc_iters, r_stored_iters, n_temp_trans, beta_N_t, N_t, directory, sigma_sq)
 }
 
 #' Tests BFOC function
@@ -585,6 +593,14 @@ TestUpdateChiTempered <- function(beta) {
 #' @export
 TestUpdateYStarTempered <- function(beta) {
     .Call('_BayesFOC_TestUpdateYStarTempered', PACKAGE = 'BayesFOC', beta)
+}
+
+#' simulates parameters
+#'
+#' @name getparams
+#' @export
+getparms <- function() {
+    invisible(.Call('_BayesFOC_getparms', PACKAGE = 'BayesFOC'))
 }
 
 #' computes the log pdf of a_1j
