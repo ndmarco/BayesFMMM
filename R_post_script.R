@@ -16,6 +16,7 @@ for(i in 0:19){
   nu_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
   nu[,,(200*(i) + 1):(200*(i+1))] <- nu_i
 }
+
 ## Get rid of burn-in
 nu <- nu[,,2000:4000]
 y <- GetStuff(0.001)
@@ -39,9 +40,9 @@ lines(f1_2_5, col = "red")
 lines(f1_97_5, col = "red")
 
 ## Function 2
-f_obs2 <- matrix(0, 3000, 100)
-for(i in 1:3000){
-  f_obs2[i,] <- t(x$B[[1]] %*% t(t(nu[2,,i])))
+f_obs2 <- matrix(0, 2000, 100)
+for(i in 1:2000){
+  f_obs2[i,] <- t(y$B[[1]] %*% t(t(nu[2,,i])))
 }
 f2_97_5 <- rep(0,100)
 f2_2_5 <- rep(0,100)
@@ -51,7 +52,7 @@ for(i in 1:100){
   f2_97_5[i] <- z[2]
 }
 f2_true <- rep(0,100)
-f2_true <- x$nu_true[2,] %*% t(x$B[[1]])
+f2_true <- x$nu_true[2,] %*% t(y$B[[1]])
 
 plot(f2_true[1,], type = 'l', ylab = "function 2")
 lines(f2_2_5, col = "red")
@@ -59,9 +60,9 @@ lines(f2_97_5, col = "red")
 
 ## Function 3
 
-f_obs3 <- matrix(0, 3000, 100)
-for(i in 1:3000){
-  f_obs3[i,] <- t(x$B[[1]] %*% t(t(nu[3,,i])))
+f_obs3 <- matrix(0, 2000, 100)
+for(i in 1:2000){
+  f_obs3[i,] <- t(y$B[[1]] %*% t(t(nu[2,,i])))
 }
 f3_97_5 <- rep(0,100)
 f3_2_5 <- rep(0,100)
@@ -71,8 +72,7 @@ for(i in 1:100){
   f3_97_5[i] <- z[2]
 }
 f3_true <- rep(0,100)
-nu3 <- c(5, 2, 5, 0, 3, 4, 1, 0)
-f3_true <- nu3 %*% t(x$B[[1]])
+f3_true <- x$nu_true[3,] %*% t(y$B[[1]])
 
 plot(f3_true[1,], type = 'l', ylab = "function 3")
 lines(f3_2_5, col = "red")

@@ -1201,31 +1201,23 @@ Rcpp::List GetStuff(double sigma_sq){
            t_obs.n_elem + t_star.n_elem - 1, 7);
   }
 
-  // Make nu matrix
-  arma::mat nu(2,8);
-  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
-  {1, 3, 0, 2, 0, 0, 3, 0}};
+  arma::mat nu;
+  nu.load("c:\\Projects\\BayesFOC\\data\\nu.txt");
 
 
   // Make Phi matrix
-  arma::cube Phi(2,8,3);
-  for(int i=0; i < 3; i++)
-  {
-    Phi.slice(i) = (3-i) * 0.1 * arma::randu<arma::mat>(2,8);
-  }
+  arma::cube Phi;
+  Phi.load("c:\\Projects\\BayesFOC\\data\\Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
-  arma::mat chi(100, 3, arma::fill::randn);
+  arma::mat chi;
+  chi.load("c:\\Projects\\BayesFOC\\data\\chi.txt");
 
 
   // Make Z matrix
-  arma::mat Z = arma::randi<arma::mat>(100, 2, arma::distr_param(0,1));
-  for(int i = 0; i < 100; i++){
-    while(arma::accu(Z.row(i)) == 0){
-      Z.row(i) = arma::randi<arma::rowvec>(2, arma::distr_param(0,1));
-    }
-  }
+  arma::mat Z;
+  Z.load("c:\\Projects\\BayesFOC\\data\\Z.txt");
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -1711,16 +1703,16 @@ Rcpp::List TestEstimateInitialMTT(const int tot_mcmc_iters, const int r_stored_i
   Rcpp::List output = PhiChiInitialState(Z_est, y_obs, t_obs1, 100, 3, 8, 3,
                                          1000, 200, t_star1, 3, 0.7, 1, 2, 3,
                                          1, 1, sqrt(1), sqrt(1), 1, 1, 1, 1,
-                                         nu, sigma_est);
+                                         nu_est, sigma_est);
 
   // start MCMC sampling
   Rcpp::List mod1 = BFOC_U_MTT(y_obs, t_obs1, n_funct, 3, 8, 3, tot_mcmc_iters,
                                r_stored_iters, n_temp_trans, t_star1, 3, 0.7, 1, 2, 3, 1, 1,
                                sqrt(1), sqrt(1), 1, 1, 1, 1, directory, Z_est,
                                output["A_est"], output["pi_est"], output["tau_est"],
-                                      output["delta_est"], nu_est, output["Phi_est"],
-                                                                         output["gamma_est"], output["chi_est"],
-                                                                                                    output["y_star_est"], beta_N_t, N_t, sigma_est);
+                               output["delta_est"], nu_est, output["Phi_est"],
+                               output["gamma_est"], output["chi_est"],
+                               output["y_star_est"], beta_N_t, N_t, sigma_est);
 
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
                                         Rcpp::Named("y_obs", y_obs),
@@ -1830,7 +1822,7 @@ Rcpp::List TestEstimateInitialTempladder(const double beta_N_t, const int N_t){
                                          nu, sigma_sq);
 
   // start MCMC sampling
-  Rcpp::List mod1 = BFOC_U_Templadder(y_obs, t_obs1, n_funct, 3, 8, 3,10, 10, t_star1, 3, 0.7, 1, 2, 3, 1, 1,
+  Rcpp::List mod1 = BFOC_U_Templadder(y_obs, t_obs1, n_funct, 3, 8, 3, 10, 10, t_star1, 3, 0.7, 1, 2, 3, 1, 1,
                               sqrt(1), sqrt(1), 1, 1, 1, 1, Z,
                               output["A_est"], output["pi_est"], output["tau_est"],
                                      output["delta_est"], nu, Phi,
@@ -2601,13 +2593,13 @@ void getparms(){
 
   // Make nu matrix
   arma::mat nu(3,8, arma::fill::randn);
-  nu = 2 * nu;
+  nu = 3 * nu;
 
   // Make Phi matrix
   arma::cube Phi(3,8,3);
   for(int i=0; i < 3; i++)
   {
-    Phi.slice(i) = (3-i) * 0.1 * arma::randu<arma::mat>(3,8);
+    Phi.slice(i) = (3-i) * 0.5 * arma::randu<arma::mat>(3,8);
   }
   double sigma_sq = 0.005;
 

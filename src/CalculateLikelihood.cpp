@@ -38,7 +38,7 @@ double calcLikelihood(const arma::field<arma::vec>& y_obs,
           }
         }
       }
-      log_lik = log_lik + R::dnorm(y_obs(i,0)(l), mean, sigma, true);
+      log_lik = log_lik + R::dnorm(y_obs(i,0)(l), mean, std::sqrt(sigma), true);
     }
     if(y_star(i,0).n_elem > 0){
       for(int l = 0; l < y_star(i,0).n_cols; l++){
@@ -52,7 +52,7 @@ double calcLikelihood(const arma::field<arma::vec>& y_obs,
             }
           }
         }
-        log_lik = log_lik + R::dnorm(y_star(i,0)(iter, l), mean, sigma, true);
+        log_lik = log_lik + R::dnorm(y_star(i,0)(iter, l), mean, std::sqrt(sigma), true);
       }
     }
   }

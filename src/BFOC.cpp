@@ -1726,6 +1726,14 @@ Rcpp::List BFOC_U_Templadder(const arma::field<arma::vec>& y_obs,
 
 
   }
+
+  logA = CalculateTTAcceptance(beta_ladder, y_obs, y_star_TT, B_obs, B_star,
+                               nu_TT, Phi_TT, Z_TT, chi_TT, sigma_TT);
+  logu = std::log(R::runif(0,1));
+
+  Rcpp::Rcout << "prob_accept: " << logA<< "\n";
+  Rcpp::Rcout << "logu: " << logu<< "\n";
+
   Rcpp::List params = Rcpp::List::create(Rcpp::Named("nu", nu_TT),
                                          Rcpp::Named("y_star", y_star_TT),
                                          Rcpp::Named("chi", chi_TT),
@@ -1943,7 +1951,7 @@ Rcpp::List BFOC_U_MTT(const arma::field<arma::vec>& y_obs,
   int accept_num = 0;
 
   for(int i = 0; i < tot_mcmc_iters; i++){
-    if((i % n_temp_trans) != 0){
+    if(((i % n_temp_trans) != 0) || (i == 0)){
       updateZ(y_obs, y_star, B_obs, B_star, Phi((i % r_stored_iters),0), nu.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
               pi.col((i % r_stored_iters)), sigma((i % r_stored_iters)), rho, (i % r_stored_iters), r_stored_iters, Z_ph, Z);
       updatePi(alpha_3, Z.slice((i % r_stored_iters)), (i % r_stored_iters), r_stored_iters,  pi);
