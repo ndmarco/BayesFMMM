@@ -10,4 +10,14 @@ void updatePi(const double& alpha,
                const int& tot_mcmc_iters,
                arma::mat& pi);
 
+void updatePi_PM(const double& alpha_3,
+                 const arma::mat& Z,
+                 const arma::vec& c,
+                 const int& iter,
+                 const int& tot_mcmc_iters,
+                 const double& sigma_pi,
+                 arma::mat& pi_tilde,
+                 arma::vec& pi_ph,
+                 arma::vec& pi_tilde_ph,
+                 arma::mat& pi);
 #endif
