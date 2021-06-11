@@ -3,6 +3,7 @@
 #include <splines2Armadillo.h>
 #include "Distributions.H"
 #include "UpdateClassMembership.H"
+#include "UpdatePartialMembership.H"
 #include "UpdatePi.H"
 #include "UpdatePhi.H"
 #include "UpdateDelta.H"
@@ -2628,5 +2629,115 @@ void getparms(){
   chi.save("c:\\Projects\\BayesFOC\\data\\chi.txt", arma::arma_ascii);
   Phi.save("c:\\Projects\\BayesFOC\\data\\Phi.txt", arma::arma_ascii);
   Z.save("c:\\Projects\\BayesFOC\\data\\Z.txt", arma::arma_ascii);
+
+}
+
+//' Tests updating Z using partial membership model
+//'
+//' @name TestUpdateZ_PM
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdateZ_PM(){
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,5);
+  for(int i=0; i < 5; i++)
+  {
+    Phi.slice(i) = (5-i) * 0.2 * arma::randu<arma::mat>(3,8);
+  }
+  double sigma_sq = 0.001;
+
+  // Make chi matrix
+  arma::mat chi(100, 5, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z(100, 3);
+  arma::mat alpha(100,3, arma::fill::randu);
+  alpha = alpha * 100;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = rdirichlet(alpha.row(i).t()).t();
+  }
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    y_star(j,0) = arma::zeros(100, B_star(j,0).n_rows);
+    mean = arma::zeros(8);
+    for(int l = 0; l < 3; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+    y_star(j, 0).row(0) = arma::mvnrnd(B_star(j, 0) * mean, sigma_sq *
+      arma::eye(B_star(j,0).n_rows, B_star(j,0).n_rows)).t();
+    for(int i = 1; i < 100; i++){
+      y_star(j, 0).row(i) = y_star(j, 0).row(0);
+    }
+  }
+
+  // Initialize pi
+  arma::vec pi = {1, 1, 1};
+
+  // Initialize placeholder
+  arma::vec Z_ph = arma::zeros(3);
+  arma::vec Z_tilde_ph = arma::zeros(3);
+
+
+  //Initialize Z_samp
+  arma::cube Z_samp = arma::ones(100, 3, 1000);
+  arma::cube Z_tilde = arma::zeros(100, 3, 1000);
+  for(int i = 0; i < 100; i++){
+    Z_samp.slice(0).row(i) = rdirichlet(pi).t();
+    Z_tilde.slice(0).row(i) = Z_samp.slice(0).row(i);
+  }
+  for(int i = 0; i < 1000; i++)
+  {
+    updateZ_PM(y_obs, y_star, B_obs, B_star, Phi, nu, chi, pi,
+            sigma_sq, i, 1000, 1.0, 0.1, Z_tilde, Z_tilde_ph, Z_ph, Z_samp);
+  }
+
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Z_samp", Z_samp),
+                                      Rcpp::Named("Z",Z),
+                                      Rcpp::Named("Z_tilde", Z_tilde),
+                                      Rcpp::Named("f_obs", y_obs),
+                                      Rcpp::Named("f_star", y_star));
+  return mod;
 
 }

@@ -603,6 +603,14 @@ getparms <- function() {
     invisible(.Call('_BayesFOC_getparms', PACKAGE = 'BayesFOC'))
 }
 
+#' Tests updating Z using partial membership model
+#'
+#' @name TestUpdateZ_PM
+#' @export
+TestUpdateZ_PM <- function() {
+    .Call('_BayesFOC_TestUpdateZ_PM', PACKAGE = 'BayesFOC')
+}
+
 #' computes the log pdf of a_1j
 #'
 #' @name lpdf_a1
@@ -666,13 +674,6 @@ NULL
 #' @return lpdf_z double contianing the log-pdf
 NULL
 
-#' Converts from the transformed space to the original parameter space
-#'
-#' @name convert_Z_tilde_Z
-#' @param Z_tilde Row Vector containing parameters in the transformed space
-#' @param Z Row Vector containing placeholder for variables in the untransformed space
-NULL
-
 #' Updates the Z Matrix
 #'
 #' @name UpdateZ
@@ -709,6 +710,16 @@ NULL
 #' @param Z_ph Matrix that acts as a placeholder for Z
 #' @param Z Cube that contains all past, current, and future MCMC draws
 NULL
+
+#' Converts from the transformed space to the original parameter space
+#'
+#' @name convert_Z_tilde_Z
+#' @param Z_tilde Row Vector containing parameters in the transformed space
+#' @param Z Row Vector containing placeholder for variables in the untransformed space
+#' @export
+convert_Z_tilde_Z <- function(Z_tilde, Z) {
+    invisible(.Call('_BayesFOC_convert_Z_tilde_Z', PACKAGE = 'BayesFOC', Z_tilde, Z))
+}
 
 #' Gets log-pdf of z_i given zeta_{-z_i}
 #'

@@ -9,4 +9,6 @@ arma::vec Rmvnormal(arma::vec mu,
 
 double logGamma(double x);
 
+arma::vec rdirichlet(arma::vec alpha);
+
 #endif

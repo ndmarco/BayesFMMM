@@ -20,3 +20,23 @@ arma::vec Rmvnormal(arma::vec mu,
 double logGamma(double x){
   return log(tgamma(x));
 }
+
+
+arma::vec rdirichlet(arma::vec alpha){
+
+    arma::vec distribution(alpha.n_elem, arma::fill::zeros);
+
+  double sum_term = 0;
+
+  for (int j = 0; j < alpha.n_elem; ++j) {
+    double gam = R::rgamma(alpha[j],1.0);
+    distribution(j) = gam;
+    sum_term += gam;
+  }
+
+  for (int j = 0; j < alpha.n_elem; ++j) {
+    distribution(j) = distribution(j) / sum_term;
+  }
+
+  return distribution;
+}

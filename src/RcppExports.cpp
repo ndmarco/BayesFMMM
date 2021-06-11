@@ -698,6 +698,27 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// TestUpdateZ_PM
+Rcpp::List TestUpdateZ_PM();
+RcppExport SEXP _BayesFOC_TestUpdateZ_PM() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateZ_PM());
+    return rcpp_result_gen;
+END_RCPP
+}
+// convert_Z_tilde_Z
+void convert_Z_tilde_Z(const arma::vec& Z_tilde, arma::vec& Z);
+RcppExport SEXP _BayesFOC_convert_Z_tilde_Z(SEXP Z_tildeSEXP, SEXP ZSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type Z_tilde(Z_tildeSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type Z(ZSEXP);
+    convert_Z_tilde_Z(Z_tilde, Z);
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_BFOC", (DL_FUNC) &_BayesFOC_BFOC, 21},
@@ -740,6 +761,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFOC_TestUpdateChiTempered", (DL_FUNC) &_BayesFOC_TestUpdateChiTempered, 1},
     {"_BayesFOC_TestUpdateYStarTempered", (DL_FUNC) &_BayesFOC_TestUpdateYStarTempered, 1},
     {"_BayesFOC_getparms", (DL_FUNC) &_BayesFOC_getparms, 0},
+    {"_BayesFOC_TestUpdateZ_PM", (DL_FUNC) &_BayesFOC_TestUpdateZ_PM, 0},
+    {"_BayesFOC_convert_Z_tilde_Z", (DL_FUNC) &_BayesFOC_convert_Z_tilde_Z, 2},
     {NULL, NULL, 0}
 };
 

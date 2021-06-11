@@ -137,9 +137,10 @@ double lpdf_zTempered(const double& beta_i,
 //' @name convert_Z_tilde_Z
 //' @param Z_tilde Row Vector containing parameters in the transformed space
 //' @param Z Row Vector containing placeholder for variables in the untransformed space
-
-void convert_Z_tilde_Z(const arma::rowvec Z_tilde,
-                       arma::rowvec Z)
+//' @export
+// [[Rcpp::export]]
+void convert_Z_tilde_Z(const arma::vec& Z_tilde,
+                       arma::vec& Z)
 {
   double total_sum = 0;
   for(int i = 0; i < Z.n_elem; i++){
@@ -176,28 +177,29 @@ void updateZ_PM(const arma::field<arma::vec>& y_obs,
                 const arma::mat& chi,
                 const arma::vec& pi,
                 const double& sigma_sq,
-                const double& rho,
                 const int& iter,
                 const int& tot_mcmc_iters,
                 const double& alpha_3,
                 const double& sigma_Z,
                 arma::cube& Z_tilde,
-                arma::mat& Z_tilde_ph,
-                arma::mat& Z_ph,
+                arma::vec& Z_tilde_ph,
+                arma::vec& Z_ph,
                 arma::cube& Z){
   double z_lpdf = 0;
   double z_new_lpdf = 0;
   double acceptance_prob = 0;
   double rand_unif_var = 0;
 
-  Z_ph = Z.slice(iter);
   for(int i = 0; i < Z.n_rows; i++){
     for(int l = 0; l < Z.n_cols; l++){
       // Propose new state
-      Z_tilde_ph(i,l) = Z_tilde.slice(iter)(i,l) + R::rnorm(0, sigma_Z);
+      Z_tilde_ph(l) = Z_tilde.slice(iter)(i,l) + R::rnorm(0, sigma_Z);
     }
-    convert_Z_tilde_Z(Z_tilde_ph.row(i), Z_ph.row(i));
+    convert_Z_tilde_Z(Z_tilde_ph, Z_ph);
 
+    if(i == 0){
+      Rcpp::Rcout << Z_ph(0) << Z_ph(1) << Z_ph(2) << "\n";
+    }
     // Get old state log pdf
     z_lpdf = lpdf_z(y_obs(i,0), y_star(i,0), B_obs(i,0), B_star(i,0),
                     Phi, nu, chi.row(i), pi, Z.slice(iter).row(i), alpha_3, i,
@@ -205,16 +207,15 @@ void updateZ_PM(const arma::field<arma::vec>& y_obs,
 
     // Get new state log pdf
     z_new_lpdf = lpdf_z(y_obs(i,0), y_star(i,0), B_obs(i,0), B_star(i,0), Phi,
-                        nu, chi.row(i), pi, Z_ph.row(i), alpha_3, i, sigma_sq);
+                        nu, chi.row(i), pi, Z_ph.t(), alpha_3, i, sigma_sq);
     acceptance_prob = z_new_lpdf - z_lpdf;
     rand_unif_var = R::runif(0,1);
 
     if(log(rand_unif_var) < acceptance_prob){
       // Accept new state and update parameters
-      Z.slice(iter).row(i) = Z_ph.row(i);
-      Z_tilde.slice(iter).row(i) = Z_tilde_ph.row(i);
-    } else{
-      Z_ph.row(i) = Z.slice(iter).row(i);;
+      Rcpp::Rcout << "Acccept" << "\n";
+      Z.slice(iter).row(i) = Z_ph.t();
+      Z_tilde.slice(iter).row(i) = Z_tilde_ph.t();
     }
   }
   // Update next iteration
@@ -252,27 +253,25 @@ void updateZTempered_PM(const double& beta_i,
                         const arma::mat& chi,
                         const arma::vec& pi,
                         const double& sigma_sq,
-                        const double& rho,
                         const int& iter,
                         const int& tot_mcmc_iters,
                         const double& alpha_3,
                         const double& sigma_Z,
                         arma::cube& Z_tilde,
-                        arma::mat& Z_tilde_ph,
-                        arma::mat& Z_ph,
+                        arma::vec& Z_tilde_ph,
+                        arma::vec& Z_ph,
                         arma::cube& Z){
   double z_lpdf = 0;
   double z_new_lpdf = 0;
   double acceptance_prob = 0;
   double rand_unif_var = 0;
 
-  Z_ph = Z.slice(iter);
   for(int i = 0; i < Z.n_rows; i++){
     for(int l = 0; l < Z.n_cols; l++){
       // Propose new state
-      Z_tilde_ph(i,l) = Z_tilde.slice(iter)(i,l) + R::rnorm(0, sigma_Z);
+      Z_tilde_ph(l) = Z_tilde.slice(iter)(i,l) + R::rnorm(0, sigma_Z);
     }
-    convert_Z_tilde_Z(Z_tilde_ph.row(i), Z_ph.row(i));
+    convert_Z_tilde_Z(Z_tilde_ph, Z_ph);
 
     // Get old state log pdf
     z_lpdf = lpdf_zTempered(beta_i, y_obs(i,0), y_star(i,0), B_obs(i,0),
@@ -282,16 +281,14 @@ void updateZTempered_PM(const double& beta_i,
     // Get new state log pdf
     z_new_lpdf = lpdf_zTempered(beta_i, y_obs(i,0), y_star(i,0), B_obs(i,0),
                                 B_star(i,0), Phi,  nu, chi.row(i), pi,
-                                Z_ph.row(i), alpha_3, i, sigma_sq);
+                                Z_ph, alpha_3, i, sigma_sq);
     acceptance_prob = z_new_lpdf - z_lpdf;
     rand_unif_var = R::runif(0,1);
 
     if(log(rand_unif_var) < acceptance_prob){
       // Accept new state and update parameters
-      Z.slice(iter).row(i) = Z_ph.row(i);
-      Z_tilde.slice(iter).row(i) = Z_tilde_ph.row(i);
-    } else{
-      Z_ph.row(i) = Z.slice(iter).row(i);
+      Z.slice(iter).row(i) = Z_ph.t();
+      Z_tilde.slice(iter).row(i) = Z_tilde_ph.t();
     }
   }
 
