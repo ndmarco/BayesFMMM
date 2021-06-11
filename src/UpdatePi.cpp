@@ -77,7 +77,7 @@ double lpdf_pi_PM(const arma::vec& c,
     for(int i = 0; i <  Z.n_rows; i++){
       lpdf = lpdf + (((alpha_3 * pi(k)) - 1) * std::log(Z(i,k)));
     }
-    lpdf = lpdf - (Z.n_rows / calc_lB(alpha_3 * pi));
+    lpdf = lpdf - (Z.n_rows * calc_lB(alpha_3 * pi));
   }
 
   return lpdf;

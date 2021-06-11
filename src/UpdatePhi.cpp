@@ -47,15 +47,15 @@ void updatePhi(const arma::field<arma::vec>& y_obs,
         if(Z(i,j) != 0){
           for(int l = 0; l < y_obs(i,0).n_elem; l++){
             ph = 0;
-            ph = y_obs(i,0)(l) - arma::dot(nu.row(j),
+            ph = y_obs(i,0)(l) - Z(i,j) * arma::dot(nu.row(j),
                         B_obs(i,0).row(l));
-            M_1 = M_1 + (chi(i,m) * chi(i,m) * B_obs(i,0).row(l).t() *
+            M_1 = M_1 + Z(i,j) * (chi(i,m) * chi(i,m) * B_obs(i,0).row(l).t() *
               B_obs(i,0).row(l));
             for(int k = 0; k < nu.n_rows; k++){
               for(int n = 0; n < Phi(iter,0).n_slices; n++){
                 if(k == j){
                   if(n != m){
-                    ph = ph - (chi(i,n) *
+                    ph = ph - (Z(i,j) * chi(i,n) *
                       arma::dot(Phi(iter,0).slice(n).row(k), B_obs(i,0).row(l)));
                   }
                 }else{
@@ -67,7 +67,7 @@ void updatePhi(const arma::field<arma::vec>& y_obs,
                 ph = ph - Z(i,k) * arma::dot(nu.row(k), B_obs(i,0).row(l));
               }
             }
-            m_1 = m_1 +  chi(i,m) * B_obs(i,0).row(l).t() * ph;
+            m_1 = m_1 + Z(i,j) * chi(i,m) * B_obs(i,0).row(l).t() * ph;
           }
 
 
@@ -75,15 +75,15 @@ void updatePhi(const arma::field<arma::vec>& y_obs,
           if(B_star(i,0).n_elem > 0){
             for(int l = 0; l < y_star(i,0).n_cols; l++){
               ph = 0;
-              ph = y_star(i,0)(iter,l) - arma::dot(nu.row(j),
+              ph = y_star(i,0)(iter,l) - Z(i,j) * arma::dot(nu.row(j),
                              B_star(i,0).row(l));
-              M_1 = M_1 +  (chi(i,m) * chi(i,m) * B_star(i,0).row(l).t() *
+              M_1 = M_1 + Z(i,j) * (chi(i,m) * chi(i,m) * B_star(i,0).row(l).t() *
                 B_star(i,0).row(l));
               for(int k = 0; k < nu.n_rows; k++){
                 for(int n = 0; n < Phi(iter,0).n_slices; n++){
                   if(k == j){
                     if(n != m){
-                      ph = ph - (chi(i,n) *
+                      ph = ph - (Z(i,j) * chi(i,n) *
                         arma::dot(Phi(iter,0).slice(n).row(k),
                                   B_star(i,0).row(l)));
                     }
@@ -97,7 +97,7 @@ void updatePhi(const arma::field<arma::vec>& y_obs,
                   ph = ph - Z(i,k) * arma::dot(nu.row(k), B_star(i,0).row(l));
                 }
               }
-              m_1 = m_1 +  chi(i,m) * B_star(i,0).row(l).t() * ph;
+              m_1 = m_1 + Z(i,j) * chi(i,m) * B_star(i,0).row(l).t() * ph;
             }
           }
         }
@@ -168,15 +168,15 @@ void updatePhiTempered(const double& beta_i,
         if(Z(i,j) != 0){
           for(int l = 0; l < y_obs(i,0).n_elem; l++){
             ph = 0;
-            ph = y_obs(i,0)(l) - arma::dot(nu.row(j),
+            ph = y_obs(i,0)(l) - Z(i,j) * arma::dot(nu.row(j),
                        B_obs(i,0).row(l));
-            M_1 = M_1 + (chi(i,m) * chi(i,m) * B_obs(i,0).row(l).t() *
+            M_1 = M_1 + Z(i,j) * (chi(i,m) * chi(i,m) * B_obs(i,0).row(l).t() *
               B_obs(i,0).row(l));
             for(int k = 0; k < nu.n_rows; k++){
               for(int n = 0; n < Phi(iter,0).n_slices; n++){
                 if(k == j){
                   if(n != m){
-                    ph = ph - (chi(i,n) *
+                    ph = ph - (Z(i,j) * chi(i,n) *
                       arma::dot(Phi(iter,0).slice(n).row(k), B_obs(i,0).row(l)));
                   }
                 }else{
@@ -188,7 +188,7 @@ void updatePhiTempered(const double& beta_i,
                 ph = ph - Z(i,k) * arma::dot(nu.row(k), B_obs(i,0).row(l));
               }
             }
-            m_1 = m_1 +  chi(i,m) * B_obs(i,0).row(l).t() * ph;
+            m_1 = m_1 +  Z(i,j) * chi(i,m) * B_obs(i,0).row(l).t() * ph;
           }
 
 
@@ -196,15 +196,15 @@ void updatePhiTempered(const double& beta_i,
           if(B_star(i,0).n_elem > 0){
             for(int l = 0; l < y_star(i,0).n_cols; l++){
               ph = 0;
-              ph = y_star(i,0)(iter,l) - arma::dot(nu.row(j),
+              ph = y_star(i,0)(iter,l) - Z(i,j) * arma::dot(nu.row(j),
                           B_star(i,0).row(l));
-              M_1 = M_1 +  (chi(i,m) * chi(i,m) * B_star(i,0).row(l).t() *
+              M_1 = M_1 +  Z(i,j) * (chi(i,m) * chi(i,m) * B_star(i,0).row(l).t() *
                 B_star(i,0).row(l));
               for(int k = 0; k < nu.n_rows; k++){
                 for(int n = 0; n < Phi(iter,0).n_slices; n++){
                   if(k == j){
                     if(n != m){
-                      ph = ph - (chi(i,n) *
+                      ph = ph - (Z(i,j) * chi(i,n) *
                         arma::dot(Phi(iter,0).slice(n).row(k),
                                   B_star(i,0).row(l)));
                     }
@@ -218,7 +218,7 @@ void updatePhiTempered(const double& beta_i,
                   ph = ph - Z(i,k) * arma::dot(nu.row(k), B_star(i,0).row(l));
                 }
               }
-              m_1 = m_1 +  chi(i,m) * B_star(i,0).row(l).t() * ph;
+              m_1 = m_1 + Z(i,j) * chi(i,m) * B_star(i,0).row(l).t() * ph;
             }
           }
         }

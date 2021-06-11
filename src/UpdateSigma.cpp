@@ -39,9 +39,9 @@ void updateSigma(const arma::field<arma::vec>& y_obs,
       b = y_obs(i,0)(l);
       for(int k = 0; k < Z.n_cols; k++){
         if(Z(i,k) != 0){
-          b = b - arma::dot(nu.row(k), B_obs(i,0).row(l));
+          b = b - Z(i,k) * arma::dot(nu.row(k), B_obs(i,0).row(l));
           for(int n = 0; n < Phi.n_slices; n++){
-            b = b - chi(i,n) * arma::dot(Phi.slice(n).row(k), B_obs(i,0).row(l));
+            b = b - Z(i,k) * chi(i,n) * arma::dot(Phi.slice(n).row(k), B_obs(i,0).row(l));
           }
         }
       }
@@ -53,9 +53,9 @@ void updateSigma(const arma::field<arma::vec>& y_obs,
         b = y_star(i,0)(iter, l);
         for(int k = 0; k < Z.n_cols; k++){
           if(Z(i,k) != 0){
-            b = b - arma::dot(nu.row(k), B_star(i,0).row(l));
+            b = b - Z(i,k) * arma::dot(nu.row(k), B_star(i,0).row(l));
             for(int n = 0; n < Phi.n_slices; n++){
-              b = b - chi(i,n) * arma::dot(Phi.slice(n).row(k),
+              b = b - Z(i,k) * chi(i,n) * arma::dot(Phi.slice(n).row(k),
                           B_star(i,0).row(l));
             }
           }
@@ -114,9 +114,9 @@ void updateSigmaTempered(const double& beta_i,
       b = y_obs(i,0)(l);
       for(int k = 0; k < Z.n_cols; k++){
         if(Z(i,k) != 0){
-          b = b - arma::dot(nu.row(k), B_obs(i,0).row(l));
+          b = b - Z(i,k) * arma::dot(nu.row(k), B_obs(i,0).row(l));
           for(int n = 0; n < Phi.n_slices; n++){
-            b = b - chi(i,n) * arma::dot(Phi.slice(n).row(k), B_obs(i,0).row(l));
+            b = b - Z(i,k) * chi(i,n) * arma::dot(Phi.slice(n).row(k), B_obs(i,0).row(l));
           }
         }
       }
@@ -128,9 +128,9 @@ void updateSigmaTempered(const double& beta_i,
         b = y_star(i,0)(iter, l);
         for(int k = 0; k < Z.n_cols; k++){
           if(Z(i,k) != 0){
-            b = b - arma::dot(nu.row(k), B_star(i,0).row(l));
+            b = b - Z(i,k) * arma::dot(nu.row(k), B_star(i,0).row(l));
             for(int n = 0; n < Phi.n_slices; n++){
-              b = b - chi(i,n) * arma::dot(Phi.slice(n).row(k),
+              b = b - Z(i,k) * chi(i,n) * arma::dot(Phi.slice(n).row(k),
                           B_star(i,0).row(l));
             }
           }

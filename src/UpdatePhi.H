@@ -3,7 +3,6 @@
 
 #include <RcppArmadillo.h>
 #include <cmath>
-#include "Distributions.H"
 
 void updatePhi(const arma::field<arma::vec>& y_obs,
                const arma::field<arma::mat>& y_star,

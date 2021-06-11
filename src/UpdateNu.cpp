@@ -49,11 +49,11 @@ void updateNu(const arma::field<arma::vec>& y_obs,
           for(int k = 0; k < nu.n_rows; k++){
             if(Z(i,k) != 0){
               if(k != j){
-                ph = ph -  (arma::dot(nu.slice(iter).row(k),
+                ph = ph -  Z(i,k) * (arma::dot(nu.slice(iter).row(k),
                              B_obs(i,0).row(l)));
               }
               for(int n = 0; n < Phi.n_slices; n++){
-                ph = ph - (chi(i,n) * arma::dot(Phi.slice(n).row(k),
+                ph = ph - Z(i,k) * (chi(i,n) * arma::dot(Phi.slice(n).row(k),
                                B_obs(i,0).row(l)));
               }
             }
@@ -68,11 +68,11 @@ void updateNu(const arma::field<arma::vec>& y_obs,
             for(int k = 0; k < nu.n_rows; k++){
               if(Z(i,k) != 0){
                 if(k != j){
-                  ph = ph -  (arma::dot(nu.slice(iter).row(k),
+                  ph = ph - Z(i,k) * (arma::dot(nu.slice(iter).row(k),
                                         B_star(i,0).row(l)));
                 }
                 for(int n = 0; n < Phi.n_slices; n++){
-                  ph = ph - (chi(i,n) * arma::dot(Phi.slice(n).row(k),
+                  ph = ph - Z(i,k) * (chi(i,n) * arma::dot(Phi.slice(n).row(k),
                                  B_star(i,0).row(l)));
                 }
               }
@@ -143,11 +143,11 @@ void updateNuTempered(const double& beta_i,
           for(int k = 0; k < nu.n_rows; k++){
             if(Z(i,k) != 0){
               if(k != j){
-                ph = ph -  (arma::dot(nu.slice(iter).row(k),
+                ph = ph - Z(i,k) * (arma::dot(nu.slice(iter).row(k),
                                       B_obs(i,0).row(l)));
               }
               for(int n = 0; n < Phi.n_slices; n++){
-                ph = ph - (chi(i,n) * arma::dot(Phi.slice(n).row(k),
+                ph = ph - Z(i,k) * (chi(i,n) * arma::dot(Phi.slice(n).row(k),
                                B_obs(i,0).row(l)));
               }
             }
@@ -162,11 +162,11 @@ void updateNuTempered(const double& beta_i,
             for(int k = 0; k < nu.n_rows; k++){
               if(Z(i,k) != 0){
                 if(k != j){
-                  ph = ph -  (arma::dot(nu.slice(iter).row(k),
+                  ph = ph - Z(i,k) * (arma::dot(nu.slice(iter).row(k),
                                         B_star(i,0).row(l)));
                 }
                 for(int n = 0; n < Phi.n_slices; n++){
-                  ph = ph - (chi(i,n) * arma::dot(Phi.slice(n).row(k),
+                  ph = ph - Z(i,k) * (chi(i,n) * arma::dot(Phi.slice(n).row(k),
                                  B_star(i,0).row(l)));
                 }
               }

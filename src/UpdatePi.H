@@ -20,4 +20,8 @@ void updatePi_PM(const double& alpha_3,
                  arma::vec& pi_ph,
                  arma::vec& pi_tilde_ph,
                  arma::mat& pi);
+
+double calc_lB(const arma::vec& alpha);
+
 #endif
+

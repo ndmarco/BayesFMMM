@@ -43,10 +43,10 @@ void updateChi(const arma::field<arma::vec>& y_obs,
         W = W + ph * ph;
         for(int k1 =0; k1 < Z.n_cols; k1++){
           if(Z(i,k1) != 0){
-            w = w - ph * arma::dot(nu.row(k1), B_obs(i,0).row(l));
+            w = w - Z(i,k1) * ph * arma::dot(nu.row(k1), B_obs(i,0).row(l));
             for(int n = 0; n < chi.n_cols; n++){
               if(n != m){
-                w = w - ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1),
+                w = w - Z(i,k1) * ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1),
                                  B_obs(i,0).row(l));
               }
             }
@@ -64,10 +64,10 @@ void updateChi(const arma::field<arma::vec>& y_obs,
           W = W + ph * ph;
           for(int k1 = 0; k1 < Z.n_cols; k1++){
             if(Z(i,k1) != 0){
-              w = w - ph * arma::dot(nu.row(k1), B_star(i,0).row(l));
+              w = w - Z(i,k1) * ph * arma::dot(nu.row(k1), B_star(i,0).row(l));
               for(int n = 0; n < chi.n_cols; n++){
                 if(n != m){
-                  w = w - ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1),
+                  w = w - Z(i,k1) * ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1),
                                    B_star(i,0).row(l));
                 }
               }
@@ -131,10 +131,10 @@ void updateChiTempered(const double& beta_i,
         W = W + ph * ph;
         for(int k1 =0; k1 < Z.n_cols; k1++){
           if(Z(i,k1) != 0){
-            w = w - ph * arma::dot(nu.row(k1), B_obs(i,0).row(l));
+            w = w - Z(i,k1) * ph * arma::dot(nu.row(k1), B_obs(i,0).row(l));
             for(int n = 0; n < chi.n_cols; n++){
               if(n != m){
-                w = w - ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1),
+                w = w - Z(i,k1) * ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1),
                                  B_obs(i,0).row(l));
               }
             }
@@ -152,10 +152,10 @@ void updateChiTempered(const double& beta_i,
           W = W + ph * ph;
           for(int k1 = 0; k1 < Z.n_cols; k1++){
             if(Z(i,k1) != 0){
-              w = w - ph * arma::dot(nu.row(k1), B_star(i,0).row(l));
+              w = w - Z(i,k1) * ph * arma::dot(nu.row(k1), B_star(i,0).row(l));
               for(int n = 0; n < chi.n_cols; n++){
                 if(n != m){
-                  w = w - ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1),
+                  w = w - Z(i,k1) * ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1),
                                    B_star(i,0).row(l));
                 }
               }
