@@ -45,7 +45,7 @@ void updateNu(const arma::field<arma::vec>& y_obs,
         for(int l = 0; l < y_obs(i,0).n_elem; l++){
           ph = 0;
           ph = y_obs(i,0)(l);
-          B_1 = B_1 + (B_obs(i,0).row(l).t() * B_obs(i,0).row(l));
+          B_1 = B_1 + Z(i,j) * Z(i,j) * (B_obs(i,0).row(l).t() * B_obs(i,0).row(l));
           for(int k = 0; k < nu.n_rows; k++){
             if(Z(i,k) != 0){
               if(k != j){
@@ -58,13 +58,13 @@ void updateNu(const arma::field<arma::vec>& y_obs,
               }
             }
           }
-          b_1 = b_1 + B_obs(i,0).row(l).t() * ph;
+          b_1 = b_1 + Z(i,j) * B_obs(i,0).row(l).t() * ph;
         }
         if(B_star(i,0).n_elem > 0){
           for(int l = 0; l < y_star(i,0).n_cols; l++){
             ph = 0;
             ph = y_star(i,0)(iter, l);
-            B_1 = B_1 + (B_star(i,0).row(l).t() * B_star(i,0).row(l));
+            B_1 = B_1 + Z(i,j) * Z(i,j) * (B_star(i,0).row(l).t() * B_star(i,0).row(l));
             for(int k = 0; k < nu.n_rows; k++){
               if(Z(i,k) != 0){
                 if(k != j){
@@ -77,7 +77,7 @@ void updateNu(const arma::field<arma::vec>& y_obs,
                 }
               }
             }
-            b_1 = b_1 + B_star(i,0).row(l).t() * ph;
+            b_1 = b_1 + Z(i,j) * B_star(i,0).row(l).t() * ph;
           }
         }
       }
@@ -139,7 +139,7 @@ void updateNuTempered(const double& beta_i,
         for(int l = 0; l < y_obs(i,0).n_elem; l++){
           ph = 0;
           ph = y_obs(i,0)(l);
-          B_1 = B_1 + (B_obs(i,0).row(l).t() * B_obs(i,0).row(l));
+          B_1 = B_1 + Z(i,j) * Z(i,j) * (B_obs(i,0).row(l).t() * B_obs(i,0).row(l));
           for(int k = 0; k < nu.n_rows; k++){
             if(Z(i,k) != 0){
               if(k != j){
@@ -152,13 +152,13 @@ void updateNuTempered(const double& beta_i,
               }
             }
           }
-          b_1 = b_1 + B_obs(i,0).row(l).t() * ph;
+          b_1 = b_1 + Z(i,j) * B_obs(i,0).row(l).t() * ph;
         }
         if(B_star(i,0).n_elem > 0){
           for(int l = 0; l < y_star(i,0).n_cols; l++){
             ph = 0;
             ph = y_star(i,0)(iter, l);
-            B_1 = B_1 + (B_star(i,0).row(l).t() * B_star(i,0).row(l));
+            B_1 = B_1 + Z(i,j) * Z(i,j) * (B_star(i,0).row(l).t() * B_star(i,0).row(l));
             for(int k = 0; k < nu.n_rows; k++){
               if(Z(i,k) != 0){
                 if(k != j){
@@ -171,7 +171,7 @@ void updateNuTempered(const double& beta_i,
                 }
               }
             }
-            b_1 = b_1 + B_star(i,0).row(l).t() * ph;
+            b_1 = b_1 + Z(i,j) * B_star(i,0).row(l).t() * ph;
           }
         }
       }

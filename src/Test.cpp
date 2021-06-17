@@ -433,9 +433,16 @@ Rcpp::List TestUpdateNu(){
   arma::mat chi(100, 5, arma::fill::randn);
 
 
-  // Make Z matrix
-  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
-  Z.col(0) = arma::vec(100, arma::fill::ones);
+  //Make Z
+  arma::mat Z(100, 3);
+  arma::vec c(3, arma::fill::randu);
+  arma::vec pi = rdirichlet(c);
+
+  // setting alpha_3 = 10
+  arma:: vec alpha = pi * 10;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = rdirichlet(alpha).t();
+  }
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -459,9 +466,6 @@ Rcpp::List TestUpdateNu(){
     }
   }
 
-  // Initialize pi
-  arma::vec pi = {0.95, 0.5, 0.5};
-
   arma::cube Nu_samp(nu.n_rows, nu.n_cols, 100);
   arma::vec b_1(nu.n_cols, arma::fill::zeros);
   arma::mat B_1(nu.n_cols, nu.n_cols, arma::fill::zeros);
@@ -477,7 +481,7 @@ Rcpp::List TestUpdateNu(){
     P(P.n_rows - 1, P.n_rows - 1) = 1;
   }
   arma::vec tau(nu.n_rows, arma::fill::ones);
-  tau = tau * 10;
+  tau = tau / 10;
   arma::vec log_lik = arma::zeros(100);
   for(int i = 0; i < 100; i++){
     updateNu(y_obs, y_star, B_obs, B_star, tau, Phi, Z, chi, sigma_sq, i, 100,
@@ -574,9 +578,15 @@ Rcpp::List TestUpdateSigma(){
   arma::mat chi(100, 5, arma::fill::randn);
 
 
-  // Make Z matrix
-  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
-  Z.col(0) = arma::vec(100, arma::fill::ones);
+  arma::mat Z(100, 3);
+  arma::vec c(3, arma::fill::randu);
+  arma::vec pi = rdirichlet(c);
+
+  // setting alpha_3 = 10
+  arma:: vec alpha = pi * 10;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = rdirichlet(alpha).t();
+  }
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -655,15 +665,21 @@ Rcpp::List TestUpdateChi(){
   {
     Phi.slice(i) = (5-i) * arma::randu<arma::mat>(3,8);
   }
-  double sigma_sq = 0.5;
+  double sigma_sq = 0.01;
 
   // Make chi matrix
   arma::mat chi(100, 5, arma::fill::randn);
 
 
-  // Make Z matrix
-  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
-  Z.col(0) = arma::vec(100, arma::fill::ones);
+  arma::mat Z(100, 3);
+  arma::vec c(3, arma::fill::randu);
+  arma::vec pi = rdirichlet(c);
+
+  // setting alpha_3 = 10
+  arma:: vec alpha = pi * 10;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = rdirichlet(alpha).t();
+  }
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -673,7 +689,7 @@ Rcpp::List TestUpdateChi(){
 
   arma::cube chi_samp(100, 5, 1000, arma::fill::zeros);
   chi_samp.slice(0) = chi;
-  for(int i = 0; i < 10000; i++){
+  for(int i = 0; i < 1000; i++){
     for(int j = 0; j < 100; j++){
       y_star(j,0) = arma::zeros(1000, B_star(j,0).n_rows);
       mean = arma::zeros(8);
@@ -687,11 +703,11 @@ Rcpp::List TestUpdateChi(){
         arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
       y_star(j, 0).row(0) = arma::mvnrnd(B_star(j, 0) * mean, sigma_sq *
         arma::eye(B_star(j,0).n_rows, B_star(j,0).n_rows)).t();
-      for(int k = 1; k < 10000; k++){
+      for(int k = 1; k < 1000; k++){
         y_star(j, 0).row(k) = y_star(j, 0).row(0);
       }
     }
-    updateChi(y_obs, y_star, B_obs, B_star, Phi, nu, Z, sigma_sq, i, 10000,
+    updateChi(y_obs, y_star, B_obs, B_star, Phi, nu, Z, sigma_sq, i, 1000,
               chi_samp);
   }
   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("chi_samp", chi_samp),
@@ -744,15 +760,20 @@ Rcpp::List TestUpdateYStar(){
   {
     Phi.slice(i) = (5-i) * 0.1 * arma::randu<arma::mat>(3,8);
   }
-  double sigma_sq = 0.01;
+  double sigma_sq = 0.001;
 
   // Make chi matrix
   arma::mat chi(100, 5, arma::fill::randn);
 
+  arma::mat Z(100, 3);
+  arma::vec c(3, arma::fill::randu);
+  arma::vec pi = rdirichlet(c);
 
-  // Make Z matrix
-  arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
-  Z.col(0) = arma::vec(100, arma::fill::ones);
+  // setting alpha_3 = 10
+  arma:: vec alpha = pi * 10;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = rdirichlet(alpha).t();
+  }
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
