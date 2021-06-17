@@ -718,6 +718,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// TestUpdatealpha3_PM
+Rcpp::List TestUpdatealpha3_PM();
+RcppExport SEXP _BayesFPMM_TestUpdatealpha3_PM() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdatealpha3_PM());
+    return rcpp_result_gen;
+END_RCPP
+}
 // convert_Z_tilde_Z
 void convert_Z_tilde_Z(const arma::vec& Z_tilde, arma::vec& Z);
 RcppExport SEXP _BayesFPMM_convert_Z_tilde_Z(SEXP Z_tildeSEXP, SEXP ZSEXP) {
@@ -773,6 +783,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_getparms", (DL_FUNC) &_BayesFPMM_getparms, 0},
     {"_BayesFPMM_TestUpdateZ_PM", (DL_FUNC) &_BayesFPMM_TestUpdateZ_PM, 0},
     {"_BayesFPMM_TestUpdatepi_PM", (DL_FUNC) &_BayesFPMM_TestUpdatepi_PM, 0},
+    {"_BayesFPMM_TestUpdatealpha3_PM", (DL_FUNC) &_BayesFPMM_TestUpdatealpha3_PM, 0},
     {"_BayesFPMM_convert_Z_tilde_Z", (DL_FUNC) &_BayesFPMM_convert_Z_tilde_Z, 2},
     {NULL, NULL, 0}
 };

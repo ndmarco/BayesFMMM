@@ -619,6 +619,14 @@ TestUpdatepi_PM <- function() {
     .Call('_BayesFPMM_TestUpdatepi_PM', PACKAGE = 'BayesFPMM')
 }
 
+#' Tests updating pi using partial membership model
+#'
+#' @name TestUpdateZ_PM
+#' @export
+TestUpdatealpha3_PM <- function() {
+    .Call('_BayesFPMM_TestUpdatealpha3_PM', PACKAGE = 'BayesFPMM')
+}
+
 #' computes the log pdf of a_1j
 #'
 #' @name lpdf_a1

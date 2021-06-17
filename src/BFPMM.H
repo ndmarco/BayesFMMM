@@ -1,5 +1,5 @@
-#ifndef BFOC_H
-#define BFOC_H
+#ifndef BFPMM_H
+#define BFPMM_H
 
 #include <RcppArmadillo.h>
 #include <cmath>

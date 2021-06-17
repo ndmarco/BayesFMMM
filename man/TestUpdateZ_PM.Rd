@@ -3,14 +3,19 @@
 \name{TestUpdateZ_PM}
 \alias{TestUpdateZ_PM}
 \alias{TestUpdatepi_PM}
+\alias{TestUpdatealpha3_PM}
 \title{Tests updating Z using partial membership model}
 \usage{
 TestUpdateZ_PM()
 
 TestUpdatepi_PM()
+
+TestUpdatealpha3_PM()
 }
 \description{
 Tests updating Z using partial membership model
+
+Tests updating pi using partial membership model
 
 Tests updating pi using partial membership model
 }

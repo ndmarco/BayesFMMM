@@ -14,8 +14,9 @@
 #include "UpdateSigma.H"
 #include "UpdateChi.H"
 #include "UpdateYStar.H"
-#include "BFOC.H"
+#include "BFPMM.H"
 #include "EstimateInitialState.H"
+#include "UpdateAlpha3.H"
 
 //' Tests updating Z
 //'
@@ -2781,7 +2782,35 @@ Rcpp::List TestUpdatepi_PM(){
                                       Rcpp::Named("pi_tilde", pi_tilde),
                                       Rcpp::Named("Z", Z));
   return mod;
+}
 
+//' Tests updating pi using partial membership model
+//'
+//' @name TestUpdateZ_PM
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdatealpha3_PM(){
+
+  // Make Z matrix
+  arma::mat Z(100, 3);
+  arma::vec c(3, arma::fill::randu);
+  arma::vec pi = rdirichlet(c);
+
+  // setting alpha_3 = 10
+  arma:: vec alpha = pi * 10;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = rdirichlet(alpha).t();
+  }
+
+  arma::vec alpha_3(1000, arma::fill::ones);
+
+  for(int i = 0; i < 1000; i++)
+  {
+    updateAlpha3(pi, 0.5, Z, i, 1000, 0.1, alpha_3);
+  }
+
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("alpha3_samp", alpha_3));
+  return mod;
 }
 
 
