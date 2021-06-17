@@ -26,7 +26,7 @@
 #' @param beta_0 Double containing hyperparameters for sampling from sigma
 #' @export
 BFOC <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0) {
-    .Call('_BayesFOC_BFOC', PACKAGE = 'BayesFOC', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+    .Call('_BayesFPMM_BFOC', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #'
@@ -53,7 +53,7 @@ BFOC <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, t_star, nu_1, r
 #' @param beta_0 Double containing hyperparameters for sampling from sigma
 #' @export
 BFOC_SS <- function(known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory) {
-    .Call('_BayesFOC_BFOC_SS', PACKAGE = 'BayesFOC', known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory)
+    .Call('_BayesFPMM_BFOC_SS', PACKAGE = 'BayesFPMM', known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory)
 }
 
 #' Conducts un-tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
@@ -95,7 +95,7 @@ BFOC_SS <- function(known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_s
 #' @returns params List of objects containing the MCMC samples from the last batch
 #' @export
 BFOC_U <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, sigma_est) {
-    .Call('_BayesFOC_BFOC_U', PACKAGE = 'BayesFOC', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, sigma_est)
+    .Call('_BayesFPMM_BFOC_U', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, sigma_est)
 }
 
 #' Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
@@ -137,7 +137,7 @@ BFOC_U <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iter
 #' @returns params List of objects containing the MCMC samples from the last batch
 #' @export
 BFOC_U_TT <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, beta_N_t, N_t, sigma_est) {
-    .Call('_BayesFOC_BFOC_U_TT', PACKAGE = 'BayesFOC', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, beta_N_t, N_t, sigma_est)
+    .Call('_BayesFPMM_BFOC_U_TT', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, beta_N_t, N_t, sigma_est)
 }
 
 #' Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
@@ -179,7 +179,7 @@ BFOC_U_TT <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_i
 #' @returns params List of objects containing the MCMC samples from the last batch
 #' @export
 BFOC_U_Temp <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, temp, sigma_est) {
-    .Call('_BayesFOC_BFOC_U_Temp', PACKAGE = 'BayesFOC', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, temp, sigma_est)
+    .Call('_BayesFPMM_BFOC_U_Temp', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, temp, sigma_est)
 }
 
 #' Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
@@ -221,7 +221,7 @@ BFOC_U_Temp <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored
 #' @returns params List of objects containing the MCMC samples from the last batch
 #' @export
 BFOC_U_Templadder <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, beta_N_t, N_t, sigma_est) {
-    .Call('_BayesFOC_BFOC_U_Templadder', PACKAGE = 'BayesFOC', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, beta_N_t, N_t, sigma_est)
+    .Call('_BayesFPMM_BFOC_U_Templadder', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, beta_N_t, N_t, sigma_est)
 }
 
 #' Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting using a mixture of traditional MCMC and tempered transitions MCMC. MCMC samples will be stored in batches to a specified path.
@@ -264,7 +264,7 @@ BFOC_U_Templadder <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_
 #' @returns params List of objects containing the MCMC samples from the last batch
 #' @export
 BFOC_U_MTT <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, beta_N_t, N_t, sigma_est) {
-    .Call('_BayesFOC_BFOC_U_MTT', PACKAGE = 'BayesFOC', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, beta_N_t, N_t, sigma_est)
+    .Call('_BayesFPMM_BFOC_U_MTT', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, Z_est, A_est, pi_est, tau_est, delta_est, nu_est, Phi_est, gamma_est, chi_est, y_star_est, beta_N_t, N_t, sigma_est)
 }
 
 #' Returns the weights for the smoothed observed functions
@@ -346,7 +346,7 @@ NULL
 #' @param sigma Double containing initial starting state of sigma squared parameter
 #' @export
 PhiChiInitialState <- function(known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, nu, sigma) {
-    .Call('_BayesFOC_PhiChiInitialState', PACKAGE = 'BayesFOC', known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, nu, sigma)
+    .Call('_BayesFPMM_PhiChiInitialState', PACKAGE = 'BayesFPMM', known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, nu_1, rho, alpha_3, alpha1l, alpha2l, beta1l, beta2l, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, nu, sigma)
 }
 
 #' Corrects for possible label switching
@@ -354,7 +354,7 @@ PhiChiInitialState <- function(known_Z, y_obs, t_obs, n_funct, K, P, M, tot_mcmc
 #' @name LabelSwitch
 #' @export
 LabelSwitch <- function(Z_ref, Z, nu, pi, gamma, Phi, tau, perm_mat) {
-    .Call('_BayesFOC_LabelSwitch', PACKAGE = 'BayesFOC', Z_ref, Z, nu, pi, gamma, Phi, tau, perm_mat)
+    .Call('_BayesFPMM_LabelSwitch', PACKAGE = 'BayesFPMM', Z_ref, Z, nu, pi, gamma, Phi, tau, perm_mat)
 }
 
 #' Tests updating Z
@@ -362,7 +362,7 @@ LabelSwitch <- function(Z_ref, Z, nu, pi, gamma, Phi, tau, perm_mat) {
 #' @name TestUpdateZ
 #' @export
 TestUpdateZ <- function() {
-    .Call('_BayesFOC_TestUpdateZ', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestUpdateZ', PACKAGE = 'BayesFPMM')
 }
 
 #' Tests updating Pi
@@ -370,14 +370,14 @@ TestUpdateZ <- function() {
 #' @name TestUpdatePi
 #' @export
 TestUpdatePi <- function() {
-    .Call('_BayesFOC_TestUpdatePi', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestUpdatePi', PACKAGE = 'BayesFPMM')
 }
 
 #' Tests updating Phi
 #'
 #' @export
 TestUpdatePhi <- function() {
-    .Call('_BayesFOC_TestUpdatePhi', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestUpdatePhi', PACKAGE = 'BayesFPMM')
 }
 
 #' Tests updating Delta
@@ -385,7 +385,7 @@ TestUpdatePhi <- function() {
 #' @name TestUpdateDelta
 #' @export
 TestUpdateDelta <- function() {
-    .Call('_BayesFOC_TestUpdateDelta', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestUpdateDelta', PACKAGE = 'BayesFPMM')
 }
 
 #' Tests updating A
@@ -393,7 +393,7 @@ TestUpdateDelta <- function() {
 #' @name TestUpdateA
 #' @export
 TestUpdateA <- function() {
-    .Call('_BayesFOC_TestUpdateA', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestUpdateA', PACKAGE = 'BayesFPMM')
 }
 
 #' Tests updating Gamma
@@ -401,7 +401,7 @@ TestUpdateA <- function() {
 #' @name TestUpdateGamma
 #' @export
 TestUpdateGamma <- function() {
-    .Call('_BayesFOC_TestUpdateGamma', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestUpdateGamma', PACKAGE = 'BayesFPMM')
 }
 
 #' Tests updating Nu
@@ -409,7 +409,7 @@ TestUpdateGamma <- function() {
 #' @name TestUpdateNu
 #' @export
 TestUpdateNu <- function() {
-    .Call('_BayesFOC_TestUpdateNu', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestUpdateNu', PACKAGE = 'BayesFPMM')
 }
 
 #' Tests updating Tau
@@ -417,7 +417,7 @@ TestUpdateNu <- function() {
 #' @name TestUpdateTau
 #' @export
 TestUpdateTau <- function() {
-    .Call('_BayesFOC_TestUpdateTau', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestUpdateTau', PACKAGE = 'BayesFPMM')
 }
 
 #' Tests updating Sigma
@@ -425,7 +425,7 @@ TestUpdateTau <- function() {
 #' @name TestUpdateSigma
 #' @export
 TestUpdateSigma <- function() {
-    .Call('_BayesFOC_TestUpdateSigma', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestUpdateSigma', PACKAGE = 'BayesFPMM')
 }
 
 #' Tests updating chi
@@ -433,7 +433,7 @@ TestUpdateSigma <- function() {
 #' @name TestUpdateChi
 #' @export
 TestUpdateChi <- function() {
-    .Call('_BayesFOC_TestUpdateChi', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestUpdateChi', PACKAGE = 'BayesFPMM')
 }
 
 #' Tests updating chi
@@ -441,7 +441,7 @@ TestUpdateChi <- function() {
 #' @name TestUpdateChi
 #' @export
 TestUpdateYStar <- function() {
-    .Call('_BayesFOC_TestUpdateYStar', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestUpdateYStar', PACKAGE = 'BayesFPMM')
 }
 
 #' Tests BFOC function
@@ -449,7 +449,7 @@ TestUpdateYStar <- function() {
 #' @name TestBFOC
 #' @export
 TestBFOC <- function(tot_mcmc_iters) {
-    .Call('_BayesFOC_TestBFOC', PACKAGE = 'BayesFOC', tot_mcmc_iters)
+    .Call('_BayesFPMM_TestBFOC', PACKAGE = 'BayesFPMM', tot_mcmc_iters)
 }
 
 #' Tests BFOC function
@@ -457,7 +457,7 @@ TestBFOC <- function(tot_mcmc_iters) {
 #' @name TestBFOC
 #' @export
 TestBFOC_SS <- function(tot_mcmc_iters, directory, r_stored_iters) {
-    .Call('_BayesFOC_TestBFOC_SS', PACKAGE = 'BayesFOC', tot_mcmc_iters, directory, r_stored_iters)
+    .Call('_BayesFPMM_TestBFOC_SS', PACKAGE = 'BayesFPMM', tot_mcmc_iters, directory, r_stored_iters)
 }
 
 #' Tests BFOC function
@@ -465,7 +465,7 @@ TestBFOC_SS <- function(tot_mcmc_iters, directory, r_stored_iters) {
 #' @name TestBFOC
 #' @export
 TestBFOC_SS_nu_Z <- function(tot_mcmc_iters, directory, r_stored_iters) {
-    .Call('_BayesFOC_TestBFOC_SS_nu_Z', PACKAGE = 'BayesFOC', tot_mcmc_iters, directory, r_stored_iters)
+    .Call('_BayesFPMM_TestBFOC_SS_nu_Z', PACKAGE = 'BayesFPMM', tot_mcmc_iters, directory, r_stored_iters)
 }
 
 #' Tests Reading Matrix
@@ -473,7 +473,7 @@ TestBFOC_SS_nu_Z <- function(tot_mcmc_iters, directory, r_stored_iters) {
 #' @name TestReadMat
 #' @export
 TestReadMat <- function(directory) {
-    .Call('_BayesFOC_TestReadMat', PACKAGE = 'BayesFOC', directory)
+    .Call('_BayesFPMM_TestReadMat', PACKAGE = 'BayesFPMM', directory)
 }
 
 #' Tests Reading Cube
@@ -481,7 +481,7 @@ TestReadMat <- function(directory) {
 #' @name TestReadCube
 #' @export
 TestReadCube <- function(directory) {
-    .Call('_BayesFOC_TestReadCube', PACKAGE = 'BayesFOC', directory)
+    .Call('_BayesFPMM_TestReadCube', PACKAGE = 'BayesFPMM', directory)
 }
 
 #' Tests Reading Field
@@ -489,7 +489,7 @@ TestReadCube <- function(directory) {
 #' @name TestReadField
 #' @export
 TestReadField <- function(directory) {
-    .Call('_BayesFOC_TestReadField', PACKAGE = 'BayesFOC', directory)
+    .Call('_BayesFPMM_TestReadField', PACKAGE = 'BayesFPMM', directory)
 }
 
 #' Tests BFOC function
@@ -497,7 +497,7 @@ TestReadField <- function(directory) {
 #' @name GetStuff
 #' @export
 GetStuff <- function(sigma_sq) {
-    .Call('_BayesFOC_GetStuff', PACKAGE = 'BayesFOC', sigma_sq)
+    .Call('_BayesFPMM_GetStuff', PACKAGE = 'BayesFPMM', sigma_sq)
 }
 
 #' Tests BFOC function
@@ -505,7 +505,7 @@ GetStuff <- function(sigma_sq) {
 #' @name GetStuff
 #' @export
 TestEstimateInitialZ <- function() {
-    .Call('_BayesFOC_TestEstimateInitialZ', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestEstimateInitialZ', PACKAGE = 'BayesFPMM')
 }
 
 #' Tests BFOC function
@@ -513,7 +513,7 @@ TestEstimateInitialZ <- function() {
 #' @name GetStuff
 #' @export
 TestEstimateInitial <- function(tot_mcmc_iters, r_stored_iters, directory) {
-    .Call('_BayesFOC_TestEstimateInitial', PACKAGE = 'BayesFOC', tot_mcmc_iters, r_stored_iters, directory)
+    .Call('_BayesFPMM_TestEstimateInitial', PACKAGE = 'BayesFPMM', tot_mcmc_iters, r_stored_iters, directory)
 }
 
 #' Tests BFOC function
@@ -521,7 +521,7 @@ TestEstimateInitial <- function(tot_mcmc_iters, r_stored_iters, directory) {
 #' @name GetStuff
 #' @export
 TestEstimateInitialTT <- function(tot_mcmc_iters, r_stored_iters, beta_N_t, N_t, directory) {
-    .Call('_BayesFOC_TestEstimateInitialTT', PACKAGE = 'BayesFOC', tot_mcmc_iters, r_stored_iters, beta_N_t, N_t, directory)
+    .Call('_BayesFPMM_TestEstimateInitialTT', PACKAGE = 'BayesFPMM', tot_mcmc_iters, r_stored_iters, beta_N_t, N_t, directory)
 }
 
 #' Tests BFOC function
@@ -529,7 +529,7 @@ TestEstimateInitialTT <- function(tot_mcmc_iters, r_stored_iters, beta_N_t, N_t,
 #' @name GetStuff
 #' @export
 TestEstimateInitialMTT <- function(tot_mcmc_iters, r_stored_iters, n_temp_trans, beta_N_t, N_t, directory, sigma_sq) {
-    .Call('_BayesFOC_TestEstimateInitialMTT', PACKAGE = 'BayesFOC', tot_mcmc_iters, r_stored_iters, n_temp_trans, beta_N_t, N_t, directory, sigma_sq)
+    .Call('_BayesFPMM_TestEstimateInitialMTT', PACKAGE = 'BayesFPMM', tot_mcmc_iters, r_stored_iters, n_temp_trans, beta_N_t, N_t, directory, sigma_sq)
 }
 
 #' Tests BFOC function
@@ -537,7 +537,7 @@ TestEstimateInitialMTT <- function(tot_mcmc_iters, r_stored_iters, n_temp_trans,
 #' @name GetStuff
 #' @export
 TestEstimateInitialTempladder <- function(beta_N_t, N_t) {
-    .Call('_BayesFOC_TestEstimateInitialTempladder', PACKAGE = 'BayesFOC', beta_N_t, N_t)
+    .Call('_BayesFPMM_TestEstimateInitialTempladder', PACKAGE = 'BayesFPMM', beta_N_t, N_t)
 }
 
 #' Tests BFOC function
@@ -545,7 +545,7 @@ TestEstimateInitialTempladder <- function(beta_N_t, N_t) {
 #' @name GetStuff
 #' @export
 TestEstimateInitialTemp <- function(tot_mcmc_iters, r_stored_iters, temp, directory) {
-    .Call('_BayesFOC_TestEstimateInitialTemp', PACKAGE = 'BayesFOC', tot_mcmc_iters, r_stored_iters, temp, directory)
+    .Call('_BayesFPMM_TestEstimateInitialTemp', PACKAGE = 'BayesFPMM', tot_mcmc_iters, r_stored_iters, temp, directory)
 }
 
 #' Tests updating Z
@@ -553,14 +553,14 @@ TestEstimateInitialTemp <- function(tot_mcmc_iters, r_stored_iters, temp, direct
 #' @name TestUpdateZ
 #' @export
 TestUpdateZTempered <- function(beta) {
-    .Call('_BayesFOC_TestUpdateZTempered', PACKAGE = 'BayesFOC', beta)
+    .Call('_BayesFPMM_TestUpdateZTempered', PACKAGE = 'BayesFPMM', beta)
 }
 
 #' Tests updating Phi using temperature
 #'
 #' @export
 TestUpdatePhiTempered <- function(beta) {
-    .Call('_BayesFOC_TestUpdatePhiTempered', PACKAGE = 'BayesFOC', beta)
+    .Call('_BayesFPMM_TestUpdatePhiTempered', PACKAGE = 'BayesFPMM', beta)
 }
 
 #' Tests updating Nu
@@ -568,7 +568,7 @@ TestUpdatePhiTempered <- function(beta) {
 #' @name TestUpdateNuTemperd
 #' @export
 TestUpdateNuTempered <- function(beta) {
-    .Call('_BayesFOC_TestUpdateNuTempered', PACKAGE = 'BayesFOC', beta)
+    .Call('_BayesFPMM_TestUpdateNuTempered', PACKAGE = 'BayesFPMM', beta)
 }
 
 #' Tests updating Sigma
@@ -576,7 +576,7 @@ TestUpdateNuTempered <- function(beta) {
 #' @name TestUpdateSigmaTempered
 #' @export
 TestUpdateSigmaTempered <- function(beta) {
-    .Call('_BayesFOC_TestUpdateSigmaTempered', PACKAGE = 'BayesFOC', beta)
+    .Call('_BayesFPMM_TestUpdateSigmaTempered', PACKAGE = 'BayesFPMM', beta)
 }
 
 #' Tests updating chi
@@ -584,7 +584,7 @@ TestUpdateSigmaTempered <- function(beta) {
 #' @name TestUpdateChiTempered
 #' @export
 TestUpdateChiTempered <- function(beta) {
-    .Call('_BayesFOC_TestUpdateChiTempered', PACKAGE = 'BayesFOC', beta)
+    .Call('_BayesFPMM_TestUpdateChiTempered', PACKAGE = 'BayesFPMM', beta)
 }
 
 #' Tests updating YstarTempered
@@ -592,7 +592,7 @@ TestUpdateChiTempered <- function(beta) {
 #' @name TestUpdateYStarTempered
 #' @export
 TestUpdateYStarTempered <- function(beta) {
-    .Call('_BayesFOC_TestUpdateYStarTempered', PACKAGE = 'BayesFOC', beta)
+    .Call('_BayesFPMM_TestUpdateYStarTempered', PACKAGE = 'BayesFPMM', beta)
 }
 
 #' simulates parameters
@@ -600,7 +600,7 @@ TestUpdateYStarTempered <- function(beta) {
 #' @name getparams
 #' @export
 getparms <- function() {
-    invisible(.Call('_BayesFOC_getparms', PACKAGE = 'BayesFOC'))
+    invisible(.Call('_BayesFPMM_getparms', PACKAGE = 'BayesFPMM'))
 }
 
 #' Tests updating Z using partial membership model
@@ -608,7 +608,15 @@ getparms <- function() {
 #' @name TestUpdateZ_PM
 #' @export
 TestUpdateZ_PM <- function() {
-    .Call('_BayesFOC_TestUpdateZ_PM', PACKAGE = 'BayesFOC')
+    .Call('_BayesFPMM_TestUpdateZ_PM', PACKAGE = 'BayesFPMM')
+}
+
+#' Tests updating pi using partial membership model
+#'
+#' @name TestUpdateZ_PM
+#' @export
+TestUpdatepi_PM <- function() {
+    .Call('_BayesFPMM_TestUpdatepi_PM', PACKAGE = 'BayesFPMM')
 }
 
 #' computes the log pdf of a_1j
@@ -718,7 +726,7 @@ NULL
 #' @param Z Row Vector containing placeholder for variables in the untransformed space
 #' @export
 convert_Z_tilde_Z <- function(Z_tilde, Z) {
-    invisible(.Call('_BayesFOC_convert_Z_tilde_Z', PACKAGE = 'BayesFOC', Z_tilde, Z))
+    invisible(.Call('_BayesFPMM_convert_Z_tilde_Z', PACKAGE = 'BayesFPMM', Z_tilde, Z))
 }
 
 #' Gets log-pdf of z_i given zeta_{-z_i}

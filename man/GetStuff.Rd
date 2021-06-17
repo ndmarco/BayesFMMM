@@ -5,10 +5,12 @@
 \alias{TestEstimateInitialZ}
 \alias{TestEstimateInitial}
 \alias{TestEstimateInitialTT}
+\alias{TestEstimateInitialMTT}
+\alias{TestEstimateInitialTempladder}
 \alias{TestEstimateInitialTemp}
 \title{Tests BFOC function}
 \usage{
-GetStuff()
+GetStuff(sigma_sq)
 
 TestEstimateInitialZ()
 
@@ -16,9 +18,25 @@ TestEstimateInitial(tot_mcmc_iters, r_stored_iters, directory)
 
 TestEstimateInitialTT(tot_mcmc_iters, r_stored_iters, beta_N_t, N_t, directory)
 
+TestEstimateInitialMTT(
+  tot_mcmc_iters,
+  r_stored_iters,
+  n_temp_trans,
+  beta_N_t,
+  N_t,
+  directory,
+  sigma_sq
+)
+
+TestEstimateInitialTempladder(beta_N_t, N_t)
+
 TestEstimateInitialTemp(tot_mcmc_iters, r_stored_iters, temp, directory)
 }
 \description{
+Tests BFOC function
+
+Tests BFOC function
+
 Tests BFOC function
 
 Tests BFOC function

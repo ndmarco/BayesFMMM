@@ -1203,22 +1203,22 @@ Rcpp::List GetStuff(double sigma_sq){
   }
 
   arma::mat nu;
-  nu.load("c:\\Projects\\BayesFOC\\data\\nu.txt");
+  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("c:\\Projects\\BayesFOC\\data\\Phi.txt");
+  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("c:\\Projects\\BayesFOC\\data\\chi.txt");
+  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
 
 
   // Make Z matrix
   arma::mat Z;
-  Z.load("c:\\Projects\\BayesFOC\\data\\Z.txt");
+  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -1659,22 +1659,22 @@ Rcpp::List TestEstimateInitialMTT(const int tot_mcmc_iters, const int r_stored_i
 
   // Make nu matrix
   arma::mat nu;
-  nu.load("c:\\Projects\\BayesFOC\\data\\nu.txt");
+  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("c:\\Projects\\BayesFOC\\data\\Phi.txt");
+  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("c:\\Projects\\BayesFOC\\data\\chi.txt");
+  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
 
 
   // Make Z matrix
   arma::mat Z;
-  Z.load("c:\\Projects\\BayesFOC\\data\\Z.txt");
+  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -1775,22 +1775,22 @@ Rcpp::List TestEstimateInitialTempladder(const double beta_N_t, const int N_t){
   }
 
   arma::mat nu;
-  nu.load("c:\\Projects\\BayesFOC\\data\\nu.txt");
+  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("c:\\Projects\\BayesFOC\\data\\Phi.txt");
+  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
   double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("c:\\Projects\\BayesFOC\\data\\chi.txt");
+  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
 
 
   // Make Z matrix
   arma::mat Z;
-  Z.load("c:\\Projects\\BayesFOC\\data\\Z.txt");
+  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -2625,10 +2625,10 @@ void getparms(){
   }
 
   //save parameters
-  nu.save("c:\\Projects\\BayesFOC\\data\\nu.txt", arma::arma_ascii);
-  chi.save("c:\\Projects\\BayesFOC\\data\\chi.txt", arma::arma_ascii);
-  Phi.save("c:\\Projects\\BayesFOC\\data\\Phi.txt", arma::arma_ascii);
-  Z.save("c:\\Projects\\BayesFOC\\data\\Z.txt", arma::arma_ascii);
+  nu.save("c:\\Projects\\BayesFPMM\\data\\nu.txt", arma::arma_ascii);
+  chi.save("c:\\Projects\\BayesFPMM\\data\\chi.txt", arma::arma_ascii);
+  Phi.save("c:\\Projects\\BayesFPMM\\data\\Phi.txt", arma::arma_ascii);
+  Z.save("c:\\Projects\\BayesFPMM\\data\\Z.txt", arma::arma_ascii);
 
 }
 
@@ -2741,3 +2741,47 @@ Rcpp::List TestUpdateZ_PM(){
   return mod;
 
 }
+
+//' Tests updating pi using partial membership model
+//'
+//' @name TestUpdateZ_PM
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestUpdatepi_PM(){
+
+  // Make Z matrix
+  arma::mat Z(100, 3);
+  arma::vec c(3, arma::fill::randu);
+  arma::vec pi = rdirichlet(c);
+
+  // setting alpha_3 = 100
+  arma:: vec alpha = pi * 100;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = rdirichlet(alpha).t();
+  }
+
+  // Initialize placeholder
+  arma::vec pi_ph = arma::zeros(3);
+  arma::vec pi_tilde_ph = arma::zeros(3);
+
+
+  //Initialize Z_samp
+  arma::mat pi_samp = arma::ones(3, 1000);
+  arma::mat pi_tilde = arma::zeros(3, 1000);
+  pi_samp.col(0) = rdirichlet(c);
+  pi_tilde.col(0) =  pi_samp.col(0);
+
+  for(int i = 0; i < 1000; i++)
+  {
+    updatePi_PM(100 ,Z, c, i, 1000, 0.1, pi_tilde, pi_ph, pi_tilde_ph, pi_samp);
+  }
+
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("pi_samp", pi_samp),
+                                      Rcpp::Named("pi",pi),
+                                      Rcpp::Named("pi_tilde", pi_tilde),
+                                      Rcpp::Named("Z", Z));
+  return mod;
+
+}
+
+

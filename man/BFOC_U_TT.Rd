@@ -3,6 +3,8 @@
 \name{BFOC_U_TT}
 \alias{BFOC_U_TT}
 \alias{BFOC_U_Temp}
+\alias{BFOC_U_Templadder}
+\alias{BFOC_U_MTT}
 \title{Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.}
 \usage{
 BFOC_U_TT(
@@ -81,6 +83,84 @@ BFOC_U_Temp(
   temp,
   sigma_est
 )
+
+BFOC_U_Templadder(
+  y_obs,
+  t_obs,
+  n_funct,
+  K,
+  P,
+  M,
+  tot_mcmc_iters,
+  r_stored_iters,
+  t_star,
+  nu_1,
+  rho,
+  alpha_3,
+  alpha1l,
+  alpha2l,
+  beta1l,
+  beta2l,
+  var_epsilon1,
+  var_epsilon2,
+  alpha,
+  beta,
+  alpha_0,
+  beta_0,
+  Z_est,
+  A_est,
+  pi_est,
+  tau_est,
+  delta_est,
+  nu_est,
+  Phi_est,
+  gamma_est,
+  chi_est,
+  y_star_est,
+  beta_N_t,
+  N_t,
+  sigma_est
+)
+
+BFOC_U_MTT(
+  y_obs,
+  t_obs,
+  n_funct,
+  K,
+  P,
+  M,
+  tot_mcmc_iters,
+  r_stored_iters,
+  n_temp_trans,
+  t_star,
+  nu_1,
+  rho,
+  alpha_3,
+  alpha1l,
+  alpha2l,
+  beta1l,
+  beta2l,
+  var_epsilon1,
+  var_epsilon2,
+  alpha,
+  beta,
+  alpha_0,
+  beta_0,
+  directory,
+  Z_est,
+  A_est,
+  pi_est,
+  tau_est,
+  delta_est,
+  nu_est,
+  Phi_est,
+  gamma_est,
+  chi_est,
+  y_star_est,
+  beta_N_t,
+  N_t,
+  sigma_est
+)
 }
 \arguments{
 \item{y_obs}{Field (list) of vectors containing the observed values}
@@ -95,7 +175,7 @@ BFOC_U_Temp(
 
 \item{tot_mcmc_iters}{Int containing total number of MCMC iterations}
 
-\item{r_stored_iters}{Int constaining number of iterations performed for each batch}
+\item{r_stored_iters}{Int containing number of iterations performed for each batch}
 
 \item{t_star}{Field (list) of vectors containing time points of interest that are not observed (optional)}
 
@@ -143,6 +223,8 @@ BFOC_U_Temp(
 
 \item{sigma_est}{Double containing starting point of sigma parameter}
 
+\item{n_temp_trans}{Int containing how often tempered transitons are to be used}
+
 \item{a_12}{Vec containing hyperparameters for sampling from delta}
 
 \item{var_epslion1}{Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm}
@@ -153,9 +235,17 @@ BFOC_U_Temp(
 params List of objects containing the MCMC samples from the last batch
 
 params List of objects containing the MCMC samples from the last batch
+
+params List of objects containing the MCMC samples from the last batch
+
+params List of objects containing the MCMC samples from the last batch
 }
 \description{
 Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
 
 Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
+
+Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
+
+Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting using a mixture of traditional MCMC and tempered transitions MCMC. MCMC samples will be stored in batches to a specified path.
 }

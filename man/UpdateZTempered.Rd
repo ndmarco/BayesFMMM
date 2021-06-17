@@ -37,5 +37,7 @@
 \description{
 Updates the Z Matrix using Tempered Transitions
 
+Updates the Z Matrix using Tempered Transitions
+
 Updates the Z Matrix when we have a subset of known class memberships using Tempered Transitions
 }

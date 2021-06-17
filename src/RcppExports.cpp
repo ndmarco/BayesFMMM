@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // BFOC
 Rcpp::List BFOC(const arma::field<arma::vec> y_obs, const arma::field<arma::vec> t_obs, const double n_funct, const int K, const int P, const int M, const int tot_mcmc_iters, const arma::field<arma::vec> t_star, const double nu_1, const double rho, const double alpha_3, const double alpha1l, const double alpha2l, const double beta1l, const double beta2l, const double var_epsilon1, const double var_epsilon2, const double alpha, const double beta, const double alpha_0, const double beta_0);
-RcppExport SEXP _BayesFOC_BFOC(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP) {
+RcppExport SEXP _BayesFPMM_BFOC(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -39,7 +39,7 @@ END_RCPP
 }
 // BFOC_SS
 Rcpp::List BFOC_SS(const arma::mat known_Z, const arma::field<arma::vec> y_obs, const arma::field<arma::vec> t_obs, const double n_funct, const int K, const int P, const int M, const int tot_mcmc_iters, const int r_stored_iters, const arma::field<arma::vec> t_star, const double nu_1, const double rho, const double alpha_3, const double alpha1l, const double alpha2l, const double beta1l, const double beta2l, const double var_epsilon1, const double var_epsilon2, const double alpha, const double beta, const double alpha_0, const double beta_0, const std::string directory);
-RcppExport SEXP _BayesFOC_BFOC_SS(SEXP known_ZSEXP, SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP) {
+RcppExport SEXP _BayesFPMM_BFOC_SS(SEXP known_ZSEXP, SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -73,7 +73,7 @@ END_RCPP
 }
 // BFOC_U
 Rcpp::List BFOC_U(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::field<arma::vec>& t_star, const double& nu_1, const double& rho, const double& alpha_3, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory, const arma::mat& Z_est, const arma::vec& A_est, const arma::vec& pi_est, const arma::vec& tau_est, const arma::vec& delta_est, const arma::mat& nu_est, const arma::cube& Phi_est, const arma::cube& gamma_est, const arma::mat& chi_est, const arma::field<arma::vec>& y_star_est, const double& sigma_est);
-RcppExport SEXP _BayesFOC_BFOC_U(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP, SEXP Z_estSEXP, SEXP A_estSEXP, SEXP pi_estSEXP, SEXP tau_estSEXP, SEXP delta_estSEXP, SEXP nu_estSEXP, SEXP Phi_estSEXP, SEXP gamma_estSEXP, SEXP chi_estSEXP, SEXP y_star_estSEXP, SEXP sigma_estSEXP) {
+RcppExport SEXP _BayesFPMM_BFOC_U(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP, SEXP Z_estSEXP, SEXP A_estSEXP, SEXP pi_estSEXP, SEXP tau_estSEXP, SEXP delta_estSEXP, SEXP nu_estSEXP, SEXP Phi_estSEXP, SEXP gamma_estSEXP, SEXP chi_estSEXP, SEXP y_star_estSEXP, SEXP sigma_estSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -117,7 +117,7 @@ END_RCPP
 }
 // BFOC_U_TT
 Rcpp::List BFOC_U_TT(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::field<arma::vec>& t_star, const double& nu_1, const double& rho, const double& alpha_3, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory, const arma::mat& Z_est, const arma::vec& A_est, const arma::vec& pi_est, const arma::vec& tau_est, const arma::vec& delta_est, const arma::mat& nu_est, const arma::cube& Phi_est, const arma::cube& gamma_est, const arma::mat& chi_est, const arma::field<arma::vec>& y_star_est, const double& beta_N_t, const int& N_t, const double& sigma_est);
-RcppExport SEXP _BayesFOC_BFOC_U_TT(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP, SEXP Z_estSEXP, SEXP A_estSEXP, SEXP pi_estSEXP, SEXP tau_estSEXP, SEXP delta_estSEXP, SEXP nu_estSEXP, SEXP Phi_estSEXP, SEXP gamma_estSEXP, SEXP chi_estSEXP, SEXP y_star_estSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP sigma_estSEXP) {
+RcppExport SEXP _BayesFPMM_BFOC_U_TT(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP, SEXP Z_estSEXP, SEXP A_estSEXP, SEXP pi_estSEXP, SEXP tau_estSEXP, SEXP delta_estSEXP, SEXP nu_estSEXP, SEXP Phi_estSEXP, SEXP gamma_estSEXP, SEXP chi_estSEXP, SEXP y_star_estSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP sigma_estSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -163,7 +163,7 @@ END_RCPP
 }
 // BFOC_U_Temp
 Rcpp::List BFOC_U_Temp(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::field<arma::vec>& t_star, const double& nu_1, const double& rho, const double& alpha_3, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory, const arma::mat& Z_est, const arma::vec& A_est, const arma::vec& pi_est, const arma::vec& tau_est, const arma::vec& delta_est, const arma::mat& nu_est, const arma::cube& Phi_est, const arma::cube& gamma_est, const arma::mat& chi_est, const arma::field<arma::vec>& y_star_est, const double& temp, const double& sigma_est);
-RcppExport SEXP _BayesFOC_BFOC_U_Temp(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP, SEXP Z_estSEXP, SEXP A_estSEXP, SEXP pi_estSEXP, SEXP tau_estSEXP, SEXP delta_estSEXP, SEXP nu_estSEXP, SEXP Phi_estSEXP, SEXP gamma_estSEXP, SEXP chi_estSEXP, SEXP y_star_estSEXP, SEXP tempSEXP, SEXP sigma_estSEXP) {
+RcppExport SEXP _BayesFPMM_BFOC_U_Temp(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP, SEXP Z_estSEXP, SEXP A_estSEXP, SEXP pi_estSEXP, SEXP tau_estSEXP, SEXP delta_estSEXP, SEXP nu_estSEXP, SEXP Phi_estSEXP, SEXP gamma_estSEXP, SEXP chi_estSEXP, SEXP y_star_estSEXP, SEXP tempSEXP, SEXP sigma_estSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -208,7 +208,7 @@ END_RCPP
 }
 // BFOC_U_Templadder
 Rcpp::List BFOC_U_Templadder(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::field<arma::vec>& t_star, const double& nu_1, const double& rho, const double& alpha_3, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const arma::mat& Z_est, const arma::vec& A_est, const arma::vec& pi_est, const arma::vec& tau_est, const arma::vec& delta_est, const arma::mat& nu_est, const arma::cube& Phi_est, const arma::cube& gamma_est, const arma::mat& chi_est, const arma::field<arma::vec>& y_star_est, const double& beta_N_t, const int& N_t, const double& sigma_est);
-RcppExport SEXP _BayesFOC_BFOC_U_Templadder(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP Z_estSEXP, SEXP A_estSEXP, SEXP pi_estSEXP, SEXP tau_estSEXP, SEXP delta_estSEXP, SEXP nu_estSEXP, SEXP Phi_estSEXP, SEXP gamma_estSEXP, SEXP chi_estSEXP, SEXP y_star_estSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP sigma_estSEXP) {
+RcppExport SEXP _BayesFPMM_BFOC_U_Templadder(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP Z_estSEXP, SEXP A_estSEXP, SEXP pi_estSEXP, SEXP tau_estSEXP, SEXP delta_estSEXP, SEXP nu_estSEXP, SEXP Phi_estSEXP, SEXP gamma_estSEXP, SEXP chi_estSEXP, SEXP y_star_estSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP sigma_estSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -253,7 +253,7 @@ END_RCPP
 }
 // BFOC_U_MTT
 Rcpp::List BFOC_U_MTT(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const int& n_temp_trans, const arma::field<arma::vec>& t_star, const double& nu_1, const double& rho, const double& alpha_3, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory, const arma::mat& Z_est, const arma::vec& A_est, const arma::vec& pi_est, const arma::vec& tau_est, const arma::vec& delta_est, const arma::mat& nu_est, const arma::cube& Phi_est, const arma::cube& gamma_est, const arma::mat& chi_est, const arma::field<arma::vec>& y_star_est, const double& beta_N_t, const int& N_t, const double& sigma_est);
-RcppExport SEXP _BayesFOC_BFOC_U_MTT(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP n_temp_transSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP, SEXP Z_estSEXP, SEXP A_estSEXP, SEXP pi_estSEXP, SEXP tau_estSEXP, SEXP delta_estSEXP, SEXP nu_estSEXP, SEXP Phi_estSEXP, SEXP gamma_estSEXP, SEXP chi_estSEXP, SEXP y_star_estSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP sigma_estSEXP) {
+RcppExport SEXP _BayesFPMM_BFOC_U_MTT(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP n_temp_transSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP, SEXP Z_estSEXP, SEXP A_estSEXP, SEXP pi_estSEXP, SEXP tau_estSEXP, SEXP delta_estSEXP, SEXP nu_estSEXP, SEXP Phi_estSEXP, SEXP gamma_estSEXP, SEXP chi_estSEXP, SEXP y_star_estSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP sigma_estSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -300,7 +300,7 @@ END_RCPP
 }
 // PhiChiInitialState
 Rcpp::List PhiChiInitialState(const arma::mat& known_Z, const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::field<arma::vec>& t_star, const double& nu_1, const double& rho, const double& alpha_3, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const arma::mat& nu, const double& sigma);
-RcppExport SEXP _BayesFOC_PhiChiInitialState(SEXP known_ZSEXP, SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP nuSEXP, SEXP sigmaSEXP) {
+RcppExport SEXP _BayesFPMM_PhiChiInitialState(SEXP known_ZSEXP, SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP nuSEXP, SEXP sigmaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -335,7 +335,7 @@ END_RCPP
 }
 // LabelSwitch
 Rcpp::List LabelSwitch(arma::mat& Z_ref, arma::cube& Z, arma::cube& nu, arma::mat& pi, arma::field<arma::cube>& gamma, arma::field<arma::cube>& Phi, arma::mat& tau, arma::mat& perm_mat);
-RcppExport SEXP _BayesFOC_LabelSwitch(SEXP Z_refSEXP, SEXP ZSEXP, SEXP nuSEXP, SEXP piSEXP, SEXP gammaSEXP, SEXP PhiSEXP, SEXP tauSEXP, SEXP perm_matSEXP) {
+RcppExport SEXP _BayesFPMM_LabelSwitch(SEXP Z_refSEXP, SEXP ZSEXP, SEXP nuSEXP, SEXP piSEXP, SEXP gammaSEXP, SEXP PhiSEXP, SEXP tauSEXP, SEXP perm_matSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -353,7 +353,7 @@ END_RCPP
 }
 // TestUpdateZ
 Rcpp::List TestUpdateZ();
-RcppExport SEXP _BayesFOC_TestUpdateZ() {
+RcppExport SEXP _BayesFPMM_TestUpdateZ() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -363,7 +363,7 @@ END_RCPP
 }
 // TestUpdatePi
 Rcpp::List TestUpdatePi();
-RcppExport SEXP _BayesFOC_TestUpdatePi() {
+RcppExport SEXP _BayesFPMM_TestUpdatePi() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -373,7 +373,7 @@ END_RCPP
 }
 // TestUpdatePhi
 Rcpp::List TestUpdatePhi();
-RcppExport SEXP _BayesFOC_TestUpdatePhi() {
+RcppExport SEXP _BayesFPMM_TestUpdatePhi() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -383,7 +383,7 @@ END_RCPP
 }
 // TestUpdateDelta
 Rcpp::List TestUpdateDelta();
-RcppExport SEXP _BayesFOC_TestUpdateDelta() {
+RcppExport SEXP _BayesFPMM_TestUpdateDelta() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -393,7 +393,7 @@ END_RCPP
 }
 // TestUpdateA
 Rcpp::List TestUpdateA();
-RcppExport SEXP _BayesFOC_TestUpdateA() {
+RcppExport SEXP _BayesFPMM_TestUpdateA() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -403,7 +403,7 @@ END_RCPP
 }
 // TestUpdateGamma
 Rcpp::List TestUpdateGamma();
-RcppExport SEXP _BayesFOC_TestUpdateGamma() {
+RcppExport SEXP _BayesFPMM_TestUpdateGamma() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -413,7 +413,7 @@ END_RCPP
 }
 // TestUpdateNu
 Rcpp::List TestUpdateNu();
-RcppExport SEXP _BayesFOC_TestUpdateNu() {
+RcppExport SEXP _BayesFPMM_TestUpdateNu() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -423,7 +423,7 @@ END_RCPP
 }
 // TestUpdateTau
 Rcpp::List TestUpdateTau();
-RcppExport SEXP _BayesFOC_TestUpdateTau() {
+RcppExport SEXP _BayesFPMM_TestUpdateTau() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -433,7 +433,7 @@ END_RCPP
 }
 // TestUpdateSigma
 Rcpp::List TestUpdateSigma();
-RcppExport SEXP _BayesFOC_TestUpdateSigma() {
+RcppExport SEXP _BayesFPMM_TestUpdateSigma() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -443,7 +443,7 @@ END_RCPP
 }
 // TestUpdateChi
 Rcpp::List TestUpdateChi();
-RcppExport SEXP _BayesFOC_TestUpdateChi() {
+RcppExport SEXP _BayesFPMM_TestUpdateChi() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -453,7 +453,7 @@ END_RCPP
 }
 // TestUpdateYStar
 Rcpp::List TestUpdateYStar();
-RcppExport SEXP _BayesFOC_TestUpdateYStar() {
+RcppExport SEXP _BayesFPMM_TestUpdateYStar() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -463,7 +463,7 @@ END_RCPP
 }
 // TestBFOC
 Rcpp::List TestBFOC(int tot_mcmc_iters);
-RcppExport SEXP _BayesFOC_TestBFOC(SEXP tot_mcmc_itersSEXP) {
+RcppExport SEXP _BayesFPMM_TestBFOC(SEXP tot_mcmc_itersSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -474,7 +474,7 @@ END_RCPP
 }
 // TestBFOC_SS
 Rcpp::List TestBFOC_SS(int tot_mcmc_iters, const std::string directory, const int r_stored_iters);
-RcppExport SEXP _BayesFOC_TestBFOC_SS(SEXP tot_mcmc_itersSEXP, SEXP directorySEXP, SEXP r_stored_itersSEXP) {
+RcppExport SEXP _BayesFPMM_TestBFOC_SS(SEXP tot_mcmc_itersSEXP, SEXP directorySEXP, SEXP r_stored_itersSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -487,7 +487,7 @@ END_RCPP
 }
 // TestBFOC_SS_nu_Z
 Rcpp::List TestBFOC_SS_nu_Z(int tot_mcmc_iters, const std::string directory, const int r_stored_iters);
-RcppExport SEXP _BayesFOC_TestBFOC_SS_nu_Z(SEXP tot_mcmc_itersSEXP, SEXP directorySEXP, SEXP r_stored_itersSEXP) {
+RcppExport SEXP _BayesFPMM_TestBFOC_SS_nu_Z(SEXP tot_mcmc_itersSEXP, SEXP directorySEXP, SEXP r_stored_itersSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -500,7 +500,7 @@ END_RCPP
 }
 // TestReadMat
 arma::mat TestReadMat(std::string directory);
-RcppExport SEXP _BayesFOC_TestReadMat(SEXP directorySEXP) {
+RcppExport SEXP _BayesFPMM_TestReadMat(SEXP directorySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -511,7 +511,7 @@ END_RCPP
 }
 // TestReadCube
 arma::cube TestReadCube(std::string directory);
-RcppExport SEXP _BayesFOC_TestReadCube(SEXP directorySEXP) {
+RcppExport SEXP _BayesFPMM_TestReadCube(SEXP directorySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -522,7 +522,7 @@ END_RCPP
 }
 // TestReadField
 arma::field<arma::cube> TestReadField(std::string directory);
-RcppExport SEXP _BayesFOC_TestReadField(SEXP directorySEXP) {
+RcppExport SEXP _BayesFPMM_TestReadField(SEXP directorySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -533,7 +533,7 @@ END_RCPP
 }
 // GetStuff
 Rcpp::List GetStuff(double sigma_sq);
-RcppExport SEXP _BayesFOC_GetStuff(SEXP sigma_sqSEXP) {
+RcppExport SEXP _BayesFPMM_GetStuff(SEXP sigma_sqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -544,7 +544,7 @@ END_RCPP
 }
 // TestEstimateInitialZ
 Rcpp::List TestEstimateInitialZ();
-RcppExport SEXP _BayesFOC_TestEstimateInitialZ() {
+RcppExport SEXP _BayesFPMM_TestEstimateInitialZ() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -554,7 +554,7 @@ END_RCPP
 }
 // TestEstimateInitial
 Rcpp::List TestEstimateInitial(const int tot_mcmc_iters, const int r_stored_iters, const std::string directory);
-RcppExport SEXP _BayesFOC_TestEstimateInitial(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP directorySEXP) {
+RcppExport SEXP _BayesFPMM_TestEstimateInitial(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP directorySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -567,7 +567,7 @@ END_RCPP
 }
 // TestEstimateInitialTT
 Rcpp::List TestEstimateInitialTT(const int tot_mcmc_iters, const int r_stored_iters, const double beta_N_t, const int N_t, const std::string directory);
-RcppExport SEXP _BayesFOC_TestEstimateInitialTT(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP directorySEXP) {
+RcppExport SEXP _BayesFPMM_TestEstimateInitialTT(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP directorySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -582,7 +582,7 @@ END_RCPP
 }
 // TestEstimateInitialMTT
 Rcpp::List TestEstimateInitialMTT(const int tot_mcmc_iters, const int r_stored_iters, const int n_temp_trans, const double beta_N_t, const int N_t, const std::string directory, const double sigma_sq);
-RcppExport SEXP _BayesFOC_TestEstimateInitialMTT(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP n_temp_transSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP directorySEXP, SEXP sigma_sqSEXP) {
+RcppExport SEXP _BayesFPMM_TestEstimateInitialMTT(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP n_temp_transSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP directorySEXP, SEXP sigma_sqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -599,7 +599,7 @@ END_RCPP
 }
 // TestEstimateInitialTempladder
 Rcpp::List TestEstimateInitialTempladder(const double beta_N_t, const int N_t);
-RcppExport SEXP _BayesFOC_TestEstimateInitialTempladder(SEXP beta_N_tSEXP, SEXP N_tSEXP) {
+RcppExport SEXP _BayesFPMM_TestEstimateInitialTempladder(SEXP beta_N_tSEXP, SEXP N_tSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -611,7 +611,7 @@ END_RCPP
 }
 // TestEstimateInitialTemp
 Rcpp::List TestEstimateInitialTemp(const int tot_mcmc_iters, const int r_stored_iters, const double temp, const std::string directory);
-RcppExport SEXP _BayesFOC_TestEstimateInitialTemp(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP tempSEXP, SEXP directorySEXP) {
+RcppExport SEXP _BayesFPMM_TestEstimateInitialTemp(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP tempSEXP, SEXP directorySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -625,7 +625,7 @@ END_RCPP
 }
 // TestUpdateZTempered
 Rcpp::List TestUpdateZTempered(const double beta);
-RcppExport SEXP _BayesFOC_TestUpdateZTempered(SEXP betaSEXP) {
+RcppExport SEXP _BayesFPMM_TestUpdateZTempered(SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -636,7 +636,7 @@ END_RCPP
 }
 // TestUpdatePhiTempered
 Rcpp::List TestUpdatePhiTempered(const double beta);
-RcppExport SEXP _BayesFOC_TestUpdatePhiTempered(SEXP betaSEXP) {
+RcppExport SEXP _BayesFPMM_TestUpdatePhiTempered(SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -647,7 +647,7 @@ END_RCPP
 }
 // TestUpdateNuTempered
 Rcpp::List TestUpdateNuTempered(const double beta);
-RcppExport SEXP _BayesFOC_TestUpdateNuTempered(SEXP betaSEXP) {
+RcppExport SEXP _BayesFPMM_TestUpdateNuTempered(SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -658,7 +658,7 @@ END_RCPP
 }
 // TestUpdateSigmaTempered
 Rcpp::List TestUpdateSigmaTempered(const double beta);
-RcppExport SEXP _BayesFOC_TestUpdateSigmaTempered(SEXP betaSEXP) {
+RcppExport SEXP _BayesFPMM_TestUpdateSigmaTempered(SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -669,7 +669,7 @@ END_RCPP
 }
 // TestUpdateChiTempered
 Rcpp::List TestUpdateChiTempered(const double beta);
-RcppExport SEXP _BayesFOC_TestUpdateChiTempered(SEXP betaSEXP) {
+RcppExport SEXP _BayesFPMM_TestUpdateChiTempered(SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -680,7 +680,7 @@ END_RCPP
 }
 // TestUpdateYStarTempered
 Rcpp::List TestUpdateYStarTempered(const double beta);
-RcppExport SEXP _BayesFOC_TestUpdateYStarTempered(SEXP betaSEXP) {
+RcppExport SEXP _BayesFPMM_TestUpdateYStarTempered(SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -691,7 +691,7 @@ END_RCPP
 }
 // getparms
 void getparms();
-RcppExport SEXP _BayesFOC_getparms() {
+RcppExport SEXP _BayesFPMM_getparms() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     getparms();
@@ -700,7 +700,7 @@ END_RCPP
 }
 // TestUpdateZ_PM
 Rcpp::List TestUpdateZ_PM();
-RcppExport SEXP _BayesFOC_TestUpdateZ_PM() {
+RcppExport SEXP _BayesFPMM_TestUpdateZ_PM() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -708,9 +708,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// TestUpdatepi_PM
+Rcpp::List TestUpdatepi_PM();
+RcppExport SEXP _BayesFPMM_TestUpdatepi_PM() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdatepi_PM());
+    return rcpp_result_gen;
+END_RCPP
+}
 // convert_Z_tilde_Z
 void convert_Z_tilde_Z(const arma::vec& Z_tilde, arma::vec& Z);
-RcppExport SEXP _BayesFOC_convert_Z_tilde_Z(SEXP Z_tildeSEXP, SEXP ZSEXP) {
+RcppExport SEXP _BayesFPMM_convert_Z_tilde_Z(SEXP Z_tildeSEXP, SEXP ZSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::vec& >::type Z_tilde(Z_tildeSEXP);
@@ -721,52 +731,53 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BayesFOC_BFOC", (DL_FUNC) &_BayesFOC_BFOC, 21},
-    {"_BayesFOC_BFOC_SS", (DL_FUNC) &_BayesFOC_BFOC_SS, 24},
-    {"_BayesFOC_BFOC_U", (DL_FUNC) &_BayesFOC_BFOC_U, 34},
-    {"_BayesFOC_BFOC_U_TT", (DL_FUNC) &_BayesFOC_BFOC_U_TT, 36},
-    {"_BayesFOC_BFOC_U_Temp", (DL_FUNC) &_BayesFOC_BFOC_U_Temp, 35},
-    {"_BayesFOC_BFOC_U_Templadder", (DL_FUNC) &_BayesFOC_BFOC_U_Templadder, 35},
-    {"_BayesFOC_BFOC_U_MTT", (DL_FUNC) &_BayesFOC_BFOC_U_MTT, 37},
-    {"_BayesFOC_PhiChiInitialState", (DL_FUNC) &_BayesFOC_PhiChiInitialState, 25},
-    {"_BayesFOC_LabelSwitch", (DL_FUNC) &_BayesFOC_LabelSwitch, 8},
-    {"_BayesFOC_TestUpdateZ", (DL_FUNC) &_BayesFOC_TestUpdateZ, 0},
-    {"_BayesFOC_TestUpdatePi", (DL_FUNC) &_BayesFOC_TestUpdatePi, 0},
-    {"_BayesFOC_TestUpdatePhi", (DL_FUNC) &_BayesFOC_TestUpdatePhi, 0},
-    {"_BayesFOC_TestUpdateDelta", (DL_FUNC) &_BayesFOC_TestUpdateDelta, 0},
-    {"_BayesFOC_TestUpdateA", (DL_FUNC) &_BayesFOC_TestUpdateA, 0},
-    {"_BayesFOC_TestUpdateGamma", (DL_FUNC) &_BayesFOC_TestUpdateGamma, 0},
-    {"_BayesFOC_TestUpdateNu", (DL_FUNC) &_BayesFOC_TestUpdateNu, 0},
-    {"_BayesFOC_TestUpdateTau", (DL_FUNC) &_BayesFOC_TestUpdateTau, 0},
-    {"_BayesFOC_TestUpdateSigma", (DL_FUNC) &_BayesFOC_TestUpdateSigma, 0},
-    {"_BayesFOC_TestUpdateChi", (DL_FUNC) &_BayesFOC_TestUpdateChi, 0},
-    {"_BayesFOC_TestUpdateYStar", (DL_FUNC) &_BayesFOC_TestUpdateYStar, 0},
-    {"_BayesFOC_TestBFOC", (DL_FUNC) &_BayesFOC_TestBFOC, 1},
-    {"_BayesFOC_TestBFOC_SS", (DL_FUNC) &_BayesFOC_TestBFOC_SS, 3},
-    {"_BayesFOC_TestBFOC_SS_nu_Z", (DL_FUNC) &_BayesFOC_TestBFOC_SS_nu_Z, 3},
-    {"_BayesFOC_TestReadMat", (DL_FUNC) &_BayesFOC_TestReadMat, 1},
-    {"_BayesFOC_TestReadCube", (DL_FUNC) &_BayesFOC_TestReadCube, 1},
-    {"_BayesFOC_TestReadField", (DL_FUNC) &_BayesFOC_TestReadField, 1},
-    {"_BayesFOC_GetStuff", (DL_FUNC) &_BayesFOC_GetStuff, 1},
-    {"_BayesFOC_TestEstimateInitialZ", (DL_FUNC) &_BayesFOC_TestEstimateInitialZ, 0},
-    {"_BayesFOC_TestEstimateInitial", (DL_FUNC) &_BayesFOC_TestEstimateInitial, 3},
-    {"_BayesFOC_TestEstimateInitialTT", (DL_FUNC) &_BayesFOC_TestEstimateInitialTT, 5},
-    {"_BayesFOC_TestEstimateInitialMTT", (DL_FUNC) &_BayesFOC_TestEstimateInitialMTT, 7},
-    {"_BayesFOC_TestEstimateInitialTempladder", (DL_FUNC) &_BayesFOC_TestEstimateInitialTempladder, 2},
-    {"_BayesFOC_TestEstimateInitialTemp", (DL_FUNC) &_BayesFOC_TestEstimateInitialTemp, 4},
-    {"_BayesFOC_TestUpdateZTempered", (DL_FUNC) &_BayesFOC_TestUpdateZTempered, 1},
-    {"_BayesFOC_TestUpdatePhiTempered", (DL_FUNC) &_BayesFOC_TestUpdatePhiTempered, 1},
-    {"_BayesFOC_TestUpdateNuTempered", (DL_FUNC) &_BayesFOC_TestUpdateNuTempered, 1},
-    {"_BayesFOC_TestUpdateSigmaTempered", (DL_FUNC) &_BayesFOC_TestUpdateSigmaTempered, 1},
-    {"_BayesFOC_TestUpdateChiTempered", (DL_FUNC) &_BayesFOC_TestUpdateChiTempered, 1},
-    {"_BayesFOC_TestUpdateYStarTempered", (DL_FUNC) &_BayesFOC_TestUpdateYStarTempered, 1},
-    {"_BayesFOC_getparms", (DL_FUNC) &_BayesFOC_getparms, 0},
-    {"_BayesFOC_TestUpdateZ_PM", (DL_FUNC) &_BayesFOC_TestUpdateZ_PM, 0},
-    {"_BayesFOC_convert_Z_tilde_Z", (DL_FUNC) &_BayesFOC_convert_Z_tilde_Z, 2},
+    {"_BayesFPMM_BFOC", (DL_FUNC) &_BayesFPMM_BFOC, 21},
+    {"_BayesFPMM_BFOC_SS", (DL_FUNC) &_BayesFPMM_BFOC_SS, 24},
+    {"_BayesFPMM_BFOC_U", (DL_FUNC) &_BayesFPMM_BFOC_U, 34},
+    {"_BayesFPMM_BFOC_U_TT", (DL_FUNC) &_BayesFPMM_BFOC_U_TT, 36},
+    {"_BayesFPMM_BFOC_U_Temp", (DL_FUNC) &_BayesFPMM_BFOC_U_Temp, 35},
+    {"_BayesFPMM_BFOC_U_Templadder", (DL_FUNC) &_BayesFPMM_BFOC_U_Templadder, 35},
+    {"_BayesFPMM_BFOC_U_MTT", (DL_FUNC) &_BayesFPMM_BFOC_U_MTT, 37},
+    {"_BayesFPMM_PhiChiInitialState", (DL_FUNC) &_BayesFPMM_PhiChiInitialState, 25},
+    {"_BayesFPMM_LabelSwitch", (DL_FUNC) &_BayesFPMM_LabelSwitch, 8},
+    {"_BayesFPMM_TestUpdateZ", (DL_FUNC) &_BayesFPMM_TestUpdateZ, 0},
+    {"_BayesFPMM_TestUpdatePi", (DL_FUNC) &_BayesFPMM_TestUpdatePi, 0},
+    {"_BayesFPMM_TestUpdatePhi", (DL_FUNC) &_BayesFPMM_TestUpdatePhi, 0},
+    {"_BayesFPMM_TestUpdateDelta", (DL_FUNC) &_BayesFPMM_TestUpdateDelta, 0},
+    {"_BayesFPMM_TestUpdateA", (DL_FUNC) &_BayesFPMM_TestUpdateA, 0},
+    {"_BayesFPMM_TestUpdateGamma", (DL_FUNC) &_BayesFPMM_TestUpdateGamma, 0},
+    {"_BayesFPMM_TestUpdateNu", (DL_FUNC) &_BayesFPMM_TestUpdateNu, 0},
+    {"_BayesFPMM_TestUpdateTau", (DL_FUNC) &_BayesFPMM_TestUpdateTau, 0},
+    {"_BayesFPMM_TestUpdateSigma", (DL_FUNC) &_BayesFPMM_TestUpdateSigma, 0},
+    {"_BayesFPMM_TestUpdateChi", (DL_FUNC) &_BayesFPMM_TestUpdateChi, 0},
+    {"_BayesFPMM_TestUpdateYStar", (DL_FUNC) &_BayesFPMM_TestUpdateYStar, 0},
+    {"_BayesFPMM_TestBFOC", (DL_FUNC) &_BayesFPMM_TestBFOC, 1},
+    {"_BayesFPMM_TestBFOC_SS", (DL_FUNC) &_BayesFPMM_TestBFOC_SS, 3},
+    {"_BayesFPMM_TestBFOC_SS_nu_Z", (DL_FUNC) &_BayesFPMM_TestBFOC_SS_nu_Z, 3},
+    {"_BayesFPMM_TestReadMat", (DL_FUNC) &_BayesFPMM_TestReadMat, 1},
+    {"_BayesFPMM_TestReadCube", (DL_FUNC) &_BayesFPMM_TestReadCube, 1},
+    {"_BayesFPMM_TestReadField", (DL_FUNC) &_BayesFPMM_TestReadField, 1},
+    {"_BayesFPMM_GetStuff", (DL_FUNC) &_BayesFPMM_GetStuff, 1},
+    {"_BayesFPMM_TestEstimateInitialZ", (DL_FUNC) &_BayesFPMM_TestEstimateInitialZ, 0},
+    {"_BayesFPMM_TestEstimateInitial", (DL_FUNC) &_BayesFPMM_TestEstimateInitial, 3},
+    {"_BayesFPMM_TestEstimateInitialTT", (DL_FUNC) &_BayesFPMM_TestEstimateInitialTT, 5},
+    {"_BayesFPMM_TestEstimateInitialMTT", (DL_FUNC) &_BayesFPMM_TestEstimateInitialMTT, 7},
+    {"_BayesFPMM_TestEstimateInitialTempladder", (DL_FUNC) &_BayesFPMM_TestEstimateInitialTempladder, 2},
+    {"_BayesFPMM_TestEstimateInitialTemp", (DL_FUNC) &_BayesFPMM_TestEstimateInitialTemp, 4},
+    {"_BayesFPMM_TestUpdateZTempered", (DL_FUNC) &_BayesFPMM_TestUpdateZTempered, 1},
+    {"_BayesFPMM_TestUpdatePhiTempered", (DL_FUNC) &_BayesFPMM_TestUpdatePhiTempered, 1},
+    {"_BayesFPMM_TestUpdateNuTempered", (DL_FUNC) &_BayesFPMM_TestUpdateNuTempered, 1},
+    {"_BayesFPMM_TestUpdateSigmaTempered", (DL_FUNC) &_BayesFPMM_TestUpdateSigmaTempered, 1},
+    {"_BayesFPMM_TestUpdateChiTempered", (DL_FUNC) &_BayesFPMM_TestUpdateChiTempered, 1},
+    {"_BayesFPMM_TestUpdateYStarTempered", (DL_FUNC) &_BayesFPMM_TestUpdateYStarTempered, 1},
+    {"_BayesFPMM_getparms", (DL_FUNC) &_BayesFPMM_getparms, 0},
+    {"_BayesFPMM_TestUpdateZ_PM", (DL_FUNC) &_BayesFPMM_TestUpdateZ_PM, 0},
+    {"_BayesFPMM_TestUpdatepi_PM", (DL_FUNC) &_BayesFPMM_TestUpdatepi_PM, 0},
+    {"_BayesFPMM_convert_Z_tilde_Z", (DL_FUNC) &_BayesFPMM_convert_Z_tilde_Z, 2},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_BayesFOC(DllInfo *dll) {
+RcppExport void R_init_BayesFPMM(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

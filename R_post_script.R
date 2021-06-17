@@ -1,4 +1,4 @@
-library(BayesFOC)
+library(BayesFPMM)
 
 ## Get Z estimates
 Z <- array(0,dim=c(100,3,4000))

@@ -1,2 +1,2 @@
-# BayesFOC
-Bayesian Functional Overlapping Clusters
+# BayesFPMM
+Bayesian Functional Partial Membership Model

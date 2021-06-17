@@ -35,5 +35,7 @@
 \description{
 Updates the Z Matrix
 
+Updates the Z Matrix
+
 Updates the Z Matrix when we have a subset of known class memberships
 }

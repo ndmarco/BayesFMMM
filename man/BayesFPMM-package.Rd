@@ -1,25 +1,25 @@
-\name{BayesFOC-package}
-\alias{BayesFOC-package}
-\alias{BayesFOC}
+\name{BayesFPMM-package}
+\alias{BayesFPMM-package}
+\alias{BayesFPMM}
 \docType{package}
 \title{
-\packageTitle{BayesFOC}
+\packageTitle{BayesFPMM}
 }
 \description{
-\packageDescription{BayesFOC}
+\packageDescription{BayesFPMM}
 }
 \details{
 
 The DESCRIPTION file:
-\packageDESCRIPTION{BayesFOC}
-\packageIndices{BayesFOC}
+\packageDESCRIPTION{BayesFPMM}
+\packageIndices{BayesFPMM}
 ~~ An overview of how to use the package, including the ~~
 ~~ most important functions ~~
 }
 \author{
-\packageAuthor{BayesFOC}
+\packageAuthor{BayesFPMM}
 
-Maintainer: \packageMaintainer{BayesFOC}
+Maintainer: \packageMaintainer{BayesFPMM}
 }
 \references{
 ~~ Literature or other references for background information ~~
