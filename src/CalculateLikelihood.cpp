@@ -31,9 +31,9 @@ double calcLikelihood(const arma::field<arma::vec>& y_obs,
       mean = 0;
       for(int k = 0; k < Z.n_cols; k++){
         if(Z(i,k) != 0){
-          mean = mean + arma::dot(nu.row(k), B_obs(i,0).row(l));
+          mean = mean + Z(i,k) * arma::dot(nu.row(k), B_obs(i,0).row(l));
           for(int n = 0; n < Phi.n_slices; n++){
-            mean = mean + chi(i,n) * arma::dot(Phi.slice(n).row(k),
+            mean = mean + Z(i,k) * chi(i,n) * arma::dot(Phi.slice(n).row(k),
                               B_obs(i,0).row(l));
           }
         }
@@ -45,9 +45,9 @@ double calcLikelihood(const arma::field<arma::vec>& y_obs,
         mean = 0;
         for(int k = 0; k < Z.n_cols; k++){
           if(Z(i,k) != 0){
-            mean = mean + arma::dot(nu.row(k), B_star(i,0).row(l));
+            mean = mean + Z(i,k) * arma::dot(nu.row(k), B_star(i,0).row(l));
             for(int n = 0; n < Phi.n_slices; n++){
-              mean = mean + chi(i,n) * arma::dot(Phi.slice(n).row(k),
+              mean = mean + Z(i,k) * chi(i,n) * arma::dot(Phi.slice(n).row(k),
                                 B_star(i,0).row(l));
             }
           }

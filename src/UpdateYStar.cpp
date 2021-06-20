@@ -33,14 +33,14 @@ double lpdfYStar(const double& beta_i,
 //' @param y_star Field of Matrices containing y_star for all mcmc iterations
 
 void updateYStar(const arma::field<arma::mat>& B_star,
-                  const arma::mat& nu,
-                  const arma::cube& Phi,
-                  const arma::mat& Z,
-                  const arma::mat& chi,
-                  const double& sigma,
-                  const int& iter,
-                  const int& tot_mcmc_iters,
-                  arma::field<arma::mat>& y_star){
+                 const arma::mat& nu,
+                 const arma::cube& Phi,
+                 const arma::mat& Z,
+                 const arma::mat& chi,
+                 const double& sigma,
+                 const int& iter,
+                 const int& tot_mcmc_iters,
+                 arma::field<arma::mat>& y_star){
   double mean = 0;
   for(int i = 0; i < Z.n_rows; i++){
     if(B_star(i,0).n_elem > 0){

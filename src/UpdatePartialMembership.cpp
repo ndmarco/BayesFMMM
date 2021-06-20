@@ -197,9 +197,6 @@ void updateZ_PM(const arma::field<arma::vec>& y_obs,
     }
     convert_Z_tilde_Z(Z_tilde_ph, Z_ph);
 
-    if(i == 0){
-      Rcpp::Rcout << Z_ph(0) << Z_ph(1) << Z_ph(2) << "\n";
-    }
     // Get old state log pdf
     z_lpdf = lpdf_z(y_obs(i,0), y_star(i,0), B_obs(i,0), B_star(i,0),
                     Phi, nu, chi.row(i), pi, Z.slice(iter).row(i), alpha_3, i,
@@ -213,7 +210,6 @@ void updateZ_PM(const arma::field<arma::vec>& y_obs,
 
     if(log(rand_unif_var) < acceptance_prob){
       // Accept new state and update parameters
-      Rcpp::Rcout << "Acccept" << "\n";
       Z.slice(iter).row(i) = Z_ph.t();
       Z_tilde.slice(iter).row(i) = Z_tilde_ph.t();
     }

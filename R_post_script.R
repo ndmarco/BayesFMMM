@@ -1,17 +1,17 @@
 library(BayesFPMM)
 
 ## Get Z estimates
-Z <- array(0,dim=c(100,3,4000))
-dir = "c:\\Projects\\High_Variance_Simulation\\Z"
-for(i in 0:19){
+Z <- array(0,dim=c(100,2,20))
+dir = "c:\\Projects\\Z"
+for(i in 0:1){
   Z_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
-  Z[,,(200*(i) + 1):(200*(i+1))] <- Z_i
+  Z[,,(10*(i) + 1):(10*(i+1))] <- Z_i
 }
 
 
 ## Get nu estimates
-nu <- array(0,dim=c(3,8,4000))
-dir = "c:\\Projects\\High_Variance_Simulation\\nu"
+nu <- array(0,dim=c(2,8,4000))
+dir = "c:\\Projects\\Simulation\\nu"
 for(i in 0:19){
   nu_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
   nu[,,(200*(i) + 1):(200*(i+1))] <- nu_i
