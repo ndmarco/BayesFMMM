@@ -11,4 +11,6 @@ double logGamma(double x);
 
 arma::vec rdirichlet(arma::vec alpha);
 
+double calc_lB(const arma::vec& alpha);
+
 #endif

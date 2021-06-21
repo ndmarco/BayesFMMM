@@ -299,8 +299,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // BFPMM
-Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& thinning_num, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::field<arma::vec>& t_star, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& var_pi, const double& var_Z, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory);
-RcppExport SEXP _BayesFPMM_BFPMM(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP thinning_numSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_piSEXP, SEXP var_ZSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP) {
+Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& thinning_num, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::field<arma::vec>& t_star, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory);
+RcppExport SEXP _BayesFPMM_BFPMM(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP thinning_numSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP t_starSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -321,8 +321,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double& >::type alpha2l(alpha2lSEXP);
     Rcpp::traits::input_parameter< const double& >::type beta1l(beta1lSEXP);
     Rcpp::traits::input_parameter< const double& >::type beta2l(beta2lSEXP);
-    Rcpp::traits::input_parameter< const double& >::type var_pi(var_piSEXP);
-    Rcpp::traits::input_parameter< const double& >::type var_Z(var_ZSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a_Z_PM(a_Z_PMSEXP);
+    Rcpp::traits::input_parameter< const double& >::type a_pi_PM(a_pi_PMSEXP);
     Rcpp::traits::input_parameter< const double& >::type var_alpha3(var_alpha3SEXP);
     Rcpp::traits::input_parameter< const double& >::type var_epsilon1(var_epsilon1SEXP);
     Rcpp::traits::input_parameter< const double& >::type var_epsilon2(var_epsilon2SEXP);
@@ -331,7 +331,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double& >::type alpha_0(alpha_0SEXP);
     Rcpp::traits::input_parameter< const double& >::type beta_0(beta_0SEXP);
     Rcpp::traits::input_parameter< const std::string >::type directory(directorySEXP);
-    rcpp_result_gen = Rcpp::wrap(BFPMM(y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, var_pi, var_Z, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory));
+    rcpp_result_gen = Rcpp::wrap(BFPMM(y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -779,15 +779,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// convert_Z_tilde_Z
-void convert_Z_tilde_Z(const arma::vec& Z_tilde, arma::vec& Z);
-RcppExport SEXP _BayesFPMM_convert_Z_tilde_Z(SEXP Z_tildeSEXP, SEXP ZSEXP) {
+// Z_proposal_density
+double Z_proposal_density(const arma::vec& Z, const arma::vec& alpha);
+RcppExport SEXP _BayesFPMM_Z_proposal_density(SEXP ZSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec& >::type Z_tilde(Z_tildeSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type Z(ZSEXP);
-    convert_Z_tilde_Z(Z_tilde, Z);
-    return R_NilValue;
+    Rcpp::traits::input_parameter< const arma::vec& >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(Z_proposal_density(Z, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pi_proposal_density
+double pi_proposal_density(const arma::vec& pi, const arma::vec& alpha);
+RcppExport SEXP _BayesFPMM_pi_proposal_density(SEXP piSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type pi(piSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(pi_proposal_density(pi, alpha));
+    return rcpp_result_gen;
 END_RCPP
 }
 
@@ -837,7 +850,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_TestUpdatepi_PM", (DL_FUNC) &_BayesFPMM_TestUpdatepi_PM, 0},
     {"_BayesFPMM_TestUpdatealpha3_PM", (DL_FUNC) &_BayesFPMM_TestUpdatealpha3_PM, 0},
     {"_BayesFPMM_TestBFPMM", (DL_FUNC) &_BayesFPMM_TestBFPMM, 4},
-    {"_BayesFPMM_convert_Z_tilde_Z", (DL_FUNC) &_BayesFPMM_convert_Z_tilde_Z, 2},
+    {"_BayesFPMM_Z_proposal_density", (DL_FUNC) &_BayesFPMM_Z_proposal_density, 2},
+    {"_BayesFPMM_pi_proposal_density", (DL_FUNC) &_BayesFPMM_pi_proposal_density, 2},
     {NULL, NULL, 0}
 };
 

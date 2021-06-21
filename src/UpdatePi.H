@@ -15,13 +15,9 @@ void updatePi_PM(const double& alpha_3,
                  const arma::vec& c,
                  const int& iter,
                  const int& tot_mcmc_iters,
-                 const double& sigma_pi,
-                 arma::mat& pi_tilde,
+                 const double& a_pi_PM,
                  arma::vec& pi_ph,
-                 arma::vec& pi_tilde_ph,
                  arma::mat& pi);
-
-double calc_lB(const arma::vec& alpha);
 
 #endif
 

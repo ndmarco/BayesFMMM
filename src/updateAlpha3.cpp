@@ -1,6 +1,6 @@
 #include <RcppArmadillo.h>
 #include <cmath>
-#include "UpdatePi.h"
+#include "Distributions.H"
 
 
 double lpdf_alpha3(const arma::vec& pi,

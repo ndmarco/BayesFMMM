@@ -2730,25 +2730,21 @@ Rcpp::List TestUpdateZ_PM(){
 
   // Initialize placeholder
   arma::vec Z_ph = arma::zeros(3);
-  arma::vec Z_tilde_ph = arma::zeros(3);
 
 
   //Initialize Z_samp
   arma::cube Z_samp = arma::ones(100, 3, 1000);
-  arma::cube Z_tilde = arma::zeros(100, 3, 1000);
   for(int i = 0; i < 100; i++){
     Z_samp.slice(0).row(i) = rdirichlet(pi).t();
-    Z_tilde.slice(0).row(i) = Z_samp.slice(0).row(i);
   }
   for(int i = 0; i < 1000; i++)
   {
     updateZ_PM(y_obs, y_star, B_obs, B_star, Phi, nu, chi, pi,
-            sigma_sq, i, 1000, 1.0, 0.1, Z_tilde, Z_tilde_ph, Z_ph, Z_samp);
+            sigma_sq, i, 1000, 1.0, 100, Z_ph, Z_samp);
   }
 
   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Z_samp", Z_samp),
                                       Rcpp::Named("Z",Z),
-                                      Rcpp::Named("Z_tilde", Z_tilde),
                                       Rcpp::Named("f_obs", y_obs),
                                       Rcpp::Named("f_star", y_star));
   return mod;
@@ -2775,23 +2771,20 @@ Rcpp::List TestUpdatepi_PM(){
 
   // Initialize placeholder
   arma::vec pi_ph = arma::zeros(3);
-  arma::vec pi_tilde_ph = arma::zeros(3);
 
 
   //Initialize Z_samp
   arma::mat pi_samp = arma::ones(3, 1000);
-  arma::mat pi_tilde = arma::zeros(3, 1000);
+
   pi_samp.col(0) = rdirichlet(c);
-  pi_tilde.col(0) =  pi_samp.col(0);
 
   for(int i = 0; i < 1000; i++)
   {
-    updatePi_PM(100 ,Z, c, i, 1000, 0.1, pi_tilde, pi_ph, pi_tilde_ph, pi_samp);
+    updatePi_PM(100 ,Z, c, i, 1000, 100, pi_ph, pi_samp);
   }
 
   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("pi_samp", pi_samp),
                                       Rcpp::Named("pi",pi),
-                                      Rcpp::Named("pi_tilde", pi_tilde),
                                       Rcpp::Named("Z", Z));
   return mod;
 }
@@ -2905,7 +2898,7 @@ Rcpp::List TestBFPMM(const int tot_mcmc_iters, const int r_stored_iters,
   // start MCMC sampling
   Rcpp::List mod1 = BFPMM(y_obs, t_obs1, n_funct, 50, 2, 8, 3, tot_mcmc_iters,
                           r_stored_iters, t_star1, c, 1, 3, 2, 3, 1, 1,
-                          0.05, 0.05, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1,
+                          100, 100, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1,
                           directory);
 
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),

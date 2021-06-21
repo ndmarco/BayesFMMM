@@ -2256,8 +2256,8 @@ Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
                  const double& alpha2l,
                  const double& beta1l,
                  const double& beta2l,
-                 const double& var_pi,
-                 const double& var_Z,
+                 const double& a_Z_PM,
+                 const double& a_pi_PM,
                  const double& var_alpha3,
                  const double& var_epsilon1,
                  const double& var_epsilon2,
@@ -2317,22 +2317,15 @@ Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
   arma::cube chi(n_funct, M, r_stored_iters, arma::fill::randn);
   arma::mat pi(K, r_stored_iters, arma::fill::zeros);
   arma::vec pi_ph = arma::zeros(K);
-  arma::vec pi_tilde_ph = arma::zeros(K);
-  arma::mat pi_tilde = arma::zeros(K, r_stored_iters);
   pi.col(0) = rdirichlet(c);
-  pi_tilde.col(0) = pi.col(0);
   arma::vec sigma(r_stored_iters, arma::fill::ones);
   arma::vec Z_ph = arma::zeros(K);
-  arma::vec Z_tilde_ph = arma::zeros(K);
   arma::vec alpha_3 = arma::zeros(r_stored_iters);
-
   arma::cube Z = arma::randi<arma::cube>(n_funct, K, r_stored_iters,
                                          arma::distr_param(0,1));
-  arma::cube Z_tilde = arma::randi<arma::cube>(n_funct, K, r_stored_iters,
-                                         arma::distr_param(0,1));
+
   for(int i = 0; i < n_funct; i++){
     Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
-    Z_tilde.slice(0).row(i) = Z.slice(0).row(i);
   }
 
   arma::mat delta(M, r_stored_iters, arma::fill::ones);
@@ -2363,11 +2356,10 @@ Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
                nu.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
                pi.col((i % r_stored_iters)), sigma((i % r_stored_iters)),
                (i % r_stored_iters), r_stored_iters, alpha_3(i % r_stored_iters),
-               var_Z, Z_tilde,Z_tilde_ph, Z_ph, Z);
+               a_Z_PM, Z_ph, Z);
 
     updatePi_PM(alpha_3(i % r_stored_iters) ,Z.slice(i% r_stored_iters), c,
-                (i % r_stored_iters), r_stored_iters, var_pi, pi_tilde, pi_ph,
-                pi_tilde_ph, pi);
+                (i % r_stored_iters), r_stored_iters, a_pi_PM, pi_ph, pi);
 
     updateAlpha3(pi.col(i % r_stored_iters), b, Z.slice(i % r_stored_iters),
                  (i % r_stored_iters), r_stored_iters, var_alpha3, alpha_3);
@@ -2503,8 +2495,6 @@ Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
       gamma(0,0) = gamma(i % r_stored_iters, 0);
       Phi(0,0) = Phi(i % r_stored_iters, 0);
       Z.slice(0) = Z.slice(i % r_stored_iters);
-      Z_tilde.slice(0) = Z_tilde.slice(i % r_stored_iters);
-      pi_tilde.col(0) = pi_tilde.col(i % r_stored_iters);
 
       q = q + 1;
     }

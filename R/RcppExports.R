@@ -297,8 +297,8 @@ BFOC_U_MTT <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_
 #' @param directory String containing path to store batches of MCMC samples
 #' @returns params List of objects containing the MCMC samples from the last batch
 #' @export
-BFPMM <- function(y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, var_pi, var_Z, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory) {
-    .Call('_BayesFPMM_BFPMM', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, var_pi, var_Z, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory)
+BFPMM <- function(y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory) {
+    .Call('_BayesFPMM_BFPMM', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory)
 }
 
 #' Returns the weights for the smoothed observed functions
@@ -853,6 +853,8 @@ NULL
 #' @param rho Double containing hyperparameter for proposal of new z_i state
 #' @param iter Int containing current mcmc iteration
 #' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param alpha_3 double containing current value of alpha_3
+#' @param a_Z_PM double containing hyperparameter for sampling Z
 #' @param Z_ph Matrix that acts as a placeholder for Z
 #' @param Z Cube that contains all past, current, and future MCMC draws
 NULL
@@ -872,17 +874,62 @@ NULL
 #' @param rho Double containing hyperparameter for proposal of new z_i state
 #' @param iter Int containing current mcmc iteration
 #' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param alpha_3 double containing current value of alpha_3
+#' @param a_Z_PM double containing hyperparameter for sampling Z
 #' @param Z_ph Matrix that acts as a placeholder for Z
 #' @param Z Cube that contains all past, current, and future MCMC draws
 NULL
 
-#' Converts from the transformed space to the original parameter space
+#' Calculates the probability that we propose a state given we are in another state
 #'
-#' @name convert_Z_tilde_Z
-#' @param Z_tilde Row Vector containing parameters in the transformed space
-#' @param Z Row Vector containing placeholder for variables in the untransformed space
+#' @name Z_proposal_density
+#' @param Z Vector containing state we are proposing
+#' @param alpha Vector containing parameters used to propose the proposed state
 #' @export
-convert_Z_tilde_Z <- function(Z_tilde, Z) {
-    invisible(.Call('_BayesFPMM_convert_Z_tilde_Z', PACKAGE = 'BayesFPMM', Z_tilde, Z))
+Z_proposal_density <- function(Z, alpha) {
+    .Call('_BayesFPMM_Z_proposal_density', PACKAGE = 'BayesFPMM', Z, alpha)
+}
+
+#' Updates pi
+#'
+#' @name UpdatePi
+#' @param alpha Double that is the hyperparameter
+#' @param iter Int containing current MCMC iteration
+#' @param tot_mcmc_iters Int  containing total number of MCMC iterations
+#' @param Z Matrix that contains the current values of the binary matrix
+#' @param pi Matrix containg all samples of Pi
+NULL
+
+#' Calculates the log pdf of the posterior distribution of pi
+#'
+#' @name lpdf_pi_PM
+#' @param c vector containing hyperparameters
+#' @param alpha_3 Double containing current value of alpha_3
+#' @param pi Vector containing pi parameters
+#' @param Z Matrix containing current Z parameters
+#' @return lpdf Double containing the log pdf
+NULL
+
+#' Updates pi for the partial membership model
+#'
+#' @name UpdatePi_PM
+#' @param alpha_3 Double containing the current value of alpha_3
+#' @param Z Matrix containing current value of Z parameters
+#' @param c Vector containing hyperparameters
+#' @param iter Int containing current MCMC iteration
+#' @param tot_mcmc_iters Int  containing total number of MCMC iterations
+#' @param a_pi_PM Double containing hyperparameter for sampling from pi
+#' @param pi_ph Vector containing placeholder for proposed update
+#' @param pi Matrix containing all values for pi values
+NULL
+
+#' Calculates the probability that we propose a state given we are in another state
+#'
+#' @name pi_proposal_density
+#' @param pi Vector containing state we are proposing
+#' @param alpha Vector containing parameters used to propose the proposed state
+#' @export
+pi_proposal_density <- function(pi, alpha) {
+    .Call('_BayesFPMM_pi_proposal_density', PACKAGE = 'BayesFPMM', pi, alpha)
 }
 

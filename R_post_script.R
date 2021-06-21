@@ -1,11 +1,11 @@
 library(BayesFPMM)
 
 ## Get Z estimates
-Z <- array(0,dim=c(100,2,20))
-dir = "c:\\Projects\\Z"
-for(i in 0:1){
+Z <- array(0,dim=c(100,2,4000))
+dir = "c:\\Projects\\Simulation\\Z"
+for(i in 0:19){
   Z_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
-  Z[,,(10*(i) + 1):(10*(i+1))] <- Z_i
+  Z[,,(200*(i) + 1):(200*(i+1))] <- Z_i
 }
 
 

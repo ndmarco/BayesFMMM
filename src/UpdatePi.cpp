@@ -1,5 +1,6 @@
 #include <RcppArmadillo.h>
 #include <cmath>
+#include "Distributions.H"
 
 //' Updates pi
 //'
@@ -21,41 +22,6 @@ void updatePi(const double& alpha,
   if(iter < (tot_mcmc_iters -1)){
     pi.col(iter + 1) = pi.col(iter);
   }
-}
-
-//' Converts from the transformed space to the original parameter space
-//'
-//' @name convert_pi_tilde_pi
-//' @param Z_tilde Vector containing parameters in the transformed space
-//' @param Z Vector containing placeholder for variables in the untransformed space
-
-void convert_pi_tilde_pi(const arma::vec& pi_tilde,
-                         arma::vec& pi)
-{
-  double total_sum = 0;
-  for(int i = 0; i < pi.n_elem; i++){
-    total_sum = total_sum + std::exp(pi_tilde(i));
-  }
-  for(int i = 0; i < pi.n_elem; i++){
-    pi(i) = std::exp(pi_tilde(i)) / total_sum;
-  }
-}
-
-//' Calculates the log of B(a) function used in the dirichlet distribution
-//'
-//' @name calc_lB
-//' @param alpha Vector containing input to the function
-//' @return log_B Double containing the log of the output of the B function
-
-double calc_lB(const arma::vec& alpha){
-  double log_B = 0;
-
-  for(int i=0; i < alpha.n_elem; i++){
-    log_B = log_B + std::lgamma(alpha(i));
-  }
-  log_B = log_B - std::lgamma(arma::accu(alpha));
-
-  return log_B;
 }
 
 //' Calculates the log pdf of the posterior distribution of pi
@@ -83,6 +49,25 @@ double lpdf_pi_PM(const arma::vec& c,
   return lpdf;
 }
 
+//' Calculates the probability that we propose a state given we are in another state
+//'
+//' @name pi_proposal_density
+//' @param pi Vector containing state we are proposing
+//' @param alpha Vector containing parameters used to propose the proposed state
+//' @export
+// [[Rcpp::export]]
+double pi_proposal_density(const arma::vec& pi,
+                           const arma::vec& alpha)
+{
+  double density = 0;
+  for(int i = 0; i < pi.n_elem; i++){
+    density = density + (alpha(i) - 1) * std::log(pi(i));
+  }
+
+  density = density - calc_lB(alpha);
+
+  return density;
+}
 
 //' Updates pi for the partial membership model
 //'
@@ -92,7 +77,8 @@ double lpdf_pi_PM(const arma::vec& c,
 //' @param c Vector containing hyperparameters
 //' @param iter Int containing current MCMC iteration
 //' @param tot_mcmc_iters Int  containing total number of MCMC iterations
-//' @param pi_tilde Matrix containing all transformed parameters of pi
+//' @param a_pi_PM Double containing hyperparameter for sampling from pi
+//' @param pi_ph Vector containing placeholder for proposed update
 //' @param pi Matrix containing all values for pi values
 
 void updatePi_PM(const double& alpha_3,
@@ -100,16 +86,11 @@ void updatePi_PM(const double& alpha_3,
                  const arma::vec& c,
                  const int& iter,
                  const int& tot_mcmc_iters,
-                 const double& sigma_pi,
-                 arma::mat& pi_tilde,
+                 const double& a_pi_PM,
                  arma::vec& pi_ph,
-                 arma::vec& pi_tilde_ph,
                  arma::mat& pi){
 
-  for(int i=0; i < pi.n_rows; i++){
-    pi_tilde_ph(i) = pi_tilde(i, iter) + R::rnorm(0, sigma_pi);
-  }
-  convert_pi_tilde_pi(pi_tilde_ph, pi_ph);
+  pi_ph = rdirichlet(a_pi_PM * pi.col(iter));
 
   // calculate proposal log pdf
   double lpdf_new = lpdf_pi_PM(c, alpha_3, pi_ph, Z);
@@ -117,19 +98,20 @@ void updatePi_PM(const double& alpha_3,
   // calculate current state log pdf
   double lpdf_old = lpdf_pi_PM(c, alpha_3, pi.col(iter), Z);
 
-  double acceptance_prob = lpdf_new - lpdf_old;
+  double lpdf_propose_new = pi_proposal_density(pi_ph, a_pi_PM * pi.col(iter));
+  double lpdf_propose_old = pi_proposal_density(pi.col(iter), a_pi_PM * pi_ph);
+
+  double acceptance_prob = lpdf_new - lpdf_old + lpdf_propose_old - lpdf_propose_new;
   double rand_unif_var = R::runif(0,1);
 
   if(std::log(rand_unif_var) < acceptance_prob){
     // Accept new state and update parameters
     pi.col(iter) = pi_ph;
-    pi_tilde.col(iter) = pi_tilde_ph;
   }
 
 
   if((tot_mcmc_iters - 1) > iter){
     pi.col(iter+1) = pi.col(iter);
-    pi_tilde.col(iter+1) = pi_tilde.col(iter);
   }
 }
 

@@ -1,5 +1,6 @@
 #include <RcppArmadillo.h>
 #include <cmath>
+#include "Distributions.H"
 
 // [[Rcpp::depends(RcppArmadillo)]]
 
@@ -132,23 +133,24 @@ double lpdf_zTempered(const double& beta_i,
   return lpdf;
 }
 
-//' Converts from the transformed space to the original parameter space
+//' Calculates the probability that we propose a state given we are in another state
 //'
-//' @name convert_Z_tilde_Z
-//' @param Z_tilde Row Vector containing parameters in the transformed space
-//' @param Z Row Vector containing placeholder for variables in the untransformed space
+//' @name Z_proposal_density
+//' @param Z Vector containing state we are proposing
+//' @param alpha Vector containing parameters used to propose the proposed state
 //' @export
 // [[Rcpp::export]]
-void convert_Z_tilde_Z(const arma::vec& Z_tilde,
-                       arma::vec& Z)
+double Z_proposal_density(const arma::vec& Z,
+                          const arma::vec& alpha)
 {
-  double total_sum = 0;
+  double density = 0;
   for(int i = 0; i < Z.n_elem; i++){
-    total_sum = total_sum + std::exp(Z_tilde(i));
+    density = density + (alpha(i) - 1) * std::log(Z(i));
   }
-  for(int i = 0; i < Z.n_elem; i++){
-    Z(i) = std::exp(Z_tilde(i)) / total_sum;
-  }
+
+  density = density - calc_lB(alpha);
+
+  return density;
 }
 
 //' Updates the Z Matrix
@@ -165,6 +167,8 @@ void convert_Z_tilde_Z(const arma::vec& Z_tilde,
 //' @param rho Double containing hyperparameter for proposal of new z_i state
 //' @param iter Int containing current mcmc iteration
 //' @param tot_mcmc_iters Int containing total number of mcmc iterations
+//' @param alpha_3 double containing current value of alpha_3
+//' @param a_Z_PM double containing hyperparameter for sampling Z
 //' @param Z_ph Matrix that acts as a placeholder for Z
 //' @param Z Cube that contains all past, current, and future MCMC draws
 
@@ -180,22 +184,19 @@ void updateZ_PM(const arma::field<arma::vec>& y_obs,
                 const int& iter,
                 const int& tot_mcmc_iters,
                 const double& alpha_3,
-                const double& sigma_Z,
-                arma::cube& Z_tilde,
-                arma::vec& Z_tilde_ph,
+                const double& a_Z_PM,
                 arma::vec& Z_ph,
                 arma::cube& Z){
   double z_lpdf = 0;
   double z_new_lpdf = 0;
+  double lpdf_propose_new = 0;
+  double lpdf_propose_old = 0;
   double acceptance_prob = 0;
   double rand_unif_var = 0;
 
   for(int i = 0; i < Z.n_rows; i++){
-    for(int l = 0; l < Z.n_cols; l++){
-      // Propose new state
-      Z_tilde_ph(l) = Z_tilde.slice(iter)(i,l) + R::rnorm(0, sigma_Z);
-    }
-    convert_Z_tilde_Z(Z_tilde_ph, Z_ph);
+    // Propose new state
+    Z_ph = rdirichlet(a_Z_PM * Z.slice(iter).row(i).t());
 
     // Get old state log pdf
     z_lpdf = lpdf_z(y_obs(i,0), y_star(i,0), B_obs(i,0), B_star(i,0),
@@ -205,19 +206,22 @@ void updateZ_PM(const arma::field<arma::vec>& y_obs,
     // Get new state log pdf
     z_new_lpdf = lpdf_z(y_obs(i,0), y_star(i,0), B_obs(i,0), B_star(i,0), Phi,
                         nu, chi.row(i), pi, Z_ph.t(), alpha_3, i, sigma_sq);
-    acceptance_prob = z_new_lpdf - z_lpdf;
+
+    // Get proposal densities
+    lpdf_propose_new = Z_proposal_density(Z_ph, a_Z_PM * Z.slice(iter).row(i).t());
+    lpdf_propose_old = Z_proposal_density(Z.slice(iter).row(i).t(), a_Z_PM * Z_ph);
+
+    acceptance_prob = z_new_lpdf - z_lpdf + lpdf_propose_old - lpdf_propose_new;
     rand_unif_var = R::runif(0,1);
 
     if(log(rand_unif_var) < acceptance_prob){
       // Accept new state and update parameters
       Z.slice(iter).row(i) = Z_ph.t();
-      Z_tilde.slice(iter).row(i) = Z_tilde_ph.t();
     }
   }
   // Update next iteration
   if(iter < (tot_mcmc_iters - 1)){
     Z.slice(iter + 1) = Z.slice(iter);
-    Z_tilde.slice(iter + 1) = Z_tilde.slice(iter);
   }
 }
 
@@ -236,6 +240,8 @@ void updateZ_PM(const arma::field<arma::vec>& y_obs,
 //' @param rho Double containing hyperparameter for proposal of new z_i state
 //' @param iter Int containing current mcmc iteration
 //' @param tot_mcmc_iters Int containing total number of mcmc iterations
+//' @param alpha_3 double containing current value of alpha_3
+//' @param a_Z_PM double containing hyperparameter for sampling Z
 //' @param Z_ph Matrix that acts as a placeholder for Z
 //' @param Z Cube that contains all past, current, and future MCMC draws
 
@@ -252,22 +258,19 @@ void updateZTempered_PM(const double& beta_i,
                         const int& iter,
                         const int& tot_mcmc_iters,
                         const double& alpha_3,
-                        const double& sigma_Z,
-                        arma::cube& Z_tilde,
-                        arma::vec& Z_tilde_ph,
+                        const double& a_Z_PM,
                         arma::vec& Z_ph,
                         arma::cube& Z){
   double z_lpdf = 0;
   double z_new_lpdf = 0;
+  double lpdf_propose_new = 0;
+  double lpdf_propose_old = 0;
   double acceptance_prob = 0;
   double rand_unif_var = 0;
 
   for(int i = 0; i < Z.n_rows; i++){
-    for(int l = 0; l < Z.n_cols; l++){
-      // Propose new state
-      Z_tilde_ph(l) = Z_tilde.slice(iter)(i,l) + R::rnorm(0, sigma_Z);
-    }
-    convert_Z_tilde_Z(Z_tilde_ph, Z_ph);
+
+    Z_ph = rdirichlet(a_Z_PM * Z.slice(iter).row(i).t());
 
     // Get old state log pdf
     z_lpdf = lpdf_zTempered(beta_i, y_obs(i,0), y_star(i,0), B_obs(i,0),
@@ -278,19 +281,22 @@ void updateZTempered_PM(const double& beta_i,
     z_new_lpdf = lpdf_zTempered(beta_i, y_obs(i,0), y_star(i,0), B_obs(i,0),
                                 B_star(i,0), Phi,  nu, chi.row(i), pi,
                                 Z_ph, alpha_3, i, sigma_sq);
-    acceptance_prob = z_new_lpdf - z_lpdf;
+
+    // Get proposal densities
+    lpdf_propose_new = Z_proposal_density(Z_ph, a_Z_PM * Z.slice(iter).row(i).t());
+    lpdf_propose_old = Z_proposal_density(Z.slice(iter).row(i).t(), a_Z_PM * Z_ph);
+
+    acceptance_prob = z_new_lpdf - z_lpdf + lpdf_propose_old - lpdf_propose_new;
     rand_unif_var = R::runif(0,1);
 
     if(log(rand_unif_var) < acceptance_prob){
       // Accept new state and update parameters
       Z.slice(iter).row(i) = Z_ph.t();
-      Z_tilde.slice(iter).row(i) = Z_tilde_ph.t();
     }
   }
 
   // Update next iteration
   if(iter < (tot_mcmc_iters - 1)){
     Z.slice(iter + 1) = Z.slice(iter);
-    Z_tilde.slice(iter + 1) = Z_tilde.slice(iter);
   }
 }

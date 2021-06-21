@@ -21,7 +21,12 @@ double logGamma(double x){
   return log(tgamma(x));
 }
 
-
+//' Generates a random sample from the Dirichlet Distribution
+//'
+//' @name rdirichlet
+//' @param alpha Vector containing concentration parameters
+//' @returns distribution Vector containing the random sample
+//'
 arma::vec rdirichlet(arma::vec alpha){
 
     arma::vec distribution(alpha.n_elem, arma::fill::zeros);
@@ -39,4 +44,23 @@ arma::vec rdirichlet(arma::vec alpha){
   }
 
   return distribution;
+}
+
+
+
+//' Calculates the log of B(a) function used in the dirichlet distribution
+//'
+//' @name calc_lB
+//' @param alpha Vector containing input to the function
+//' @return log_B Double containing the log of the output of the B function
+
+double calc_lB(const arma::vec& alpha){
+  double log_B = 0;
+
+  for(int i=0; i < alpha.n_elem; i++){
+    log_B = log_B + std::lgamma(alpha(i));
+  }
+  log_B = log_B - std::lgamma(arma::accu(alpha));
+
+  return log_B;
 }
