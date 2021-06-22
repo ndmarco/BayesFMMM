@@ -269,7 +269,6 @@ void updateZTempered_PM(const double& beta_i,
   double rand_unif_var = 0;
 
   for(int i = 0; i < Z.n_rows; i++){
-
     Z_ph = rdirichlet(a_Z_PM * Z.slice(iter).row(i).t());
 
     // Get old state log pdf
@@ -280,7 +279,7 @@ void updateZTempered_PM(const double& beta_i,
     // Get new state log pdf
     z_new_lpdf = lpdf_zTempered(beta_i, y_obs(i,0), y_star(i,0), B_obs(i,0),
                                 B_star(i,0), Phi,  nu, chi.row(i), pi,
-                                Z_ph, alpha_3, i, sigma_sq);
+                                Z_ph.t(), alpha_3, i, sigma_sq);
 
     // Get proposal densities
     lpdf_propose_new = Z_proposal_density(Z_ph, a_Z_PM * Z.slice(iter).row(i).t());

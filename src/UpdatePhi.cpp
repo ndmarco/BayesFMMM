@@ -170,7 +170,7 @@ void updatePhiTempered(const double& beta_i,
             ph = 0;
             ph = y_obs(i,0)(l) - Z(i,j) * arma::dot(nu.row(j),
                        B_obs(i,0).row(l));
-            M_1 = M_1 + Z(i,j) * (chi(i,m) * chi(i,m) * B_obs(i,0).row(l).t() *
+            M_1 = M_1 + Z(i,j) *  Z(i,j) * (chi(i,m) * chi(i,m) * B_obs(i,0).row(l).t() *
               B_obs(i,0).row(l));
             for(int k = 0; k < nu.n_rows; k++){
               for(int n = 0; n < Phi(iter,0).n_slices; n++){
@@ -198,7 +198,7 @@ void updatePhiTempered(const double& beta_i,
               ph = 0;
               ph = y_star(i,0)(iter,l) - Z(i,j) * arma::dot(nu.row(j),
                           B_star(i,0).row(l));
-              M_1 = M_1 +  Z(i,j) * (chi(i,m) * chi(i,m) * B_star(i,0).row(l).t() *
+              M_1 = M_1 +  Z(i,j) *  Z(i,j) * (chi(i,m) * chi(i,m) * B_star(i,0).row(l).t() *
                 B_star(i,0).row(l));
               for(int k = 0; k < nu.n_rows; k++){
                 for(int n = 0; n < Phi(iter,0).n_slices; n++){

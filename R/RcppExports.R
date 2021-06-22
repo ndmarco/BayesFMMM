@@ -301,6 +301,48 @@ BFPMM <- function(y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, 
     .Call('_BayesFPMM_BFPMM', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory)
 }
 
+#' Conducts tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
+#'
+#' @name BFPMM_Templadder
+#' @param y_obs Field (list) of vectors containing the observed values
+#' @param t_obs Field (list) of vectors containing time points of observed values
+#' @param n_funct Double containing number of functions observed
+#' @param P Int that indicates the number of b-spline basis functions
+#' @param M int that indicates the number of slices used in Phi parameter
+#' @param tot_mcmc_iters Int containing total number of MCMC iterations
+#' @param r_stored_iters Int constaining number of iterations performed for each batch
+#' @param t_star Field (list) of vectors containing time points of interest that are not observed (optional)
+#' @param rho Double containing hyperparmater for sampling from Z
+#' @param alpha_3 Double hyperparameter for sampling from pi
+#' @param a_12 Vec containing hyperparameters for sampling from delta
+#' @param alpha1l Double containing hyperparameters for sampling from A
+#' @param alpha2l Double containing hyperparameters for sampling from A
+#' @param beta1l Double containing hyperparameters for sampling from A
+#' @param beta2l Double containing hyperparameters for sampling from A
+#' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param alpha Double containing hyperparameters for sampling from tau
+#' @param beta Double containing hyperparameters for sampling from tau
+#' @param alpha_0 Double containing hyperparameters for sampling from sigma
+#' @param beta_0 Double containing hyperparameters for sampling from sigma
+#' @param directory String containing path to store batches of MCMC samples
+#' @param Z_est Matrix containing initial starting point of Z matrix
+#' @param A_est Vector containing initial starting point of A vector
+#' @param pi_est Vector containing initial starting point of pi vector
+#' @param tau_est Vector containing initial starting point of tau vector
+#' @param delta_est Vector containing initial starting point of delta vector
+#' @param nu_est Matrix containing initial starting point of nu matrix
+#' @param Phi_est Cube containing initial starting point of Phi matrix
+#' @param gamma_est Cube containing initial starting point of gamma matrix
+#' @param chi_est Matrix containing initial starting point of chi matrix
+#' @param y_star_est Field of Vectors containing initial starting point of y_star
+#' @param sigma_est Double containing starting point of sigma parameter
+#' @returns params List of objects containing the MCMC samples from the last batch
+#' @export
+BFPMM_Templadder <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, beta_N_t, N_t) {
+    .Call('_BayesFPMM_BFPMM_Templadder', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, beta_N_t, N_t)
+}
+
 #' Returns the weights for the smoothed observed functions
 #'
 #' @name BasisExpansion
@@ -667,6 +709,22 @@ TestUpdatealpha3_PM <- function() {
 #' @export
 TestBFPMM <- function(tot_mcmc_iters, r_stored_iters, directory, sigma_sq) {
     .Call('_BayesFPMM_TestBFPMM', PACKAGE = 'BayesFPMM', tot_mcmc_iters, r_stored_iters, directory, sigma_sq)
+}
+
+#' Tests updating Z using partial membership model
+#'
+#' @name TestUpdateZ_PM
+#' @export
+TestUpdateTemperedZ_PM <- function(beta) {
+    .Call('_BayesFPMM_TestUpdateTemperedZ_PM', PACKAGE = 'BayesFPMM', beta)
+}
+
+#' Tests BFOC function
+#'
+#' @name TestEstimateBFPMMTempladder
+#' @export
+TestEstimateBFPMMTempladder <- function(beta_N_t, N_t) {
+    .Call('_BayesFPMM_TestEstimateBFPMMTempladder', PACKAGE = 'BayesFPMM', beta_N_t, N_t)
 }
 
 #' computes the log pdf of a_1j
