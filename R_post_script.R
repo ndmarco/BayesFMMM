@@ -1,21 +1,73 @@
 library(BayesFPMM)
 
 ## Get Z estimates
-Z <- array(0,dim=c(100,2,2000))
-dir = "c:\\Projects\\Simulation\\Z"
-for(i in 0:1){
+Z <- array(0,dim=c(100,2,4000))
+dir = "c:\\Projects\\trace_3\\Z"
+for(i in 0:19){
   Z_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
   Z[,,(200*(i) + 1):(200*(i+1))] <- Z_i
 }
 
 
 ## Get nu estimates
-nu <- array(0,dim=c(2,8,600))
-dir = "c:\\Projects\\trace\\Nu"
-for(i in 0:2){
+nu <- array(0,dim=c(2,8,4000))
+dir = "c:\\Projects\\trace_3\\Nu"
+for(i in 0:19){
   nu_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
   nu[,,(200*(i) + 1):(200*(i+1))] <- nu_i
 }
+
+chi <- array(0, dim=c(100,3,4000))
+dir = "c:\\Projects\\trace_3\\Chi"
+for(i in 0:19){
+  chi_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
+  chi[,,(200*(i) + 1):(200*(i+1))] <- chi_i
+}
+
+Phi <- array(0,dim=c(2,8,3,4000))
+dir = "c:\\Projects\\trace_3\\Phi"
+for(i in 0:19){
+  Phi_i <- TestReadField(paste(dir, as.character(i),".txt", sep = ""))
+  for(j in 1:200){
+    Phi[,,,(i)*200 + j] = Phi_i[[j]]
+  }
+}
+
+## Estimate curve level fit
+##
+##
+##
+Phi <- Phi[,,,500:4000]
+nu <- nu[,,500:4000]
+Z <- Z[,,500:4000]
+chi <- chi[,,500:4000]
+
+y <- GetStuff(0.001)
+x <- readRDS("c:\\Projects\\trace\\x_results.RDS")
+
+for(k in 1:100){
+  f_i <- matrix(0, 3500, 100)
+  fun = k
+  for(i in 1:3500){
+    f_i[i,] <- f_i[i,] + Z[fun, , i] %*% (nu[,,i]) %*% t(y$B[[1]])
+    for(j in 1:3){
+      f_i[i,] <- f_i[i,] + chi[fun,j,i] * Z[fun,,i] %*% Phi[,,j, i] %*% t(y$B[[1]])
+    }
+  }
+
+  for(i in 1:100){
+    z <- quantile(f_i[,i], probs = c(0.025, 0.975))
+    f3_2_5[i] <- z[1]
+    f3_97_5[i] <- z[2]
+  }
+  plot(x$y_obs[[fun]], type = 'l', ylab = "observed data")
+  lines(f3_2_5, col = "red")
+  lines(f3_97_5, col = "red")
+}
+
+##
+##
+##
 
 ## Get rid of burn-in
 nu <- nu[,,200:600]
