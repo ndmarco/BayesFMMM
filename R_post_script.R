@@ -1,28 +1,28 @@
 library(BayesFPMM)
 
 ## Get Z estimates
-Z <- array(0,dim=c(100,2,4000))
+Z <- array(0,dim=c(100,2,2000))
 dir = "c:\\Projects\\Simulation\\Z"
-for(i in 0:19){
+for(i in 0:1){
   Z_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
   Z[,,(200*(i) + 1):(200*(i+1))] <- Z_i
 }
 
 
 ## Get nu estimates
-nu <- array(0,dim=c(2,8,4000))
-dir = "c:\\Projects\\Simulation\\nu"
-for(i in 0:19){
+nu <- array(0,dim=c(2,8,600))
+dir = "c:\\Projects\\trace\\Nu"
+for(i in 0:2){
   nu_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
   nu[,,(200*(i) + 1):(200*(i+1))] <- nu_i
 }
 
 ## Get rid of burn-in
-nu <- nu[,,2000:4000]
+nu <- nu[,,200:600]
 y <- GetStuff(0.001)
-x <- readRDS("c:\\Projects\\High_Variance_Simulation\\x_results.RDS")
-f_obs1 <- matrix(0, 2000, 100)
-for(i in 1:2000){
+x <- readRDS("c:\\Projects\\trace\\x_results.RDS")
+f_obs1 <- matrix(0, 200, 100)
+for(i in 1:400){
   f_obs1[i,] <- t(y$B[[1]] %*% t(t(nu[1,,i])))
 }
 f1_97_5 <- rep(0,100)
@@ -33,7 +33,7 @@ for(i in 1:100){
   f1_97_5[i] <- z[2]
 }
 f1_true <- rep(0,100)
-f1_true <- x$nu_true[3,] %*% t(y$B[[1]])
+f1_true <- x$nu_true[1,] %*% t(y$B[[1]])
 
 plot(f1_true[1,], type = 'l', ylab = "function 1")
 lines(f1_2_5, col = "red")
@@ -60,8 +60,8 @@ lines(f2_97_5, col = "red")
 
 ## Function 3
 
-f_obs3 <- matrix(0, 2000, 100)
-for(i in 1:2000){
+f_obs3 <- matrix(0, 400, 100)
+for(i in 1:400){
   f_obs3[i,] <- t(y$B[[1]] %*% t(t(nu[2,,i])))
 }
 f3_97_5 <- rep(0,100)
@@ -72,7 +72,7 @@ for(i in 1:100){
   f3_97_5[i] <- z[2]
 }
 f3_true <- rep(0,100)
-f3_true <- x$nu_true[3,] %*% t(y$B[[1]])
+f3_true <- x$nu_true[2,] %*% t(y$B[[1]])
 
 plot(f3_true[1,], type = 'l', ylab = "function 3")
 lines(f3_2_5, col = "red")
@@ -82,25 +82,25 @@ lines(f3_97_5, col = "red")
 ### Phi
 
 ## Get nu estimates
-Phi <- array(0,dim=c(3,8,3,3960))
-dir = "/Users/nicholasmarco/Projects/FDA/Trace/rstudio-export/Trace/Phi"
-for(i in 1:99){
+Phi <- array(0,dim=c(2,8,3,600))
+dir = "c:\\Projects\\trace\\Phi"
+for(i in 0:2){
   Phi_i <- TestReadField(paste(dir, as.character(i),".txt", sep = ""))
-  for(j in 1:40){
-    Phi[,,,(i-1)*40 + j] = Phi_i[[j]]
+  for(j in 1:200){
+    Phi[,,,(i)*200 + j] = Phi_i[[j]]
   }
 }
 
 ## Get rid of Burn-in
-Phi <- Phi[,,,961:3960]
+Phi <- Phi[,,,200:600]
 
 
-f1_var <- array(0, dim= c(100, 100, 3000))
-for(i in 1:3000){
+f1_var <- array(0, dim= c(100, 100, 400))
+for(i in 1:400){
   for(j in 1:100){
     for(k in 1:100){
       for(m in 1:3){
-        f1_var[j,k,i] <- f1_var[j,k,i] + Phi[1, ,m ,i] %*% t(t(x$B[[1]][j,])) %*% x$B[[1]][k,] %*% t(t(Phi[1, ,m ,i]))
+        f1_var[j,k,i] <- f1_var[j,k,i] + Phi[1, ,m ,i] %*% t(t(y$B[[1]][j,])) %*% y$B[[1]][k,] %*% t(t(Phi[1, ,m ,i]))
       }
     }
   }
@@ -118,7 +118,7 @@ for(j in 1:100){
 
 cov1_true <- matrix(0, 100, 100)
 
-y <- readRDS("/Users/nicholasmarco/Projects/FDA/Trace/rstudio-export/x_results.RDS")
+y <- readRDS("c:\\Projects\\trace\\x_results.RDS")
 for(j in 1:100){
   for(k in 1:100){
     for(m in 1:3){

@@ -319,6 +319,9 @@ BFPMM <- function(y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, 
 #' @param alpha2l Double containing hyperparameters for sampling from A
 #' @param beta1l Double containing hyperparameters for sampling from A
 #' @param beta2l Double containing hyperparameters for sampling from A
+#' @param a_Z_PM Double containing hyperparameter used to sample from the posterior of Z
+#' @param a_pi_PM Double containing hyperparameter used to sample from the posterior of pi
+#' @param var_alpha3 Doubel containing hyperparameter for sampling from alpha_3
 #' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameters for sampling from tau
@@ -326,21 +329,78 @@ BFPMM <- function(y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, 
 #' @param alpha_0 Double containing hyperparameters for sampling from sigma
 #' @param beta_0 Double containing hyperparameters for sampling from sigma
 #' @param directory String containing path to store batches of MCMC samples
-#' @param Z_est Matrix containing initial starting point of Z matrix
-#' @param A_est Vector containing initial starting point of A vector
-#' @param pi_est Vector containing initial starting point of pi vector
-#' @param tau_est Vector containing initial starting point of tau vector
-#' @param delta_est Vector containing initial starting point of delta vector
-#' @param nu_est Matrix containing initial starting point of nu matrix
-#' @param Phi_est Cube containing initial starting point of Phi matrix
-#' @param gamma_est Cube containing initial starting point of gamma matrix
-#' @param chi_est Matrix containing initial starting point of chi matrix
-#' @param y_star_est Field of Vectors containing initial starting point of y_star
-#' @param sigma_est Double containing starting point of sigma parameter
 #' @returns params List of objects containing the MCMC samples from the last batch
 #' @export
 BFPMM_Templadder <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, beta_N_t, N_t) {
     .Call('_BayesFPMM_BFPMM_Templadder', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, beta_N_t, N_t)
+}
+
+#' Conducts a mixture of untempered sampling and termpered sampling to get posterior draws from the partial membership model
+#'
+#' @name BFPMM_MTT
+#' @param y_obs Field (list) of vectors containing the observed values
+#' @param t_obs Field (list) of vectors containing time points of observed values
+#' @param n_funct Double containing number of functions observed
+#' @param P Int that indicates the number of b-spline basis functions
+#' @param M int that indicates the number of slices used in Phi parameter
+#' @param tot_mcmc_iters Int containing total number of MCMC iterations
+#' @param r_stored_iters Int constaining number of iterations performed for each batch
+#' @param t_star Field (list) of vectors containing time points of interest that are not observed (optional)
+#' @param rho Double containing hyperparmater for sampling from Z
+#' @param alpha_3 Double hyperparameter for sampling from pi
+#' @param a_12 Vec containing hyperparameters for sampling from delta
+#' @param alpha1l Double containing hyperparameters for sampling from A
+#' @param alpha2l Double containing hyperparameters for sampling from A
+#' @param beta1l Double containing hyperparameters for sampling from A
+#' @param beta2l Double containing hyperparameters for sampling from A
+#' @param a_Z_PM Double containing hyperparameter used to sample from the posterior of Z
+#' @param a_pi_PM Double containing hyperparameter used to sample from the posterior of pi
+#' @param var_alpha3 Doubel containing hyperparameter for sampling from alpha_3
+#' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param alpha Double containing hyperparameters for sampling from tau
+#' @param beta Double containing hyperparameters for sampling from tau
+#' @param alpha_0 Double containing hyperparameters for sampling from sigma
+#' @param beta_0 Double containing hyperparameters for sampling from sigma
+#' @param directory String containing path to store batches of MCMC samples
+#' @returns params List of objects containing the MCMC samples from the last batch
+#' @export
+BFPMM_MTT <- function(y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t) {
+    .Call('_BayesFPMM_BFPMM_MTT', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, t_star, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t)
+}
+
+#' Generates multivariate normal random variable
+#'
+#' @name Rmvnormal
+#' @param mu Vector containing mean vector
+#' @param sigma Matrix containing covariance matrix
+NULL
+
+#' Calculates log gamma of a double
+#'
+#' @name logGamma
+#' @param x Double
+#' @return log(x)
+NULL
+
+#' Generates a random sample from the Dirichlet Distribution
+#'
+#' @name rdirichlet
+#' @param alpha Vector containing concentration parameters
+#' @returns distribution Vector containing the random sample
+#' @export
+rdirichlet <- function(alpha) {
+    .Call('_BayesFPMM_rdirichlet', PACKAGE = 'BayesFPMM', alpha)
+}
+
+#' Calculates the log of B(a) function used in the dirichlet distribution
+#'
+#' @name calc_lB
+#' @param alpha Vector containing input to the function
+#' @return log_B Double containing the log of the output of the B function
+#' @export
+calc_lB <- function(alpha) {
+    .Call('_BayesFPMM_calc_lB', PACKAGE = 'BayesFPMM', alpha)
 }
 
 #' Returns the weights for the smoothed observed functions
@@ -725,6 +785,22 @@ TestUpdateTemperedZ_PM <- function(beta) {
 #' @export
 TestEstimateBFPMMTempladder <- function(beta_N_t, N_t) {
     .Call('_BayesFPMM_TestEstimateBFPMMTempladder', PACKAGE = 'BayesFPMM', beta_N_t, N_t)
+}
+
+#' Tests mixed sampling from the Bayesian Functional Partial Membership Model
+#'
+#' @name TestBFPMM_MTT
+#' @export
+TestBFPMM_MTT <- function(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq) {
+    .Call('_BayesFPMM_TestBFPMM_MTT', PACKAGE = 'BayesFPMM', beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq)
+}
+
+#' Tests BFOC function
+#'
+#' @name TestEstimateBFPMMTempladder
+#' @export
+getLikelihood <- function() {
+    .Call('_BayesFPMM_getLikelihood', PACKAGE = 'BayesFPMM')
 }
 
 #' computes the log pdf of a_1j

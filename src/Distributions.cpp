@@ -26,7 +26,9 @@ double logGamma(double x){
 //' @name rdirichlet
 //' @param alpha Vector containing concentration parameters
 //' @returns distribution Vector containing the random sample
-//'
+//' @export
+// [[Rcpp::export]]
+
 arma::vec rdirichlet(arma::vec alpha){
 
     arma::vec distribution(alpha.n_elem, arma::fill::zeros);
@@ -53,6 +55,8 @@ arma::vec rdirichlet(arma::vec alpha){
 //' @name calc_lB
 //' @param alpha Vector containing input to the function
 //' @return log_B Double containing the log of the output of the B function
+//' @export
+// [[Rcpp::export]]
 
 double calc_lB(const arma::vec& alpha){
   double log_B = 0;
