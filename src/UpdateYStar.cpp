@@ -57,9 +57,9 @@ void updateYStar(const arma::field<arma::mat>& B_star,
         }
         y_star(i,0)(iter, l) = R::rnorm(mean, std::sqrt(sigma));
       }
-    }
-    if(iter < (tot_mcmc_iters - 1)){
-      y_star(i,0).row(iter + 1) = y_star(i,0).row(iter);
+      if(iter < (tot_mcmc_iters - 1)){
+        y_star(i,0).row(iter + 1) = y_star(i,0).row(iter);
+      }
     }
   }
 }
@@ -123,9 +123,9 @@ void updateYStarTempered(const double& beta_i,
           y_star(i,0)(iter, l) = y_star_proposal;
         }
       }
-    }
-    if(iter < (tot_mcmc_iters - 1)){
-      y_star(i,0).row(iter + 1) = y_star(i,0).row(iter);
+      if(iter < (tot_mcmc_iters - 1)){
+        y_star(i,0).row(iter + 1) = y_star(i,0).row(iter);
+      }
     }
   }
 }

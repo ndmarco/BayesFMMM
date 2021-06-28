@@ -2720,8 +2720,11 @@ Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs,
   alpha_3_TT(1) = alpha_3_TT(0);
 
   for(int j = 0; j < n_funct; j++){
-    y_star_TT(j,0).row(0) = y_star(j,0).row(0);
+    if(B_star(j,0).n_elem > 0){
+      y_star_TT(j,0).row(0) = y_star(j,0).row(0);
+    }
   }
+
 
   temp_ind = 0;
 
@@ -3044,32 +3047,34 @@ Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
 
     if((i % n_temp_trans) == 0 && (i > 0)){
       // initialize placeholders
-      nu_TT.slice(0) = nu.slice(i % i % r_stored_iters);
-      chi_TT.slice(0) = chi.slice(i % i % r_stored_iters);
-      pi_TT.col(0) = pi.col(i % i % r_stored_iters);
-      sigma_TT(0) = sigma(i % i % r_stored_iters);
-      Z_TT.slice(0) = Z.slice(i % i % r_stored_iters);
-      delta_TT.col(0) = delta.col(i % i % r_stored_iters);
-      gamma_TT(0,0) = gamma(i % i % r_stored_iters,0);
-      Phi_TT(0,0) = Phi(i % i % r_stored_iters,0);
-      A_TT.row(0) = A.row(i % i % r_stored_iters);
-      tau_TT.row(0) = tau.row(i % i % r_stored_iters);
-      alpha_3_TT(0) = alpha_3(i % i % r_stored_iters);
+      nu_TT.slice(0) = nu.slice (i % r_stored_iters);
+      chi_TT.slice(0) = chi.slice(i % r_stored_iters);
+      pi_TT.col(0) = pi.col(i % r_stored_iters);
+      sigma_TT(0) = sigma(i % r_stored_iters);
+      Z_TT.slice(0) = Z.slice(i % r_stored_iters);
+      delta_TT.col(0) = delta.col(i % r_stored_iters);
+      gamma_TT(0,0) = gamma(i % r_stored_iters,0);
+      Phi_TT(0,0) = Phi(i % r_stored_iters,0);
+      A_TT.row(0) = A.row(i % r_stored_iters);
+      tau_TT.row(0) = tau.row(i % r_stored_iters);
+      alpha_3_TT(0) = alpha_3(i % r_stored_iters);
 
-      nu_TT.slice(1) = nu.slice(i % i % r_stored_iters);
-      chi_TT.slice(1) = chi.slice(i % i % r_stored_iters);
-      pi_TT.col(1) = pi.col(i % i % r_stored_iters);
-      sigma_TT(1) = sigma(i % i % r_stored_iters);
-      Z_TT.slice(1) = Z.slice(i % i % r_stored_iters);
-      delta_TT.col(1) = delta.col(i % i % r_stored_iters);
-      gamma_TT(1,0) = gamma(i % i % r_stored_iters,0);
-      Phi_TT(1,0) = Phi(i % i % r_stored_iters,0);
-      A_TT.row(1) = A.row(i % i % r_stored_iters);
-      tau_TT.row(1) = tau.row(i % i % r_stored_iters);
-      alpha_3_TT(1) = alpha_3(i % i % r_stored_iters);
+      nu_TT.slice(1) = nu.slice(i % r_stored_iters);
+      chi_TT.slice(1) = chi.slice(i % r_stored_iters);
+      pi_TT.col(1) = pi.col(i % r_stored_iters);
+      sigma_TT(1) = sigma(i % r_stored_iters);
+      Z_TT.slice(1) = Z.slice(i % r_stored_iters);
+      delta_TT.col(1) = delta.col(i % r_stored_iters);
+      gamma_TT(1,0) = gamma(i % r_stored_iters,0);
+      Phi_TT(1,0) = Phi(i % r_stored_iters,0);
+      A_TT.row(1) = A.row(i % r_stored_iters);
+      tau_TT.row(1) = tau.row(i % r_stored_iters);
+      alpha_3_TT(1) = alpha_3(i % r_stored_iters);
 
       for(int j = 0; j < n_funct; j++){
-        y_star_TT(j,0).row(0) = y_star(j,0).row(0);
+        if(B_star(j,0).n_elem > 0){
+          y_star_TT(j,0).row(0) = y_star(j,0).row(0);
+        }
       }
 
       temp_ind = 0;
@@ -3144,7 +3149,9 @@ Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
         tau.row(i % r_stored_iters) = tau_TT.row(2 * N_t);
         alpha_3(i % r_stored_iters) = alpha_3_TT(2 * N_t);
         for(int j = 0; j < n_funct; j++){
-          y_star(j,0).row(i % r_stored_iters) = y_star_TT(j,0).row(2 * N_t);
+          if(B_star(j,0).n_elem > 0){
+            y_star(j,0).row(i % r_stored_iters) = y_star_TT(j,0).row(2 * N_t);
+          }
         }
 
         //update accept number
@@ -3164,7 +3171,9 @@ Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
         Phi((i+1) % r_stored_iters,0) = Phi(i % r_stored_iters, 0);
         alpha_3((i+1) % r_stored_iters) =  alpha_3(i % r_stored_iters);
         for(int j = 0; j < n_funct; j++){
-          y_star(j,0).row((i+1) % r_stored_iters) = y_star(j,0).row(i % r_stored_iters);
+          if(B_star(j,0).n_elem > 0){
+            y_star(j,0).row((i+1) % r_stored_iters) = y_star(j,0).row(i % r_stored_iters);
+          }
         }
       }
     }
@@ -3205,8 +3214,10 @@ Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
       Phi1(0,0) = Phi(0,0);
       tau1.row(0) = tau.row(0);
       for(int j = 0; j < n_funct; j++){
-        y_star1(j,0) = arma::randn(r_stored_iters/thinning_num, t_star(j,0).n_elem);
-        y_star1(j,0).row(0) = y_star(j,0).row(0);
+        if(B_star(j,0).n_elem > 0){
+          y_star1(j,0) = arma::randn(r_stored_iters/thinning_num, t_star(j,0).n_elem);
+          y_star1(j,0).row(0) = y_star(j,0).row(0);
+        }
       }
 
       for(int p=1; p < r_stored_iters / thinning_num; p++){
@@ -3222,7 +3233,9 @@ Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
         Phi1(p,0) = Phi(thinning_num*p  - 1,0);
         tau1.row(p) = tau.row(thinning_num*p - 1);
         for(int j = 0; j < n_funct; j++){
-          y_star1(j,0).row(p) = y_star(j,0).row(thinning_num*p - 1);
+          if(B_star(j,0).n_elem > 0){
+            y_star1(j,0).row(p) = y_star(j,0).row(thinning_num*p - 1);
+          }
         }
       }
 
@@ -3277,3 +3290,350 @@ Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
   return params;
 }
 
+//' Conducts un-tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
+//'
+//' @name BFPMM
+//' @param y_obs Field (list) of vectors containing the observed values
+//' @param t_obs Field (list) of vectors containing time points of observed values
+//' @param n_funct Double containing number of functions observed
+//' @param thinning_num Int that saves every (thinning_num) sample
+//' @param P Int that indicates the number of b-spline basis functions
+//' @param M int that indicates the number of slices used in Phi parameter
+//' @param tot_mcmc_iters Int containing total number of MCMC iterations
+//' @param r_stored_iters Int constaining number of iterations performed for each batch
+//' @param t_star Field (list) of vectors containing time points of interest that are not observed (optional)
+//' @param c Vector containing hyperparmeters for pi
+//' @param b double containing hyperparameter for alpha_3
+//' @param a_12 Vector containing hyperparameters for sampling from delta
+//' @param alpha1l Double containing hyperparameters for sampling from A
+//' @param alpha2l Double containing hyperparameters for sampling from A
+//' @param beta1l Double containing hyperparameters for sampling from A
+//' @param beta2l Double containing hyperparameters for sampling from A
+//' @param var_pi Double containing variance parameter of the random walk MH for pi parameter
+//' @param var_Z Double containing variance parameter of the random walk MH for Z parameter
+//' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+//' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+//' @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+//' @param alpha Double containing hyperparameters for sampling from tau
+//' @param beta Double containing hyperparameters for sampling from tau
+//' @param alpha_0 Double containing hyperparameters for sampling from sigma
+//' @param beta_0 Double containing hyperparameters for sampling from sigma
+//' @param directory String containing path to store batches of MCMC samples
+//' @returns params List of objects containing the MCMC samples from the last batch
+//' @export
+// [[Rcpp::export]]
+Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
+                      const arma::field<arma::vec>& t_obs,
+                      const double& n_funct,
+                      const int& K,
+                      const int& P,
+                      const int& M,
+                      const int& tot_mcmc_iters,
+                      const int& n_temp_trans,
+                      const arma::field<arma::vec>& t_star,
+                      const arma::vec& c,
+                      const double& b,
+                      const double& nu_1,
+                      const double& alpha1l,
+                      const double& alpha2l,
+                      const double& beta1l,
+                      const double& beta2l,
+                      const double& a_Z_PM,
+                      const double& a_pi_PM,
+                      const double& var_alpha3,
+                      const double& var_epsilon1,
+                      const double& var_epsilon2,
+                      const double& alpha,
+                      const double& beta,
+                      const double& alpha_0,
+                      const double& beta_0,
+                      const double& beta_N_t,
+                      const int& N_t){
+  // Make B_obs
+  arma::field<arma::mat> B_obs(n_funct,1);
+  arma::field<arma::mat> B_star(n_funct,1);
+  arma::field<arma::mat> y_star(n_funct, 1);
+  arma::field<arma::vec> t_comb(n_funct,1);
+  arma::field<arma::mat> y_star_TT(n_funct, 1);
+
+  for(int i = 0; i < n_funct; i++){
+    if(t_star(i,0).n_elem > 0){
+      t_comb(i,0) = arma::zeros(t_obs(i,0).n_elem + t_star(i,0).n_elem);
+      t_comb(i,0).subvec(0, t_obs(i,0).n_elem - 1) = t_obs(i,0);
+      t_comb(i,0).subvec(t_obs(i,0).n_elem, t_obs(i,0).n_elem + t_star(i,0).n_elem - 1)
+        = t_star(i,0);
+      splines2::BSpline bspline;
+      // Create Bspline object with 8 degrees of freedom
+      // 8 - 3 - 1 internal nodes
+      bspline = splines2::BSpline(t_comb(i,0), P);
+      // Get Basis matrix (100 x 8)
+      arma::mat bspline_mat {bspline.basis(true)};
+
+      B_obs(i,0) = bspline_mat.submat(0, 0, t_obs(i,0).n_elem - 1, P-1);
+      B_star(i,0) =  bspline_mat.submat(t_obs(i,0).n_elem, 0,
+             t_obs(i,0).n_elem + t_star(i,0).n_elem - 1, P-1);
+      y_star(i,0) = arma::randn(tot_mcmc_iters, t_star(i,0).n_elem);
+    }else{
+      splines2::BSpline bspline;
+      // Create Bspline object with 8 degrees of freedom
+      // 8 - 3 - 1 internal nodes
+      bspline = splines2::BSpline(t_obs(i,0), P);
+      // Get Basis matrix (100 x 8)
+      arma::mat bspline_mat {bspline.basis(true)};
+      B_obs(i,0) = bspline_mat;
+    }
+
+  }
+
+  arma::mat P_mat(P, P, arma::fill::zeros);
+  P_mat.zeros();
+  for(int j = 0; j < P_mat.n_rows; j++){
+    P_mat(0,0) = 1;
+    if(j > 0){
+      P_mat(j,j) = 2;
+      P_mat(j-1,j) = -1;
+      P_mat(j,j-1) = -1;
+    }
+    P_mat(P_mat.n_rows - 1, P_mat.n_rows - 1) = 1;
+  }
+
+  arma::cube nu(K, P, tot_mcmc_iters, arma::fill::randn);
+  arma::cube chi(n_funct, M, tot_mcmc_iters, arma::fill::zeros);
+  arma::mat pi(K, tot_mcmc_iters, arma::fill::zeros);
+  arma::vec pi_ph = arma::zeros(K);
+  pi.col(0) = rdirichlet(c);
+  arma::vec sigma(tot_mcmc_iters, arma::fill::ones);
+  arma::vec Z_ph = arma::zeros(K);
+  arma::vec alpha_3 = arma::zeros(tot_mcmc_iters);
+  arma::cube Z = arma::randi<arma::cube>(n_funct, K, tot_mcmc_iters,
+                                         arma::distr_param(0,1));
+
+  for(int i = 0; i < n_funct; i++){
+    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+  }
+
+  arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
+  arma::field<arma::cube> gamma(tot_mcmc_iters,1);
+  arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
+  arma::vec tilde_tau(M, arma::fill::ones);
+  arma::mat A = arma::ones(tot_mcmc_iters, 2);
+  arma::vec loglik = arma::zeros(tot_mcmc_iters);
+
+  // Create parameters for tempered transitions using geometric scheme
+  arma::vec beta_ladder(N_t, arma::fill::ones);
+  beta_ladder(N_t - 1) = beta_N_t;
+  double geom_mult = std::pow(beta_N_t, 1.0/N_t);
+  Rcpp::Rcout << "geom_mult: " << geom_mult << "\n";
+  for(int i = 1; i < N_t; i++){
+    beta_ladder(i) = beta_ladder(i-1) * geom_mult;
+    // beta_ladder(i) = 1 - ((1- beta_N_t) *(std::pow(i/ (N_t - 1.0), 2.0)));
+    Rcpp::Rcout << "beta_i: " << beta_ladder(i) << "\n";
+  }
+  // Create storage for tempered transitions
+  arma::cube nu_TT(K, P, (2 * N_t) + 1, arma::fill::randn);
+  arma::cube chi_TT(n_funct, M, (2 * N_t) + 1, arma::fill::zeros);
+  arma::mat pi_TT(K, (2 * N_t) + 1, arma::fill::zeros);
+  arma::vec sigma_TT((2 * N_t) + 1, arma::fill::ones);
+  arma::cube Z_TT = arma::randi<arma::cube>(n_funct, K, (2 * N_t) + 1,
+                                            arma::distr_param(0,1));
+  arma::mat delta_TT(M, (2 * N_t) + 1, arma::fill::ones);
+  arma::field<arma::cube> gamma_TT((2 * N_t) + 1, 1);
+  arma::field<arma::cube> Phi_TT((2 * N_t) + 1, 1);
+  arma::mat A_TT = arma::ones((2 * N_t) + 1, 2);
+  arma::vec alpha_3_TT = arma::ones((2 * N_t) + 1);
+
+  for(int i = 0; i < ((2 * N_t) + 1); i++){
+    gamma_TT(i,0) = arma::cube(K, P, M, arma::fill::zeros);
+    Phi_TT(i,0) = arma::zeros(K, P, M);
+  }
+
+  arma::mat tau_TT((2 * N_t) + 1, K, arma::fill::ones);
+
+  int temp_ind = 0;
+  double logA = 0;
+  double logu = 0;
+  int accept_num = 0;
+
+
+  for(int i = 0; i < tot_mcmc_iters; i++){
+    gamma(i,0) = arma::cube(K, P, M, arma::fill::ones);
+    Phi(i,0) = arma::zeros(K, P, M);
+  }
+
+  arma::vec m_1(P, arma::fill::zeros);
+  arma::mat M_1(P, P, arma::fill::zeros);
+  arma::mat tau(tot_mcmc_iters, K, arma::fill::ones);
+
+  arma::vec b_1(P, arma::fill::zeros);
+  arma::mat B_1(P, P, arma::fill::zeros);
+
+  for(int i = 0; i < tot_mcmc_iters; i++){
+    if((i % n_temp_trans) == 0 && (i > 0)){
+      // initialize placeholders
+      nu_TT.slice(0) = nu.slice(i);
+      chi_TT.slice(0) = chi.slice(i);
+      pi_TT.col(0) = pi.col(i);
+      sigma_TT(0) = sigma(i);
+      Z_TT.slice(0) = Z.slice(i);
+      delta_TT.col(0) = delta.col(i);
+      gamma_TT(0,0) = gamma(i,0);
+      Phi_TT(0,0) = Phi(i,0);
+      A_TT.row(0) = A.row(i);
+      tau_TT.row(0) = tau.row(i);
+      alpha_3_TT(0) = alpha_3(i);
+
+      nu_TT.slice(1) = nu.slice(i);
+      pi_TT.col(1) = pi.col(i);
+      sigma_TT(1) = sigma(i);
+      Z_TT.slice(1) = Z.slice(i);
+      delta_TT.col(1) = delta.col(i);
+      A_TT.row(1) = A.row(i);
+      tau_TT.row(1) = tau.row(i);
+      alpha_3_TT(1) = alpha_3(i);
+
+      for(int j = 0; j < n_funct; j++){
+        if(B_star(j,0).n_elem > 0){
+          y_star_TT(j,0).row(0) = y_star(j,0).row(0);
+        }
+      }
+
+      temp_ind = 0;
+
+      // Perform tempered transitions
+      for(int l = 1; l < ((2 * N_t) + 1); l++){
+        updateZTempered_PM(beta_ladder(temp_ind), y_obs, y_star_TT, B_obs, B_star,
+                           Phi_TT(l,0), nu_TT.slice(l), chi_TT.slice(l),
+                           pi_TT.col(l), sigma_TT(l), l, (2 * N_t) + 1, alpha_3_TT(l), a_Z_PM,
+                           Z_ph, Z_TT);
+        updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
+        updateAlpha3(pi_TT.col(l), b, Z_TT.slice(l), l, (2 * N_t) + 1, var_alpha3, alpha_3_TT);
+
+        tilde_tau(0) = delta_TT(0, l);
+        for(int j = 1; j < M; j++){
+          tilde_tau(j) = tilde_tau(j-1) * delta_TT(j,l);
+        }
+
+        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.row(l).t(), l, (2 * N_t) + 1,
+                    delta_TT);
+
+        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.col(l), var_epsilon1,
+                var_epsilon2, l, (2 * N_t) + 1, A_TT);
+        updateNuTempered(beta_ladder(temp_ind), y_obs, y_star_TT, B_obs, B_star,
+                         tau_TT.row(l).t(), Phi_TT(l,0), Z_TT.slice(l),
+                         chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, P_mat,
+                         b_1, B_1, nu_TT);
+        updateTau(alpha, beta, nu_TT.slice(l), l, (2 * N_t) + 1, P_mat, tau_TT);
+        updateSigmaTempered(beta_ladder(temp_ind), y_obs, y_star_TT, B_obs, B_star,
+                            alpha_0, beta_0, nu_TT.slice(l), Phi_TT(l,0),
+                            Z_TT.slice(l), chi_TT.slice(l), l, (2 * N_t) + 1,
+                            sigma_TT);
+        updateYStarTempered(beta_ladder(temp_ind), B_star, nu_TT.slice(l),
+                            Phi_TT(l,0), Z_TT.slice(l), chi_TT.slice(l),
+                            sigma_TT(l), l, (2 * N_t) + 1, y_star_TT);
+
+        // update temp_ind
+        if(l < N_t){
+          temp_ind = temp_ind + 1;
+        }
+        if(l > N_t){
+          temp_ind = temp_ind - 1;
+        }
+      }
+      logA = CalculateTTAcceptance(beta_ladder, y_obs, y_star_TT, B_obs, B_star,
+                                   nu_TT, Phi_TT, Z_TT, chi_TT, sigma_TT);
+      logu = std::log(R::runif(0,1));
+
+      Rcpp::Rcout << "prob_accept: " << logA<< "\n";
+      Rcpp::Rcout << "logu: " << logu<< "\n";
+
+      if(logu < logA){
+        Rcpp::Rcout << "Accept \n";
+        nu.slice(i) = nu_TT.slice(2 * N_t);
+        pi.col(i) = pi_TT.col(2 * N_t);
+        sigma(i) = sigma_TT(2 * N_t);
+        Z.slice(i) = Z_TT.slice(2 * N_t);
+        delta.col(i) = delta_TT.col(2 * N_t);
+        A.row(i) = A_TT.row(2 * N_t);
+        tau.row(i) = tau_TT.row(2 * N_t);
+        alpha_3(i) = alpha_3_TT(2 * N_t);
+        for(int j = 0; j < n_funct; j++){
+          if(B_star(j,0).n_elem > 0){
+            y_star(j,0).row(i) = y_star_TT(j,0).row(2 * N_t);
+          }
+        }
+
+        //update accept number
+        accept_num = accept_num + 1;
+      }
+      nu.slice(i+1) = nu.slice(i);
+      pi.col(i+1) = pi.col(i);
+      sigma(i+1) = sigma(i);
+      Z.slice(i+1) = Z.slice(i);
+      delta.col(i+1) = delta.col(i);
+      A.row(i+1) = A.row(i);
+      tau.row(i+1) = tau.row(i);
+      alpha_3(i+1) = alpha_3(i);
+      for(int j = 0; j < n_funct; j++){
+        if(B_star(j,0).n_elem > 0){
+          y_star(j,0).row(i+1) = y_star(j,0).row(i);
+        }
+      }
+    }
+    if(((i % n_temp_trans) != 0) || (i == 0)){
+      updateZ_PM(y_obs, y_star, B_obs, B_star,Phi(i,0),
+                 nu.slice(i), chi.slice(i),
+                 pi.col(i), sigma(i),
+                 i, tot_mcmc_iters, alpha_3(i),
+                 a_Z_PM, Z_ph, Z);
+      updatePi_PM(alpha_3(i) ,Z.slice(i), c,
+                  (i), tot_mcmc_iters, a_pi_PM, pi_ph, pi);
+
+      updateAlpha3(pi.col(i), b, Z.slice(i),
+                   (i), tot_mcmc_iters, var_alpha3, alpha_3);
+
+      tilde_tau(0) = delta(0, (i));
+      for(int j = 1; j < M; j++){
+        tilde_tau(j) = tilde_tau(j-1) * delta(j,(i));
+      }
+
+      updateNu(y_obs, y_star, B_obs, B_star, tau.row((i)).t(),
+               Phi((i),0), Z.slice((i)),
+               chi.slice((i)), sigma((i)),
+               (i), tot_mcmc_iters, P_mat, b_1, B_1, nu);
+
+      updateTau(alpha, beta, nu.slice((i)), (i),
+                tot_mcmc_iters, P_mat, tau);
+
+      updateSigma(y_obs, y_star, B_obs, B_star, alpha_0, beta_0,
+                  nu.slice((i)), Phi((i),0),
+                  Z.slice((i)), chi.slice((i)),
+                  (i), tot_mcmc_iters, sigma);
+
+      updateYStar(B_star, nu.slice((i)), Phi((i),0),
+                  Z.slice((i)), chi.slice((i)),
+                  sigma((i)), (i), tot_mcmc_iters,
+                  y_star);
+    }
+
+    // Calculate log likelihood
+    loglik((i)) =  calcLikelihood(y_obs, y_star, B_obs, B_star, nu.slice((i)),
+           Phi((i),0), Z.slice((i)), chi.slice((i)),(i), sigma((i)));
+    if(((i+1) % 100) == 0){
+      Rcpp::Rcout << "Iteration: " << i+1 << "\n";
+      Rcpp::Rcout << "Accpetance Probability: " << accept_num / (std::round(i / n_temp_trans)) << "\n";
+      Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i)-19, (i))) << "\n";
+      Rcpp::checkUserInterrupt();
+    }
+  }
+  Rcpp::List params = Rcpp::List::create(Rcpp::Named("nu", nu),
+                                         Rcpp::Named("y_star", y_star),
+                                         Rcpp::Named("pi", pi),
+                                         Rcpp::Named("alpha_3", alpha_3),
+                                         Rcpp::Named("A", A),
+                                         Rcpp::Named("delta", delta),
+                                         Rcpp::Named("sigma", sigma),
+                                         Rcpp::Named("tau", tau),
+                                         Rcpp::Named("Z", Z),
+                                         Rcpp::Named("loglik", loglik));
+  return params;
+}

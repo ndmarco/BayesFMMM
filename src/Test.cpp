@@ -3067,7 +3067,7 @@ Rcpp::List TestEstimateBFPMMTempladder(const double beta_N_t, const int N_t){
   int n_funct = 100;
   for(int i = 0; i < n_funct; i++){
     t_obs1(i,0) =  arma::regspace(0, 10, 990);
-    t_star1(i,0) = arma::regspace(0, 50, 950);
+    //t_star1(i,0) = arma::regspace(0, 50, 950);
   }
 
   // Set space of functions
@@ -3097,22 +3097,22 @@ Rcpp::List TestEstimateBFPMMTempladder(const double beta_N_t, const int N_t){
 
   // Make nu matrix
   arma::mat nu;
-  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+  nu.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+  Phi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+  chi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/chi.txt");
 
 
   // Make Z matrix
   arma::mat Z;
-  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
+  Z.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Z.txt");
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -3175,7 +3175,7 @@ Rcpp::List TestBFPMM_MTT(const double beta_N_t, const int N_t, const int n_temp_
   int n_funct = 100;
   for(int i = 0; i < n_funct; i++){
     t_obs1(i,0) =  arma::regspace(0, 10, 990);
-    t_star1(i,0) = arma::regspace(0, 50, 950);
+    //t_star1(i,0) = arma::regspace(0, 50, 950);
   }
 
   // Set space of functions
@@ -3205,22 +3205,22 @@ Rcpp::List TestBFPMM_MTT(const double beta_N_t, const int N_t, const int n_temp_
 
   // Make nu matrix
   arma::mat nu;
-  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+  nu.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+  Phi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+  chi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/chi.txt");
 
 
   // Make Z matrix
   arma::mat Z;
-  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
+  Z.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Z.txt");
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -3301,28 +3301,28 @@ double getLikelihood(){
   for(int i = 0; i < 100; i++)
   {
     B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
-    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
-           t_obs.n_elem + t_star.n_elem - 1, 7);
+    // B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+    //        t_obs.n_elem + t_star.n_elem - 1, 7);
   }
 
   // Make nu matrix
   arma::mat nu;
-  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+  nu.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+  Phi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+  chi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/chi.txt");
 
 
   // Make Z matrix
   arma::mat Z;
-  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
+  Z.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Z.txt");
 
   double sigma_sq = 0.001;
 
@@ -3331,7 +3331,7 @@ double getLikelihood(){
   arma::vec mean = arma::zeros(8);
 
   for(int j = 0; j < 100; j++){
-    y_star(j,0) = arma::zeros(100, B_star(j,0).n_rows);
+    //y_star(j,0) = arma::zeros(100, B_star(j,0).n_rows);
     mean = arma::zeros(8);
     for(int l = 0; l < nu.n_rows; l++){
       mean = mean + Z(j,l) * nu.row(l).t();
@@ -3341,11 +3341,11 @@ double getLikelihood(){
     }
     y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
       arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
-    y_star(j, 0).row(0) = arma::mvnrnd(B_star(j, 0) * mean, sigma_sq *
-      arma::eye(B_star(j,0).n_rows, B_star(j,0).n_rows)).t();
-    for(int i = 1; i < 100; i++){
-      y_star(j, 0).row(i) = y_star(j, 0).row(0);
-    }
+    // y_star(j, 0).row(0) = arma::mvnrnd(B_star(j, 0) * mean, sigma_sq *
+    //   arma::eye(B_star(j,0).n_rows, B_star(j,0).n_rows)).t();
+    // for(int i = 1; i < 100; i++){
+    //   y_star(j, 0).row(i) = y_star(j, 0).row(0);
+    // }
   }
   double likelihood = calcLikelihood(y_obs, y_star, B_obs, B_star, nu,
                  Phi, Z, chi, 0, sigma_sq);
@@ -3353,3 +3353,101 @@ double getLikelihood(){
   return likelihood;
 }
 
+//' Tests the full Bayesian Functional Partial Membership Model
+//'
+//' @name TestBFPMM_Nu_Z
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestBFPMM_Nu_Z(const int tot_mcmc_iters, const double sigma_sq,
+                          const double beta_N_t, const int N_t, const int n_temp_trans){
+  arma::field<arma::vec> t_obs1(100,1);
+  arma::field<arma::vec> t_star1(100,1);
+  int n_funct = 100;
+  for(int i = 0; i < n_funct; i++){
+    t_obs1(i,0) =  arma::regspace(0, 10, 990);
+    //t_star1(i,0) = arma::regspace(0, 50, 950);
+  }
+
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu;
+  nu.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/nu.txt");
+
+
+  // Make Phi matrix
+  arma::cube Phi;
+  Phi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Phi.txt");
+  // double sigma_sq = 0.005;
+
+  // Make chi matrix
+  arma::mat chi;
+  chi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/chi.txt");
+
+
+  // Make Z matrix
+  arma::mat Z;
+  Z.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Z.txt");
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    mean = arma::zeros(8);
+    for(int l = 0; l < nu.n_rows; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+  }
+  arma::vec c = arma::ones(2);
+
+  // start MCMC sampling
+  Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 8, 3, tot_mcmc_iters,
+                               n_temp_trans, t_star1, c, 1, 3, 2, 3, 1, 1,
+                          1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1, beta_N_t,
+                          N_t);
+
+  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
+                                        Rcpp::Named("y_obs", y_obs),
+                                        Rcpp::Named("nu_true", nu),
+                                        Rcpp::Named("nu", mod1["nu"]),
+                                        Rcpp::Named("y_star", mod1["y_star"]),
+                                        Rcpp::Named("pi", mod1["pi"]),
+                                        Rcpp::Named("alpha_3", mod1["alpha_3"]),
+                                        Rcpp::Named("A", mod1["A"]),
+                                        Rcpp::Named("delta", mod1["delta"]),
+                                        Rcpp::Named("sigma", mod1["sigma"]),
+                                        Rcpp::Named("tau", mod1["tau"]),
+                                        Rcpp::Named("Z", mod1["Z"]),
+                                        Rcpp::Named("loglik", mod1["loglik"]));
+
+  return mod2;
+}
