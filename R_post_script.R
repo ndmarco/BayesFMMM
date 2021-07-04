@@ -1,8 +1,26 @@
 library(BayesFPMM)
 
+######
+######
+######
+## Run SImulations
+for(i in 1:10){
+  x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 20)
+  y <- TestBFPMM_Theta(5000, 0.001, x$Z, x$nu, 0.8)
+  dir <- paste("c:\\Projects\\Simulation\\High_Variance\\Trace", as.character(i), "\\", sep = "")
+  z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 200000, 10000, dir, 0.001, x$Z, x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu, x$tau, y$sigma, y$chi, 0.8)
+  saveRDS(z, paste(dir, "x_results.RDS", sep = ""))
+}
+
+
+
+######
+######
+######
+######
 ## Get Z estimates
 Z <- array(0,dim=c(100,2,4000))
-dir = "c:\\Projects\\trace_3\\Z"
+dir = "c:\\Projects\\Simulation\\Z"
 for(i in 0:19){
   Z_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
   Z[,,(200*(i) + 1):(200*(i+1))] <- Z_i
@@ -11,7 +29,7 @@ for(i in 0:19){
 
 ## Get nu estimates
 nu <- array(0,dim=c(2,8,4000))
-dir = "c:\\Projects\\trace_3\\Nu"
+dir = "c:\\Projects\\Simulation\\Nu"
 for(i in 0:19){
   nu_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
   nu[,,(200*(i) + 1):(200*(i+1))] <- nu_i
@@ -70,12 +88,12 @@ for(k in 1:100){
 ##
 
 ## Get rid of burn-in
-nu <- nu[,,200:600]
+nu <- nu[,,1000:2000]
 y <- GetStuff(0.001)
-x <- readRDS("c:\\Projects\\trace\\x_results.RDS")
-f_obs1 <- matrix(0, 200, 100)
-for(i in 1:400){
-  f_obs1[i,] <- t(y$B[[1]] %*% t(t(nu[1,,i])))
+x <- readRDS("c:\\Projects\\Simulation\\x_results.RDS")
+f_obs1 <- matrix(0, 2000, 100)
+for(i in 1:2000){
+  f_obs1[i,] <- t(y$B[[1]] %*% t(t(nu[2,,i])))
 }
 f1_97_5 <- rep(0,100)
 f1_2_5 <- rep(0,100)
@@ -92,8 +110,8 @@ lines(f1_2_5, col = "red")
 lines(f1_97_5, col = "red")
 
 ## Function 2
-f_obs2 <- matrix(0, 2000, 100)
-for(i in 1:2000){
+f_obs2 <- matrix(0, 1000, 100)
+for(i in 1:1000){
   f_obs2[i,] <- t(y$B[[1]] %*% t(t(nu[2,,i])))
 }
 f2_97_5 <- rep(0,100)

@@ -17,6 +17,7 @@
 #include "BFPMM.H"
 #include "EstimateInitialState.H"
 #include "UpdateAlpha3.H"
+#include "LabelSwitch.H"
 
 //' Tests updating Z
 //'
@@ -2649,7 +2650,7 @@ void getparms(){
   arma::cube Phi(2,8,3);
   for(int i=0; i < 3; i++)
   {
-    Phi.slice(i) = (3-i) * 0.5 * arma::randu<arma::mat>(2,8);
+    Phi.slice(i) = (3-i) * 0.2 * arma::randu<arma::mat>(2,8);
   }
   double sigma_sq = 0.005;
 
@@ -3097,22 +3098,22 @@ Rcpp::List TestEstimateBFPMMTempladder(const double beta_N_t, const int N_t){
 
   // Make nu matrix
   arma::mat nu;
-  nu.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/nu.txt");
+  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Phi.txt");
+  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/chi.txt");
+  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
 
 
   // Make Z matrix
   arma::mat Z;
-  Z.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Z.txt");
+  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -3205,22 +3206,22 @@ Rcpp::List TestBFPMM_MTT(const double beta_N_t, const int N_t, const int n_temp_
 
   // Make nu matrix
   arma::mat nu;
-  nu.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/nu.txt");
+  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Phi.txt");
+  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/chi.txt");
+  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
 
 
   // Make Z matrix
   arma::mat Z;
-  Z.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Z.txt");
+  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -3307,22 +3308,22 @@ double getLikelihood(){
 
   // Make nu matrix
   arma::mat nu;
-  nu.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/nu.txt");
+  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Phi.txt");
+  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/chi.txt");
+  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
 
 
   // Make Z matrix
   arma::mat Z;
-  Z.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Z.txt");
+  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
 
   double sigma_sq = 0.001;
 
@@ -3347,6 +3348,7 @@ double getLikelihood(){
     //   y_star(j, 0).row(i) = y_star(j, 0).row(0);
     // }
   }
+  chi = arma::zeros(100, 3);
   double likelihood = calcLikelihood(y_obs, y_star, B_obs, B_star, nu,
                  Phi, Z, chi, 0, sigma_sq);
 
@@ -3395,22 +3397,22 @@ Rcpp::List TestBFPMM_Nu_Z(const int tot_mcmc_iters, const double sigma_sq,
 
   // Make nu matrix
   arma::mat nu;
-  nu.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/nu.txt");
+  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Phi.txt");
+  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/chi.txt");
+  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
 
 
   // Make Z matrix
   arma::mat Z;
-  Z.load("/Users/nicholasmarco/Projects/FDA/BayesFOC/data/Z.txt");
+  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -3451,3 +3453,543 @@ Rcpp::List TestBFPMM_Nu_Z(const int tot_mcmc_iters, const double sigma_sq,
 
   return mod2;
 }
+
+
+//' Tests the full Bayesian Functional Partial Membership Model
+//'
+//' @name TestBFPMM_Theta
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
+                           const arma::cube Z_samp, const arma::cube nu_samp,
+                           double burnin_prop){
+  arma::field<arma::vec> t_obs1(100,1);
+  arma::field<arma::vec> t_star1(100,1);
+  int n_funct = 100;
+  for(int i = 0; i < n_funct; i++){
+    t_obs1(i,0) =  arma::regspace(0, 10, 990);
+    //t_star1(i,0) = arma::regspace(0, 50, 950);
+  }
+
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu;
+  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+
+
+  // Make Phi matrix
+  arma::cube Phi;
+  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+  // double sigma_sq = 0.005;
+
+  // Make chi matrix
+  arma::mat chi;
+  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+
+
+  // Make Z matrix
+  arma::mat Z;
+  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    mean = arma::zeros(8);
+    for(int l = 0; l < nu.n_rows; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+  }
+  arma::vec c = arma::ones(2);
+
+  int n_nu = nu_samp.n_slices;
+  arma::mat Z_est = arma::zeros(n_funct, Z_samp.n_cols);
+  arma::mat nu_est = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+  arma::vec ph_Z = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+  arma::vec ph_nu = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+  for(int i = 0; i < Z_est.n_cols; i++){
+    for(int j = 0; j < Z_est.n_rows; j++){
+      for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+        ph_Z(l - std::round(n_nu * burnin_prop)) = Z_samp(j,i,l);
+      }
+      Z_est(j,i) = arma::median(ph_Z);
+    }
+    for(int j = 0; j < nu_samp.n_cols; j++){
+      for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+        ph_nu(l - std::round(n_nu * burnin_prop)) = nu_samp(i,j,l);
+      }
+      nu_est(i,j) = arma::median(ph_nu);
+    }
+  }
+
+  // start MCMC sampling
+  Rcpp::List mod1 = BFPMM_Theta(y_obs, t_obs1, n_funct, 2, 8, 3, tot_mcmc_iters,
+                                t_star1, c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
+                                sqrt(1), sqrt(1), 1, 1, 1, 1, Z_est, nu_est);
+
+  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("chi", mod1["chi"]),
+                                        Rcpp::Named("A", mod1["A"]),
+                                        Rcpp::Named("delta", mod1["delta"]),
+                                        Rcpp::Named("sigma", mod1["sigma"]),
+                                        Rcpp::Named("tau", mod1["tau"]),
+                                        Rcpp::Named("gamma", mod1["gamma"]),
+                                        Rcpp::Named("Phi", mod1["Phi"]),
+                                        Rcpp::Named("Nu_est", nu_est),
+                                        Rcpp::Named("loglik", mod1["loglik"]));
+
+  return mod2;
+}
+
+//' Tests BFOC function
+//'
+//' @name TestEstimateInitialZ_ph
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestEstimateInitialZ_PM(const arma::mat perm_mat){
+  arma::field<arma::vec> t_obs1(100,1);
+  arma::field<arma::vec> t_star1(100,1);
+  int n_funct = 100;
+  for(int i = 0; i < n_funct; i++){
+    t_obs1(i,0) =  arma::regspace(0, 10, 990);
+    t_star1(i,0) = arma::regspace(0, 50, 950);
+  }
+
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat {bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu;
+  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+
+
+  // Make Phi matrix
+  arma::cube Phi;
+  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+  // double sigma_sq = 0.005;
+
+  // Make chi matrix
+  arma::mat chi;
+  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+
+
+  // Make Z matrix
+  arma::mat Z;
+  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
+
+  // center data
+  double mean1 = 0;
+  for(int i = 0; i < nu.n_cols; i++){
+    mean1 = arma::accu(nu.col(i));
+    for(int j = 0; j < nu.n_rows; j++){
+      nu(j,i) = nu(j,i) - mean1;
+    }
+  }
+
+  double sigma_sq = 0.001;
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    mean = arma::zeros(8);
+    for(int l = 0; l < nu.n_rows; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+  }
+
+  arma::mat theta = BasisExpansion(y_obs, B_obs, 100, 3, 8);
+
+  arma::mat Z_ref = ZInitialState(B_obs, theta, 50, 2, 100, 0.001);
+
+  arma::mat Z_i = arma::zeros(100, 2);
+  arma::mat Z_ph = arma::zeros(100, 2);
+  for(int i = 1; i < 100; i ++){
+    Z_i = ZInitialState(B_obs, theta, 50, 2, 100, 0.001);
+    Z_i = LabelSwitch(Z_ref, Z_i, perm_mat);
+    Z_ph = Z_ph + Z_i;
+  }
+
+  Z_ph = Z_ph + Z_ref;
+  for(int i=0; i < Z.n_rows; i++){
+    Z_ph.row(i) = Z_ph.row(i) / arma::accu( Z_ph.row(i));
+  }
+
+
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Z", Z),
+                                      Rcpp::Named("z_est", Z_ph),
+                                      Rcpp::Named("y_obs", y_obs),
+                                      Rcpp::Named("Z_true", Z),
+                                      Rcpp::Named("nu_true", nu));
+  return mod;
+}
+
+//' Tests the full Bayesian Functional Partial Membership Model
+//'
+//' @name TestBFPMM_Nu_Z
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double sigma_sq,
+                                       const double beta_N_t, const int N_t, const int n_temp_trans,
+                                       const int n_trys){
+  arma::field<arma::vec> t_obs1(100,1);
+  arma::field<arma::vec> t_star1(100,1);
+  int n_funct = 100;
+  for(int i = 0; i < n_funct; i++){
+    t_obs1(i,0) =  arma::regspace(0, 10, 990);
+    //t_star1(i,0) = arma::regspace(0, 50, 950);
+  }
+
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  arma::vec t_star = arma::regspace(0, 50, 950);
+  arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+  t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+  t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_comb, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat { bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(100,1);
+
+  arma::field<arma::mat> B_star(100,1);
+
+
+  for(int i = 0; i < 100; i++)
+  {
+    B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+    B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+           t_obs.n_elem + t_star.n_elem - 1, 7);
+  }
+
+  // Make nu matrix
+  arma::mat nu;
+  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+
+
+  // Make Phi matrix
+  arma::cube Phi;
+  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+  // double sigma_sq = 0.005;
+
+  // Make chi matrix
+  arma::mat chi;
+  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+
+
+  // Make Z matrix
+  arma::mat Z;
+  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
+
+  arma::field<arma::vec> y_obs(100, 1);
+  arma::field<arma::mat> y_star(100, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 100; j++){
+    mean = arma::zeros(8);
+    for(int l = 0; l < nu.n_rows; l++){
+      mean = mean + Z(j,l) * nu.row(l).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+  }
+  arma::vec c = arma::ones(2);
+
+  // start MCMC sampling
+  Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 8, 3, tot_mcmc_iters,
+                               n_temp_trans, t_star1, c, 1, 3, 2, 3, 1, 1,
+                               1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1, beta_N_t,
+                               N_t);
+  arma::vec ph = mod1["loglik"];
+  double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+
+  for(int i = 0; i < n_trys; i++){
+    Rcpp::List modi = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 8, 3, tot_mcmc_iters,
+                                 n_temp_trans, t_star1, c, 1, 3, 2, 3, 1, 1,
+                                 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1, beta_N_t,
+                                 N_t);
+    arma::vec ph1 = modi["loglik"];
+    if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
+      mod1 = modi;
+      min_likelihood = arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+    }
+
+  }
+
+  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
+                                        Rcpp::Named("y_obs", y_obs),
+                                        Rcpp::Named("nu_true", nu),
+                                        Rcpp::Named("nu", mod1["nu"]),
+                                        Rcpp::Named("y_star", mod1["y_star"]),
+                                        Rcpp::Named("pi", mod1["pi"]),
+                                        Rcpp::Named("alpha_3", mod1["alpha_3"]),
+                                        Rcpp::Named("A", mod1["A"]),
+                                        Rcpp::Named("delta", mod1["delta"]),
+                                        Rcpp::Named("sigma", mod1["sigma"]),
+                                        Rcpp::Named("tau", mod1["tau"]),
+                                        Rcpp::Named("Z", mod1["Z"]),
+                                        Rcpp::Named("loglik", mod1["loglik"]));
+
+  return mod2;
+}
+
+  //' Tests mixed sampling from the Bayesian Functional Partial Membership Model
+  //'
+  //' @name TestBFPMM_MTT
+  //' @export
+  // [[Rcpp::export]]
+  Rcpp::List TestBFPMM_MTT_warm_start(const double beta_N_t, const int N_t, const int n_temp_trans,
+                                      const int tot_mcmc_iters, const int r_stored_iters,
+                                      const std::string directory, const double sigma_sq,
+                                      const arma::cube Z_samp,
+                                      const arma::mat pi_samp,
+                                      const arma::vec alpha_3_samp,
+                                      const arma::mat delta_samp,
+                                      const arma::field<arma::cube> gamma_samp,
+                                      const arma::field<arma::cube> Phi_samp,
+                                      const arma::mat A_samp,
+                                      const arma::cube nu_samp,
+                                      const arma::mat tau_samp,
+                                      const arma::vec sigma_samp,
+                                      const arma::cube chi_samp,
+                                      const double burnin_prop){
+    arma::field<arma::vec> t_obs1(100,1);
+    arma::field<arma::vec> t_star1(100,1);
+    int n_funct = 100;
+    for(int i = 0; i < n_funct; i++){
+      t_obs1(i,0) =  arma::regspace(0, 10, 990);
+      //t_star1(i,0) = arma::regspace(0, 50, 950);
+    }
+
+    // Set space of functions
+    arma::vec t_obs =  arma::regspace(0, 10, 990);
+    arma::vec t_star = arma::regspace(0, 50, 950);
+    arma::vec t_comb = arma::zeros(t_obs.n_elem + t_star.n_elem);
+    t_comb.subvec(0, t_obs.n_elem - 1) = t_obs;
+    t_comb.subvec(t_obs.n_elem, t_obs.n_elem + t_star.n_elem - 1) = t_star;
+    splines2::BSpline bspline;
+    // Create Bspline object with 8 degrees of freedom
+    // 8 - 3 - 1 internal nodes
+    bspline = splines2::BSpline(t_comb, 8);
+    // Get Basis matrix (100 x 8)
+    arma::mat bspline_mat { bspline.basis(true)};
+    // Make B_obs
+    arma::field<arma::mat> B_obs(100,1);
+
+    arma::field<arma::mat> B_star(100,1);
+
+
+    for(int i = 0; i < 100; i++)
+    {
+      B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
+      B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
+             t_obs.n_elem + t_star.n_elem - 1, 7);
+    }
+
+    // Make nu matrix
+    arma::mat nu;
+    nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+
+
+    // Make Phi matrix
+    arma::cube Phi;
+    Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+    // double sigma_sq = 0.005;
+
+    // Make chi matrix
+    arma::mat chi;
+    chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+
+
+    // Make Z matrix
+    arma::mat Z;
+    Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
+
+    arma::field<arma::vec> y_obs(100, 1);
+    arma::field<arma::mat> y_star(100, 1);
+    arma::vec mean = arma::zeros(8);
+
+    for(int j = 0; j < 100; j++){
+      mean = arma::zeros(8);
+      for(int l = 0; l < nu.n_rows; l++){
+        mean = mean + Z(j,l) * nu.row(l).t();
+        for(int m = 0; m < Phi.n_slices; m++){
+          mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+        }
+      }
+      y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+        arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+    }
+    arma::vec c = arma::ones(2);
+
+    int n_nu = alpha_3_samp.n_elem;
+
+    double alpha_3_est = arma::median(alpha_3_samp.subvec(std::round(n_nu * burnin_prop), n_nu - 1));
+    arma::vec pi_est = arma::zeros(pi_samp.n_rows);
+    arma::mat Z_est = arma::zeros(n_funct, Z_samp.n_cols);
+    arma::mat nu_est = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+    arma::vec ph_Z = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    arma::vec ph_nu = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    for(int i = 0; i < Z_est.n_cols; i++){
+      pi_est(i) = arma::median(pi_samp.row(i).subvec(std::round(n_nu * burnin_prop), n_nu - 1));
+      for(int j = 0; j < Z_est.n_rows; j++){
+        for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+          ph_Z(l - std::round(n_nu * burnin_prop)) = Z_samp(j,i,l);
+        }
+        Z_est(j,i) = arma::median(ph_Z);
+      }
+      for(int j = 0; j < nu_samp.n_cols; j++){
+        for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+          ph_nu(l - std::round(n_nu * burnin_prop)) = nu_samp(i,j,l);
+        }
+        nu_est(i,j) = arma::median(ph_nu);
+      }
+    }
+
+    int n_Phi = sigma_samp.n_elem;
+
+    double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
+    arma::vec delta_est = arma::zeros(delta_samp.n_rows);
+    arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
+    for(int i = 0; i < delta_samp.n_rows; i++){
+      for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,l);
+      }
+      delta_est(i) = arma::median(ph_delta);
+    }
+    arma::cube gamma_est = arma::zeros(gamma_samp(0,0).n_rows, gamma_samp(0,0).n_cols, gamma_samp(0,0).n_slices);
+    arma::cube Phi_est = arma::zeros(Phi_samp(0,0).n_rows, Phi_samp(0,0).n_cols, Phi_samp(0,0).n_slices);
+    arma::vec ph_phi = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
+    arma::vec ph_gamma = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
+    for(int i = 0; i < Phi_est.n_rows; i++){
+      for(int j = 0; j < Phi_est.n_cols; j++){
+        for(int m = 0; m < Phi_est.n_slices; m++){
+          for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+            ph_phi(l - std::round(n_Phi * burnin_prop)) = Phi_samp(l,0)(i,j,m);
+
+            ph_gamma(l - std::round(n_Phi * burnin_prop)) = gamma_samp(l,0)(i,j,m);
+          }
+          Phi_est(i,j,m) = arma::median(ph_phi);
+          gamma_est(i,j,m) = arma::median(ph_gamma);
+        }
+      }
+    }
+
+    arma::vec A_est = arma::zeros(A_samp.n_cols);
+    arma::vec ph_A = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
+    for(int i = 0; i < A_est.n_elem; i++){
+      for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(l,i);
+      }
+      A_est(i) = arma::median(ph_A);
+    }
+    arma::vec tau_est = arma::zeros(tau_samp.n_cols);
+    arma::vec ph_tau = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    for(int i = 0; i < tau_est.n_elem; i++){
+      for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+        ph_tau(l - std::round(n_nu * burnin_prop)) = tau_samp(l,i);
+      }
+      tau_est(i) = arma::median(ph_tau);
+    }
+    arma::mat chi_est = arma::zeros(chi_samp.n_rows, chi_samp.n_cols);
+    arma::vec ph_chi = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
+    for(int i = 0; i < chi_est.n_rows; i++){
+      for(int j = 0; j < chi_est.n_cols; j++){
+        for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+          ph_chi(l - std::round(n_Phi * burnin_prop)) = chi_samp(i,j,l);
+        }
+        chi_est(i,j) = arma::median(ph_chi);
+      }
+    }
+
+    // start MCMC sampling
+    Rcpp::List mod1 = BFPMM_MTT_warm_start(y_obs, t_obs1, n_funct, 50, 2, 8, 3, tot_mcmc_iters,
+                                r_stored_iters, n_temp_trans, t_star1, c, 1, 3, 2,
+                                3, 1, 1, 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1,
+                                directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est,
+                                delta_est, gamma_est, Phi_est, A_est, nu_est,
+                                 tau_est, sigma_est, chi_est);
+
+    Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
+                                          Rcpp::Named("y_obs", y_obs),
+                                          Rcpp::Named("nu_true", nu),
+                                          Rcpp::Named("Phi_true", Phi),
+                                          Rcpp::Named("nu", mod1["nu"]),
+                                          Rcpp::Named("y_star", mod1["y_star"]),
+                                          Rcpp::Named("chi", mod1["chi"]),
+                                          Rcpp::Named("pi", mod1["pi"]),
+                                          Rcpp::Named("alpha_3", mod1["alpha_3"]),
+                                          Rcpp::Named("A", mod1["A"]),
+                                          Rcpp::Named("delta", mod1["delta"]),
+                                          Rcpp::Named("sigma", mod1["sigma"]),
+                                          Rcpp::Named("tau", mod1["tau"]),
+                                          Rcpp::Named("gamma", mod1["gamma"]),
+                                          Rcpp::Named("Phi", mod1["Phi"]),
+                                          Rcpp::Named("Z", mod1["Z"]),
+                                          Rcpp::Named("loglik", mod1["loglik"]));
+
+    return mod2;
+  }
