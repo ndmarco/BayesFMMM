@@ -4,23 +4,138 @@ library(BayesFPMM)
 ######
 ######
 ## Run SImulations
+##
+set.seed(1)
 for(i in 1:10){
-  x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 20)
-  y <- TestBFPMM_Theta(5000, 0.001, x$Z, x$nu, 0.8)
-  dir <- paste("c:\\Projects\\Simulation\\High_Variance\\Trace", as.character(i), "\\", sep = "")
-  z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 200000, 10000, dir, 0.001, x$Z, x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu, x$tau, y$sigma, y$chi, 0.8)
+  x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 100, 5)
+  y <- TestBFPMM_Theta(5000, 0.001, x$Z, x$nu, 0.8, 5)
+  #dir <- paste("c:\\Projects\\Simulation\\High_Variance\\Trace", as.character(i), "\\", sep = "")
+  dir <- "C:\\Projects\\Simulation\\Optimal_K\\5_clusters\\"
+  z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 200000, 10000, dir, 0.001, x$Z, x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu, x$tau, y$sigma, y$chi, 0.8, 5)
   saveRDS(z, paste(dir, "x_results.RDS", sep = ""))
 }
 
+x <- readRDS("c:\\Projects\\Simulation\\High_Variance\\Trace1\\x_results.RDS")
+nu_true <- x$nu_true
+all_nu <- array(0, dim = c(2,8,3500,10))
+all_Z <- array(0, dim =c(100,2,3500,10))
+all_f1_97_5 <- array(0,dim = c(100, 10))
+all_f2_2_5 <- array(0,dim = c(100,10))
+all_f2_97_5 <- array(0,dim = c(100, 10))
+all_f1_2_5 <- array(0,dim = c(100,10))
+all_Z_97_5 <- array(0,dim = c(100, 10))
+all_Z_2_5 <- array(0,dim = c(100,10))
+for(j in 1:10){
+  print(j)
+  nu <- array(0,dim=c(2,8,4000))
+  dir = paste("c:\\Projects\\Simulation\\High_Variance\\Trace",j,"\\Nu", sep ="")
+  for(i in 0:19){
+    nu_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
+    nu[,,(200*(i) + 1):(200*(i+1))] <- nu_i
+  }
+  Z <- array(0,dim=c(100,2,4000))
+  dir = paste("c:\\Projects\\Simulation\\High_Variance\\Trace",j,"\\Z", sep ="")
+  for(i in 0:19){
+    Z_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
+    Z[,,(200*(i) + 1):(200*(i+1))] <- Z_i
+  }
+  nu <- nu[,,501:4000]
+  Z <- Z[,,501:4000]
 
+  ## Fix label switching problem
+  nu_ph <- nu
+  Z_ph <- Z
+  nu_ph[1,,] <- nu[2,,]
+  Z_ph[,1,] <- Z[,2,]
+  nu_ph[2,,] <- nu[1,,]
+  Z_ph[,2,] <- Z[,1,]
+  if(sum(abs(nu[,,3500]-nu_true)) > sum(abs(nu_ph[,,3500] - nu_true))){
+    all_nu[,,,j] <- nu_ph
+    all_Z[,,,j] <- Z_ph
+    nu <- nu_ph
+    Z <- Z_ph
+  }else{
+    all_nu[,,,j] <- nu
+    all_Z[,,,i=j] <- Z
+  }
+
+  y <- GetStuff(0.001)
+  x <- readRDS("c:\\Projects\\Simulation\\High_Variance\\Trace2\\x_results.RDS")
+  f_obs1 <- matrix(0, 2500, 100)
+  for(i in 1:1500){
+    f_obs1[i,] <- t(y$B[[1]] %*% t(t(nu[1,,i])))
+  }
+
+  f1_97_5 <- rep(0,100)
+  f1_2_5 <- rep(0,100)
+  for(i in 1:100){
+    q <- quantile(f_obs1[,i], probs = c(0.025, 0.975))
+    f1_2_5[i] <- q[1]
+    f1_97_5[i] <- q[2]
+  }
+  all_f1_2_5[,j]<- f1_2_5
+  all_f1_97_5[,j] <- f1_97_5
+
+  f_obs2 <- matrix(0, 3500, 100)
+  for(i in 1:3500){
+    f_obs2[i,] <- t(y$B[[1]] %*% t(t(nu[2,,i])))
+  }
+
+  f2_97_5 <- rep(0,100)
+  f2_2_5 <- rep(0,100)
+  for(i in 1:100){
+    q <- quantile(f_obs2[,i], probs = c(0.025, 0.975))
+    f2_2_5[i] <- q[1]
+    f2_97_5[i] <- q[2]
+  }
+  all_f2_2_5[,j]<- f2_2_5
+  all_f2_97_5[,j] <- f2_97_5
+
+
+  Z_97_5 <- rep(0,100)
+  Z_2_5 <- rep(0,100)
+  for(i in 1:100){
+    q <- quantile(Z[i,1,], probs = c(0.025, 0.975))
+    Z_2_5[i] <- q[1]
+    Z_97_5[i] <- q[2]
+  }
+
+  all_Z_2_5[,j] <- Z_2_5
+  all_Z_97_5[,j] <- Z_97_5
+
+}
+
+f1_true <- rep(0,100)
+f1_true <- x$nu_true[2,] %*% t(y$B[[1]])
+plot(f1_true[1,], type = "l", ylim = c(-3,4), lwd = 3)
+for(i in 1:10){
+  lines(all_f2_2_5[,i], col=i, lty = 2)
+  lines(all_f2_97_5[,i], col=i, lty=2)
+}
+
+library(plotrix)
+Z_true <- x$Z_true[1:10,1]
+Z_true <- rep(Z_true, 10)
+Z_true <- (as.vector(all_Z_97_5[1:10,1:10]) + as.vector(all_Z_2_5[1:10,1:10]))/2
+obs_num <- 1:10
+obs_num <- rep(obs_num, 10)
+col_num <- 1:100
+for(i in 1:10){
+  for(j in 1:10){
+    col_num[(i-1)*10 + j] <- rainbow(10)[i]
+  }
+}
+
+plot(1:10, x$Z_true[1:10,1])
+plotCI(obs_num, Z_true, ui=as.vector(all_Z_97_5[1:10,1:10]), li = as.vector(all_Z_2_5[1:10,1:10]), scol = col_num, col ="#1C00ff00", add=T)
 
 ######
 ######
 ######
 ######
 ## Get Z estimates
-Z <- array(0,dim=c(100,2,4000))
-dir = "c:\\Projects\\Simulation\\Z"
+Z <- array(0,dim=c(100,3,4000))
+dir = "C:\\Projects\\Simulation\\Optimal_K\\3_clusters\\Z"
 for(i in 0:19){
   Z_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
   Z[,,(200*(i) + 1):(200*(i+1))] <- Z_i
@@ -28,28 +143,32 @@ for(i in 0:19){
 
 
 ## Get nu estimates
-nu <- array(0,dim=c(2,8,4000))
-dir = "c:\\Projects\\Simulation\\Nu"
+nu <- array(0,dim=c(3,8,4000))
+dir = "C:\\Projects\\Simulation\\Optimal_K\\3_clusters\\Nu"
 for(i in 0:19){
   nu_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
   nu[,,(200*(i) + 1):(200*(i+1))] <- nu_i
 }
 
 chi <- array(0, dim=c(100,3,4000))
-dir = "c:\\Projects\\trace_3\\Chi"
+dir = "C:\\Projects\\Simulation\\Optimal_K\\3_clusters\\Chi"
 for(i in 0:19){
   chi_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
   chi[,,(200*(i) + 1):(200*(i+1))] <- chi_i
 }
 
-Phi <- array(0,dim=c(2,8,3,4000))
-dir = "c:\\Projects\\trace_3\\Phi"
+Phi <- array(0,dim=c(3,8,3,4000))
+dir = "C:\\Projects\\Simulation\\Optimal_K\\3_clusters\\Phi"
 for(i in 0:19){
   Phi_i <- TestReadField(paste(dir, as.character(i),".txt", sep = ""))
   for(j in 1:200){
     Phi[,,,(i)*200 + j] = Phi_i[[j]]
   }
 }
+
+##
+## Calculate DIC and BIC
+##
 
 ## Estimate curve level fit
 ##
@@ -88,12 +207,12 @@ for(k in 1:100){
 ##
 
 ## Get rid of burn-in
-nu <- nu[,,1000:2000]
+nu <- nu[,,1001:4000]
 y <- GetStuff(0.001)
-x <- readRDS("c:\\Projects\\Simulation\\x_results.RDS")
-f_obs1 <- matrix(0, 2000, 100)
-for(i in 1:2000){
-  f_obs1[i,] <- t(y$B[[1]] %*% t(t(nu[2,,i])))
+x <- readRDS("C:\\Projects\\Simulation\\Optimal_K\\3_clusters\\x_results.RDS")
+f_obs1 <- matrix(0, 3000, 100)
+for(i in 1:3000){
+  f_obs1[i,] <- t(y$B[[1]] %*% t(t(nu[1,,i])))
 }
 f1_97_5 <- rep(0,100)
 f1_2_5 <- rep(0,100)
@@ -103,7 +222,8 @@ for(i in 1:100){
   f1_97_5[i] <- z[2]
 }
 f1_true <- rep(0,100)
-f1_true <- x$nu_true[1,] %*% t(y$B[[1]])
+f1_true <- x$nu_true[3,] %*% t(y$B[[1]])
+
 
 plot(f1_true[1,], type = 'l', ylab = "function 1")
 lines(f1_2_5, col = "red")
@@ -122,7 +242,7 @@ for(i in 1:100){
   f2_97_5[i] <- z[2]
 }
 f2_true <- rep(0,100)
-f2_true <- x$nu_true[2,] %*% t(y$B[[1]])
+f2_true <- x$nu_true[1,] %*% t(y$B[[1]])
 
 plot(f2_true[1,], type = 'l', ylab = "function 2")
 lines(f2_2_5, col = "red")
@@ -130,9 +250,9 @@ lines(f2_97_5, col = "red")
 
 ## Function 3
 
-f_obs3 <- matrix(0, 400, 100)
-for(i in 1:400){
-  f_obs3[i,] <- t(y$B[[1]] %*% t(t(nu[2,,i])))
+f_obs3 <- matrix(0, 1500, 100)
+for(i in 1:1500){
+  f_obs3[i,] <- t(y$B[[1]] %*% t(t(nu[3,,i])))
 }
 f3_97_5 <- rep(0,100)
 f3_2_5 <- rep(0,100)
@@ -144,7 +264,7 @@ for(i in 1:100){
 f3_true <- rep(0,100)
 f3_true <- x$nu_true[2,] %*% t(y$B[[1]])
 
-plot(f3_true[1,], type = 'l', ylab = "function 3")
+plot(f3_true[1,], type = 'l', ylab = "function 3", ylim = c(-10,5))
 lines(f3_2_5, col = "red")
 lines(f3_97_5, col = "red")
 

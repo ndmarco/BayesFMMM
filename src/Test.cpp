@@ -2643,14 +2643,14 @@ void getparms(){
   }
 
   // Make nu matrix
-  arma::mat nu(2,8, arma::fill::randn);
+  arma::mat nu(3,8, arma::fill::randn);
   nu = 3 * nu;
 
   // Make Phi matrix
-  arma::cube Phi(2,8,3);
+  arma::cube Phi(3,8,3);
   for(int i=0; i < 3; i++)
   {
-    Phi.slice(i) = (3-i) * 0.2 * arma::randu<arma::mat>(2,8);
+    Phi.slice(i) = (3-i) * 0.2 * arma::randu<arma::mat>(3,8);
   }
   double sigma_sq = 0.005;
 
@@ -2659,10 +2659,22 @@ void getparms(){
 
 
   // Make Z matrix
-  arma::mat Z(100, 2);
-  arma::vec alpha(2, arma::fill::ones);
+  arma::mat Z(100, 3);
+  arma::vec alpha(3, arma::fill::ones);
+  arma::vec alpha_i = {100, 1, 1};
+  alpha = alpha * 0.5;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = rdirichlet(alpha).t();
+    if(i < 20){
+      Z.row(i) = rdirichlet(alpha_i).t();
+    }else if( i < 40){
+      alpha_i = {1, 100, 1};
+      Z.row(i) = rdirichlet(alpha_i).t();
+    }else if(i < 60){
+      alpha_i = {1, 1, 100};
+      Z.row(i) = rdirichlet(alpha_i).t();
+    }else{
+      Z.row(i) = rdirichlet(alpha).t();
+    }
   }
 
   //save parameters
@@ -3462,7 +3474,7 @@ Rcpp::List TestBFPMM_Nu_Z(const int tot_mcmc_iters, const double sigma_sq,
 // [[Rcpp::export]]
 Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
                            const arma::cube Z_samp, const arma::cube nu_samp,
-                           double burnin_prop){
+                           double burnin_prop, const int k){
   arma::field<arma::vec> t_obs1(100,1);
   arma::field<arma::vec> t_star1(100,1);
   int n_funct = 100;
@@ -3530,7 +3542,7 @@ Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
     y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
       arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
   }
-  arma::vec c = arma::ones(2);
+  arma::vec c = arma::ones(k);
 
   int n_nu = nu_samp.n_slices;
   arma::mat Z_est = arma::zeros(n_funct, Z_samp.n_cols);
@@ -3553,7 +3565,7 @@ Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BFPMM_Theta(y_obs, t_obs1, n_funct, 2, 8, 3, tot_mcmc_iters,
+  Rcpp::List mod1 = BFPMM_Theta(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
                                 t_star1, c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
                                 sqrt(1), sqrt(1), 1, 1, 1, 1, Z_est, nu_est);
 
@@ -3688,7 +3700,7 @@ Rcpp::List TestEstimateInitialZ_PM(const arma::mat perm_mat){
 // [[Rcpp::export]]
 Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double sigma_sq,
                                        const double beta_N_t, const int N_t, const int n_temp_trans,
-                                       const int n_trys){
+                                       const int n_trys, const int k){
   arma::field<arma::vec> t_obs1(100,1);
   arma::field<arma::vec> t_star1(100,1);
   int n_funct = 100;
@@ -3756,10 +3768,10 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
     y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
       arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
   }
-  arma::vec c = arma::ones(2);
+  arma::vec c = arma::ones(k);
 
   // start MCMC sampling
-  Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 8, 3, tot_mcmc_iters,
+  Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
                                n_temp_trans, t_star1, c, 1, 3, 2, 3, 1, 1,
                                1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1, beta_N_t,
                                N_t);
@@ -3767,7 +3779,7 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
   double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
 
   for(int i = 0; i < n_trys; i++){
-    Rcpp::List modi = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 8, 3, tot_mcmc_iters,
+    Rcpp::List modi = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
                                  n_temp_trans, t_star1, c, 1, 3, 2, 3, 1, 1,
                                  1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1, beta_N_t,
                                  N_t);
@@ -3815,7 +3827,8 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
                                       const arma::mat tau_samp,
                                       const arma::vec sigma_samp,
                                       const arma::cube chi_samp,
-                                      const double burnin_prop){
+                                      const double burnin_prop,
+                                      const int k){
     arma::field<arma::vec> t_obs1(100,1);
     arma::field<arma::vec> t_star1(100,1);
     int n_funct = 100;
@@ -3883,7 +3896,7 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
       y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
         arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
     }
-    arma::vec c = arma::ones(2);
+    arma::vec c = arma::ones(k);
 
     int n_nu = alpha_3_samp.n_elem;
 
@@ -3966,7 +3979,7 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
     }
 
     // start MCMC sampling
-    Rcpp::List mod1 = BFPMM_MTT_warm_start(y_obs, t_obs1, n_funct, 50, 2, 8, 3, tot_mcmc_iters,
+    Rcpp::List mod1 = BFPMM_MTT_warm_start(y_obs, t_obs1, n_funct, 50, k, 8, 3, tot_mcmc_iters,
                                 r_stored_iters, n_temp_trans, t_star1, c, 1, 3, 2,
                                 3, 1, 1, 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1,
                                 directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est,

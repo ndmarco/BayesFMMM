@@ -4349,18 +4349,18 @@ Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
     }
   }
 
-  Rcpp::List params = Rcpp::List::create(Rcpp::Named("nu", nu_TT),
-                                         Rcpp::Named("alpha_3", alpha_3_TT),
-                                         Rcpp::Named("y_star", y_star_TT),
-                                         Rcpp::Named("chi", chi_TT),
-                                         Rcpp::Named("pi", pi_TT),
-                                         Rcpp::Named("A", A_TT),
-                                         Rcpp::Named("delta", delta_TT),
-                                         Rcpp::Named("sigma", sigma_TT),
-                                         Rcpp::Named("tau", tau_TT),
-                                         Rcpp::Named("gamma", gamma_TT),
-                                         Rcpp::Named("Phi", Phi_TT),
-                                         Rcpp::Named("Z", Z_TT),
+  Rcpp::List params = Rcpp::List::create(Rcpp::Named("nu", nu),
+                                         Rcpp::Named("alpha_3", alpha_3),
+                                         Rcpp::Named("y_star", y_star),
+                                         Rcpp::Named("chi", chi),
+                                         Rcpp::Named("pi", pi),
+                                         Rcpp::Named("A", A),
+                                         Rcpp::Named("delta", delta),
+                                         Rcpp::Named("sigma", sigma),
+                                         Rcpp::Named("tau", tau),
+                                         Rcpp::Named("gamma", gamma),
+                                         Rcpp::Named("Phi", Phi),
+                                         Rcpp::Named("Z", Z),
                                          Rcpp::Named("loglik", loglik));
   return params;
 }

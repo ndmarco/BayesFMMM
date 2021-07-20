@@ -919,8 +919,8 @@ TestBFPMM_Nu_Z <- function(tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans
 #'
 #' @name TestBFPMM_Theta
 #' @export
-TestBFPMM_Theta <- function(tot_mcmc_iters, sigma_sq, Z_samp, nu_samp, burnin_prop) {
-    .Call('_BayesFPMM_TestBFPMM_Theta', PACKAGE = 'BayesFPMM', tot_mcmc_iters, sigma_sq, Z_samp, nu_samp, burnin_prop)
+TestBFPMM_Theta <- function(tot_mcmc_iters, sigma_sq, Z_samp, nu_samp, burnin_prop, k) {
+    .Call('_BayesFPMM_TestBFPMM_Theta', PACKAGE = 'BayesFPMM', tot_mcmc_iters, sigma_sq, Z_samp, nu_samp, burnin_prop, k)
 }
 
 #' Tests BFOC function
@@ -935,12 +935,12 @@ TestEstimateInitialZ_PM <- function(perm_mat) {
 #'
 #' @name TestBFPMM_Nu_Z
 #' @export
-TestBFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans, n_trys) {
-    .Call('_BayesFPMM_TestBFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans, n_trys)
+TestBFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans, n_trys, k) {
+    .Call('_BayesFPMM_TestBFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans, n_trys, k)
 }
 
-TestBFPMM_MTT_warm_start <- function(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop) {
-    .Call('_BayesFPMM_TestBFPMM_MTT_warm_start', PACKAGE = 'BayesFPMM', beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop)
+TestBFPMM_MTT_warm_start <- function(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k) {
+    .Call('_BayesFPMM_TestBFPMM_MTT_warm_start', PACKAGE = 'BayesFPMM', beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k)
 }
 
 #' computes the log pdf of a_1j
