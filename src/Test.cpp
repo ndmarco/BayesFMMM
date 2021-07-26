@@ -2608,10 +2608,10 @@ Rcpp::List TestUpdateYStarTempered(const double beta){
 //' @name getparams
 //' @export
 // [[Rcpp::export]]
-void getparms(){
-  arma::field<arma::vec> t_obs1(100,1);
-  arma::field<arma::vec> t_star1(100,1);
-  int n_funct = 100;
+void getparms(int n_funct){
+  arma::field<arma::vec> t_obs1(n_funct,1);
+  arma::field<arma::vec> t_star1(n_funct,1);
+
   for(int i = 0; i < n_funct; i++){
     t_obs1(i,0) =  arma::regspace(0, 10, 990);
     t_star1(i,0) = arma::regspace(0, 50, 950);
@@ -2630,12 +2630,12 @@ void getparms(){
   // Get Basis matrix (100 x 8)
   arma::mat bspline_mat {bspline.basis(true)};
   // Make B_obs
-  arma::field<arma::mat> B_obs(100,1);
+  arma::field<arma::mat> B_obs(n_funct,1);
 
-  arma::field<arma::mat> B_star(100,1);
+  arma::field<arma::mat> B_star(n_funct,1);
 
 
-  for(int i = 0; i < 100; i++)
+  for(int i = 0; i < n_funct; i++)
   {
     B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
     B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
@@ -2655,21 +2655,21 @@ void getparms(){
   double sigma_sq = 0.005;
 
   // Make chi matrix
-  arma::mat chi(100, 3, arma::fill::randn);
+  arma::mat chi(n_funct, 3, arma::fill::randn);
 
 
   // Make Z matrix
-  arma::mat Z(100, 3);
+  arma::mat Z(n_funct, 3);
   arma::vec alpha(3, arma::fill::ones);
   arma::vec alpha_i = {100, 1, 1};
   alpha = alpha * 0.5;
   for(int i = 0; i < Z.n_rows; i++){
-    if(i < 20){
+    if(i < n_funct * 0.2){
       Z.row(i) = rdirichlet(alpha_i).t();
-    }else if( i < 40){
+    }else if( i <  n_funct * 0.4){
       alpha_i = {1, 100, 1};
       Z.row(i) = rdirichlet(alpha_i).t();
-    }else if(i < 60){
+    }else if(i <  n_funct * 0.6){
       alpha_i = {1, 1, 100};
       Z.row(i) = rdirichlet(alpha_i).t();
     }else{
@@ -3475,9 +3475,14 @@ Rcpp::List TestBFPMM_Nu_Z(const int tot_mcmc_iters, const double sigma_sq,
 Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
                            const arma::cube Z_samp, const arma::cube nu_samp,
                            double burnin_prop, const int k){
-  arma::field<arma::vec> t_obs1(100,1);
-  arma::field<arma::vec> t_star1(100,1);
-  int n_funct = 100;
+  // Make Z matrix
+  arma::mat Z;
+  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");\
+  int n_funct = Z.n_rows;
+
+  arma::field<arma::vec> t_obs1(n_funct,1);
+  arma::field<arma::vec> t_star1(n_funct,1);
+
   for(int i = 0; i < n_funct; i++){
     t_obs1(i,0) =  arma::regspace(0, 10, 990);
     //t_star1(i,0) = arma::regspace(0, 50, 950);
@@ -3496,12 +3501,12 @@ Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
   // Get Basis matrix (100 x 8)
   arma::mat bspline_mat { bspline.basis(true)};
   // Make B_obs
-  arma::field<arma::mat> B_obs(100,1);
+  arma::field<arma::mat> B_obs(n_funct,1);
 
-  arma::field<arma::mat> B_star(100,1);
+  arma::field<arma::mat> B_star(n_funct,1);
 
 
-  for(int i = 0; i < 100; i++)
+  for(int i = 0; i < n_funct; i++)
   {
     B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
     B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
@@ -3523,15 +3528,11 @@ Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
   chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
 
 
-  // Make Z matrix
-  arma::mat Z;
-  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
-
-  arma::field<arma::vec> y_obs(100, 1);
-  arma::field<arma::mat> y_star(100, 1);
+  arma::field<arma::vec> y_obs(n_funct, 1);
+  arma::field<arma::mat> y_star(n_funct, 1);
   arma::vec mean = arma::zeros(8);
 
-  for(int j = 0; j < 100; j++){
+  for(int j = 0; j < n_funct; j++){
     mean = arma::zeros(8);
     for(int l = 0; l < nu.n_rows; l++){
       mean = mean + Z(j,l) * nu.row(l).t();
@@ -3588,6 +3589,8 @@ Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
 //' @export
 // [[Rcpp::export]]
 Rcpp::List TestEstimateInitialZ_PM(const arma::mat perm_mat){
+
+
   arma::field<arma::vec> t_obs1(100,1);
   arma::field<arma::vec> t_star1(100,1);
   int n_funct = 100;
@@ -3701,9 +3704,14 @@ Rcpp::List TestEstimateInitialZ_PM(const arma::mat perm_mat){
 Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double sigma_sq,
                                        const double beta_N_t, const int N_t, const int n_temp_trans,
                                        const int n_trys, const int k){
-  arma::field<arma::vec> t_obs1(100,1);
-  arma::field<arma::vec> t_star1(100,1);
-  int n_funct = 100;
+  // Make Z matrix
+  arma::mat Z;
+  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");\
+  int n_funct = Z.n_rows;
+
+  arma::field<arma::vec> t_obs1(n_funct,1);
+  arma::field<arma::vec> t_star1(n_funct,1);
+
   for(int i = 0; i < n_funct; i++){
     t_obs1(i,0) =  arma::regspace(0, 10, 990);
     //t_star1(i,0) = arma::regspace(0, 50, 950);
@@ -3722,12 +3730,12 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
   // Get Basis matrix (100 x 8)
   arma::mat bspline_mat { bspline.basis(true)};
   // Make B_obs
-  arma::field<arma::mat> B_obs(100,1);
+  arma::field<arma::mat> B_obs(n_funct,1);
 
-  arma::field<arma::mat> B_star(100,1);
+  arma::field<arma::mat> B_star(n_funct,1);
 
 
-  for(int i = 0; i < 100; i++)
+  for(int i = 0; i < n_funct; i++)
   {
     B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
     B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
@@ -3749,15 +3757,11 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
   chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
 
 
-  // Make Z matrix
-  arma::mat Z;
-  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
-
-  arma::field<arma::vec> y_obs(100, 1);
-  arma::field<arma::mat> y_star(100, 1);
+  arma::field<arma::vec> y_obs(n_funct, 1);
+  arma::field<arma::mat> y_star(n_funct, 1);
   arma::vec mean = arma::zeros(8);
 
-  for(int j = 0; j < 100; j++){
+  for(int j = 0; j < n_funct; j++){
     mean = arma::zeros(8);
     for(int l = 0; l < nu.n_rows; l++){
       mean = mean + Z(j,l) * nu.row(l).t();
@@ -3772,7 +3776,7 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
 
   // start MCMC sampling
   Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
-                               n_temp_trans, t_star1, c, 1, 3, 2, 3, 1, 1,
+                               n_temp_trans, t_star1, c, 500, 3, 2, 3, 1, 1,
                                1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1, beta_N_t,
                                N_t);
   arma::vec ph = mod1["loglik"];
@@ -3780,7 +3784,7 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
 
   for(int i = 0; i < n_trys; i++){
     Rcpp::List modi = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
-                                 n_temp_trans, t_star1, c, 1, 3, 2, 3, 1, 1,
+                                 n_temp_trans, t_star1, c, 500, 3, 2, 3, 1, 1,
                                  1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1, beta_N_t,
                                  N_t);
     arma::vec ph1 = modi["loglik"];
@@ -3829,9 +3833,15 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
                                       const arma::cube chi_samp,
                                       const double burnin_prop,
                                       const int k){
-    arma::field<arma::vec> t_obs1(100,1);
-    arma::field<arma::vec> t_star1(100,1);
-    int n_funct = 100;
+
+    // Make Z matrix
+    arma::mat Z;
+    Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");\
+    int n_funct = Z.n_rows;
+
+    arma::field<arma::vec> t_obs1(n_funct,1);
+    arma::field<arma::vec> t_star1(n_funct,1);
+
     for(int i = 0; i < n_funct; i++){
       t_obs1(i,0) =  arma::regspace(0, 10, 990);
       //t_star1(i,0) = arma::regspace(0, 50, 950);
@@ -3850,12 +3860,12 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
     // Get Basis matrix (100 x 8)
     arma::mat bspline_mat { bspline.basis(true)};
     // Make B_obs
-    arma::field<arma::mat> B_obs(100,1);
+    arma::field<arma::mat> B_obs(n_funct,1);
 
-    arma::field<arma::mat> B_star(100,1);
+    arma::field<arma::mat> B_star(n_funct,1);
 
 
-    for(int i = 0; i < 100; i++)
+    for(int i = 0; i < n_funct; i++)
     {
       B_obs(i,0) = bspline_mat.submat(0, 0, t_obs.n_elem - 1, 7);
       B_star(i,0) =  bspline_mat.submat(t_obs.n_elem, 0,
@@ -3876,16 +3886,11 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
     arma::mat chi;
     chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
 
-
-    // Make Z matrix
-    arma::mat Z;
-    Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
-
-    arma::field<arma::vec> y_obs(100, 1);
-    arma::field<arma::mat> y_star(100, 1);
+    arma::field<arma::vec> y_obs(n_funct, 1);
+    arma::field<arma::mat> y_star(n_funct, 1);
     arma::vec mean = arma::zeros(8);
 
-    for(int j = 0; j < 100; j++){
+    for(int j = 0; j < n_funct; j++){
       mean = arma::zeros(8);
       for(int l = 0; l < nu.n_rows; l++){
         mean = mean + Z(j,l) * nu.row(l).t();

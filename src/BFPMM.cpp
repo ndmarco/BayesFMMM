@@ -2320,7 +2320,7 @@ Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
   pi.col(0) = rdirichlet(c);
   arma::vec sigma(r_stored_iters, arma::fill::ones);
   arma::vec Z_ph = arma::zeros(K);
-  arma::vec alpha_3 = arma::zeros(r_stored_iters);
+  arma::vec alpha_3 = arma::ones(r_stored_iters);
   arma::cube Z = arma::randi<arma::cube>(n_funct, K, r_stored_iters,
                                          arma::distr_param(0,1));
 
@@ -2628,7 +2628,7 @@ Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs,
   pi.col(0) = rdirichlet(c);
   arma::vec sigma(r_stored_iters, arma::fill::ones);
   arma::vec Z_ph = arma::zeros(K);
-  arma::vec alpha_3 = arma::zeros(r_stored_iters);
+  arma::vec alpha_3 = arma::ones(r_stored_iters);
   arma::cube Z = arma::randi<arma::cube>(n_funct, K, r_stored_iters,
                                          arma::distr_param(0,1));
 
@@ -2921,7 +2921,7 @@ Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
   pi.col(0) = rdirichlet(c);
   arma::vec sigma(r_stored_iters, arma::fill::ones);
   arma::vec Z_ph = arma::zeros(K);
-  arma::vec alpha_3 = arma::zeros(r_stored_iters);
+  arma::vec alpha_3 = arma::ones(r_stored_iters);
   arma::cube Z = arma::randi<arma::cube>(n_funct, K, r_stored_iters,
                                          arma::distr_param(0,1));
 
@@ -3404,7 +3404,7 @@ Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
   pi.col(0) = rdirichlet(c);
   arma::vec sigma(tot_mcmc_iters, arma::fill::ones);
   arma::vec Z_ph = arma::zeros(K);
-  arma::vec alpha_3 = arma::zeros(tot_mcmc_iters);
+  arma::vec alpha_3 = arma::ones(tot_mcmc_iters);
   arma::cube Z = arma::randi<arma::cube>(n_funct, K, tot_mcmc_iters,
                                          arma::distr_param(0,1));
 
@@ -3751,7 +3751,7 @@ Rcpp::List BFPMM_Theta(const arma::field<arma::vec>& y_obs,
   pi.col(0) = rdirichlet(c);
   arma::vec sigma(tot_mcmc_iters, arma::fill::ones);
   arma::vec Z_ph = arma::zeros(K);
-  arma::vec alpha_3 = arma::zeros(tot_mcmc_iters);
+  arma::vec alpha_3 = arma::ones(tot_mcmc_iters);
   arma::cube Z = arma::randi<arma::cube>(n_funct, K, tot_mcmc_iters,
                                          arma::distr_param(0,1));
 
@@ -3982,7 +3982,7 @@ Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
   pi.col(0) = rdirichlet(c);
   arma::vec sigma(r_stored_iters, arma::fill::ones);
   arma::vec Z_ph = arma::zeros(K);
-  arma::vec alpha_3 = arma::zeros(r_stored_iters);
+  arma::vec alpha_3 = arma::ones(r_stored_iters);
   arma::cube Z = arma::randi<arma::cube>(n_funct, K, r_stored_iters,
                                          arma::distr_param(0,1));
 

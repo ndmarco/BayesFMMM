@@ -7,11 +7,13 @@ library(BayesFPMM)
 ##
 set.seed(1)
 for(i in 1:10){
-  x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 100, 5)
-  y <- TestBFPMM_Theta(5000, 0.001, x$Z, x$nu, 0.8, 5)
+  x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 100, 2)
+  y <- TestBFPMM_Theta(5000, 0.001, x$Z, x$nu, 0.8, 2)
   #dir <- paste("c:\\Projects\\Simulation\\High_Variance\\Trace", as.character(i), "\\", sep = "")
-  dir <- "C:\\Projects\\Simulation\\Optimal_K\\5_clusters\\"
-  z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 200000, 10000, dir, 0.001, x$Z, x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu, x$tau, y$sigma, y$chi, 0.8, 5)
+  dir <- "C:\\Projects\\Simulation\\Optimal_K\\2_clusters\\"
+  z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 500000, 10000, dir, 0.001, x$Z,
+                                x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu,
+                                x$tau, y$sigma, y$chi, 0.8, 2)
   saveRDS(z, paste(dir, "x_results.RDS", sep = ""))
 }
 
@@ -210,8 +212,8 @@ for(k in 1:100){
 nu <- nu[,,1001:4000]
 y <- GetStuff(0.001)
 x <- readRDS("C:\\Projects\\Simulation\\Optimal_K\\3_clusters\\x_results.RDS")
-f_obs1 <- matrix(0, 3000, 100)
-for(i in 1:3000){
+f_obs1 <- matrix(0, 1500, 100)
+for(i in 1:1500){
   f_obs1[i,] <- t(y$B[[1]] %*% t(t(nu[1,,i])))
 }
 f1_97_5 <- rep(0,100)
@@ -242,7 +244,7 @@ for(i in 1:100){
   f2_97_5[i] <- z[2]
 }
 f2_true <- rep(0,100)
-f2_true <- x$nu_true[1,] %*% t(y$B[[1]])
+f2_true <- x$nu_true[2,] %*% t(y$B[[1]])
 
 plot(f2_true[1,], type = 'l', ylab = "function 2")
 lines(f2_2_5, col = "red")
@@ -262,9 +264,9 @@ for(i in 1:100){
   f3_97_5[i] <- z[2]
 }
 f3_true <- rep(0,100)
-f3_true <- x$nu_true[2,] %*% t(y$B[[1]])
+f3_true <- x$nu_true[1,] %*% t(y$B[[1]])
 
-plot(f3_true[1,], type = 'l', ylab = "function 3", ylim = c(-10,5))
+plot(f3_true[1,], type = 'l', ylab = "function 3")
 lines(f3_2_5, col = "red")
 lines(f3_97_5, col = "red")
 

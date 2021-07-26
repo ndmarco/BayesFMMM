@@ -839,8 +839,8 @@ TestUpdateYStarTempered <- function(beta) {
 #'
 #' @name getparams
 #' @export
-getparms <- function() {
-    invisible(.Call('_BayesFPMM_getparms', PACKAGE = 'BayesFPMM'))
+getparms <- function(n_funct) {
+    invisible(.Call('_BayesFPMM_getparms', PACKAGE = 'BayesFPMM', n_funct))
 }
 
 #' Tests updating Z using partial membership model

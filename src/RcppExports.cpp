@@ -945,11 +945,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // getparms
-void getparms();
-RcppExport SEXP _BayesFPMM_getparms() {
+void getparms(int n_funct);
+RcppExport SEXP _BayesFPMM_getparms(SEXP n_functSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    getparms();
+    Rcpp::traits::input_parameter< int >::type n_funct(n_functSEXP);
+    getparms(n_funct);
     return R_NilValue;
 END_RCPP
 }
@@ -1209,7 +1210,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_TestUpdateSigmaTempered", (DL_FUNC) &_BayesFPMM_TestUpdateSigmaTempered, 1},
     {"_BayesFPMM_TestUpdateChiTempered", (DL_FUNC) &_BayesFPMM_TestUpdateChiTempered, 1},
     {"_BayesFPMM_TestUpdateYStarTempered", (DL_FUNC) &_BayesFPMM_TestUpdateYStarTempered, 1},
-    {"_BayesFPMM_getparms", (DL_FUNC) &_BayesFPMM_getparms, 0},
+    {"_BayesFPMM_getparms", (DL_FUNC) &_BayesFPMM_getparms, 1},
     {"_BayesFPMM_TestUpdateZ_PM", (DL_FUNC) &_BayesFPMM_TestUpdateZ_PM, 0},
     {"_BayesFPMM_TestUpdatepi_PM", (DL_FUNC) &_BayesFPMM_TestUpdatepi_PM, 0},
     {"_BayesFPMM_TestUpdatealpha3_PM", (DL_FUNC) &_BayesFPMM_TestUpdatealpha3_PM, 0},
