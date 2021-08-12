@@ -5,7 +5,7 @@
 \alias{getparms}
 \title{simulates parameters}
 \usage{
-getparms()
+getparms(n_funct)
 }
 \description{
 simulates parameters

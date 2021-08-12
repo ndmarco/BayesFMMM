@@ -4,7 +4,7 @@
 \alias{LabelSwitch}
 \title{Corrects for possible label switching}
 \usage{
-LabelSwitch(Z_ref, Z, nu, pi, gamma, Phi, tau, perm_mat)
+LabelSwitch(Z_ref, Z, perm_mat)
 }
 \description{
 Corrects for possible label switching

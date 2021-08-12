@@ -2,10 +2,15 @@
 % Please edit documentation in R/RcppExports.R
 \name{TestEstimateBFPMMTempladder}
 \alias{TestEstimateBFPMMTempladder}
+\alias{getLikelihood}
 \title{Tests BFOC function}
 \usage{
 TestEstimateBFPMMTempladder(beta_N_t, N_t)
+
+getLikelihood()
 }
 \description{
+Tests BFOC function
+
 Tests BFOC function
 }

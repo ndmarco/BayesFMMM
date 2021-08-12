@@ -3,7 +3,7 @@
 
 #include <RcppArmadillo.h>
 #include <cmath>
-#include "UpdatePi.h"
+#include "UpdatePi.H"
 
 
 void updateAlpha3(const arma::vec& pi,

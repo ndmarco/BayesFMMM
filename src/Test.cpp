@@ -3985,7 +3985,7 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
 
     // start MCMC sampling
     Rcpp::List mod1 = BFPMM_MTT_warm_start(y_obs, t_obs1, n_funct, 50, k, 8, 3, tot_mcmc_iters,
-                                r_stored_iters, n_temp_trans, t_star1, c, 1, 3, 2,
+                                r_stored_iters, n_temp_trans, t_star1, c, 500, 3, 2,
                                 3, 1, 1, 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1,
                                 directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est,
                                 delta_est, gamma_est, Phi_est, A_est, nu_est,
