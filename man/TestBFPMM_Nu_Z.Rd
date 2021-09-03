@@ -14,7 +14,8 @@ TestBFPMM_Nu_Z_multiple_try(
   N_t,
   n_temp_trans,
   n_trys,
-  k
+  k,
+  dir
 )
 }
 \description{

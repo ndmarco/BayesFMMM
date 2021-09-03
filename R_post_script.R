@@ -6,14 +6,15 @@ library(BayesFPMM)
 ## Run SImulations
 ##
 set.seed(1)
-for(i in 1:10){
-  x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 100, 2)
-  y <- TestBFPMM_Theta(5000, 0.001, x$Z, x$nu, 0.8, 2)
-  #dir <- paste("c:\\Projects\\Simulation\\High_Variance\\Trace", as.character(i), "\\", sep = "")
-  dir <- "C:\\Projects\\Simulation\\Optimal_K\\2_clusters\\"
+for(i in 9:10){
+  data_dir <- "c:\\Projects\\Simulation\\Optimal_K\\data\\"
+  x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 100, 5, data_dir)
+  y <- TestBFPMM_Theta(5000, 0.001, x$Z, x$nu, 0.8, 5, data_dir)
+  dir <- paste("c:\\Projects\\Simulation\\Optimal_K\\5_clusters\\trace", as.character(i), "\\", sep = "")
+  #dir <- "C:\\Projects\\Simulation\\Optimal_K\\2_clusters\\"
   z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 500000, 10000, dir, 0.001, x$Z,
                                 x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu,
-                                x$tau, y$sigma, y$chi, 0.8, 2)
+                                x$tau, y$sigma, y$chi, 0.8, 5, data_dir)
   saveRDS(z, paste(dir, "x_results.RDS", sep = ""))
 }
 

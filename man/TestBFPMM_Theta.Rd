@@ -4,7 +4,7 @@
 \alias{TestBFPMM_Theta}
 \title{Tests the full Bayesian Functional Partial Membership Model}
 \usage{
-TestBFPMM_Theta(tot_mcmc_iters, sigma_sq, Z_samp, nu_samp, burnin_prop, k)
+TestBFPMM_Theta(tot_mcmc_iters, sigma_sq, Z_samp, nu_samp, burnin_prop, k, dir)
 }
 \description{
 Tests the full Bayesian Functional Partial Membership Model

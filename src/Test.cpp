@@ -1191,7 +1191,7 @@ arma::field<arma::cube> TestReadField(std::string directory){
 //' @name GetStuff
 //' @export
 // [[Rcpp::export]]
-Rcpp::List GetStuff(double sigma_sq){
+Rcpp::List GetStuff(double sigma_sq, const std::string dir){
   arma::field<arma::vec> t_obs1(100,1);
   arma::field<arma::vec> t_star1(100,1);
   int n_funct = 100;
@@ -1226,22 +1226,22 @@ Rcpp::List GetStuff(double sigma_sq){
   }
 
   arma::mat nu;
-  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+  nu.load(dir + "nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+  Phi.load(dir + "Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+  chi.load(dir + "chi.txt");
 
 
   // Make Z matrix
   arma::mat Z;
-  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
+  Z.load(dir + "Z.txt");
 
   arma::field<arma::vec> y_obs(100, 1);
   arma::field<arma::mat> y_star(100, 1);
@@ -2609,6 +2609,7 @@ Rcpp::List TestUpdateYStarTempered(const double beta){
 //' @export
 // [[Rcpp::export]]
 void getparms(int n_funct){
+  int k = 2;
   arma::field<arma::vec> t_obs1(n_funct,1);
   arma::field<arma::vec> t_star1(n_funct,1);
 
@@ -2643,14 +2644,14 @@ void getparms(int n_funct){
   }
 
   // Make nu matrix
-  arma::mat nu(3,8, arma::fill::randn);
+  arma::mat nu(k,8, arma::fill::randn);
   nu = 3 * nu;
 
   // Make Phi matrix
-  arma::cube Phi(3,8,3);
+  arma::cube Phi(k,8,3);
   for(int i=0; i < 3; i++)
   {
-    Phi.slice(i) = (3-i) * 0.2 * arma::randu<arma::mat>(3,8);
+    Phi.slice(i) = (3-i) * 0.1 * arma::randn<arma::mat>(k,8);
   }
   double sigma_sq = 0.005;
 
@@ -2659,19 +2660,19 @@ void getparms(int n_funct){
 
 
   // Make Z matrix
-  arma::mat Z(n_funct, 3);
-  arma::vec alpha(3, arma::fill::ones);
-  arma::vec alpha_i = {100, 1, 1};
+  arma::mat Z(n_funct, k);
+  arma::vec alpha(k, arma::fill::ones);
+  arma::vec alpha_i = {100, 1};
   alpha = alpha * 0.5;
   for(int i = 0; i < Z.n_rows; i++){
     if(i < n_funct * 0.2){
       Z.row(i) = rdirichlet(alpha_i).t();
     }else if( i <  n_funct * 0.4){
-      alpha_i = {1, 100, 1};
+      alpha_i = {1, 100};
       Z.row(i) = rdirichlet(alpha_i).t();
-    }else if(i <  n_funct * 0.6){
-      alpha_i = {1, 1, 100};
-      Z.row(i) = rdirichlet(alpha_i).t();
+    // }else if(i <  n_funct * 0.6){
+    //   alpha_i = {1, 1, 100};
+    //   Z.row(i) = rdirichlet(alpha_i).t();
     }else{
       Z.row(i) = rdirichlet(alpha).t();
     }
@@ -3474,10 +3475,10 @@ Rcpp::List TestBFPMM_Nu_Z(const int tot_mcmc_iters, const double sigma_sq,
 // [[Rcpp::export]]
 Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
                            const arma::cube Z_samp, const arma::cube nu_samp,
-                           double burnin_prop, const int k){
+                           double burnin_prop, const int k,const std::string dir){
   // Make Z matrix
   arma::mat Z;
-  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");\
+  Z.load(dir + "Z.txt");\
   int n_funct = Z.n_rows;
 
   arma::field<arma::vec> t_obs1(n_funct,1);
@@ -3515,17 +3516,17 @@ Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
 
   // Make nu matrix
   arma::mat nu;
-  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+  nu.load(dir + "nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+  Phi.load(dir + "Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+  chi.load(dir + "chi.txt");
 
 
   arma::field<arma::vec> y_obs(n_funct, 1);
@@ -3703,10 +3704,10 @@ Rcpp::List TestEstimateInitialZ_PM(const arma::mat perm_mat){
 // [[Rcpp::export]]
 Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double sigma_sq,
                                        const double beta_N_t, const int N_t, const int n_temp_trans,
-                                       const int n_trys, const int k){
+                                       const int n_trys, const int k, const std::string dir){
   // Make Z matrix
   arma::mat Z;
-  Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");\
+  Z.load(dir + "Z.txt");\
   int n_funct = Z.n_rows;
 
   arma::field<arma::vec> t_obs1(n_funct,1);
@@ -3744,17 +3745,17 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
 
   // Make nu matrix
   arma::mat nu;
-  nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+  nu.load(dir + "nu.txt");
 
 
   // Make Phi matrix
   arma::cube Phi;
-  Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+  Phi.load(dir + "Phi.txt");
   // double sigma_sq = 0.005;
 
   // Make chi matrix
   arma::mat chi;
-  chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+  chi.load(dir + "chi.txt");
 
 
   arma::field<arma::vec> y_obs(n_funct, 1);
@@ -3832,11 +3833,12 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
                                       const arma::vec sigma_samp,
                                       const arma::cube chi_samp,
                                       const double burnin_prop,
-                                      const int k){
+                                      const int k,
+                                      const std::string dir){
 
     // Make Z matrix
     arma::mat Z;
-    Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");\
+    Z.load(dir + "Z.txt");\
     int n_funct = Z.n_rows;
 
     arma::field<arma::vec> t_obs1(n_funct,1);
@@ -3874,17 +3876,17 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
 
     // Make nu matrix
     arma::mat nu;
-    nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+    nu.load(dir + "nu.txt");
 
 
     // Make Phi matrix
     arma::cube Phi;
-    Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+    Phi.load(dir + "Phi.txt");
     // double sigma_sq = 0.005;
 
     // Make chi matrix
     arma::mat chi;
-    chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+    chi.load(dir + "chi.txt");
 
     arma::field<arma::vec> y_obs(n_funct, 1);
     arma::field<arma::mat> y_star(n_funct, 1);
