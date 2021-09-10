@@ -3569,7 +3569,7 @@ Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
   // start MCMC sampling
   Rcpp::List mod1 = BFPMM_Theta(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
                                 t_star1, c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
-                                sqrt(1), sqrt(1), 1, 1, 1, 1, Z_est, nu_est);
+                                sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est, nu_est);
 
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("chi", mod1["chi"]),
                                         Rcpp::Named("A", mod1["A"]),
@@ -3777,16 +3777,16 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
 
   // start MCMC sampling
   Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
-                               n_temp_trans, t_star1, c, 500, 3, 2, 3, 1, 1,
-                               1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1, beta_N_t,
+                               n_temp_trans, t_star1, c, 800, 3, 2, 3, 1, 1,
+                               1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1, beta_N_t,
                                N_t);
   arma::vec ph = mod1["loglik"];
   double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
 
   for(int i = 0; i < n_trys; i++){
     Rcpp::List modi = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
-                                 n_temp_trans, t_star1, c, 500, 3, 2, 3, 1, 1,
-                                 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1, beta_N_t,
+                                 n_temp_trans, t_star1, c, 800, 3, 2, 3, 1, 1,
+                                 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1, beta_N_t,
                                  N_t);
     arma::vec ph1 = modi["loglik"];
     if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
@@ -3987,8 +3987,8 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
 
     // start MCMC sampling
     Rcpp::List mod1 = BFPMM_MTT_warm_start(y_obs, t_obs1, n_funct, 50, k, 8, 3, tot_mcmc_iters,
-                                r_stored_iters, n_temp_trans, t_star1, c, 500, 3, 2,
-                                3, 1, 1, 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1,
+                                r_stored_iters, n_temp_trans, t_star1, c, 800, 3, 2,
+                                3, 1, 1, 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1,
                                 directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est,
                                 delta_est, gamma_est, Phi_est, A_est, nu_est,
                                  tau_est, sigma_est, chi_est);

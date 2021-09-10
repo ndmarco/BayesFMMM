@@ -597,6 +597,32 @@ LabelSwitch <- function(Z_ref, Z, perm_mat) {
     .Call('_BayesFPMM_LabelSwitch', PACKAGE = 'BayesFPMM', Z_ref, Z, perm_mat)
 }
 
+#' Calculates the Pointwise credible interval for the mean
+#'
+#' @name GetMeanCI_Pw
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param time Vector containing time points of interest
+#' @param k Int containing the cluster group of which you want to get the credible interval for
+#' @return CI list containing the 97.5th , 50th, and 2.5th pointwise functions
+#' @export
+GetMeanCI_PW <- function(dir, n_files, time, k) {
+    .Call('_BayesFPMM_GetMeanCI_PW', PACKAGE = 'BayesFPMM', dir, n_files, time, k)
+}
+
+#' Calculates the simultaneous credible interval for the mean
+#'
+#' @name GetMeanCI_S
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param time Vector containing time points of interest
+#' @param k Int containing the cluster group of which you want to get the credible interval for
+#' @return CI list containing the 97.5th , 50th, and 2.5th simultaneous functions
+#' @export
+GetMeanCI_S <- function(dir, n_files, time, k) {
+    .Call('_BayesFPMM_GetMeanCI_S', PACKAGE = 'BayesFPMM', dir, n_files, time, k)
+}
+
 #' Tests updating Z
 #'
 #' @name TestUpdateZ

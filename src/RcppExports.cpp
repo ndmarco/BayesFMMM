@@ -606,6 +606,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// GetMeanCI_PW
+Rcpp::List GetMeanCI_PW(const std::string dir, const int n_files, const arma::vec time, const int k);
+RcppExport SEXP _BayesFPMM_GetMeanCI_PW(SEXP dirSEXP, SEXP n_filesSEXP, SEXP timeSEXP, SEXP kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< const int >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(GetMeanCI_PW(dir, n_files, time, k));
+    return rcpp_result_gen;
+END_RCPP
+}
+// GetMeanCI_S
+Rcpp::List GetMeanCI_S(const std::string dir, const int n_files, const arma::vec time, const int k);
+RcppExport SEXP _BayesFPMM_GetMeanCI_S(SEXP dirSEXP, SEXP n_filesSEXP, SEXP timeSEXP, SEXP kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< const int >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(GetMeanCI_S(dir, n_files, time, k));
+    return rcpp_result_gen;
+END_RCPP
+}
 // TestUpdateZ
 Rcpp::List TestUpdateZ();
 RcppExport SEXP _BayesFPMM_TestUpdateZ() {
@@ -1184,6 +1212,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_calc_lB", (DL_FUNC) &_BayesFPMM_calc_lB, 1},
     {"_BayesFPMM_PhiChiInitialState", (DL_FUNC) &_BayesFPMM_PhiChiInitialState, 25},
     {"_BayesFPMM_LabelSwitch", (DL_FUNC) &_BayesFPMM_LabelSwitch, 3},
+    {"_BayesFPMM_GetMeanCI_PW", (DL_FUNC) &_BayesFPMM_GetMeanCI_PW, 4},
+    {"_BayesFPMM_GetMeanCI_S", (DL_FUNC) &_BayesFPMM_GetMeanCI_S, 4},
     {"_BayesFPMM_TestUpdateZ", (DL_FUNC) &_BayesFPMM_TestUpdateZ, 0},
     {"_BayesFPMM_TestUpdatePi", (DL_FUNC) &_BayesFPMM_TestUpdatePi, 0},
     {"_BayesFPMM_TestUpdatePhi", (DL_FUNC) &_BayesFPMM_TestUpdatePhi, 0},
