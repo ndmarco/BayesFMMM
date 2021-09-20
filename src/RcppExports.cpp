@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // BFOC
 Rcpp::List BFOC(const arma::field<arma::vec> y_obs, const arma::field<arma::vec> t_obs, const double n_funct, const int K, const int P, const int M, const int tot_mcmc_iters, const arma::field<arma::vec> t_star, const double nu_1, const double rho, const double alpha_3, const double alpha1l, const double alpha2l, const double beta1l, const double beta2l, const double var_epsilon1, const double var_epsilon2, const double alpha, const double beta, const double alpha_0, const double beta_0);
 RcppExport SEXP _BayesFPMM_BFOC(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP t_starSEXP, SEXP nu_1SEXP, SEXP rhoSEXP, SEXP alpha_3SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP) {

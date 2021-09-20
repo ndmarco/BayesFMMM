@@ -6,11 +6,11 @@ library(BayesFPMM)
 ## Run SImulations
 ##
 set.seed(1)
-for(i in 8:10){
-  data_dir <- "c:\\Projects\\Simulation\\3_cluster\\data\\"
+for(i in 57:60){
+  data_dir <- "/Users/nicholasmarco/Projects/Simulation/2_cluster/data/"
   x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 200, 2, data_dir)
   y <- TestBFPMM_Theta(5000, 0.001, x$Z, x$nu, 0.8, 2, data_dir)
-  dir <- paste("c:\\Projects\\Simulation\\2_cluster\\trace", as.character(i), "\\", sep = "")
+  dir <- paste("c/Users/nicholasmarco/Projects/Simulation/2_cluster/trace", as.character(i), "/", sep = "")
   #dir <- "C:\\Projects\\Simulation\\Optimal_K\\2_clusters\\"
   z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 500000, 10000, dir, 0.001, x$Z,
                                 x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu,
