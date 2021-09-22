@@ -487,8 +487,8 @@ Rcpp::List TestUpdateNu(){
   for(int i = 0; i < 100; i++){
     updateNu(y_obs, y_star, B_obs, B_star, tau, Phi, Z, chi, sigma_sq, i, 100,
              P, b_1, B_1, Nu_samp);
-    log_lik(i) = calcLikelihood(y_obs, y_star, B_obs, B_star, Nu_samp.slice(i),
-            Phi, Z, chi,i, sigma_sq);
+    log_lik(i) = calcLikelihood(y_obs, B_obs, Nu_samp.slice(i),
+            Phi, Z, chi, sigma_sq);
   }
   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("nu_samp", Nu_samp),
                                       Rcpp::Named("nu", nu),
@@ -2308,8 +2308,8 @@ Rcpp::List TestUpdateNuTempered(const double beta){
   for(int i = 0; i < 100; i++){
     updateNuTempered(beta, y_obs, y_star, B_obs, B_star, tau, Phi, Z, chi, sigma_sq, i, 100,
              P, b_1, B_1, Nu_samp);
-    log_lik(i) = calcLikelihood(y_obs, y_star, B_obs, B_star, Nu_samp.slice(i),
-            Phi, Z, chi,i, sigma_sq);
+    log_lik(i) = calcLikelihood(y_obs, B_obs, Nu_samp.slice(i),
+            Phi, Z, chi, sigma_sq);
   }
   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("nu_samp", Nu_samp),
                                       Rcpp::Named("nu", nu),
@@ -3362,8 +3362,8 @@ double getLikelihood(){
     // }
   }
   chi = arma::zeros(100, 3);
-  double likelihood = calcLikelihood(y_obs, y_star, B_obs, B_star, nu,
-                 Phi, Z, chi, 0, sigma_sq);
+  double likelihood = calcLikelihood(y_obs, B_obs, nu,
+                 Phi, Z, chi, sigma_sq);
 
   return likelihood;
 }

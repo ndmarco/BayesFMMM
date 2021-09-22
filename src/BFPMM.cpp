@@ -166,8 +166,8 @@ Rcpp::List BFOC(const arma::field<arma::vec> y_obs,
     //             sigma(i), i, tot_mcmc_iters, y_star);
 
     // Calculate log likelihood
-    loglik(i) =  calcLikelihood(y_obs, y_star, B_obs, B_star, nu.slice(i),
-           Phi(i,0), Z.slice(i), chi.slice(i),i, sigma(i));
+    loglik(i) =  calcLikelihood(y_obs, B_obs, nu.slice(i),
+           Phi(i,0), Z.slice(i), chi.slice(i), sigma(i));
     if(((i+1) % 20) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
       Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec(i-19, i)) << "\n";
@@ -343,8 +343,8 @@ Rcpp::List BFOC_SS(const arma::mat known_Z,
                 sigma((i % r_stored_iters)), (i % r_stored_iters), r_stored_iters, y_star);
 
     // Calculate log likelihood
-    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, y_star, B_obs, B_star, nu.slice((i % r_stored_iters)),
-           Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),(i % r_stored_iters), sigma((i % r_stored_iters)));
+    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, B_obs, nu.slice((i % r_stored_iters)),
+           Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)), sigma((i % r_stored_iters)));
     if(((i+1) % 20) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
       Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i % r_stored_iters)-19, (i % r_stored_iters))) << "\n";
@@ -633,8 +633,8 @@ Rcpp::List BFOC_U(const arma::field<arma::vec>& y_obs,
                 sigma((i % r_stored_iters)), (i % r_stored_iters), r_stored_iters, y_star);
 
     // Calculate log likelihood
-    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, y_star, B_obs, B_star, nu.slice((i % r_stored_iters)),
-           Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),(i % r_stored_iters), sigma((i % r_stored_iters)));
+    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, B_obs, nu.slice((i % r_stored_iters)),
+           Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)), sigma((i % r_stored_iters)));
     if(((i+1) % 20) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
       Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i % r_stored_iters)-19, (i % r_stored_iters))) << "\n";
@@ -1058,8 +1058,8 @@ Rcpp::List BFOC_U_TT(const arma::field<arma::vec>& y_obs,
 
 
     // Calculate log likelihood
-    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, y_star, B_obs, B_star, nu.slice((i % r_stored_iters)),
-           Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),(i % r_stored_iters), sigma((i % r_stored_iters)));
+    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, B_obs, nu.slice((i % r_stored_iters)),
+           Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)), sigma((i % r_stored_iters)));
     if(((i+1) % 5) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
       Rcpp::Rcout << "Accpetance Probability: " << accept_num / (i+1.0) << "\n";
@@ -1350,8 +1350,8 @@ Rcpp::List BFOC_U_Temp(const arma::field<arma::vec>& y_obs,
                 sigma((i % r_stored_iters)), (i % r_stored_iters), r_stored_iters, y_star);
 
     // Calculate log likelihood
-    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, y_star, B_obs, B_star, nu.slice((i % r_stored_iters)),
-           Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),(i % r_stored_iters), sigma((i % r_stored_iters)));
+    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, B_obs, nu.slice((i % r_stored_iters)),
+           Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)), sigma((i % r_stored_iters)));
     if(((i+1) % 20) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
       Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i % r_stored_iters)-19, (i % r_stored_iters))) << "\n";
@@ -2105,8 +2105,8 @@ Rcpp::List BFOC_U_MTT(const arma::field<arma::vec>& y_obs,
 
 
     // Calculate log likelihood
-    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, y_star, B_obs, B_star, nu.slice((i % r_stored_iters)),
-           Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),(i % r_stored_iters), sigma((i % r_stored_iters)));
+    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, B_obs, nu.slice((i % r_stored_iters)),
+           Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)), sigma((i % r_stored_iters)));
     if(((i+1) % 100) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
       Rcpp::Rcout << "Accpetance Probability: " << accept_num / (std::round(i / n_temp_trans)) << "\n";
@@ -2407,8 +2407,8 @@ Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
                 y_star);
 
     // Calculate log likelihood
-    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, y_star, B_obs, B_star, nu.slice((i % r_stored_iters)),
-           Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),(i % r_stored_iters), sigma((i % r_stored_iters)));
+    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, B_obs, nu.slice((i % r_stored_iters)),
+           Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)), sigma((i % r_stored_iters)));
     if(((i+1) % 20) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
       Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i % r_stored_iters)-19, (i % r_stored_iters))) << "\n";
@@ -3177,10 +3177,10 @@ Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
         }
       }
     }
-    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, y_star, B_obs, B_star,
+    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, B_obs,
            nu.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
            Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
-           (i % r_stored_iters), sigma((i % r_stored_iters)));
+           sigma((i % r_stored_iters)));
     if(((i+1) % 100) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
       Rcpp::Rcout << "Accpetance Probability: " << accept_num / (std::round(i / n_temp_trans)) << "\n";
@@ -3616,8 +3616,8 @@ Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
     }
 
     // Calculate log likelihood
-    loglik((i)) =  calcLikelihood(y_obs, y_star, B_obs, B_star, nu.slice((i)),
-           Phi((i),0), Z.slice((i)), chi.slice((i)),(i), sigma((i)));
+    loglik((i)) =  calcLikelihood(y_obs, B_obs, nu.slice((i)),
+           Phi((i),0), Z.slice((i)), chi.slice((i)), sigma((i)));
     if(((i+1) % 100) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
       Rcpp::Rcout << "Accpetance Probability: " << accept_num / (std::round(i / n_temp_trans)) << "\n";
@@ -3831,8 +3831,8 @@ Rcpp::List BFPMM_Theta(const arma::field<arma::vec>& y_obs,
                 y_star);
 
     // Calculate log likelihood
-    loglik((i)) =  calcLikelihood(y_obs, y_star, B_obs, B_star, nu.slice((i)),
-           Phi((i),0), Z.slice((i)), chi.slice((i)),(i), sigma((i)));
+    loglik((i)) =  calcLikelihood(y_obs, B_obs, nu.slice((i)),
+           Phi((i),0), Z.slice((i)), chi.slice((i)), sigma((i)));
     if(((i+1) % 100) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
       Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i)-99, (i))) << "\n";
@@ -4252,10 +4252,10 @@ Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
         }
       }
     }
-    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, y_star, B_obs, B_star,
+    loglik((i % r_stored_iters)) =  calcLikelihood(y_obs, B_obs,
            nu.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
            Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
-           (i % r_stored_iters), sigma((i % r_stored_iters)));
+           sigma((i % r_stored_iters)));
     if(((i+1) % 100) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
       Rcpp::Rcout << "Accpetance Probability: " << accept_num / (std::round(i / n_temp_trans)) << "\n";
