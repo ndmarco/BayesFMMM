@@ -16,7 +16,7 @@ GetMeanCI_S(dir, n_files, time, k)
 \item{k}{Int containing the cluster group of which you want to get the credible interval for}
 }
 \value{
-CI list containing the 97.5th , 50th, and 2.5th simultaneous functions
+CI list containing the 97.5th , 50th, and 2.5th simultaneous credible functions
 }
 \description{
 Calculates the simultaneous credible interval for the mean

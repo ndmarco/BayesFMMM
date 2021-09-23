@@ -17,7 +17,7 @@ GetMeanCI_PW(dir, n_files, time, k)
 \item{k}{Int containing the cluster group of which you want to get the credible interval for}
 }
 \value{
-CI list containing the 97.5th , 50th, and 2.5th pointwise functions
+CI list containing the 97.5th , 50th, and 2.5th pointwise credible functions
 }
 \description{
 Calculates the Pointwise credible interval for the mean

@@ -604,7 +604,7 @@ LabelSwitch <- function(Z_ref, Z, perm_mat) {
 #' @param n_files Int containing the number of files per parameter
 #' @param time Vector containing time points of interest
 #' @param k Int containing the cluster group of which you want to get the credible interval for
-#' @return CI list containing the 97.5th , 50th, and 2.5th pointwise functions
+#' @return CI list containing the 97.5th , 50th, and 2.5th pointwise credible functions
 #' @export
 GetMeanCI_PW <- function(dir, n_files, time, k) {
     .Call('_BayesFPMM_GetMeanCI_PW', PACKAGE = 'BayesFPMM', dir, n_files, time, k)
@@ -617,10 +617,77 @@ GetMeanCI_PW <- function(dir, n_files, time, k) {
 #' @param n_files Int containing the number of files per parameter
 #' @param time Vector containing time points of interest
 #' @param k Int containing the cluster group of which you want to get the credible interval for
-#' @return CI list containing the 97.5th , 50th, and 2.5th simultaneous functions
+#' @return CI list containing the 97.5th , 50th, and 2.5th simultaneous credible functions
 #' @export
 GetMeanCI_S <- function(dir, n_files, time, k) {
     .Call('_BayesFPMM_GetMeanCI_S', PACKAGE = 'BayesFPMM', dir, n_files, time, k)
+}
+
+#' Calculates the Pointwise credible interval for the covariance function between two clusters
+#'
+#' @name GetCovCI_Pw
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param time1 Vector containing time points of interest for first cluster
+#' @param time2 Vector containing time points of interest for second cluster
+#' @param l Int containing the 1st cluster group of which you want to get the credible interval for
+#' @param m Int containing the 2nd cluster group of which you want to get the credible interval for
+#' @return CI list containing the 97.5th , 50th, and 2.5th pointwise credible functions
+#' @export
+GetCovCI_Pw <- function(dir, n_files, n_MCMC, time1, time2, l, m) {
+    .Call('_BayesFPMM_GetCovCI_Pw', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time1, time2, l, m)
+}
+
+#' Calculates the Simultaneous credible interval for the covariance function between two clusters
+#'
+#' @name GetCovCI_S
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param time1 Vector containing time points of interest for first cluster
+#' @param time2 Vector containing time points of interest for second cluster
+#' @param l Int containing the 1st cluster group of which you want to get the credible interval for
+#' @param m Int containing the 2nd cluster group of which you want to get the credible interval for
+#' @return CI list containing the 97.5th , 50th, and 2.5th simultaneous credible functions
+#' @export
+GetCovCI_S <- function(dir, n_files, n_MCMC, time1, time2, l, m) {
+    .Call('_BayesFPMM_GetCovCI_S', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time1, time2, l, m)
+}
+
+#' Calculates the credible interval for sigma squared
+#'
+#' @name GetSigmaCI
+#' @param dir String containing the directory where the MCMC files are located
+#' @return CI list containing the 97.5th , 50th, and 2.5th pointwise credible values
+#' @export
+GetSigamCI <- function(dir, n_files) {
+    .Call('_BayesFPMM_GetSigamCI', PACKAGE = 'BayesFPMM', dir, n_files)
+}
+
+#' Calculates the credible interval for membership parameters Z
+#'
+#' @name GetZCI
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @return CI list containing the 97.5th , 50th, and 2.5th credible values
+#' @export
+GetZCI <- function(dir, n_files) {
+    .Call('_BayesFPMM_GetZCI', PACKAGE = 'BayesFPMM', dir, n_files)
+}
+
+#' Calculates the DIC of a model
+#'
+#' @name Model_DIC
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param time Field of vectors containing time points at which the function was observed
+#' @param Y Field of vectors containing observed values of the function
+#' @returns DIC Double containing DIC value
+#' @export
+Model_DIC <- function(dir, n_files, n_MCMC, time, Y) {
+    .Call('_BayesFPMM_Model_DIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time, Y)
 }
 
 #' Tests updating Z
@@ -965,6 +1032,10 @@ TestBFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, sigma_sq, beta_N_t, N_t,
     .Call('_BayesFPMM_TestBFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans, n_trys, k, dir)
 }
 
+#' Tests mixed sampling from the Bayesian Functional Partial Membership Model
+#'
+#' @name TestBFPMM_MTT
+#' @export
 TestBFPMM_MTT_warm_start <- function(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, dir) {
     .Call('_BayesFPMM_TestBFPMM_MTT_warm_start', PACKAGE = 'BayesFPMM', beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, dir)
 }
@@ -1124,6 +1195,78 @@ NULL
 #' @export
 pi_proposal_density <- function(pi, alpha) {
     .Call('_BayesFPMM_pi_proposal_density', PACKAGE = 'BayesFPMM', pi, alpha)
+}
+
+#' Function for finding a good initial starting point for nu parameters and Z parameters, with option for temperered transitions
+#'
+#' @name BFPMM_Nu_Z_multiple_try
+#' @param tot_mcmc_iters Int conatining the number of MCMC iterations per try
+#' @param beta_N_t Double containing the maximum weight for tempered transisitons
+#' @param N_t Int containing total number of tempered transitions. If no tempered transitions are desired, pick a small integer
+#' @param n_temp_trans Int containing how often tempered transitions are performed. If no tempered transitions are desired, pick a integer larger than tot_mcmc_iters
+#' @param n_try Int containing how many different chains are tried
+#' @param k Int containing the number of clusters
+#' @param Y Field of vectors containing the observed values
+#' @param time Field of vecotrs containing the observed time points
+#' @param n_funct Int containing the number of functions
+#' @param n_basis Int containing the number of basis functions
+#' @param n_eigen Int containing the number of eigenfunctions
+#' @returns BestChain List containing a summary of the best performing chain
+#' @export
+BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, beta_N_t, N_t, n_temp_trans, n_try, k, Y, time, n_funct, n_basis, n_eigen) {
+    .Call('_BayesFPMM_BFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, beta_N_t, N_t, n_temp_trans, n_try, k, Y, time, n_funct, n_basis, n_eigen)
+}
+
+#' Estimates the initial starting point of the rest of the parameters given an intial starting point for Z and nu
+#'
+#' @name BFPMM_Theta_Est
+#' @param tot_mcmc_iters Int containing the total number of MCMC iterations
+#' @param Z_samp Cube containing initial chain of Z parameters from BFPMM_Nu_Z_multiple_try
+#' @param nu_samp Cube containing intial chain of nu paramaeters from BFPMM_Nu_Z_multiple_try
+#' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
+#' @param k Int containing the number of clusters
+#' @param Y Field of vectors containing the observed values
+#' @param time Field of vecotrs containing the observed time points
+#' @param n_funct Int containing the number of functions
+#' @param n_basis Int containing the number of basis functions
+#' @param n_eigen Int containing the number of eigenfunctions
+#' @returns BestChain List containing a summary of the chain conditioned on nu and Z
+#' @export
+BFPMM_Theta_Est <- function(tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, time, n_funct, n_basis, n_eigen) {
+    .Call('_BayesFPMM_BFPMM_Theta_Est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, time, n_funct, n_basis, n_eigen)
+}
+
+#' Performs MCMC, with optional tempered transitions, using user specified starting points.
+#'
+#' @name BFPMM_warm_start
+#' @param beta_N_t Double containing the maximum weight for tempered transisitons
+#' @param N_t Int containing total number of tempered transitions. If no tempered transitions are desired, pick a small integer
+#' @param n_temp_trans Int containing how often tempered transitions are performed. If no tempered transitions are desired, pick a integer larger than tot_mcmc_iters
+#' @param tot_mcmc_iters Int conatining the number of MCMC iterations
+#' @param r_stored_iters Int containing number of MCMC iterations stored in memory before writing to directory
+#' @param Z_samp Cube containing initial chain of Z parameters
+#' @param pi_samp Matrix containing intial chain of pi parameters
+#' @param alpha_3_samp Vector containing intial chain of alpha_3 parameters
+#' @param delta_samp Matrix containing initial chain of delta parameters
+#' @param gamma_samp Field of cubes containing initial chain of gamma parameters
+#' @param Phi_samp Field of cubes containing initial chain of phi parameters
+#' @param A_samp Matrix containing intial chain of A parameters
+#' @param nu_samp Cube containing intial chain of nu paramaeters
+#' @param tau_samp Matrix containing initial chain of tau parameters
+#' @param sigma_samp Vector containing initial chain of sigma parameters
+#' @param chi_samp Cube containing initial chain of chi parameters
+#' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
+#' @param k Int containing the number of clusters
+#' @param Y Field of vectors containing the observed values
+#' @param time Field of vecotrs containing the observed time points
+#' @param n_funct Int containing the number of functions
+#' @param n_basis Int containing the number of basis functions
+#' @param n_eigen Int containing the number of eigenfunctions
+#' @param thinning_num Int containing how often we should save MCMC iterations. Should be a divisible by r_stored_iters and tot_mcmc_iters
+#' @param dir String containing directory where the MCMC files should be saved
+#' @export
+BFPMM_warm_start <- function(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, Y, time, n_funct, n_basis, n_eigen, thinning_num, dir) {
+    .Call('_BayesFPMM_BFPMM_warm_start', PACKAGE = 'BayesFPMM', beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, Y, time, n_funct, n_basis, n_eigen, thinning_num, dir)
 }
 
 #' Gets log-pdf of z_i given zeta_{-z_i}

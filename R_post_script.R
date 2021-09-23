@@ -6,11 +6,11 @@ library(BayesFPMM)
 ## Run SImulations
 ##
 set.seed(1)
-for(i in 57:60){
+for(i in 91:100){
   data_dir <- "/Users/nicholasmarco/Projects/Simulation/2_cluster/data/"
   x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 200, 2, data_dir)
   y <- TestBFPMM_Theta(5000, 0.001, x$Z, x$nu, 0.8, 2, data_dir)
-  dir <- paste("c/Users/nicholasmarco/Projects/Simulation/2_cluster/trace", as.character(i), "/", sep = "")
+  dir <- paste("/Users/nicholasmarco/Projects/Simulation/2_cluster/trace", as.character(i), "/", sep = "")
   #dir <- "C:\\Projects\\Simulation\\Optimal_K\\2_clusters\\"
   z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 500000, 10000, dir, 0.001, x$Z,
                                 x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu,
@@ -417,3 +417,74 @@ fig3 <- fig3 %>% add_surface(z = ~cov3_2_5, opacity = 0.50)
 fig3 <- fig3 %>% add_surface(z = ~cov3_97_5, opacity = 0.50)
 
 fig3
+
+### Real Case study
+
+setwd("/Users/nicholasmarco/Projects/Simulation/real_data")
+
+### Peak alpha data for John
+library(pracma)
+
+# Subject ID
+subj_id <- sort(c(10,	11,	13,	14,	15,	23,	26,	30,	31,	35,	48,	49,	50,
+                  53,	54,	55,	161,165,	184,	188,	189,	195,	201,
+                  # 202,	excluded due to low counts
+                  207,	210,	213,	214,	242,	255,	261,	282,	283,
+                  284,	286,	287,	289,	290,	343,	351,	2,	3,	5,	6,
+                  7,	8,	9,	12,	18,	19,	22,	24,	25,	27,	33,	34,	37,	38,
+                  40,	41,	42,	43,	44,	47,	51,	401,	405,	406,	408,	411,
+                  415,	416,	417,	418,	423,	426,	427,	430,
+                  #431,	excluded due to low counts
+                  433,	436,	438,	439,	440,	442,	444,	445,	446,	447,
+                  448,	450,	451,	452,	453,	3019,	3024,	3026,	3029,	3032))
+# Channel ID (order of chan_id corresponds to 1:25 labeling of regions)
+chan_id <- c('Fp1', 'Fp2','F9','F7','F3','Fz','F4','F8','F10','T9','T7',
+             'C3','Cz','C4','T8','T10','P9','P7','P3','Pz','P4','P8','P10','O1','O2')
+
+# Demographic Data
+demDat <- read.csv(file='demographic_data.csv', header = TRUE)
+colnames(demDat) <- c("ID", "Gender", "Age", "Group", "VIQ", "NVIQ")
+demDat <- demDat[which(demDat$ID %in% subj_id), ]
+
+# Peak Alpha Data
+load("pa.dat.Rdata")
+# ID: subject ID
+# group: TD(1) or ASD (2)
+# func: frequency domain
+# reg: electrode (order corresponds to chan_id above)
+# Age: age in months
+# y: alpha spectra density
+out1 <- unique(pa.dat$func)
+out3 <- unique(pa.dat$reg)
+matplot(matrix(pa.dat$y, nrow = length(out1)), type = "l") # data
+trapz(out1, pa.dat$y[1:33]) # all functional observations integrate to 1 (normalized across electordes, subjects)
+
+### Convert to wide format
+y <- pa.dat
+## paper used T8 electrode
+y <- y[y$reg == 15,]
+y$ID <- paste(y$ID, y$reg, sep = ".")
+y <- reshape(y[,c(1,3,6)], idvar = "ID", timevar = "func", direction = "wide")
+y <- y[,-1]
+y <- as.matrix(y)
+
+#get rid of ID value
+
+y <- split(y, seq(nrow(y)))
+
+time <- seq(6, 14, 0.25)
+time <- rep(list(time), 97)
+
+
+### Start MCMC
+
+x <- BFPMM_Nu_Z_multiple_try(2000, 1/2, 10, 10000, 200, 2, y, time, 97, 8, 3)
+y <- TestBFPMM_Theta(5000, x$Z, x$nu, 0.8, 2, y, time, 97, 8, 3)
+dir <- "/Users/nicholasmarco/Projects/Simulation/real_data/trace/"
+z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 500000, 10000, 0.001, x$Z,
+                              x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu,
+                              x$tau, y$sigma, y$chi, 0.8, 2, y, time, 97, 8, 3, 50, dir)
+saveRDS(z, paste(dir, "x_results.RDS", sep = ""))
+
+
+
