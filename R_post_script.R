@@ -460,17 +460,17 @@ matplot(matrix(pa.dat$y, nrow = length(out1)), type = "l") # data
 trapz(out1, pa.dat$y[1:33]) # all functional observations integrate to 1 (normalized across electordes, subjects)
 
 ### Convert to wide format
-y <- pa.dat
+Y <- pa.dat
 ## paper used T8 electrode
-y <- y[y$reg == 15,]
-y$ID <- paste(y$ID, y$reg, sep = ".")
-y <- reshape(y[,c(1,3,6)], idvar = "ID", timevar = "func", direction = "wide")
-y <- y[,-1]
-y <- as.matrix(y)
+Y <- Y[Y$reg == 15,]
+Y$ID <- paste(Y$ID, Y$reg, sep = ".")
+Y <- reshape(Y[,c(1,3,6)], idvar = "ID", timevar = "func", direction = "wide")
+Y <- Y[,-1]
+Y <- as.matrix(Y)
 
 #get rid of ID value
 
-y <- split(y, seq(nrow(y)))
+Y <- split(Y, seq(nrow(Y)))
 
 time <- seq(6, 14, 0.25)
 time <- rep(list(time), 97)
@@ -478,13 +478,28 @@ time <- rep(list(time), 97)
 
 ### Start MCMC
 
-x <- BFPMM_Nu_Z_multiple_try(2000, 1/2, 10, 10000, 200, 2, y, time, 97, 8, 3)
-y <- TestBFPMM_Theta(5000, x$Z, x$nu, 0.8, 2, y, time, 97, 8, 3)
+x <- BFPMM_Nu_Z_multiple_try(2000, 1/2, 10, 10000, 200, 2, Y, time, 97, 8, 3)
+y <- BFPMM_Theta_Est(5000, x$Z, x$nu, 0.8, 2, Y, time, 97, 8, 3)
 dir <- "/Users/nicholasmarco/Projects/Simulation/real_data/trace/"
-z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 500000, 10000, 0.001, x$Z,
+z <- BFPMM_warm_start(1/5, 10, 1000000, 500000, 10000, x$Z,
                               x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu,
-                              x$tau, y$sigma, y$chi, 0.8, 2, y, time, 97, 8, 3, 50, dir)
+                              x$tau, y$sigma, y$chi, 0.8, 2, Y, time, 97, 8, 3, 50, dir)
 saveRDS(z, paste(dir, "x_results.RDS", sep = ""))
+
+### get credible intervals for mean
+mean_1 <- GetMeanCI_S(dir,50, time[[1]], 1)
+plot(mean_1$CI_50, type = 'l')
+lines(mean_1$CI_025, col = "red")
+lines(mean_1$CI_975, col = "red")
+
+mean_2 <- GetMeanCI_S(dir,50, time[[1]], 2)
+plot(mean_2$CI_50, type = 'l')
+lines(mean_2$CI_025, col = "red")
+lines(mean_2$CI_975, col = "red")
+
+### Get median cluster memberships
+
+Z_post <- GetZCI(dir, 50)
 
 
 

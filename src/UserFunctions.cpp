@@ -85,7 +85,8 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
   }
 
-  Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("nu", mod1["nu"]),
+  Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
+                                             Rcpp::Named("nu", mod1["nu"]),
                                              Rcpp::Named("pi", mod1["pi"]),
                                              Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                              Rcpp::Named("A", mod1["A"]),
@@ -168,7 +169,8 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
                                 t_star1, c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
                                 sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est, nu_est);
 
-  Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("chi", mod1["chi"]),
+  Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
+                                             Rcpp::Named("chi", mod1["chi"]),
                                              Rcpp::Named("A", mod1["A"]),
                                              Rcpp::Named("delta", mod1["delta"]),
                                              Rcpp::Named("sigma", mod1["sigma"]),
@@ -344,7 +346,8 @@ Rcpp::List BFPMM_warm_start(const double beta_N_t,
                                          delta_est, gamma_est, Phi_est, A_est,
                                          nu_est, tau_est, sigma_est, chi_est);
 
-  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("nu", mod1["nu"]),
+  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
+                                        Rcpp::Named("nu", mod1["nu"]),
                                         Rcpp::Named("chi", mod1["chi"]),
                                         Rcpp::Named("pi", mod1["pi"]),
                                         Rcpp::Named("alpha_3", mod1["alpha_3"]),

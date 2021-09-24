@@ -92,8 +92,8 @@ Rcpp::List GetMeanCI_S(const std::string dir,
   for(int i = 0; i < nu_samp.n_slices; i++){
     f_samp.row(i) = (B * nu_samp.slice(i).row(k-1).t()).t();
   }
-  arma::rowvec f_mean = arma::mean(f_samp, 0);
-  arma::rowvec f_sd = arma::stddev(f_samp, 0, 0);
+  arma::vec f_mean = arma::mean(f_samp, 0);
+  arma::vec f_sd = arma::stddev(f_samp, 0, 0);
 
   arma::vec C = arma::zeros(nu_samp.n_slices);
   arma::vec ph1 = arma::zeros(time.n_elem);
@@ -191,7 +191,7 @@ Rcpp::List GetCovCI_Pw(const std::string dir,
   arma::vec p = {0.025, 0.5, 0.975};
   arma::vec q = arma::zeros(3);
 
-  arma::rowvec ph = arma::zeros(cov_samp.n_slices);
+  arma::vec ph = arma::zeros(cov_samp.n_slices);
   for(int i = 0; i < time1.n_elem; i++){
     for(int j = 0; j < time2.n_elem; j++){
       ph = cov_samp(arma::span(i), arma::span(j), arma::span::all);
@@ -270,7 +270,7 @@ Rcpp::List GetCovCI_S(const std::string dir,
 
   arma::mat cov_mean = arma::mean(cov_samp, 2);
   arma::mat cov_sd = arma::zeros(time1.n_elem, time2.n_elem);
-  arma::rowvec ph = arma::zeros(cov_samp.n_slices);
+  arma::vec ph = arma::zeros(cov_samp.n_slices);
   for(int i = 0; i < time1.n_elem; i++){
     for(int j = 0; j < time2.n_elem; j++){
       ph = cov_samp(arma::span(i), arma::span(j), arma::span::all);
@@ -371,7 +371,7 @@ Rcpp::List GetZCI(const std::string dir,
   arma::mat CI_50 = arma::zeros(Z_i.n_rows, Z_i.n_cols);
   arma::mat CI_025 = arma::zeros(Z_i.n_rows, Z_i.n_cols);
 
-  arma::rowvec ph = arma::zeros(Z_samp.n_slices);
+  arma::vec ph(Z_samp.n_slices, arma::fill::zeros);
   for(int i = 0; i < Z_i.n_rows; i++){
     for(int j = 0; j < Z_i.n_cols; j++){
       ph = Z_samp(arma::span(i), arma::span(j), arma::span::all);
