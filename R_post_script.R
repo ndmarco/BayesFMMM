@@ -6,11 +6,11 @@ library(BayesFPMM)
 ## Run SImulations
 ##
 set.seed(1)
-for(i in 91:100){
+for(i in 1:25){
   data_dir <- "/Users/nicholasmarco/Projects/Simulation/2_cluster/data/"
   x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 200, 2, data_dir)
   y <- TestBFPMM_Theta(5000, 0.001, x$Z, x$nu, 0.8, 2, data_dir)
-  dir <- paste("/Users/nicholasmarco/Projects/Simulation/2_cluster/trace", as.character(i), "/", sep = "")
+  dir <- paste("/Users/nicholasmarco/Projects/Simulation/2_cluster/trace", as.character(1 + ((i-1) * 4)), "/", sep = "")
   #dir <- "C:\\Projects\\Simulation\\Optimal_K\\2_clusters\\"
   z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 500000, 10000, dir, 0.001, x$Z,
                                 x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu,
@@ -476,6 +476,10 @@ time <- seq(6, 14, 0.25)
 time <- rep(list(time), 97)
 
 
+#############################
+### Real Data example #######
+#############################
+
 ### Start MCMC
 
 x <- BFPMM_Nu_Z_multiple_try(2000, 1/2, 10, 10000, 200, 2, Y, time, 97, 8, 3)
@@ -502,4 +506,93 @@ lines(mean_2$CI_975, col = "red")
 Z_post <- GetZCI(dir, 50)
 
 
+
+##################################
+##### Simulation Study 1 #########
+##################################
+
+### Pointwise Credible Interval coverage mean
+dir <- "/Users/nicholasmarco/Projects/Simulation/2_cluster/"
+
+counter1 <- 0
+counter2 <- 0
+counterall <- 0
+y <- GetStuff(0.001,"/Users/nicholasmarco/Projects/Simulation/2_cluster/data/")
+x <- readRDS("/Users/nicholasmarco/Projects/Simulation/2_cluster/trace1/x_results.RDS")
+nu_1_true <-  y$B[[1]] %*% t(t(x$nu_true[1,]))
+nu_2_true <-  y$B[[1]] %*% t(t(x$nu_true[2,]))
+time <- seq(0, 990, 10)
+for(i in 1:100){
+  dir_i <- paste(dir, "trace", i, "/", sep = "")
+  nu_1 <- GetMeanCI_PW(dir_i, 50, time, 1)
+  nu_2 <- GetMeanCI_PW(dir_i, 50, time, 2)
+
+  ## Label Switching
+  if(sum(abs(nu_1$CI_50 - nu_1_true)) > sum(abs(nu_1$CI_50 - nu_2_true))){
+    nu_i <- nu_1
+    nu_1 <- nu_2
+    nu_2 <- nu_i
+  }
+  for(j in 1:100){
+    ## Calculate how many points are within the credible interval for mean 1
+    if(nu_1$CI_975[j] > nu_1_true[j]){
+      if(nu_1$CI_025[j] < nu_1_true[j]){
+        counter1 <- counter1 + 1
+      }
+    }
+
+    ## Calculate how many points are within the credible interval for mean 1
+    if(nu_2$CI_975[j] > nu_2_true[j]){
+      if(nu_2$CI_025[j] < nu_2_true[j]){
+        counter2 <- counter2 + 1
+      }
+    }
+    counterall <- counterall + 1
+  }
+}
+
+### Simultaneous Credible Interval coverage mean
+dir <- "/Users/nicholasmarco/Projects/Simulation/2_cluster/"
+
+counter1 <- 0
+counter2 <- 0
+counterall <- 0
+y <- GetStuff(0.001,"/Users/nicholasmarco/Projects/Simulation/2_cluster/data/")
+x <- readRDS("/Users/nicholasmarco/Projects/Simulation/2_cluster/trace1/x_results.RDS")
+nu_1_true <-  y$B[[1]] %*% t(t(x$nu_true[1,]))
+nu_2_true <-  y$B[[1]] %*% t(t(x$nu_true[2,]))
+time <- seq(0, 990, 10)
+for(i in 1:100){
+  dir_i <- paste(dir, "trace", i, "/", sep = "")
+  nu_1 <- GetMeanCI_S(dir_i, 50, time, 1)
+  nu_2 <- GetMeanCI_S(dir_i, 50, time, 2)
+
+  ## Label Switching
+  if(sum(abs(nu_1$CI_50 - nu_1_true)) > sum(abs(nu_1$CI_50 - nu_2_true))){
+    nu_i <- nu_1
+    nu_1 <- nu_2
+    nu_2 <- nu_i
+  }
+  for(j in 1:100){
+    ## Calculate how many points are within the credible interval for mean 1
+    if(nu_1$CI_975[j] > nu_1_true[j]){
+      if(nu_1$CI_025[j] < nu_1_true[j]){
+        counter1 <- counter1 + 1
+      }
+    }
+
+    ## Calculate how many points are within the credible interval for mean 1
+    if(nu_2$CI_975[j] > nu_2_true[j]){
+      if(nu_2$CI_025[j] < nu_2_true[j]){
+        counter2 <- counter2 + 1
+      }
+    }
+    counterall <- counterall + 1
+  }
+}
+
+
+plot(nu_2_true, type = 'l')
+lines(nu_2$CI_025, col = "red")
+lines(nu_2$CI_975, col = "red")
 

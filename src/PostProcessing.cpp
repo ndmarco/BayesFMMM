@@ -92,8 +92,8 @@ Rcpp::List GetMeanCI_S(const std::string dir,
   for(int i = 0; i < nu_samp.n_slices; i++){
     f_samp.row(i) = (B * nu_samp.slice(i).row(k-1).t()).t();
   }
-  arma::vec f_mean = arma::mean(f_samp, 0);
-  arma::vec f_sd = arma::stddev(f_samp, 0, 0);
+  arma::rowvec f_mean = arma::mean(f_samp, 0);
+  arma::rowvec f_sd = arma::stddev(f_samp, 0, 0);
 
   arma::vec C = arma::zeros(nu_samp.n_slices);
   arma::vec ph1 = arma::zeros(time.n_elem);
@@ -498,4 +498,255 @@ double Model_DIC(const std::string dir,
 
   double DIC = (2 * f_hat) - (4 * expected_log_f);
   return(DIC);
+}
+
+//' Calculates the AIC of a model
+//'
+//' @name Model_AIC
+//' @param dir String containing the directory where the MCMC files are located
+//' @param n_files Int containing the number of files per parameter
+//' @param n_MCMC Int containing the number of saved MCMC iterations per file
+//' @param time Field of vectors containing time points at which the function was observed
+//' @param Y Field of vectors containing observed values of the function
+//' @returns DIC Double containing DIC value
+//' @export
+// [[Rcpp::export]]
+double Model_AIC(const std::string dir,
+                 const int n_files,
+                 const int n_MCMC,
+                 const arma::field<arma::vec> time,
+                 const arma::field<arma::vec> Y){
+  // Get Nu parameters
+  arma::cube nu_i;
+  nu_i.load(dir + "Nu0.txt");
+  arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
+  nu_samp.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
+  for(int i = 1; i < n_files; i++){
+    nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
+    nu_samp.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
+                    (nu_i.n_slices)*(i+1) - 1) = nu_i;
+  }
+
+  // Get Phi parameters
+  arma::field<arma::cube> phi_i;
+  phi_i.load(dir + "Phi0.txt");
+  arma::field<arma::cube> phi_samp(n_MCMC * n_files, 1);
+  for(int i = 0; i < n_MCMC; i++){
+    phi_samp(i,0) = phi_i(i,0);
+  }
+
+  for(int i = 1; i < n_files; i++){
+    phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
+    for(int j = 0; j < n_MCMC; j++){
+      phi_samp((i * n_MCMC) + j, 0) = phi_i(i,0);
+    }
+  }
+
+  // Get Z parameters
+  arma::cube Z_i;
+  Z_i.load(dir + "Z0.txt");
+  arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+  Z_samp.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+  for(int i = 1; i < n_files; i++){
+    Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+    Z_samp.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+  }
+
+  // Get sigma parameters
+  arma::vec sigma_i;
+  sigma_i.load(dir + "Sigma0.txt");
+  arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
+  sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
+  for(int i = 1; i < n_files; i++){
+    sigma_i.load(dir + "Sigma" + std::to_string(i) +".txt");
+    sigma_samp.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
+  }
+
+  // Get chi parameters
+  arma::cube chi_i;
+  chi_i.load(dir + "Chi0.txt");
+  arma::cube chi_samp = arma::zeros(chi_i.n_rows, chi_i.n_cols, chi_i.n_slices * n_files);
+  chi_samp.subcube(0, 0, 0, chi_i.n_rows-1, chi_i.n_cols-1, chi_i.n_slices-1) = chi_i;
+  for(int i = 1; i < n_files; i++){
+    chi_i.load(dir + "Chi" + std::to_string(i) +".txt");
+    chi_samp.subcube(0, 0,  chi_i.n_slices*i, chi_i.n_rows-1, chi_i.n_cols-1,
+                     (chi_i.n_slices)*(i+1) - 1) = chi_i;
+  }
+
+  // Make spline basis
+  arma::field<arma::mat> B_obs(Z_samp.n_rows, 1);
+  splines2::BSpline bspline2;
+  for(int i = 0; i < Z_samp.n_rows; i++)
+  {
+    bspline2 = splines2::BSpline(time(i,0), phi_samp.n_cols);
+    // Get Basis matrix (time2 x Phi.n_cols)
+    arma::mat bspline_mat2{bspline2.basis(true)};
+    // Make B_obs
+    B_obs(i,0) = bspline_mat2;
+  }
+
+  // Estimate individual curve fit
+  arma::field<arma::mat> curve_fit(Z_i.n_rows, 1);
+  arma::rowvec Z_ph(Z_i.n_cols, arma::fill::zeros);
+  for(int i = 0; i < Z_i.n_rows; i++){
+    curve_fit(i,0) = arma::zeros(sigma_i.n_elem * n_files, Y(i,0).n_elem);
+    for(int j = 0; j < curve_fit(i,0).n_rows; j++){
+      Z_ph = Z_samp(arma::span(i), arma::span::all, arma::span(j));
+      curve_fit(i,0).row(j) = Z_ph * nu_samp.slice(j) * B_obs(i,0).t();
+      for(int k = 0; k < chi_samp.n_cols; k++){
+        curve_fit(i,0).row(j) = curve_fit(i,0).row(j) + (chi_samp(i, k, j) *
+          Z_ph * phi_samp(j,0).slice(k) * B_obs(i,0).t());
+      }
+    }
+  }
+
+  // Get mean curve fit
+  arma::field<arma::rowvec> mean_curve_fit(Z_i.n_rows, 1);
+  for(int i = 0; i < Z_i.n_rows, i++){
+    mean_curve_fit(i,0) = arma::mean(curve_fit(i,0), 0);
+  }
+
+  // Get posterior mean of sigma^2
+  double mean_sigma = arma::mean(sigma_samp);
+
+  // Calculate Log likelihood
+  double log_lik = 0;
+  for(int i = 0; i < Z_samp.n_rows; i++){
+    for(int j = 0; j < Y(i,0).n_elem; j++){
+      log_lik = log_lik + R::dnorm(Y(i,0)(j), mean_curve_fit(j),
+                                   std::sqrt(mean_sigma), true);
+    }
+  }
+
+  // Calculate AIC
+  double AIC = (2 * ((Z_samp.n_rows + phi_samp.n_cols) * Z_samp.n_cols +
+                2 * phi_samp.n_cols * Z_samp.n_rows * Z_samp.n_cols +
+                4 + 2 * Z_samp.n_cols + 2 * phi_samp.n_cols)) - (2 * log_lik);
+  return(AIC);
+}
+
+//' Calculates the BIC of a model
+//'
+//' @name Model_BIC
+//' @param dir String containing the directory where the MCMC files are located
+//' @param n_files Int containing the number of files per parameter
+//' @param n_MCMC Int containing the number of saved MCMC iterations per file
+//' @param time Field of vectors containing time points at which the function was observed
+//' @param Y Field of vectors containing observed values of the function
+//' @returns DIC Double containing DIC value
+//' @export
+// [[Rcpp::export]]
+double Model_BIC(const std::string dir,
+                 const int n_files,
+                 const int n_MCMC,
+                 const arma::field<arma::vec> time,
+                 const arma::field<arma::vec> Y){
+  // Get Nu parameters
+  arma::cube nu_i;
+  nu_i.load(dir + "Nu0.txt");
+  arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
+  nu_samp.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
+  for(int i = 1; i < n_files; i++){
+    nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
+    nu_samp.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
+                    (nu_i.n_slices)*(i+1) - 1) = nu_i;
+  }
+
+  // Get Phi parameters
+  arma::field<arma::cube> phi_i;
+  phi_i.load(dir + "Phi0.txt");
+  arma::field<arma::cube> phi_samp(n_MCMC * n_files, 1);
+  for(int i = 0; i < n_MCMC; i++){
+    phi_samp(i,0) = phi_i(i,0);
+  }
+
+  for(int i = 1; i < n_files; i++){
+    phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
+    for(int j = 0; j < n_MCMC; j++){
+      phi_samp((i * n_MCMC) + j, 0) = phi_i(i,0);
+    }
+  }
+
+  // Get Z parameters
+  arma::cube Z_i;
+  Z_i.load(dir + "Z0.txt");
+  arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+  Z_samp.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+  for(int i = 1; i < n_files; i++){
+    Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+    Z_samp.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+  }
+
+  // Get sigma parameters
+  arma::vec sigma_i;
+  sigma_i.load(dir + "Sigma0.txt");
+  arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
+  sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
+  for(int i = 1; i < n_files; i++){
+    sigma_i.load(dir + "Sigma" + std::to_string(i) +".txt");
+    sigma_samp.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
+  }
+
+  // Get chi parameters
+  arma::cube chi_i;
+  chi_i.load(dir + "Chi0.txt");
+  arma::cube chi_samp = arma::zeros(chi_i.n_rows, chi_i.n_cols, chi_i.n_slices * n_files);
+  chi_samp.subcube(0, 0, 0, chi_i.n_rows-1, chi_i.n_cols-1, chi_i.n_slices-1) = chi_i;
+  for(int i = 1; i < n_files; i++){
+    chi_i.load(dir + "Chi" + std::to_string(i) +".txt");
+    chi_samp.subcube(0, 0,  chi_i.n_slices*i, chi_i.n_rows-1, chi_i.n_cols-1,
+                     (chi_i.n_slices)*(i+1) - 1) = chi_i;
+  }
+
+  // Make spline basis
+  arma::field<arma::mat> B_obs(Z_samp.n_rows, 1);
+  splines2::BSpline bspline2;
+  for(int i = 0; i < Z_samp.n_rows; i++)
+  {
+    bspline2 = splines2::BSpline(time(i,0), phi_samp.n_cols);
+    // Get Basis matrix (time2 x Phi.n_cols)
+    arma::mat bspline_mat2{bspline2.basis(true)};
+    // Make B_obs
+    B_obs(i,0) = bspline_mat2;
+  }
+
+  // Estimate individual curve fit
+  arma::field<arma::mat> curve_fit(Z_i.n_rows, 1);
+  arma::rowvec Z_ph(Z_i.n_cols, arma::fill::zeros);
+  for(int i = 0; i < Z_i.n_rows; i++){
+    curve_fit(i,0) = arma::zeros(sigma_i.n_elem * n_files, Y(i,0).n_elem);
+    for(int j = 0; j < curve_fit(i,0).n_rows; j++){
+      Z_ph = Z_samp(arma::span(i), arma::span::all, arma::span(j));
+      curve_fit(i,0).row(j) = Z_ph * nu_samp.slice(j) * B_obs(i,0).t();
+      for(int k = 0; k < chi_samp.n_cols; k++){
+        curve_fit(i,0).row(j) = curve_fit(i,0).row(j) + (chi_samp(i, k, j) *
+          Z_ph * phi_samp(j,0).slice(k) * B_obs(i,0).t());
+      }
+    }
+  }
+
+  // Get mean curve fit
+  arma::field<arma::rowvec> mean_curve_fit(Z_i.n_rows, 1);
+  for(int i = 0; i < Z_i.n_rows, i++){
+    mean_curve_fit(i,0) = arma::mean(curve_fit(i,0), 0);
+  }
+
+  // Get posterior mean of sigma^2
+  double mean_sigma = arma::mean(sigma_samp);
+
+  // Calculate Log likelihood
+  double log_lik = 0;
+  for(int i = 0; i < Z_samp.n_rows; i++){
+    for(int j = 0; j < Y(i,0).n_elem; j++){
+      log_lik = log_lik + R::dnorm(Y(i,0)(j), mean_curve_fit(j),
+                                   std::sqrt(mean_sigma), true);
+    }
+  }
+
+  // Calculate AIC
+  double BIC = (2 * log_lik) - (std::log(Z_samp.n_rows * Z_samp.n_cols) *
+                ((Z_samp.n_rows + phi_samp.n_cols) * Z_samp.n_cols +
+                2 * phi_samp.n_cols * Z_samp.n_rows * Z_samp.n_cols +
+                4 + 2 * Z_samp.n_cols + 2 * phi_samp.n_cols));
+  return(BIC);
 }

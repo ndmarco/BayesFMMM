@@ -2645,7 +2645,20 @@ void getparms(int n_funct){
 
   // Make nu matrix
   arma::mat nu(k,8, arma::fill::randn);
-  nu = 3 * nu;
+  arma::mat P_mat(8, 8, arma::fill::zeros);
+  P_mat.zeros();
+  for(int j = 0; j < P_mat.n_rows; j++){
+    P_mat(0,0) = 1;
+    if(j > 0){
+      P_mat(j,j) = 2;
+      P_mat(j-1,j) = -1;
+      P_mat(j,j-1) = -1;
+    }
+    P_mat(P_mat.n_rows - 1, P_mat.n_rows - 1) = 1;
+  }
+  arma::vec M = arma::zeros(8);
+  nu.row(0) = arma::mvnrnd(M, 4 * P_mat).t();
+  nu.row(1) = arma::mvnrnd(M, 4 * P_mat).t();
 
   // Make Phi matrix
   arma::cube Phi(k,8,3);
@@ -2665,9 +2678,9 @@ void getparms(int n_funct){
   arma::vec alpha_i = {100, 1};
   alpha = alpha * 0.5;
   for(int i = 0; i < Z.n_rows; i++){
-    if(i < n_funct * 0.2){
+    if(i < n_funct * 0.3){
       Z.row(i) = rdirichlet(alpha_i).t();
-    }else if( i <  n_funct * 0.4){
+    }else if( i <  n_funct * 0.6){
       alpha_i = {1, 100};
       Z.row(i) = rdirichlet(alpha_i).t();
     // }else if(i <  n_funct * 0.6){
@@ -2679,10 +2692,10 @@ void getparms(int n_funct){
   }
 
   //save parameters
-  nu.save("c:\\Projects\\BayesFPMM\\data\\nu.txt", arma::arma_ascii);
-  chi.save("c:\\Projects\\BayesFPMM\\data\\chi.txt", arma::arma_ascii);
-  Phi.save("c:\\Projects\\BayesFPMM\\data\\Phi.txt", arma::arma_ascii);
-  Z.save("c:\\Projects\\BayesFPMM\\data\\Z.txt", arma::arma_ascii);
+  nu.save("/Users/nicholasmarco/Projects/BayesFPMM/data/nu.txt", arma::arma_ascii);
+  chi.save("/Users/nicholasmarco/Projects/BayesFPMM/data/chi.txt", arma::arma_ascii);
+  Phi.save("/Users/nicholasmarco/Projects/BayesFPMM/data/Phi.txt", arma::arma_ascii);
+  Z.save("/Users/nicholasmarco/Projects/BayesFPMM/data/Z.txt", arma::arma_ascii);
 
 }
 
