@@ -467,7 +467,7 @@ double Model_DIC(const std::string dir,
   splines2::BSpline bspline2;
   for(int i = 0; i < Z_samp.n_rows; i++)
   {
-    bspline2 = splines2::BSpline(time(i,0), phi_samp.n_cols);
+    bspline2 = splines2::BSpline(time(i,0), nu_samp.n_cols);
     // Get Basis matrix (time2 x Phi.n_cols)
     arma::mat bspline_mat2{bspline2.basis(true)};
     // Make B_obs
@@ -489,7 +489,7 @@ double Model_DIC(const std::string dir,
       f_hat_ij = 0;
       for(int n = 0; n < nu_samp.n_slices; n++){
         f_hat_ij = f_hat_ij + calcDIC2(Y(i,0), B_obs(i,0), nu_samp.slice(n), phi_samp(n,0),
-                                       Z_samp.slice(n), chi_samp.slice(i), i, j,
+                                       Z_samp.slice(n), chi_samp.slice(n), i, j,
                                        sigma_samp(n));
       }
       f_hat = f_hat + std::log(f_hat_ij / nu_samp.n_slices);
@@ -576,9 +576,8 @@ double Model_AIC(const std::string dir,
   // Make spline basis
   arma::field<arma::mat> B_obs(Z_samp.n_rows, 1);
   splines2::BSpline bspline2;
-  for(int i = 0; i < Z_samp.n_rows; i++)
-  {
-    bspline2 = splines2::BSpline(time(i,0), phi_samp.n_cols);
+  for(int i = 0; i < Z_samp.n_rows; i++){
+    bspline2 = splines2::BSpline(time(i,0), nu_samp.n_cols);
     // Get Basis matrix (time2 x Phi.n_cols)
     arma::mat bspline_mat2{bspline2.basis(true)};
     // Make B_obs
@@ -602,7 +601,7 @@ double Model_AIC(const std::string dir,
 
   // Get mean curve fit
   arma::field<arma::rowvec> mean_curve_fit(Z_i.n_rows, 1);
-  for(int i = 0; i < Z_i.n_rows, i++){
+  for(int i = 0; i < Z_i.n_rows; i++){
     mean_curve_fit(i,0) = arma::mean(curve_fit(i,0), 0);
   }
 
@@ -613,7 +612,7 @@ double Model_AIC(const std::string dir,
   double log_lik = 0;
   for(int i = 0; i < Z_samp.n_rows; i++){
     for(int j = 0; j < Y(i,0).n_elem; j++){
-      log_lik = log_lik + R::dnorm(Y(i,0)(j), mean_curve_fit(j),
+      log_lik = log_lik + R::dnorm(Y(i,0)(j), mean_curve_fit(i,0)(j),
                                    std::sqrt(mean_sigma), true);
     }
   }
@@ -701,9 +700,8 @@ double Model_BIC(const std::string dir,
   // Make spline basis
   arma::field<arma::mat> B_obs(Z_samp.n_rows, 1);
   splines2::BSpline bspline2;
-  for(int i = 0; i < Z_samp.n_rows; i++)
-  {
-    bspline2 = splines2::BSpline(time(i,0), phi_samp.n_cols);
+  for(int i = 0; i < Z_samp.n_rows; i++){
+    bspline2 = splines2::BSpline(time(i,0), nu_samp.n_cols);
     // Get Basis matrix (time2 x Phi.n_cols)
     arma::mat bspline_mat2{bspline2.basis(true)};
     // Make B_obs
@@ -727,7 +725,7 @@ double Model_BIC(const std::string dir,
 
   // Get mean curve fit
   arma::field<arma::rowvec> mean_curve_fit(Z_i.n_rows, 1);
-  for(int i = 0; i < Z_i.n_rows, i++){
+  for(int i = 0; i < Z_i.n_rows; i++){
     mean_curve_fit(i,0) = arma::mean(curve_fit(i,0), 0);
   }
 
@@ -738,7 +736,7 @@ double Model_BIC(const std::string dir,
   double log_lik = 0;
   for(int i = 0; i < Z_samp.n_rows; i++){
     for(int j = 0; j < Y(i,0).n_elem; j++){
-      log_lik = log_lik + R::dnorm(Y(i,0)(j), mean_curve_fit(j),
+      log_lik = log_lik + R::dnorm(Y(i,0)(j), mean_curve_fit(i,0)(j),
                                    std::sqrt(mean_sigma), true);
     }
   }

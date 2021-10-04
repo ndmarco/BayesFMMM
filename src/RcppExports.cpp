@@ -712,6 +712,36 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Model_AIC
+double Model_AIC(const std::string dir, const int n_files, const int n_MCMC, const arma::field<arma::vec> time, const arma::field<arma::vec> Y);
+RcppExport SEXP _BayesFPMM_Model_AIC(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP timeSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_MCMC(n_MCMCSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(Model_AIC(dir, n_files, n_MCMC, time, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Model_BIC
+double Model_BIC(const std::string dir, const int n_files, const int n_MCMC, const arma::field<arma::vec> time, const arma::field<arma::vec> Y);
+RcppExport SEXP _BayesFPMM_Model_BIC(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP timeSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_MCMC(n_MCMCSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(Model_BIC(dir, n_files, n_MCMC, time, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // TestUpdateZ
 Rcpp::List TestUpdateZ();
 RcppExport SEXP _BayesFPMM_TestUpdateZ() {
@@ -893,14 +923,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // GetStuff
-Rcpp::List GetStuff(double sigma_sq, const std::string dir);
-RcppExport SEXP _BayesFPMM_GetStuff(SEXP sigma_sqSEXP, SEXP dirSEXP) {
+Rcpp::List GetStuff(double sigma_sq, const std::string dir, const int n_funct);
+RcppExport SEXP _BayesFPMM_GetStuff(SEXP sigma_sqSEXP, SEXP dirSEXP, SEXP n_functSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type sigma_sq(sigma_sqSEXP);
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
-    rcpp_result_gen = Rcpp::wrap(GetStuff(sigma_sq, dir));
+    Rcpp::traits::input_parameter< const int >::type n_funct(n_functSEXP);
+    rcpp_result_gen = Rcpp::wrap(GetStuff(sigma_sq, dir, n_funct));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1373,6 +1404,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_GetSigamCI", (DL_FUNC) &_BayesFPMM_GetSigamCI, 2},
     {"_BayesFPMM_GetZCI", (DL_FUNC) &_BayesFPMM_GetZCI, 2},
     {"_BayesFPMM_Model_DIC", (DL_FUNC) &_BayesFPMM_Model_DIC, 5},
+    {"_BayesFPMM_Model_AIC", (DL_FUNC) &_BayesFPMM_Model_AIC, 5},
+    {"_BayesFPMM_Model_BIC", (DL_FUNC) &_BayesFPMM_Model_BIC, 5},
     {"_BayesFPMM_TestUpdateZ", (DL_FUNC) &_BayesFPMM_TestUpdateZ, 0},
     {"_BayesFPMM_TestUpdatePi", (DL_FUNC) &_BayesFPMM_TestUpdatePi, 0},
     {"_BayesFPMM_TestUpdatePhi", (DL_FUNC) &_BayesFPMM_TestUpdatePhi, 0},
@@ -1390,7 +1423,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_TestReadMat", (DL_FUNC) &_BayesFPMM_TestReadMat, 1},
     {"_BayesFPMM_TestReadCube", (DL_FUNC) &_BayesFPMM_TestReadCube, 1},
     {"_BayesFPMM_TestReadField", (DL_FUNC) &_BayesFPMM_TestReadField, 1},
-    {"_BayesFPMM_GetStuff", (DL_FUNC) &_BayesFPMM_GetStuff, 2},
+    {"_BayesFPMM_GetStuff", (DL_FUNC) &_BayesFPMM_GetStuff, 3},
     {"_BayesFPMM_TestEstimateInitialZ", (DL_FUNC) &_BayesFPMM_TestEstimateInitialZ, 0},
     {"_BayesFPMM_TestEstimateInitial", (DL_FUNC) &_BayesFPMM_TestEstimateInitial, 3},
     {"_BayesFPMM_TestEstimateInitialTT", (DL_FUNC) &_BayesFPMM_TestEstimateInitialTT, 5},

@@ -5,15 +5,15 @@ library(BayesFPMM)
 ######
 ## Run SImulations
 ##
-set.seed(1)
+library(BayesFPMM)
 for(i in 1:25){
   data_dir <- "/Users/nicholasmarco/Projects/Simulation/2_cluster/data/"
-  x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 200, 2, data_dir)
+  x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 500, 2, data_dir)
   y <- TestBFPMM_Theta(5000, 0.001, x$Z, x$nu, 0.8, 2, data_dir)
-  dir <- paste("/Users/nicholasmarco/Projects/Simulation/2_cluster/trace", as.character(1 + ((i-1) * 4)), "/", sep = "")
+  dir <- paste("/Users/nicholasmarco/Projects/Simulation/2_cluster/trace", as.character(4 + ((i-1) * 4)), "/", sep = "")
   #dir <- "C:\\Projects\\Simulation\\Optimal_K\\2_clusters\\"
-  z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 500000, 10000, dir, 0.001, x$Z,
-                                x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu,
+  z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 500000, 10000, dir, 0.001, y$Z,
+                                x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, y$nu,
                                 x$tau, y$sigma, y$chi, 0.8, 2, data_dir)
   saveRDS(z, paste(dir, "x_results.RDS", sep = ""))
 }
@@ -36,14 +36,14 @@ for(j in 1:10){
     nu_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
     nu[,,(200*(i) + 1):(200*(i+1))] <- nu_i
   }
-  Z <- array(0,dim=c(100,2,4000))
-  dir = paste("c:\\Projects\\Simulation\\High_Variance\\Trace",j,"\\Z", sep ="")
-  for(i in 0:19){
+  Z <- array(0,dim=c(100,2,10000))
+  dir = "/Users/nicholasmarco/Projects/Simulation/2_cluster/trace4/Z"
+  for(i in 0:49){
     Z_i <- TestReadCube(paste(dir, as.character(i),".txt", sep = ""))
     Z[,,(200*(i) + 1):(200*(i+1))] <- Z_i
   }
   nu <- nu[,,501:4000]
-  Z <- Z[,,501:4000]
+  Z <- Z[,,501:10000]
 
   ## Fix label switching problem
   nu_ph <- nu
@@ -471,6 +471,7 @@ Y <- as.matrix(Y)
 #get rid of ID value
 
 Y <- split(Y, seq(nrow(Y)))
+matplot(Y[demDat$Group ==2,], type = 'l')
 
 time <- seq(6, 14, 0.25)
 time <- rep(list(time), 97)
@@ -492,19 +493,19 @@ saveRDS(z, paste(dir, "x_results.RDS", sep = ""))
 
 ### get credible intervals for mean
 mean_1 <- GetMeanCI_S(dir,50, time[[1]], 1)
-plot(mean_1$CI_50, type = 'l')
-lines(mean_1$CI_025, col = "red")
-lines(mean_1$CI_975, col = "red")
+plot(time[[1]],mean_1$CI_50, type = 'l')
+lines(time[[1]], mean_1$CI_025, col = "red")
+lines(time[[1]], mean_1$CI_975, col = "red")
 
 mean_2 <- GetMeanCI_S(dir,50, time[[1]], 2)
-plot(mean_2$CI_50, type = 'l')
-lines(mean_2$CI_025, col = "red")
-lines(mean_2$CI_975, col = "red")
+plot(time[[1]],mean_2$CI_50, type = 'l')
+lines(time[[1]],mean_2$CI_025, col = "red")
+lines(time[[1]],mean_2$CI_975, col = "red")
 
 ### Get median cluster memberships
 
 Z_post <- GetZCI(dir, 50)
-
+plot(Z_post$CI_50[,1], demDat$Group)
 
 
 ##################################
@@ -522,7 +523,7 @@ x <- readRDS("/Users/nicholasmarco/Projects/Simulation/2_cluster/trace1/x_result
 nu_1_true <-  y$B[[1]] %*% t(t(x$nu_true[1,]))
 nu_2_true <-  y$B[[1]] %*% t(t(x$nu_true[2,]))
 time <- seq(0, 990, 10)
-for(i in 1:100){
+for(i in 1:12){
   dir_i <- paste(dir, "trace", i, "/", sep = "")
   nu_1 <- GetMeanCI_PW(dir_i, 50, time, 1)
   nu_2 <- GetMeanCI_PW(dir_i, 50, time, 2)
@@ -562,7 +563,7 @@ x <- readRDS("/Users/nicholasmarco/Projects/Simulation/2_cluster/trace1/x_result
 nu_1_true <-  y$B[[1]] %*% t(t(x$nu_true[1,]))
 nu_2_true <-  y$B[[1]] %*% t(t(x$nu_true[2,]))
 time <- seq(0, 990, 10)
-for(i in 1:100){
+for(i in 1:12){
   dir_i <- paste(dir, "trace", i, "/", sep = "")
   nu_1 <- GetMeanCI_S(dir_i, 50, time, 1)
   nu_2 <- GetMeanCI_S(dir_i, 50, time, 2)
@@ -595,4 +596,26 @@ for(i in 1:100){
 plot(nu_2_true, type = 'l')
 lines(nu_2$CI_025, col = "red")
 lines(nu_2$CI_975, col = "red")
+
+b <- GetZCI(dir_i, 50)
+
+### Simulation 2
+
+BIC <- matrix(0, 10, 4)
+AIC <- matrix(0, 10, 4)
+DIC <- matrix(0, 10, 4)
+
+dir <- "/Users/nicholasmarco/Projects/Simulation/Optimal_k/"
+time <- seq(0, 990, 10)
+time <- rep(list(time), 100)
+for(j in 2:5){
+  for(i in 1:10){
+    print(i)
+    print(j)
+    x <-  readRDS(paste(dir, j, "_clusters/trace", i,"/x_results.RDS", sep = ""))
+    #AIC[i,j-1] <- Model_AIC(paste(dir, j, "_clusters/trace", i, "/", sep = ""), 50, 200, time, x$y_obs)
+    #BIC[i,j-1] <- Model_BIC(paste(dir, j, "_clusters/trace", i, "/", sep = ""), 50, 200, time, x$y_obs)
+    DIC[i,j-1] <- Model_DIC(paste(dir, j, "_clusters/trace", i, "/", sep = ""), 50, 200, time, x$y_obs)
+  }
+}
 

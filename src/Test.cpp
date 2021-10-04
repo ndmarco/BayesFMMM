@@ -1191,10 +1191,9 @@ arma::field<arma::cube> TestReadField(std::string directory){
 //' @name GetStuff
 //' @export
 // [[Rcpp::export]]
-Rcpp::List GetStuff(double sigma_sq, const std::string dir){
+Rcpp::List GetStuff(double sigma_sq, const std::string dir, const int  n_funct){
   arma::field<arma::vec> t_obs1(100,1);
   arma::field<arma::vec> t_star1(100,1);
-  int n_funct = 100;
   for(int i = 0; i < n_funct; i++){
     t_obs1(i,0) =  arma::regspace(0, 10, 990);
     t_star1(i,0) = arma::regspace(0, 50, 950);
@@ -1243,11 +1242,11 @@ Rcpp::List GetStuff(double sigma_sq, const std::string dir){
   arma::mat Z;
   Z.load(dir + "Z.txt");
 
-  arma::field<arma::vec> y_obs(100, 1);
-  arma::field<arma::mat> y_star(100, 1);
+  arma::field<arma::vec> y_obs(n_funct, 1);
+  arma::field<arma::mat> y_star(n_funct, 1);
   arma::vec mean = arma::zeros(8);
 
-  for(int j = 0; j < 100; j++){
+  for(int j = 0; j < n_funct; j++){
     mean = arma::zeros(8);
     for(int l = 0; l < nu.n_rows; l++){
       mean = mean + Z(j,l) * nu.row(l).t();
@@ -3579,12 +3578,47 @@ Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
     }
   }
 
+  // rescale Z and nu
+  arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+  int max_ind = 0;
+  for(int i = 0; i < Z_est.n_cols; i++){
+    max_ind = arma::index_max(Z_est.col(i));
+    transform_mat.row(i) = Z_est.row(max_ind);
+  }
+  arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
+  arma::mat nu_est_rescale = arma::pinv(transform_mat) * nu_est;
+  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),0) = 0.999;
+  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),1) = 0.001;
+  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),0) = 0.001;
+  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),1) = 0.999;
+
+
+  // arma::mat Z_est_rescale = arma::zeros(n_funct, Z_samp.n_cols);
+  // arma::mat nu_est_rescale = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+  // double Z_max = 0;
+  // double Z_min = 0;
+  // int Z_max_ind = 0;
+  // int Z_min_ind = 0;
+  // for(int i = 0; i < Z_est.n_cols; i++){
+  //   Z_max = arma::max(Z.col(i));
+  //   Z_min = arma::min(Z.col(i));
+  //   Z_max_ind = arma::index_max(Z.col(i));
+  //   for(int j = 0; j < Z_est.n_rows; j++){
+  //     Z_est_rescale(i,j) = (Z_est(i,j) - Z_min) / (Z_max - Z_min);
+  //     for(int l = 0; l < Z_est.n_cols; l++){
+  //       nu_est_rescale.row(i) = nu_est_rescale.row(i) + Z_est(Z_max_ind, l) * nu_est.row(l);
+  //     }
+  //   }
+  // }
+
   // start MCMC sampling
   Rcpp::List mod1 = BFPMM_Theta(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
                                 t_star1, c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
-                                sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est, nu_est);
+                                sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est_rescale, nu_est_rescale);
 
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("chi", mod1["chi"]),
+                                        Rcpp::Named("Z", mod1["Z"]),
+                                        Rcpp::Named("nu", mod1["nu"]),
                                         Rcpp::Named("A", mod1["A"]),
                                         Rcpp::Named("delta", mod1["delta"]),
                                         Rcpp::Named("sigma", mod1["sigma"]),
@@ -3790,7 +3824,7 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
 
   // start MCMC sampling
   Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
-                               n_temp_trans, t_star1, c, 800, 3, 2, 3, 1, 1,
+                               n_temp_trans, t_star1, c, 1, 3, 2, 3, 1, 1,
                                1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1, beta_N_t,
                                N_t);
   arma::vec ph = mod1["loglik"];
@@ -3798,7 +3832,7 @@ Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double si
 
   for(int i = 0; i < n_trys; i++){
     Rcpp::List modi = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
-                                 n_temp_trans, t_star1, c, 800, 3, 2, 3, 1, 1,
+                                 n_temp_trans, t_star1, c, 1, 3, 2, 3, 1, 1,
                                  1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1, beta_N_t,
                                  N_t);
     arma::vec ph1 = modi["loglik"];
@@ -3921,6 +3955,7 @@ Rcpp::List TestBFPMM_MTT_warm_start(const double beta_N_t,
       arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
   }
   arma::vec c = arma::ones(k);
+  c = c / 5;
 
   int n_nu = alpha_3_samp.n_elem;
 
@@ -4004,7 +4039,7 @@ Rcpp::List TestBFPMM_MTT_warm_start(const double beta_N_t,
 
   // start MCMC sampling
   Rcpp::List mod1 = BFPMM_MTT_warm_start(y_obs, t_obs1, n_funct, 50, k, 8, 3, tot_mcmc_iters,
-                              r_stored_iters, n_temp_trans, t_star1, c, 800, 3, 2,
+                              r_stored_iters, n_temp_trans, t_star1, c, 1, 3, 2,
                               3, 1, 1, 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1,
                               directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est,
                               delta_est, gamma_est, Phi_est, A_est, nu_est,

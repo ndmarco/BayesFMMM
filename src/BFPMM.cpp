@@ -3840,6 +3840,8 @@ Rcpp::List BFPMM_Theta(const arma::field<arma::vec>& y_obs,
     }
   }
   Rcpp::List params = Rcpp::List::create(Rcpp::Named("y_star", y_star),
+                                         Rcpp::Named("Z", Z),
+                                         Rcpp::Named("nu", nu),
                                          Rcpp::Named("chi", chi),
                                          Rcpp::Named("A", A),
                                          Rcpp::Named("delta", delta),

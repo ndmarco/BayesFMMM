@@ -690,6 +690,34 @@ Model_DIC <- function(dir, n_files, n_MCMC, time, Y) {
     .Call('_BayesFPMM_Model_DIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time, Y)
 }
 
+#' Calculates the AIC of a model
+#'
+#' @name Model_AIC
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param time Field of vectors containing time points at which the function was observed
+#' @param Y Field of vectors containing observed values of the function
+#' @returns DIC Double containing DIC value
+#' @export
+Model_AIC <- function(dir, n_files, n_MCMC, time, Y) {
+    .Call('_BayesFPMM_Model_AIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time, Y)
+}
+
+#' Calculates the BIC of a model
+#'
+#' @name Model_BIC
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param time Field of vectors containing time points at which the function was observed
+#' @param Y Field of vectors containing observed values of the function
+#' @returns DIC Double containing DIC value
+#' @export
+Model_BIC <- function(dir, n_files, n_MCMC, time, Y) {
+    .Call('_BayesFPMM_Model_BIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time, Y)
+}
+
 #' Tests updating Z
 #'
 #' @name TestUpdateZ
@@ -829,8 +857,8 @@ TestReadField <- function(directory) {
 #'
 #' @name GetStuff
 #' @export
-GetStuff <- function(sigma_sq, dir) {
-    .Call('_BayesFPMM_GetStuff', PACKAGE = 'BayesFPMM', sigma_sq, dir)
+GetStuff <- function(sigma_sq, dir, n_funct) {
+    .Call('_BayesFPMM_GetStuff', PACKAGE = 'BayesFPMM', sigma_sq, dir, n_funct)
 }
 
 #' Tests BFOC function
