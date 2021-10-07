@@ -10,7 +10,7 @@
 \alias{TestEstimateInitialTemp}
 \title{Tests BFOC function}
 \usage{
-GetStuff(sigma_sq, dir)
+GetStuff(sigma_sq, dir, n_funct)
 
 TestEstimateInitialZ()
 

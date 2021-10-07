@@ -5,9 +5,7 @@
 #include <cmath>
 
 void updateZ_PM(const arma::field<arma::vec>& y_obs,
-                const arma::field<arma::mat>& y_star,
                 const arma::field<arma::mat>& B_obs,
-                const arma::field<arma::mat>& B_star,
                 const arma::cube& Phi,
                 const arma::mat& nu,
                 const arma::mat& chi,
@@ -22,9 +20,7 @@ void updateZ_PM(const arma::field<arma::vec>& y_obs,
 
 void updateZTempered_PM(const double& beta_i,
                         const arma::field<arma::vec>& y_obs,
-                        const arma::field<arma::mat>& y_star,
                         const arma::field<arma::mat>& B_obs,
-                        const arma::field<arma::mat>& B_star,
                         const arma::cube& Phi,
                         const arma::mat& nu,
                         const arma::mat& chi,

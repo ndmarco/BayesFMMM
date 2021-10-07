@@ -5,9 +5,7 @@
 #include <cmath>
 
 void updateSigma(const arma::field<arma::vec>& y_obs,
-                 const arma::field<arma::mat>& y_star,
                  const arma::field<arma::mat>& B_obs,
-                 const arma::field<arma::mat>& B_star,
                  const double alpha_0,
                  const double beta_0,
                  const arma::mat& nu,
@@ -20,9 +18,7 @@ void updateSigma(const arma::field<arma::vec>& y_obs,
 
 void updateSigmaTempered(const double& beta_i,
                          const arma::field<arma::vec>& y_obs,
-                         const arma::field<arma::mat>& y_star,
                          const arma::field<arma::mat>& B_obs,
-                         const arma::field<arma::mat>& B_star,
                          const double alpha_0,
                          const double beta_0,
                          const arma::mat& nu,

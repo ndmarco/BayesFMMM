@@ -6,9 +6,7 @@
 //'
 //' @name updateNu
 //' @param y_obs Field of vectors containing observed time points
-//' @param y_obs Field of matrices containing unobserved time points for all iterations
 //' @param B_obs Field of matrices containing basis functions evaluated at observed time points
-//' @param B_star Field of matrices containing basis functions evaluated at unobserved time points
 //' @param tau Vector containing current tau parameters
 //' @param Phi Cube containing current Phi parameters
 //' @param Z Matrix containing current Z parameters
@@ -21,9 +19,7 @@
 //' @param B_1 Matrix acting as placeholder for covariance matrix
 //' @param nu Cube contianing MCMC samples for nu
 void updateNu(const arma::field<arma::vec>& y_obs,
-              const arma::field<arma::mat>& y_star,
               const arma::field<arma::mat>& B_obs,
-              const arma::field<arma::mat>& B_star,
               const arma::vec& tau,
               const arma::cube& Phi,
               const arma::mat& Z,
@@ -60,26 +56,6 @@ void updateNu(const arma::field<arma::vec>& y_obs,
           }
           b_1 = b_1 + Z(i,j) * B_obs(i,0).row(l).t() * ph;
         }
-        if(B_star(i,0).n_elem > 0){
-          for(int l = 0; l < y_star(i,0).n_cols; l++){
-            ph = 0;
-            ph = y_star(i,0)(iter, l);
-            B_1 = B_1 + Z(i,j) * Z(i,j) * (B_star(i,0).row(l).t() * B_star(i,0).row(l));
-            for(int k = 0; k < nu.n_rows; k++){
-              if(Z(i,k) != 0){
-                if(k != j){
-                  ph = ph - Z(i,k) * (arma::dot(nu.slice(iter).row(k),
-                                        B_star(i,0).row(l)));
-                }
-                for(int n = 0; n < Phi.n_slices; n++){
-                  ph = ph - Z(i,k) * (chi(i,n) * arma::dot(Phi.slice(n).row(k),
-                                 B_star(i,0).row(l)));
-                }
-              }
-            }
-            b_1 = b_1 + Z(i,j) * B_star(i,0).row(l).t() * ph;
-          }
-        }
       }
     }
     b_1 = b_1 / sigma;
@@ -99,9 +75,7 @@ void updateNu(const arma::field<arma::vec>& y_obs,
 //' @name updateNuTempered
 //' @param beta_i temperature at current step
 //' @param y_obs Field of vectors containing observed time points
-//' @param y_obs Field of matrices containing unobserved time points for all iterations
 //' @param B_obs Field of matrices containing basis functions evaluated at observed time points
-//' @param B_star Field of matrices containing basis functions evaluated at unobserved time points
 //' @param tau Vector containing current tau parameters
 //' @param Phi Cube containing current Phi parameters
 //' @param Z Matrix containing current Z parameters
@@ -115,9 +89,7 @@ void updateNu(const arma::field<arma::vec>& y_obs,
 //' @param nu Cube contianing MCMC samples for nu
 void updateNuTempered(const double& beta_i,
                       const arma::field<arma::vec>& y_obs,
-                      const arma::field<arma::mat>& y_star,
                       const arma::field<arma::mat>& B_obs,
-                      const arma::field<arma::mat>& B_star,
                       const arma::vec& tau,
                       const arma::cube& Phi,
                       const arma::mat& Z,
@@ -153,26 +125,6 @@ void updateNuTempered(const double& beta_i,
             }
           }
           b_1 = b_1 + Z(i,j) * B_obs(i,0).row(l).t() * ph;
-        }
-        if(B_star(i,0).n_elem > 0){
-          for(int l = 0; l < y_star(i,0).n_cols; l++){
-            ph = 0;
-            ph = y_star(i,0)(iter, l);
-            B_1 = B_1 + Z(i,j) * Z(i,j) * (B_star(i,0).row(l).t() * B_star(i,0).row(l));
-            for(int k = 0; k < nu.n_rows; k++){
-              if(Z(i,k) != 0){
-                if(k != j){
-                  ph = ph - Z(i,k) * (arma::dot(nu.slice(iter).row(k),
-                                        B_star(i,0).row(l)));
-                }
-                for(int n = 0; n < Phi.n_slices; n++){
-                  ph = ph - Z(i,k) * (chi(i,n) * arma::dot(Phi.slice(n).row(k),
-                                 B_star(i,0).row(l)));
-                }
-              }
-            }
-            b_1 = b_1 + Z(i,j) * B_star(i,0).row(l).t() * ph;
-          }
         }
       }
     }

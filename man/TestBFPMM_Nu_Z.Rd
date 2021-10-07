@@ -3,7 +3,6 @@
 \name{TestBFPMM_Nu_Z}
 \alias{TestBFPMM_Nu_Z}
 \alias{TestBFPMM_Nu_Z_multiple_try}
-\alias{BFPMM_Nu_Z_multiple_try}
 \title{Tests the full Bayesian Functional Partial Membership Model}
 \usage{
 TestBFPMM_Nu_Z(tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans)
@@ -18,48 +17,9 @@ TestBFPMM_Nu_Z_multiple_try(
   k,
   dir
 )
-
-BFPMM_Nu_Z_multiple_try(
-  tot_mcmc_iters,
-  beta_N_t,
-  N_t,
-  n_temp_trans,
-  n_try,
-  k,
-  Y,
-  time,
-  n_funct,
-  n_basis,
-  n_eigen
-)
-}
-\arguments{
-\item{tot_mcmc_iters}{Int conatining the number of MCMC iterations per try}
-
-\item{beta_N_t}{Double containing the maximum weight for tempered transisitons}
-
-\item{N_t}{Int containing total number of tempered transitions. If no tempered transitions are desired, pick a small integer}
-
-\item{n_temp_trans}{Int containing how often tempered transitions are performed. If no tempered transitions are desired, pick a integer larger than tot_mcmc_iters}
-
-\item{k}{Int containing the number of clusters}
-
-\item{n_try}{Int containing how many different chains are tried}
-
-\item{Y}{Field of vectors containing the observed values}
-
-\item{time}{Field of vecotrs containing the observed time points}
-
-\item{n_funct}{Int containing the number of functions}
-
-\item{n_basis}{Int containing the number of basis functions}
-
-\item{n_eigen}{Int containing the number of eigenfunctions}
 }
 \description{
 Tests the full Bayesian Functional Partial Membership Model
 
 Tests the full Bayesian Functional Partial Membership Model
-
-Function for finding a good initial starting point for nu parameters and Z parameters, with option for temperered transitions
 }
