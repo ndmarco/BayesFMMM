@@ -9,9 +9,7 @@
 //'
 //' @name lpdf_z
 //' @param y_obs Vector containing y at observed time points
-//' @param y_star Vector containing y at unobserved time points
 //' @param B_obs Matrix containing basis functions evaluated at observed time points
-//' @param B_star Matrix containing basis functions evaluated at unobserved time points
 //' @param Phi Cube containing Phi parameters
 //' @param nu Matrix containing nu parameters
 //' @param pi vector containing the elements of pi
@@ -20,9 +18,7 @@
 //' @return lpdf_z double contianing the log-pdf
 
 double lpdf_z(const arma::vec& y_obs,
-              const arma::mat& y_star,
               const arma::mat& B_obs,
-              const arma::mat& B_star,
               const arma::cube& Phi,
               const arma::mat& nu,
               const arma::rowvec& chi,
@@ -50,21 +46,6 @@ double lpdf_z(const arma::vec& y_obs,
     lpdf = lpdf - (std::pow(y_obs(l) - mean, 2.0) / (2 * sigma_sq));
   }
 
-  // Check to see if there are unobserved time points of interest
-  if(B_star.n_rows > 0){
-    for(int l = 0; l < B_star.n_rows; l++){
-      mean = 0;
-      for(int k = 0; k < pi.n_elem; k++){
-        mean = mean + Z(k) * arma::dot(nu.row(k), B_star.row(l).t());
-        for(int n = 0; n < Phi.n_slices; n++){
-          mean = mean + Z(k) * chi(n) * arma::dot(Phi.slice(n).row(k),
-                          B_star.row(l).t());
-        }
-      }
-      lpdf = lpdf - (std::pow(y_star(num,l) - mean, 2.0) / (2 * sigma_sq));
-    }
-  }
-
   return lpdf;
 }
 
@@ -73,9 +54,7 @@ double lpdf_z(const arma::vec& y_obs,
 //' @name lpdf_zTempered
 //' @param beta_i Double containing current temperature
 //' @param y_obs Vector containing y at observed time points
-//' @param y_star Vector containing y at unobserved time points
 //' @param B_obs Matrix containing basis functions evaluated at observed time points
-//' @param B_star Matrix containing basis functions evaluated at unobserved time points
 //' @param Phi Cube containing Phi parameters
 //' @param nu Matrix containing nu parameters
 //' @param pi vector containing the elements of pi
@@ -85,9 +64,7 @@ double lpdf_z(const arma::vec& y_obs,
 
 double lpdf_zTempered(const double& beta_i,
                       const arma::vec& y_obs,
-                      const arma::mat& y_star,
                       const arma::mat& B_obs,
-                      const arma::mat& B_star,
                       const arma::cube& Phi,
                       const arma::mat& nu,
                       const arma::rowvec& chi,
@@ -113,21 +90,6 @@ double lpdf_zTempered(const double& beta_i,
       }
     }
     lpdf = lpdf - (beta_i * (std::pow(y_obs(l) - mean, 2.0) / (2 * sigma_sq)));
-  }
-
-  // Check to see if there are unobserved time points of interest
-  if(B_star.n_rows > 0){
-    for(int l = 0; l < B_star.n_rows; l++){
-      mean = 0;
-      for(int k = 0; k < pi.n_elem; k++){
-        mean = mean + Z(k) * arma::dot(nu.row(k), B_star.row(l).t());
-        for(int n = 0; n < Phi.n_slices; n++){
-          mean = mean + Z(k) * chi(n) * arma::dot(Phi.slice(n).row(k),
-                          B_star.row(l).t());
-        }
-      }
-      lpdf = lpdf - (beta_i * (std::pow(y_star(num,l) - mean, 2.0) / (2 * sigma_sq)));
-    }
   }
 
   return lpdf;
@@ -157,9 +119,7 @@ double Z_proposal_density(const arma::vec& Z,
 //'
 //' @name UpdateZ
 //' @param y_obs Field of Vectors containing y at observed time points
-//' @param y_star Field of Matrices containing y at unobserved time points at all mcmc iterations
 //' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-//' @param B_star Field of Matrices containing basis functions evaluated at unobserved time points
 //' @param Phi Cube containing Phi parameters
 //' @param nu Matrix containing nu parameters
 //' @param pi Vector containing the elements of pi
@@ -173,9 +133,7 @@ double Z_proposal_density(const arma::vec& Z,
 //' @param Z Cube that contains all past, current, and future MCMC draws
 
 void updateZ_PM(const arma::field<arma::vec>& y_obs,
-                const arma::field<arma::mat>& y_star,
                 const arma::field<arma::mat>& B_obs,
-                const arma::field<arma::mat>& B_star,
                 const arma::cube& Phi,
                 const arma::mat& nu,
                 const arma::mat& chi,
@@ -199,13 +157,12 @@ void updateZ_PM(const arma::field<arma::vec>& y_obs,
     Z_ph = rdirichlet(a_Z_PM * Z.slice(iter).row(i).t());
 
     // Get old state log pdf
-    z_lpdf = lpdf_z(y_obs(i,0), y_star(i,0), B_obs(i,0), B_star(i,0),
-                    Phi, nu, chi.row(i), pi, Z.slice(iter).row(i), alpha_3, i,
-                    sigma_sq);
+    z_lpdf = lpdf_z(y_obs(i,0), B_obs(i,0),Phi, nu, chi.row(i), pi,
+                    Z.slice(iter).row(i), alpha_3, i, sigma_sq);
 
     // Get new state log pdf
-    z_new_lpdf = lpdf_z(y_obs(i,0), y_star(i,0), B_obs(i,0), B_star(i,0), Phi,
-                        nu, chi.row(i), pi, Z_ph.t(), alpha_3, i, sigma_sq);
+    z_new_lpdf = lpdf_z(y_obs(i,0), B_obs(i,0), Phi, nu, chi.row(i), pi,
+                        Z_ph.t(), alpha_3, i, sigma_sq);
 
     // Get proposal densities
     lpdf_propose_new = Z_proposal_density(Z_ph, a_Z_PM * Z.slice(iter).row(i).t());
@@ -230,9 +187,7 @@ void updateZ_PM(const arma::field<arma::vec>& y_obs,
 //' @name UpdateZTempered
 //' @param beta_i Double containing current temperature
 //' @param y_obs Field of Vectors containing y at observed time points
-//' @param y_star Field of Matrices containing y at unobserved time points at all mcmc iterations
 //' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-//' @param B_star Field of Matrices containing basis functions evaluated at unobserved time points
 //' @param Phi Cube containing Phi parameters
 //' @param nu Matrix containing nu parameters
 //' @param pi Vector containing the elements of pi
@@ -247,9 +202,7 @@ void updateZ_PM(const arma::field<arma::vec>& y_obs,
 
 void updateZTempered_PM(const double& beta_i,
                         const arma::field<arma::vec>& y_obs,
-                        const arma::field<arma::mat>& y_star,
                         const arma::field<arma::mat>& B_obs,
-                        const arma::field<arma::mat>& B_star,
                         const arma::cube& Phi,
                         const arma::mat& nu,
                         const arma::mat& chi,
@@ -272,13 +225,13 @@ void updateZTempered_PM(const double& beta_i,
     Z_ph = rdirichlet(a_Z_PM * Z.slice(iter).row(i).t());
 
     // Get old state log pdf
-    z_lpdf = lpdf_zTempered(beta_i, y_obs(i,0), y_star(i,0), B_obs(i,0),
-                            B_star(i,0), Phi, nu, chi.row(i), pi,
+    z_lpdf = lpdf_zTempered(beta_i, y_obs(i,0), B_obs(i,0),
+                            Phi, nu, chi.row(i), pi,
                             Z.slice(iter).row(i), alpha_3, i, sigma_sq);
 
     // Get new state log pdf
-    z_new_lpdf = lpdf_zTempered(beta_i, y_obs(i,0), y_star(i,0), B_obs(i,0),
-                                B_star(i,0), Phi,  nu, chi.row(i), pi,
+    z_new_lpdf = lpdf_zTempered(beta_i, y_obs(i,0), B_obs(i,0),
+                                Phi,  nu, chi.row(i), pi,
                                 Z_ph.t(), alpha_3, i, sigma_sq);
 
     // Get proposal densities

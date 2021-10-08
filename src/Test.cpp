@@ -175,7 +175,6 @@ Rcpp::List TestUpdatePhi()
   Z.col(0) = arma::vec(100, arma::fill::ones);
 
   arma::field<arma::vec> y_obs(100, 1);
-  arma::field<arma::mat> y_star(100, 1);
   arma::vec mean = arma::zeros(8);
 
   for(int j = 0; j < 100; j++){
@@ -1210,8 +1209,7 @@ Rcpp::List TestEstimateInitial(const int tot_mcmc_iters, const int r_stored_iter
                            sqrt(1), sqrt(1), 1, 1, 1, 1, directory, Z_est,
                            output["A_est"], output["pi_est"], output["tau_est"],
                            output["delta_est"], nu_est, output["Phi_est"],
-                           output["gamma_est"], output["chi_est"],
-                           output["y_star_est"], sigma_est);
+                           output["gamma_est"], output["chi_est"], sigma_est);
 
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
                                         Rcpp::Named("y_obs", y_obs),
@@ -1332,15 +1330,13 @@ Rcpp::List TestEstimateInitialTT(const int tot_mcmc_iters, const int r_stored_it
                            sqrt(1), sqrt(1), 1, 1, 1, 1, directory, Z,
                            output["A_est"], output["pi_est"], output["tau_est"],
                           output["delta_est"], nu, Phi,
-                          output["gamma_est"], chi,
-                          output["y_star_est"], beta_N_t, N_t, sigma_sq);
+                          output["gamma_est"], chi, beta_N_t, N_t, sigma_sq);
 
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
                                         Rcpp::Named("y_obs", y_obs),
                                         Rcpp::Named("nu_true", nu),
                                         Rcpp::Named("Phi_true", Phi),
                                         Rcpp::Named("nu", mod1["nu"]),
-                                        Rcpp::Named("y_star", mod1["y_star"]),
                                         Rcpp::Named("chi", mod1["chi"]),
                                         Rcpp::Named("pi", mod1["pi"]),
                                         Rcpp::Named("A", mod1["A"]),
@@ -1438,8 +1434,8 @@ Rcpp::List TestEstimateInitialMTT(const int tot_mcmc_iters, const int r_stored_i
                                sqrt(1), sqrt(1), 1, 1, 1, 1, directory, Z_est,
                                output["A_est"], output["pi_est"], output["tau_est"],
                                output["delta_est"], nu_est, output["Phi_est"],
-                               output["gamma_est"], output["chi_est"],
-                               output["y_star_est"], beta_N_t, N_t, sigma_est);
+                               output["gamma_est"], output["chi_est"], beta_N_t,
+                               N_t, sigma_est);
 
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
                                         Rcpp::Named("y_obs", y_obs),
@@ -1543,8 +1539,8 @@ Rcpp::List TestEstimateInitialTempladder(const double beta_N_t, const int N_t){
                               sqrt(1), sqrt(1), 1, 1, 1, 1, Z,
                               output["A_est"], output["pi_est"], output["tau_est"],
                                      output["delta_est"], nu, Phi,
-                                     output["gamma_est"], chi,
-                                     output["y_star_est"], beta_N_t, N_t, sigma_sq);
+                                     output["gamma_est"], chi, beta_N_t, N_t,
+                                     sigma_sq);
 
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
                                         Rcpp::Named("y_obs", y_obs),
@@ -1662,8 +1658,8 @@ Rcpp::List TestEstimateInitialTemp(const int tot_mcmc_iters, const int r_stored_
                            sqrt(1), sqrt(1), 1, 1, 1, 1, directory, Z_est,
                            output["A_est"], output["pi_est"], output["tau_est"],
                            output["delta_est"], nu_est, output["Phi_est"],
-                           output["gamma_est"], output["chi_est"],
-                           output["y_star_est"], temp, sigma_est);
+                           output["gamma_est"], output["chi_est"], temp,
+                           sigma_est);
 
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
                                         Rcpp::Named("y_obs", y_obs),
@@ -1842,7 +1838,7 @@ Rcpp::List TestUpdatePhiTempered(const double beta)
   gamma = gamma * 10;
   arma::vec tilde_tau = {2, 2.5, 3, 5, 10};
   for(int i = 0; i < 100; i++){
-    updatePhiTempered(beta, y_obs, y_star, B_obs, B_star, nu, gamma, tilde_tau, Z, chi,
+    updatePhiTempered(beta, y_obs, B_obs, nu, gamma, tilde_tau, Z, chi,
               sigma_sq, i, 100, m_1, M_1, Phi_samp);
   }
   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Phi", Phi),
@@ -2752,7 +2748,6 @@ double getLikelihood(){
   arma::vec mean = arma::zeros(8);
 
   for(int j = 0; j < 100; j++){
-    //y_star(j,0) = arma::zeros(100, B_star(j,0).n_rows);
     mean = arma::zeros(8);
     for(int l = 0; l < nu.n_rows; l++){
       mean = mean + Z(j,l) * nu.row(l).t();

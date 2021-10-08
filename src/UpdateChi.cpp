@@ -16,16 +16,14 @@
 //' @param chi Cube contianing MCMC samples for chi
 
 void updateChi(const arma::field<arma::vec>& y_obs,
-              const arma::field<arma::mat>& y_star,
-              const arma::field<arma::mat>& B_obs,
-              const arma::field<arma::mat>& B_star,
-              const arma::cube& Phi,
-              const arma::mat& nu,
-              const arma::mat& Z,
-              const double& sigma,
-              const int& iter,
-              const int& tot_mcmc_iters,
-              arma::cube& chi){
+               const arma::field<arma::mat>& B_obs,
+               const arma::cube& Phi,
+               const arma::mat& nu,
+               const arma::mat& Z,
+               const double& sigma,
+               const int& iter,
+               const int& tot_mcmc_iters,
+               arma::cube& chi){
   double w = 0;
   double W = 0;
   double ph = 0;
@@ -48,28 +46,6 @@ void updateChi(const arma::field<arma::vec>& y_obs,
               if(n != m){
                 w = w - Z(i,k1) * ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1),
                                  B_obs(i,0).row(l));
-              }
-            }
-          }
-        }
-      }
-      if(y_star(i,0).n_elem > 0){
-        for(int l = 0; l < y_star(i,0).n_cols; l++){
-          ph = 0;
-          for(int k2 = 0; k2 < Z.n_cols; k2++){
-            ph = ph + Z(i, k2) * arma::dot(Phi.slice(m).row(k2),
-                        B_star(i,0).row(l));
-          }
-          w = w + ph * y_star(i,0)(iter, l);
-          W = W + ph * ph;
-          for(int k1 = 0; k1 < Z.n_cols; k1++){
-            if(Z(i,k1) != 0){
-              w = w - Z(i,k1) * ph * arma::dot(nu.row(k1), B_star(i,0).row(l));
-              for(int n = 0; n < chi.n_cols; n++){
-                if(n != m){
-                  w = w - Z(i,k1) * ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1),
-                                   B_star(i,0).row(l));
-                }
               }
             }
           }
@@ -104,9 +80,7 @@ void updateChi(const arma::field<arma::vec>& y_obs,
 
 void updateChiTempered(const double& beta_i,
                        const arma::field<arma::vec>& y_obs,
-                       const arma::field<arma::mat>& y_star,
                        const arma::field<arma::mat>& B_obs,
-                       const arma::field<arma::mat>& B_star,
                        const arma::cube& Phi,
                        const arma::mat& nu,
                        const arma::mat& Z,
@@ -136,28 +110,6 @@ void updateChiTempered(const double& beta_i,
               if(n != m){
                 w = w - Z(i,k1) * ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1),
                                  B_obs(i,0).row(l));
-              }
-            }
-          }
-        }
-      }
-      if(y_star(i,0).n_elem > 0){
-        for(int l = 0; l < y_star(i,0).n_cols; l++){
-          ph = 0;
-          for(int k2 = 0; k2 < Z.n_cols; k2++){
-            ph = ph + Z(i, k2) * arma::dot(Phi.slice(m).row(k2),
-                        B_star(i,0).row(l));
-          }
-          w = w + ph * y_star(i,0)(iter, l);
-          W = W + ph * ph;
-          for(int k1 = 0; k1 < Z.n_cols; k1++){
-            if(Z(i,k1) != 0){
-              w = w - Z(i,k1) * ph * arma::dot(nu.row(k1), B_star(i,0).row(l));
-              for(int n = 0; n < chi.n_cols; n++){
-                if(n != m){
-                  w = w - Z(i,k1) * ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1),
-                                   B_star(i,0).row(l));
-                }
               }
             }
           }
