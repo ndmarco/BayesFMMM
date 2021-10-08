@@ -13,9 +13,7 @@
 #include "UpdateTau.H"
 #include "UpdateSigma.H"
 #include "UpdateChi.H"
-#include "UpdateYStar.H"
 #include "BFPMM.H"
-#include "EstimateInitialState.H"
 #include "UpdateAlpha3.H"
 #include "LabelSwitch.H"
 
