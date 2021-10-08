@@ -39,7 +39,6 @@
 Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                    const double beta_N_t,
                                    const int N_t,
-                                   const int n_temp_trans,
                                    const int n_try,
                                    const int k,
                                    const arma::field<arma::vec> Y,
@@ -66,17 +65,15 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
   // start MCMC sampling
   Rcpp::List mod1 = BFPMM_Nu_Z(Y, time, n_funct, k, n_basis, n_eigen, tot_mcmc_iters,
-                               n_temp_trans, t_star1, c, 800, 3, 2, 3, 1, 1,
-                               1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1, beta_N_t,
-                               N_t);
+                               t_star1, c, 800, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
+                               sqrt(1), sqrt(1), 1, 10, 1, 1, beta_N_t, N_t);
   arma::vec ph = mod1["loglik"];
   double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
 
   for(int i = 0; i < n_try; i++){
     Rcpp::List modi = BFPMM_Nu_Z(Y, time, n_funct, k, n_basis, n_eigen, tot_mcmc_iters,
-                                 n_temp_trans, t_star1, c, 800, 3, 2, 3, 1, 1,
-                                 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1, beta_N_t,
-                                 N_t);
+                                 t_star1, c, 800, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
+                                 sqrt(1), sqrt(1), 1, 10, 1, 1, beta_N_t, N_t);
     arma::vec ph1 = modi["loglik"];
     if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
       mod1 = modi;

@@ -6,9 +6,7 @@
 #include <truncnorm.h>
 
 void updateNu(const arma::field<arma::vec>& y_obs,
-              const arma::field<arma::mat>& y_star,
               const arma::field<arma::mat>& B_obs,
-              const arma::field<arma::mat>& B_star,
               const arma::vec& tau,
               const arma::cube& Phi,
               const arma::mat& Z,
@@ -23,9 +21,7 @@ void updateNu(const arma::field<arma::vec>& y_obs,
 
 void updateNuTempered(const double& beta_i,
                       const arma::field<arma::vec>& y_obs,
-                      const arma::field<arma::mat>& y_star,
                       const arma::field<arma::mat>& B_obs,
-                      const arma::field<arma::mat>& B_star,
                       const arma::vec& tau,
                       const arma::cube& Phi,
                       const arma::mat& Z,

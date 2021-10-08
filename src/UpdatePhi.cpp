@@ -6,9 +6,7 @@
 //'
 //' @name UpdatePhi
 //' @param y_obs Field of Vectors containing observed time points
-//' @param y_star Field of Matrices contianing unobserved time points at all mcmc iterations
 //' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-//' @param B_star Field of Matrices containing basis functions evaluated at unobserved time points
 //' @param nu Matrix containing current nu parameters
 //' @param gamma Cube containing current gamma parameters
 //' @param tilde_tau vector containing current tilde_tau parameters
@@ -21,9 +19,7 @@
 //' @param Phi Field of Cubes containing all mcmc samples of Phi
 
 void updatePhi(const arma::field<arma::vec>& y_obs,
-               const arma::field<arma::mat>& y_star,
                const arma::field<arma::mat>& B_obs,
-               const arma::field<arma::mat>& B_star,
                const arma::mat& nu,
                const arma::cube& gamma,
                const arma::vec& tilde_tau,
@@ -69,37 +65,6 @@ void updatePhi(const arma::field<arma::vec>& y_obs,
             }
             m_1 = m_1 + Z(i,j) * chi(i,m) * B_obs(i,0).row(l).t() * ph;
           }
-
-
-          // Check to see if there are unobserved time points of interest
-          if(B_star(i,0).n_elem > 0){
-            for(int l = 0; l < y_star(i,0).n_cols; l++){
-              ph = 0;
-              ph = y_star(i,0)(iter,l) - Z(i,j) * arma::dot(nu.row(j),
-                             B_star(i,0).row(l));
-              M_1 = M_1 + Z(i,j) * Z(i,j) * (chi(i,m) * chi(i,m) *
-                B_star(i,0).row(l).t() * B_star(i,0).row(l));
-              for(int k = 0; k < nu.n_rows; k++){
-                for(int n = 0; n < Phi(iter,0).n_slices; n++){
-                  if(k == j){
-                    if(n != m){
-                      ph = ph - (Z(i,j) * chi(i,n) *
-                        arma::dot(Phi(iter,0).slice(n).row(k),
-                                  B_star(i,0).row(l)));
-                    }
-                  }else{
-                    ph = ph - (Z(i,k) * chi(i,n) *
-                      arma::dot(Phi(iter,0).slice(n).row(k),
-                                B_star(i,0).row(l)));
-                  }
-                }
-                if(k != j){
-                  ph = ph - Z(i,k) * arma::dot(nu.row(k), B_star(i,0).row(l));
-                }
-              }
-              m_1 = m_1 + Z(i,j) * chi(i,m) * B_star(i,0).row(l).t() * ph;
-            }
-          }
         }
       }
       m_1 = m_1 * (1 / sigma_sq);
@@ -126,9 +91,7 @@ void updatePhi(const arma::field<arma::vec>& y_obs,
 //' @name UpdatePhiTempered
 //' @param beta_i Double containing the current temperature
 //' @param y_obs Field of Vectors containing observed time points
-//' @param y_star Field of Matrices contianing unobserved time points at all mcmc iterations
 //' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-//' @param B_star Field of Matrices containing basis functions evaluated at unobserved time points
 //' @param nu Matrix containing current nu parameters
 //' @param gamma Cube containing current gamma parameters
 //' @param tilde_tau vector containing current tilde_tau parameters
@@ -142,9 +105,7 @@ void updatePhi(const arma::field<arma::vec>& y_obs,
 
 void updatePhiTempered(const double& beta_i,
                        const arma::field<arma::vec>& y_obs,
-                       const arma::field<arma::mat>& y_star,
                        const arma::field<arma::mat>& B_obs,
-                       const arma::field<arma::mat>& B_star,
                        const arma::mat& nu,
                        const arma::cube& gamma,
                        const arma::vec& tilde_tau,
@@ -189,37 +150,6 @@ void updatePhiTempered(const double& beta_i,
               }
             }
             m_1 = m_1 +  Z(i,j) * chi(i,m) * B_obs(i,0).row(l).t() * ph;
-          }
-
-
-          // Check to see if there are unobserved time points of interest
-          if(B_star(i,0).n_elem > 0){
-            for(int l = 0; l < y_star(i,0).n_cols; l++){
-              ph = 0;
-              ph = y_star(i,0)(iter,l) - Z(i,j) * arma::dot(nu.row(j),
-                          B_star(i,0).row(l));
-              M_1 = M_1 +  Z(i,j) *  Z(i,j) * (chi(i,m) * chi(i,m) * B_star(i,0).row(l).t() *
-                B_star(i,0).row(l));
-              for(int k = 0; k < nu.n_rows; k++){
-                for(int n = 0; n < Phi(iter,0).n_slices; n++){
-                  if(k == j){
-                    if(n != m){
-                      ph = ph - (Z(i,j) * chi(i,n) *
-                        arma::dot(Phi(iter,0).slice(n).row(k),
-                                  B_star(i,0).row(l)));
-                    }
-                  }else{
-                    ph = ph - (Z(i,k) * chi(i,n) *
-                      arma::dot(Phi(iter,0).slice(n).row(k),
-                                B_star(i,0).row(l)));
-                  }
-                }
-                if(k != j){
-                  ph = ph - Z(i,k) * arma::dot(nu.row(k), B_star(i,0).row(l));
-                }
-              }
-              m_1 = m_1 + Z(i,j) * chi(i,m) * B_star(i,0).row(l).t() * ph;
-            }
           }
         }
       }

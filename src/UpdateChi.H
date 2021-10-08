@@ -4,9 +4,7 @@
 #include <RcppArmadillo.h>
 
 void updateChi(const arma::field<arma::vec>& y_obs,
-               const arma::field<arma::mat>& y_star,
                const arma::field<arma::mat>& B_obs,
-               const arma::field<arma::mat>& B_star,
                const arma::cube& Phi,
                const arma::mat& nu,
                const arma::mat& Z,
@@ -17,9 +15,7 @@ void updateChi(const arma::field<arma::vec>& y_obs,
 
 void updateChiTempered(const double& beta_i,
                        const arma::field<arma::vec>& y_obs,
-                       const arma::field<arma::mat>& y_star,
                        const arma::field<arma::mat>& B_obs,
-                       const arma::field<arma::mat>& B_star,
                        const arma::cube& Phi,
                        const arma::mat& nu,
                        const arma::mat& Z,
