@@ -6,11 +6,11 @@ library(BayesFPMM)
 ## Run SImulations
 ##
 library(BayesFPMM)
-for(i in 1:25){
-  data_dir <- "/Users/nicholasmarco/Projects/Simulation/2_cluster/data/"
+for(i in 1:20){
+  data_dir <- "/Users/nicholasmarco/Projects/Simulation/integrated_error/25_obs/data/"
   x <- TestBFPMM_Nu_Z_multiple_try(2000, 0.001, 1/2, 10, 10000, 500, 2, data_dir)
   y <- TestBFPMM_Theta(5000, 0.001, x$Z, x$nu, 0.8, 2, data_dir)
-  dir <- paste("/Users/nicholasmarco/Projects/Simulation/2_cluster/trace", as.character(4 + ((i-1) * 4)), "/", sep = "")
+  dir <- paste("/Users/nicholasmarco/Projects/Simulation/integrated_error/25_obs/trace", as.character(i), "/", sep = "")
   #dir <- "C:\\Projects\\Simulation\\Optimal_K\\2_clusters\\"
   z <- TestBFPMM_MTT_warm_start(1/5, 10, 1000000, 500000, 10000, dir, 0.001, y$Z,
                                 x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, y$nu,
@@ -456,7 +456,7 @@ load("pa.dat.Rdata")
 # y: alpha spectra density
 out1 <- unique(pa.dat$func)
 out3 <- unique(pa.dat$reg)
-matplot(matrix(pa.dat$y, nrow = length(out1)), type = "l") # data
+matplot(matrix(pa.dat$y[pa.dat$], nrow = length(out1)), type = "l") # data
 trapz(out1, pa.dat$y[1:33]) # all functional observations integrate to 1 (normalized across electordes, subjects)
 
 ### Convert to wide format
@@ -469,13 +469,36 @@ Y <- Y[,-1]
 Y <- as.matrix(Y)
 
 #get rid of ID value
-
+library(reshape2)
+library(ggplot2)
 Y <- split(Y, seq(nrow(Y)))
-matplot(Y[demDat$Group ==2,], type = 'l')
-
 time <- seq(6, 14, 0.25)
-time <- rep(list(time), 97)
+data_g1 <- Y[demDat$Group ==2 & demDat$Age > 100,]
+colnames(data_g1) <-  time
+data_g1 <- melt(data_g1)
+data_g1$Var1 <- as.factor(data_g1$Var1)
+p1 <- ggplot(data = data_g1, aes(x = Var2, y = value, colour = Var1)) + geom_line() + xlab("Frequency (Hz)") + ylab("Power") + ggtitle("ASD") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        plot.title = element_text(hjust = 0.5),
+        legend.position = "none")
 
+data_g2 <- Y[demDat$Group ==1& demDat$Age > 100,]
+colnames(data_g2) <-  time
+data_g2 <- melt(data_g2)
+data_g2$Var1 <- as.factor(data_g2$Var1)
+p2 <- ggplot(data = data_g2, aes(x = Var2, y = value, colour = Var1)) + geom_line() + xlab("Frequency (Hz)") + ylab("Power") + ggtitle("TD") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        plot.title = element_text(hjust = 0.5),
+        legend.position = "none")
+#matplot( t(time_mat[demDat$Group ==2 & demDat$Age > 100,]), t(Y[demDat$Group ==2 & demDat$Age > 100,]), type = 'l', xlab = "Frequency (Hz)", ylab = "Power", main = "ASD")
+#matplot( t(time_mat[demDat$Group ==1 & demDat$Age > 100,]), t(Y[demDat$Group ==1 & demDat$Age > 100,]), type = 'l', xlab = "Frequency (Hz)", ylab = "Power", main = "TD")
+grid.arrange(p1, p2, ncol = 2)
+
+time <- seq(6, 14, 0.1)
+time <- rep(list(time), 97)
+time_mat <- matrix(rep(time, 97), nrow = 97, byrow = T)
 
 #############################
 ### Real Data example #######
@@ -487,8 +510,8 @@ x <- BFPMM_Nu_Z_multiple_try(2000, 1/2, 10, 10000, 200, 2, Y, time, 97, 8, 3)
 y <- BFPMM_Theta_Est(5000, x$Z, x$nu, 0.8, 2, Y, time, 97, 8, 3)
 dir <- "/Users/nicholasmarco/Projects/Simulation/real_data/trace/"
 z <- BFPMM_warm_start(1/5, 10, 1000000, 500000, 10000, x$Z,
-                              x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu,
-                              x$tau, y$sigma, y$chi, 0.8, 2, Y, time, 97, 8, 3, 50, dir)
+                      x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu,
+                      x$tau, y$sigma, y$chi, 0.8, 2, Y, time, 97, 8, 3, 50, dir)
 saveRDS(z, paste(dir, "x_results.RDS", sep = ""))
 
 ### get credible intervals for mean
@@ -498,14 +521,75 @@ lines(time[[1]], mean_1$CI_025, col = "red")
 lines(time[[1]], mean_1$CI_975, col = "red")
 
 mean_2 <- GetMeanCI_S(dir,50, time[[1]], 2)
-plot(time[[1]],mean_2$CI_50, type = 'l')
+plot(time[[1]],mean_2$CI_50, type = 'l', xlab = "Frequency (Hz)", ylab = "Power", ylim = c(0, 0.4))
 lines(time[[1]],mean_2$CI_025, col = "red")
 lines(time[[1]],mean_2$CI_975, col = "red")
+
+
+predframe <- data.frame(freq = time[[1]],
+                        median=mean_1$CI_50,lwr=mean_1$CI_025,upr=mean_1$CI_975)
+p1 <- ggplot(predframe, aes(freq, median))+
+  geom_line(col = "blue")+
+  geom_ribbon(data=predframe,aes(ymin=lwr,ymax=upr),alpha=0.3)  + ylab("Power") +
+  xlab("Frequency (Hz)") + ylim(c(0, 0.4)) + xlim(c(6,14)) + ggtitle("Mean 1") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        plot.title = element_text(hjust = 0.5))
+
+predframe <- data.frame(freq = time[[1]],
+                        median=mean_2$CI_50,lwr=mean_2$CI_025,upr=mean_2$CI_975)
+p2<- ggplot(predframe, aes(freq, median))+
+  geom_line(col = "blue")+
+  geom_ribbon(data=predframe,aes(ymin=lwr,ymax=upr),alpha=0.3) + ylab("Power")+
+  xlab("Frequency (Hz)") + ylim(c(0, 0.4)) + xlim(c(6,14)) + ggtitle("Mean 2") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        plot.title = element_text(hjust = 0.5))
+
+grid.arrange(p1, p2, ncol = 2)
+x <- arrangeGrob(p1, p2)
+##ggsave("/Users/nicholasmarco/Projects/BayesFPMM/Paper/means.jpeg", arrangeGrob(p1, p2))
+##p1
 
 ### Get median cluster memberships
 
 Z_post <- GetZCI(dir, 50)
-plot(Z_post$CI_50[,1], demDat$Group)
+data_Z <- data.frame("Cluster 1" = Z_post$CI_50[,1], "Clinical Diagnosis" = demDat$Group)
+data_Z$Clinical.Diagnosis[data_Z$Clinical.Diagnosis == 2] <- "ASD"
+data_Z$Clinical.Diagnosis[data_Z$Clinical.Diagnosis == 1] <- "TD"
+ggplot(data= data_Z, aes(x = `Cluster.1` , y = Clinical.Diagnosis)) + geom_violin(trim = F, xlim = c(0,1)) + geom_point() + xlab("Cluster 1") + ylab("Clinical Diagnosis") +
+  stat_summary(
+    geom = "point",
+    fun.x = "mean",
+    col = "black",
+    size = 3,
+    shape = 24,
+    fill = "red")+ xlim(c(0,1)) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                                        panel.background = element_blank(),axis.line = element_line(colour = "black"),
+                                        plot.title = element_text(hjust = 0.5))
+data_VIQ <- data_Z <- data.frame("Cluster 1" = Z_post$CI_50[,1], "VIQ" = demDat$VIQ)
+p1 <- ggplot(data= data_Z, aes(x = `Cluster.1` , y = VIQ)) + geom_point() + xlab("Cluster 1") + ylab("Verbal IQ") +
+  geom_smooth(method='lm', colour = "red") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                                                   panel.background = element_blank(),axis.line = element_line(colour = "black"),
+                                                   plot.title = element_text(hjust = 0.5))
+data_NVIQ <- data_Z <- data.frame("Cluster 1" = Z_post$CI_50[,1], "NVIQ" = demDat$NVIQ)
+p2 <- ggplot(data= data_Z, aes(x = `Cluster.1` , y = NVIQ)) + geom_point() + xlab("Cluster 1") + ylab("Nonverbal IQ") +
+  geom_smooth(method='lm', colour = "red") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                                                   panel.background = element_blank(),axis.line = element_line(colour = "black"),
+                                                   plot.title = element_text(hjust = 0.5))
+grid.arrange(p1, p2, ncol = 2)
+
+## Get Covariances
+Cov_1 <- GetCovCI_S(dir, 50, 200, time[[1]], time[[1]], 1,1)
+
+library(plotly)
+
+fig <- plot_ly(showscale = FALSE)
+fig <- fig %>% add_surface(z = ~ Cov_1$CI_50)
+fig <- fig %>% add_surface(z = ~ Cov_1$CI_975, opacity = 0.20)
+fig <- fig %>% add_surface(z = ~ Cov_1$CI_025, opacity = 0.20)
+
+fig
 
 
 ##################################
@@ -513,53 +597,169 @@ plot(Z_post$CI_50[,1], demDat$Group)
 ##################################
 
 ### Pointwise Credible Interval coverage mean
-dir <- "/Users/nicholasmarco/Projects/Simulation/2_cluster/"
+dir <- "/Users/nicholasmarco/Projects/Simulation/integrated_error/"
 
-counter1 <- 0
-counter2 <- 0
-counterall <- 0
-y <- GetStuff(0.001,"/Users/nicholasmarco/Projects/Simulation/2_cluster/data/")
-x <- readRDS("/Users/nicholasmarco/Projects/Simulation/2_cluster/trace1/x_results.RDS")
+y <- GetStuff(0.0000001,"/Users/nicholasmarco/Projects/Simulation/integrated_error/100_obs/data/", 100)
+x <- readRDS("/Users/nicholasmarco/Projects/Simulation/integrated_error/100_obs/trace1/x_results.RDS")
 nu_1_true <-  y$B[[1]] %*% t(t(x$nu_true[1,]))
 nu_2_true <-  y$B[[1]] %*% t(t(x$nu_true[2,]))
-time <- seq(0, 990, 10)
-for(i in 1:12){
-  dir_i <- paste(dir, "trace", i, "/", sep = "")
-  nu_1 <- GetMeanCI_PW(dir_i, 50, time, 1)
-  nu_2 <- GetMeanCI_PW(dir_i, 50, time, 2)
 
-  ## Label Switching
-  if(sum(abs(nu_1$CI_50 - nu_1_true)) > sum(abs(nu_1$CI_50 - nu_2_true))){
-    nu_i <- nu_1
-    nu_1 <- nu_2
-    nu_2 <- nu_i
-  }
-  for(j in 1:100){
-    ## Calculate how many points are within the credible interval for mean 1
-    if(nu_1$CI_975[j] > nu_1_true[j]){
-      if(nu_1$CI_025[j] < nu_1_true[j]){
-        counter1 <- counter1 + 1
-      }
-    }
+##plot functions
 
-    ## Calculate how many points are within the credible interval for mean 1
-    if(nu_2$CI_975[j] > nu_2_true[j]){
-      if(nu_2$CI_025[j] < nu_2_true[j]){
-        counter2 <- counter2 + 1
-      }
+
+
+observed <- matrix(0, 3, 100)
+observed[1,] <- y$y[[1]]
+observed[2,] <- y$y[[40]]
+observed[3,] <- y$y[[84]]
+obs1 <- melt(observed)
+obs1$Var2 <- (obs1$Var2 -1) * 10
+
+
+observed1 <- data.frame("funct" =observed, "Z" =x$Z_true[c(1,40, 84),1], id = 1:3)
+
+observed1$Col <- rbPal(30)[as.numeric(cut(observed1$Z,breaks = 30))]
+col2 <- observed1$Col[2]
+observed1$Col[2] <- observed1$Col[3]
+observed1$Col[3] <- col2
+obs <- melt(observed1, id = c("id", "Z", "Col"))
+
+obs1$Z <- obs$Z
+obs1$Z <- as.factor(obs1$Z)
+obs1$Col <- obs$Col
+
+
+ggplot(obs1, aes(x = Var2, y = value, colour=Z))+
+  geom_line(aes(colour = Z))+ scale_colour_manual(values = observed1$Col)+
+  xlab("") + ylab("") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), legend.position = "none",axis.line = element_line(colour = "black"),
+        plot.title = element_text(hjust = 0.5))
+
+cov1_true <- matrix(0, 100, 100)
+for(j in 1:100){
+  for(k in 1:100){
+    for(m in 1:3){
+      cov1_true[j,k] <- cov1_true[j,k] + x$Phi_true[1, ,m] %*% t(t(y$B[[1]][j,])) %*% y$B[[1]][k,] %*% t(t(x$Phi_true[1, ,m]))
     }
-    counterall <- counterall + 1
   }
 }
 
+cov2_true <- matrix(0, 100, 100)
+for(j in 1:100){
+  for(k in 1:100){
+    for(m in 1:3){
+      cov2_true[j,k] <- cov2_true[j,k] + x$Phi_true[2, ,m] %*% t(t(y$B[[1]][j,])) %*% y$B[[1]][k,] %*% t(t(x$Phi_true[2, ,m]))
+    }
+  }
+}
+
+cov12_true <- matrix(0, 100, 100)
+for(j in 1:100){
+  for(k in 1:100){
+    for(m in 1:3){
+      cov12_true[j,k] <- cov12_true[j,k] + x$Phi_true[2, ,m] %*% t(t(y$B[[1]][j,])) %*% y$B[[1]][k,] %*% t(t(x$Phi_true[1, ,m]))
+    }
+  }
+}
+
+time <- seq(0, 990, 10)
+
+int_err_mean1 <- matrix(0, 25, 3)
+int_err_mean2 <- matrix(0, 25, 3)
+
+int_err_cov1 <- matrix(0, 25, 3)
+int_err_cov2 <- matrix(0, 25, 3)
+int_err_cov12 <- matrix(0, 25, 3)
+
+for(j in 1:3){
+  if(j == 1){
+    dir <- "/Users/nicholasmarco/Projects/Simulation/integrated_error/25_obs/"
+  }
+  if(j == 2){
+    dir <- "/Users/nicholasmarco/Projects/Simulation/integrated_error/50_obs/"
+  }
+  if(j == 3){
+    dir <- "/Users/nicholasmarco/Projects/Simulation/integrated_error/100_obs/"
+  }
+  for(i in 1:25){
+    dir_i <- paste(dir, "trace", i, "/", sep = "")
+    nu_1 <- GetMeanCI_PW(dir_i, 50, time, 1)
+    nu_2 <- GetMeanCI_PW(dir_i, 50, time, 2)
+    cov1 <- GetCovCI_S(dir_i, 50, 200, time, time, 0, 0)
+    cov2 <- GetCovCI_S(dir_i, 50, 200, time, time, 1, 1)
+    cov12 <- GetCovCI_S(dir_i, 50, 200, time, time, 0, 1)
+    Z <- GetZCI(dir_i, 50)
+    ## Label Switching
+    if(sum(abs(nu_1$CI_50 - nu_1_true)) > sum(abs(nu_1$CI_50 - nu_2_true))){
+      nu_i <- nu_1
+      nu_1 <- nu_2
+      nu_2 <- nu_i
+      cov_i <- cov2
+      cov1 <- cov2
+      cov2 <- cov_i
+      cov12$CI_50<- t(cov12$CI_50)
+    }
+    int_err_mean1[i,j] <- sum((nu_1$CI_50 - nu_1_true)^2) * 10
+    int_err_mean2[i,j] <- sum((nu_2$CI_50 - nu_2_true)^2) * 10
+    int_err_cov1[i,j] <- sum((cov1$CI_50 - cov1_true)^2) * 10^2
+    int_err_cov2[i,j] <- sum((cov2$CI_50 - cov2_true)^2) * 10^2
+    int_err_cov12[i,j] <- sum((cov12$CI_50 - cov12_true)^2) * 10^2
+    print(i)
+    print(j)
+  }
+}
+
+rel_int_err_mean1 <- sum((nu_1$CI_50)^2) * 10
+rel_int_err_mean2 <- sum((nu_2$CI_50)^2) * 10
+rel_int_err_cov1 <- sum((cov1$CI_50)^2) * 100
+rel_int_err_cov2 <- sum((cov2$CI_50)^2) * 100
+rel_int_err_cov12 <- sum((cov12$CI_50)^2) * 100
+
+
+dir <- "/Users/nicholasmarco/Projects/Simulation/integrated_error/100_obs/trace1/"
+
+time <- seq(0, 990, 10)
+Cov_1 <- GetCovCI_S(dir, 50, 200, time, time, 1,1)
+library(plotly)
+
+fig <- plot_ly(showscale = FALSE)
+fig <- fig %>% add_surface(z = ~ cov2_true)
+fig <- fig %>% add_surface(z = ~ Cov_1$CI_975, opacity = 0.20)
+fig <- fig %>% add_surface(z = ~ Cov_1$CI_025, opacity = 0.20)
+
+fig
+
+time <- seq(0, 990, 10)
+Cov_1 <- GetCovCI_S(dir, 50, 200, time, time, 0,0)
+library(plotly)
+
+fig <- plot_ly(showscale = FALSE)
+fig <- fig %>% add_surface(z = ~ cov1_true)
+fig <- fig %>% add_surface(z = ~ Cov_1$CI_975, opacity = 0.20)
+fig <- fig %>% add_surface(z = ~ Cov_1$CI_025, opacity = 0.20)
+
+fig
+
+time <- seq(0, 990, 10)
+Cov_1 <- GetCovCI_S(dir, 50, 200, time, time, 1,0)
+library(plotly)
+
+fig <- plot_ly(showscale = FALSE)
+fig <- fig %>% add_surface(z = ~ cov12_true)
+fig <- fig %>% add_surface(z = ~ Cov_1$CI_975, opacity = 0.20)
+fig <- fig %>% add_surface(z = ~ Cov_1$CI_025, opacity = 0.20)
+
+fig
+
 ### Simultaneous Credible Interval coverage mean
-dir <- "/Users/nicholasmarco/Projects/Simulation/2_cluster/"
+dir <- "/Users/nicholasmarco/Projects/Simulation/integrated_error/80_obs/"
 
 counter1 <- 0
 counter2 <- 0
 counterall <- 0
-y <- GetStuff(0.001,"/Users/nicholasmarco/Projects/Simulation/2_cluster/data/")
-x <- readRDS("/Users/nicholasmarco/Projects/Simulation/2_cluster/trace1/x_results.RDS")
+y <- GetStuff(0.001,"/Users/nicholasmarco/Projects/Simulation/integrated_error/80_obs/data/", 80)
+x <- readRDS("/Users/nicholasmarco/Projects/Simulation/integrated_error/80_obs/trace1/x_results.RDS")
 nu_1_true <-  y$B[[1]] %*% t(t(x$nu_true[1,]))
 nu_2_true <-  y$B[[1]] %*% t(t(x$nu_true[2,]))
 time <- seq(0, 990, 10)
@@ -593,9 +793,9 @@ for(i in 1:12){
 }
 
 
-plot(nu_2_true, type = 'l')
-lines(nu_2$CI_025, col = "red")
-lines(nu_2$CI_975, col = "red")
+plot(nu_1_true, type = 'l')
+lines(nu_1$CI_025, col = "red")
+lines(nu_1$CI_975, col = "red")
 
 b <- GetZCI(dir_i, 50)
 

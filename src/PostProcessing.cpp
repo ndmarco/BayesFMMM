@@ -161,7 +161,7 @@ Rcpp::List GetCovCI_Pw(const std::string dir,
 
   // Make spline basis 1
   splines2::BSpline bspline1;
-  bspline1 = splines2::BSpline(time1, phi_samp.n_cols);
+  bspline1 = splines2::BSpline(time1, phi_samp(0,0).n_cols);
   // Get Basis matrix (time1 x Phi.n_cols)
   arma::mat bspline_mat1{bspline1.basis(true)};
   // Make B_obs
@@ -169,7 +169,7 @@ Rcpp::List GetCovCI_Pw(const std::string dir,
 
   // Make spline basis 2
   splines2::BSpline bspline2;
-  bspline2 = splines2::BSpline(time2, phi_samp.n_cols);
+  bspline2 = splines2::BSpline(time2, phi_samp(0,0).n_cols);
   // Get Basis matrix (time2 x Phi.n_cols)
   arma::mat bspline_mat2{bspline2.basis(true)};
   // Make B_obs
@@ -246,7 +246,7 @@ Rcpp::List GetCovCI_S(const std::string dir,
 
   // Make spline basis 1
   splines2::BSpline bspline1;
-  bspline1 = splines2::BSpline(time1, phi_samp.n_cols);
+  bspline1 = splines2::BSpline(time1, phi_samp(0,0).n_cols);
   // Get Basis matrix (time1 x Phi.n_cols)
   arma::mat bspline_mat1{bspline1.basis(true)};
   // Make B_obs
@@ -254,7 +254,7 @@ Rcpp::List GetCovCI_S(const std::string dir,
 
   // Make spline basis 2
   splines2::BSpline bspline2;
-  bspline2 = splines2::BSpline(time2, phi_samp.n_cols);
+  bspline2 = splines2::BSpline(time2, phi_samp(0,0).n_cols);
   // Get Basis matrix (time2 x Phi.n_cols)
   arma::mat bspline_mat2{bspline2.basis(true)};
   // Make B_obs
