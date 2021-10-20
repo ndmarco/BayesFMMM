@@ -456,7 +456,7 @@ load("pa.dat.Rdata")
 # y: alpha spectra density
 out1 <- unique(pa.dat$func)
 out3 <- unique(pa.dat$reg)
-matplot(matrix(pa.dat$y[pa.dat$], nrow = length(out1)), type = "l") # data
+matplot(matrix(pa.dat$y, nrow = length(out1)), type = "l") # data
 trapz(out1, pa.dat$y[1:33]) # all functional observations integrate to 1 (normalized across electordes, subjects)
 
 ### Convert to wide format
@@ -496,7 +496,7 @@ p2 <- ggplot(data = data_g2, aes(x = Var2, y = value, colour = Var1)) + geom_lin
 #matplot( t(time_mat[demDat$Group ==1 & demDat$Age > 100,]), t(Y[demDat$Group ==1 & demDat$Age > 100,]), type = 'l', xlab = "Frequency (Hz)", ylab = "Power", main = "TD")
 grid.arrange(p1, p2, ncol = 2)
 
-time <- seq(6, 14, 0.1)
+time <- seq(6, 14, 0.25)
 time <- rep(list(time), 97)
 time_mat <- matrix(rep(time, 97), nrow = 97, byrow = T)
 
@@ -506,9 +506,9 @@ time_mat <- matrix(rep(time, 97), nrow = 97, byrow = T)
 
 ### Start MCMC
 
-x <- BFPMM_Nu_Z_multiple_try(2000, 1/2, 10, 10000, 200, 2, Y, time, 97, 8, 3)
+x <- BFPMM_Nu_Z_multiple_try(2000, 200, 2, Y, time, 97, 8, 3)
 y <- BFPMM_Theta_Est(5000, x$Z, x$nu, 0.8, 2, Y, time, 97, 8, 3)
-dir <- "/Users/nicholasmarco/Projects/Simulation/real_data/trace/"
+dir <- "/Users/nicholasmarco/Projects/Simulation/real_data/trace2/"
 z <- BFPMM_warm_start(1/5, 10, 1000000, 500000, 10000, x$Z,
                       x$pi, x$alpha_3, y$delta, y$gamma, y$Phi, y$A, x$nu,
                       x$tau, y$sigma, y$chi, 0.8, 2, Y, time, 97, 8, 3, 50, dir)
@@ -753,6 +753,28 @@ fig <- fig %>% add_surface(z = ~ Cov_1$CI_025, opacity = 0.20)
 
 fig
 
+mean_1_pw <- GetMeanCI_PW(dir, 50, time, 1)
+mean_1_S <- GetMeanCI_S(dir, 50, time, 1)
+predframe_pw <- data.frame(freq = time,
+                        true_func=nu_1_true,lwr=mean_1_pw$CI_025,upr=mean_1_pw$CI_975)
+predframe_S <- data.frame(freq = time,
+                           true_func=nu_1_true,lwr=mean_1_S$CI_025,upr=mean_1_S$CI_975)
+p1 <- ggplot(predframe_pw, aes(freq, true_func))+
+  geom_line(col = "blue")+
+  geom_ribbon(data=predframe_pw,aes(ymin=lwr,ymax=upr),alpha=0.5)  + ylab("") +
+  xlab("") + ggtitle("Pointwise CI") + ylim(c(-1,2)) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        plot.title = element_text(hjust = 0.5))
+p2 <- ggplot(predframe_S, aes(freq, true_func))+
+  geom_line(col = "blue")+
+  geom_ribbon(data=predframe_S,aes(ymin=lwr,ymax=upr),alpha=0.5)  + ylab("") +
+  xlab("") + ggtitle("Simultaneous CI") + ylim(c(-1,2)) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        plot.title = element_text(hjust = 0.5))
+
+grid.arrange(p1, p2, ncol = 2)
 ### Simultaneous Credible Interval coverage mean
 dir <- "/Users/nicholasmarco/Projects/Simulation/integrated_error/80_obs/"
 

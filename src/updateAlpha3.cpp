@@ -1,12 +1,15 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include "Distributions.H"
+#include <truncnorm.h>
 
 
 double lpdf_alpha3(const arma::vec& pi,
                    const double& b,
                    const arma::mat& Z,
-                   double& alpha_3){
+                   double& alpha_3,
+                   double& alpha_3_ph,
+                   const double& sigma_alpha_3){
   double lpdf = (-b) * alpha_3;
   for(int k = 0; k < Z.n_cols; k++){
     for(int i = 0; i < Z.n_rows; i++){
@@ -14,6 +17,8 @@ double lpdf_alpha3(const arma::vec& pi,
     }
   }
   lpdf = lpdf - (Z.n_rows *calc_lB(alpha_3 * pi));
+  lpdf = lpdf + d_truncnorm(alpha_3_ph, alpha_3_ph, sigma_alpha_3, 0,
+                            std::numeric_limits<double>::infinity(), 1);
   return lpdf;
 }
 
@@ -35,20 +40,19 @@ void updateAlpha3(const arma::vec& pi,
                   arma::vec& alpha_3){
 
   // propose new value
-  double alpha_3_ph = alpha_3(iter) + R::rnorm(0, sigma_alpha_3);
+  double alpha_3_ph = r_truncnorm(alpha_3(iter), sigma_alpha_3, 0,
+                                  std::numeric_limits<double>::infinity());
 
-  double lpdf_old = lpdf_alpha3(pi, b, Z, alpha_3(iter));
+  double lpdf_old = lpdf_alpha3(pi, b, Z, alpha_3(iter), alpha_3_ph, sigma_alpha_3);
 
-  if(alpha_3_ph > 0){
-    double lpdf_new = lpdf_alpha3(pi, b, Z, alpha_3_ph);
+  double lpdf_new = lpdf_alpha3(pi, b, Z, alpha_3_ph, alpha_3(iter), sigma_alpha_3);
 
-    double acceptance_prob = lpdf_new - lpdf_old;
-    double rand_unif_var = R::runif(0,1);
+  double acceptance_prob = lpdf_new - lpdf_old;
+  double rand_unif_var = R::runif(0,1);
 
-    if(std::log(rand_unif_var) < acceptance_prob){
-      // Accept new state and update parameters
-      alpha_3(iter) = alpha_3_ph;
-    }
+  if(std::log(rand_unif_var) < acceptance_prob){
+    // Accept new state and update parameters
+    alpha_3(iter) = alpha_3_ph;
   }
 
   if((tot_mcmc_iters - 1) > iter){

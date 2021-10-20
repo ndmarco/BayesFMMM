@@ -1368,7 +1368,7 @@ Rcpp::List TestUpdatealpha3_PM(){
 
   // Make Z matrix
   arma::mat Z(100, 3);
-  arma::vec c(3, arma::fill::randu);
+  arma::vec c(3, arma::fill::ones);
   arma::vec pi = rdirichlet(c);
 
   // setting alpha_3 = 10
@@ -1381,10 +1381,11 @@ Rcpp::List TestUpdatealpha3_PM(){
 
   for(int i = 0; i < 1000; i++)
   {
-    updateAlpha3(pi, 0.5, Z, i, 1000, 0.1, alpha_3);
+    updateAlpha3(pi, 0.5, Z, i, 1000, 0.05, alpha_3);
   }
 
-  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("alpha3_samp", alpha_3));
+  Rcpp::List mod = Rcpp::List::create(Rcpp::Named("alpha3_samp", alpha_3),
+                                      Rcpp::Named("alpha3", alpha));
   return mod;
 }
 
