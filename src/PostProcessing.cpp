@@ -178,8 +178,8 @@ Rcpp::List GetCovCI_Pw(const std::string dir,
   arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, n_MCMC * n_files);
   for(int i = 0; i < n_MCMC * n_files; i++){
     for(int j = 0; j < phi_samp.n_slices; j++){
-      cov_samp.slice(i) = cov_samp.slice(i) + (B1 * phi_samp(i,0).slice(j).row(l) *
-        (B2 * phi_samp(i,0).slice(j).row(m)).t());
+      cov_samp.slice(i) = cov_samp.slice(i) + (B1 * phi_samp(i,0).slice(j).row(l-1) *
+        (B2 * phi_samp(i,0).slice(j).row(m-1)).t());
     }
   }
 
@@ -263,8 +263,8 @@ Rcpp::List GetCovCI_S(const std::string dir,
   arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, n_MCMC * n_files);
   for(int i = 0; i < n_MCMC * n_files; i++){
     for(int j = 0; j < phi_samp.n_slices; j++){
-      cov_samp.slice(i) = cov_samp.slice(i) + (B1 * phi_samp(i,0).slice(j).row(l) *
-        (B2 * phi_samp(i,0).slice(j).row(m)).t());
+      cov_samp.slice(i) = cov_samp.slice(i) + (B1 * phi_samp(i,0).slice(j).row(l-1) *
+        (B2 * phi_samp(i,0).slice(j).row(m-1)).t());
     }
   }
 

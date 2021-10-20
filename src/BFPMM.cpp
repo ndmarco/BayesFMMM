@@ -13,7 +13,6 @@
 #include "UpdateTau.H"
 #include "UpdateSigma.H"
 #include "UpdateChi.H"
-#include "UpdateYStar.H"
 #include "CalculateLikelihood.H"
 #include "CalculateTTAcceptance.H"
 #include "UpdateAlpha3.H"
@@ -218,7 +217,6 @@ Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
       A1.row(0) = A.row(0);
       Z1.slice(0) = Z.slice(0);
       delta1.col(0) = delta.col(0);
-      arma::field<arma::mat> y_star1(n_funct, 1);
       gamma1(0,0) = gamma(0,0);
       Phi1(0,0) = Phi(0,0);
       tau1.row(0) = tau.row(0);
@@ -238,7 +236,6 @@ Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
       }
 
       nu1.save(directory + "Nu" + std::to_string(q) + ".txt", arma::arma_ascii);
-      y_star1.save(directory + "Y_Star" + std::to_string(q) + ".txt");
       chi1.save(directory + "Chi" + std::to_string(q) +".txt", arma::arma_ascii);
       pi1.save(directory + "Pi" + std::to_string(q) +".txt", arma::arma_ascii);
       alpha_31.save(directory + "alpha_3" + std::to_string(q) + ".txt", arma::arma_ascii);
@@ -384,9 +381,6 @@ Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs,
   arma::mat A = arma::ones(r_stored_iters, 2);
   arma::vec loglik = arma::zeros(r_stored_iters);
 
-  // start numbering for output files
-  int q = 0;
-
   for(int i = 0; i < r_stored_iters; i++){
     gamma(i,0) = arma::cube(K, P, M, arma::fill::zeros);
     Phi(i,0) = arma::zeros(K, P, M);
@@ -432,7 +426,6 @@ Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs,
   int temp_ind = 0;
   double logA = 0;
   double logu = 0;
-  int accept_num = 0;
 
 
   // initialize placeholders
@@ -741,7 +734,6 @@ Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
                 sigma((i % r_stored_iters)), (i % r_stored_iters), r_stored_iters,
                 chi);
     }
-
     if((i % n_temp_trans) == 0 && (i > 0)){
       // initialize placeholders
       nu_TT.slice(0) = nu.slice (i % r_stored_iters);
@@ -887,7 +879,6 @@ Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
       A1.row(0) = A.row(0);
       Z1.slice(0) = Z.slice(0);
       delta1.col(0) = delta.col(0);
-      arma::field<arma::mat> y_star1(n_funct, 1);
       gamma1(0,0) = gamma(0,0);
       Phi1(0,0) = Phi(0,0);
       tau1.row(0) = tau.row(0);
@@ -905,33 +896,33 @@ Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
         Phi1(p,0) = Phi(thinning_num*p  - 1,0);
         tau1.row(p) = tau.row(thinning_num*p - 1);
 
-      nu1.save(directory + "Nu" + std::to_string(q) + ".txt", arma::arma_ascii);
-      y_star1.save(directory + "Y_Star" + std::to_string(q) + ".txt");
-      chi1.save(directory + "Chi" + std::to_string(q) +".txt", arma::arma_ascii);
-      pi1.save(directory + "Pi" + std::to_string(q) +".txt", arma::arma_ascii);
-      alpha_31.save(directory + "alpha_3" + std::to_string(q) + ".txt", arma::arma_ascii);
-      A1.save(directory + "A" + std::to_string(q) +".txt", arma::arma_ascii);
-      delta1.save(directory + "Delta" + std::to_string(q) +".txt", arma::arma_ascii);
-      sigma1.save(directory + "Sigma" + std::to_string(q) +".txt", arma::arma_ascii);
-      tau1.save(directory + "Tau" + std::to_string(q) +".txt", arma::arma_ascii);
-      gamma1.save(directory + "Gamma" + std::to_string(q) +".txt");
-      Phi1.save(directory + "Phi" + std::to_string(q) +".txt");
-      Z1.save(directory + "Z" + std::to_string(q) +".txt", arma::arma_ascii);
+        nu1.save(directory + "Nu" + std::to_string(q) + ".txt", arma::arma_ascii);
+        chi1.save(directory + "Chi" + std::to_string(q) +".txt", arma::arma_ascii);
+        pi1.save(directory + "Pi" + std::to_string(q) +".txt", arma::arma_ascii);
+        alpha_31.save(directory + "alpha_3" + std::to_string(q) + ".txt", arma::arma_ascii);
+        A1.save(directory + "A" + std::to_string(q) +".txt", arma::arma_ascii);
+        delta1.save(directory + "Delta" + std::to_string(q) +".txt", arma::arma_ascii);
+        sigma1.save(directory + "Sigma" + std::to_string(q) +".txt", arma::arma_ascii);
+        tau1.save(directory + "Tau" + std::to_string(q) +".txt", arma::arma_ascii);
+        gamma1.save(directory + "Gamma" + std::to_string(q) +".txt");
+        Phi1.save(directory + "Phi" + std::to_string(q) +".txt");
+        Z1.save(directory + "Z" + std::to_string(q) +".txt", arma::arma_ascii);
 
-      //reset all parameters
-      nu.slice(0) = nu.slice(i % r_stored_iters);
-      chi.slice(0) = chi.slice(i % r_stored_iters);
-      pi.col(0) = pi.col(i % r_stored_iters);
-      alpha_3(0) = alpha_3(i % r_stored_iters);
-      A.row(0) = A.row(i % r_stored_iters);
-      delta.col(0) = delta.col(i % r_stored_iters);
-      sigma(0) = sigma(i % r_stored_iters);
-      tau.row(0) = tau.row(i % r_stored_iters);
-      gamma(0,0) = gamma(i % r_stored_iters, 0);
-      Phi(0,0) = Phi(i % r_stored_iters, 0);
-      Z.slice(0) = Z.slice(i % r_stored_iters);
+        //reset all parameters
+        nu.slice(0) = nu.slice(i % r_stored_iters);
+        chi.slice(0) = chi.slice(i % r_stored_iters);
+        pi.col(0) = pi.col(i % r_stored_iters);
+        alpha_3(0) = alpha_3(i % r_stored_iters);
+        A.row(0) = A.row(i % r_stored_iters);
+        delta.col(0) = delta.col(i % r_stored_iters);
+        sigma(0) = sigma(i % r_stored_iters);
+        tau.row(0) = tau.row(i % r_stored_iters);
+        gamma(0,0) = gamma(i % r_stored_iters, 0);
+        Phi(0,0) = Phi(i % r_stored_iters, 0);
+        Z.slice(0) = Z.slice(i % r_stored_iters);
 
-      q = q + 1;
+        q = q + 1;
+      }
     }
   }
 
@@ -1003,9 +994,7 @@ Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
                       const double& alpha,
                       const double& beta,
                       const double& alpha_0,
-                      const double& beta_0,
-                      const double& beta_N_t,
-                      const int& N_t){
+                      const double& beta_0){
   // Make B_obs
   arma::field<arma::mat> B_obs(n_funct,1);
 
@@ -1100,7 +1089,6 @@ Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
            Phi((i),0), Z.slice((i)), chi.slice((i)), sigma((i)));
     if(((i+1) % 100) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
-      Rcpp::Rcout << "Accpetance Probability: " << accept_num / (std::round(i / n_temp_trans)) << "\n";
       Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i)-19, (i))) << "\n";
       Rcpp::checkUserInterrupt();
     }
@@ -1220,9 +1208,6 @@ Rcpp::List BFPMM_Theta(const arma::field<arma::vec>& y_obs,
   arma::vec tilde_tau(M, arma::fill::ones);
   arma::mat A = arma::ones(tot_mcmc_iters, 2);
   arma::vec loglik = arma::zeros(tot_mcmc_iters);
-
-  // start numbering for output files
-  int q = 0;
 
   for(int i = 0; i < tot_mcmc_iters; i++){
     gamma(i,0) = arma::cube(K, P, M, arma::fill::ones);
@@ -1344,7 +1329,6 @@ Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
                                 const int& tot_mcmc_iters,
                                 const int& r_stored_iters,
                                 const int& n_temp_trans,
-                                const arma::field<arma::vec>& t_star,
                                 const arma::vec& c,
                                 const double& b,
                                 const double& nu_1,
@@ -1684,7 +1668,6 @@ Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       A1.row(0) = A.row(0);
       Z1.slice(0) = Z.slice(0);
       delta1.col(0) = delta.col(0);
-      arma::field<arma::mat> y_star1(n_funct, 1);
       gamma1(0,0) = gamma(0,0);
       Phi1(0,0) = Phi(0,0);
       tau1.row(0) = tau.row(0);
@@ -1717,11 +1700,6 @@ Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
 
       //reset all parameters
       nu.slice(0) = nu.slice(i % r_stored_iters);
-      for(int b = 0; b < n_funct; b++){
-        if(y_star(b,0).n_elem > 0){
-          y_star(b,0).row(0) =  y_star(b,0).row(i % r_stored_iters);
-        }
-      }
       chi.slice(0) = chi.slice(i % r_stored_iters);
       pi.col(0) = pi.col(i % r_stored_iters);
       alpha_3(0) = alpha_3(i % r_stored_iters);
@@ -1739,7 +1717,6 @@ Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
 
   Rcpp::List params = Rcpp::List::create(Rcpp::Named("nu", nu),
                                          Rcpp::Named("alpha_3", alpha_3),
-                                         Rcpp::Named("y_star", y_star),
                                          Rcpp::Named("chi", chi),
                                          Rcpp::Named("pi", pi),
                                          Rcpp::Named("A", A),

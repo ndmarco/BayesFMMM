@@ -8,11 +8,7 @@
 
 \item{y_obs}{Vector containing y at observed time points}
 
-\item{y_star}{Vector containing y at unobserved time points}
-
 \item{B_obs}{Matrix containing basis functions evaluated at observed time points}
-
-\item{B_star}{Matrix containing basis functions evaluated at unobserved time points}
 
 \item{Phi}{Cube containing Phi parameters}
 

@@ -13,9 +13,7 @@
 #include "UpdateTau.H"
 #include "UpdateSigma.H"
 #include "UpdateChi.H"
-#include "UpdateYStar.H"
 #include "BFPMM.H"
-#include "EstimateInitialState.H"
 #include "UpdateAlpha3.H"
 #include "LabelSwitch.H"
 
@@ -23,9 +21,6 @@
 //'
 //' @name BFPMM_Nu_Z_multiple_try
 //' @param tot_mcmc_iters Int conatining the number of MCMC iterations per try
-//' @param beta_N_t Double containing the maximum weight for tempered transisitons
-//' @param N_t Int containing total number of tempered transitions. If no tempered transitions are desired, pick a small integer
-//' @param n_temp_trans Int containing how often tempered transitions are performed. If no tempered transitions are desired, pick a integer larger than tot_mcmc_iters
 //' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
 //' @param Y Field of vectors containing the observed values
@@ -37,8 +32,6 @@
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
-                                   const double beta_N_t,
-                                   const int N_t,
                                    const int n_try,
                                    const int k,
                                    const arma::field<arma::vec> Y,
@@ -60,20 +53,19 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   }
 
   // placeholder
-  arma::field<arma::vec> t_star1(n_funct,1);
   arma::vec c = arma::ones(k);
 
   // start MCMC sampling
-  Rcpp::List mod1 = BFPMM_Nu_Z(Y, time, n_funct, k, n_basis, n_eigen, tot_mcmc_iters,
-                               t_star1, c, 800, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
-                               sqrt(1), sqrt(1), 1, 10, 1, 1, beta_N_t, N_t);
+  Rcpp::List mod1 = BFPMM_Nu_Z(Y, time, n_funct, k, n_basis, n_eigen,
+                               tot_mcmc_iters,c, 800, 3, 2, 3, 1, 1, 1000, 1000,
+                               0.05, sqrt(1), sqrt(1), 1, 10, 1, 1);
   arma::vec ph = mod1["loglik"];
   double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
 
   for(int i = 0; i < n_try; i++){
-    Rcpp::List modi = BFPMM_Nu_Z(Y, time, n_funct, k, n_basis, n_eigen, tot_mcmc_iters,
-                                 t_star1, c, 800, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
-                                 sqrt(1), sqrt(1), 1, 10, 1, 1, beta_N_t, N_t);
+    Rcpp::List modi = BFPMM_Nu_Z(Y, time, n_funct, k, n_basis, n_eigen,
+                                 tot_mcmc_iters, c, 800, 3, 2, 3, 1, 1, 1000,
+                                 1000, 0.05, sqrt(1), sqrt(1), 1,10, 1, 1);
     arma::vec ph1 = modi["loglik"];
     if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
       mod1 = modi;
@@ -136,9 +128,6 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
     B_obs(i,0) = bspline_mat;
   }
 
-  // placeholder
-  arma::field<arma::vec> t_star1(n_funct,1);
-
   arma::vec c = arma::ones(k);
 
   int n_nu = nu_samp.n_slices;
@@ -163,7 +152,7 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
 
   // start MCMC sampling
   Rcpp::List mod1 = BFPMM_Theta(Y, time, n_funct, k, n_basis, n_eigen, tot_mcmc_iters,
-                                t_star1, c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
+                                c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
                                 sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est, nu_est);
 
   Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
@@ -247,9 +236,6 @@ Rcpp::List BFPMM_warm_start(const double beta_N_t,
     arma::mat bspline_mat{bspline.basis(true)};
     B_obs(i,0) = bspline_mat;
   }
-
-  // placeholder
-  arma::field<arma::vec> t_star1(n_funct,1);
 
   arma::vec c = arma::ones(k);
 
@@ -336,7 +322,7 @@ Rcpp::List BFPMM_warm_start(const double beta_N_t,
   // start MCMC sampling
   Rcpp::List mod1 = BFPMM_MTT_warm_start(Y, time, n_funct, thinning_num, k,
                                          n_basis, n_eigen, tot_mcmc_iters,
-                                         r_stored_iters, n_temp_trans, t_star1,
+                                         r_stored_iters, n_temp_trans,
                                          c, 800, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
                                          sqrt(1), sqrt(1), 1, 10, 1, 1, dir,
                                          beta_N_t, N_t, Z_est, pi_est, alpha_3_est,

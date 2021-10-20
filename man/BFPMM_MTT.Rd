@@ -2,7 +2,6 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFPMM_MTT}
 \alias{BFPMM_MTT}
-\alias{BFPMM_MTT_warm_start}
 \title{Conducts a mixture of untempered sampling and termpered sampling to get posterior draws from the partial membership model}
 \usage{
 BFPMM_MTT(
@@ -16,7 +15,6 @@ BFPMM_MTT(
   tot_mcmc_iters,
   r_stored_iters,
   n_temp_trans,
-  t_star,
   c,
   b,
   nu_1,
@@ -37,50 +35,6 @@ BFPMM_MTT(
   beta_N_t,
   N_t
 )
-
-BFPMM_MTT_warm_start(
-  y_obs,
-  t_obs,
-  n_funct,
-  thinning_num,
-  K,
-  P,
-  M,
-  tot_mcmc_iters,
-  r_stored_iters,
-  n_temp_trans,
-  t_star,
-  c,
-  b,
-  nu_1,
-  alpha1l,
-  alpha2l,
-  beta1l,
-  beta2l,
-  a_Z_PM,
-  a_pi_PM,
-  var_alpha3,
-  var_epsilon1,
-  var_epsilon2,
-  alpha,
-  beta,
-  alpha_0,
-  beta_0,
-  directory,
-  beta_N_t,
-  N_t,
-  Z_est,
-  pi_est,
-  alpha_3_est,
-  delta_est,
-  gamma_est,
-  Phi_est,
-  A_est,
-  nu_est,
-  tau_est,
-  sigma_est,
-  chi_est
-)
 }
 \arguments{
 \item{y_obs}{Field (list) of vectors containing the observed values}
@@ -96,8 +50,6 @@ BFPMM_MTT_warm_start(
 \item{tot_mcmc_iters}{Int containing total number of MCMC iterations}
 
 \item{r_stored_iters}{Int constaining number of iterations performed for each batch}
-
-\item{t_star}{Field (list) of vectors containing time points of interest that are not observed (optional)}
 
 \item{alpha1l}{Double containing hyperparameters for sampling from A}
 
@@ -135,11 +87,7 @@ BFPMM_MTT_warm_start(
 }
 \value{
 params List of objects containing the MCMC samples from the last batch
-
-params List of objects containing the MCMC samples from the last batch
 }
 \description{
-Conducts a mixture of untempered sampling and termpered sampling to get posterior draws from the partial membership model
-
 Conducts a mixture of untempered sampling and termpered sampling to get posterior draws from the partial membership model
 }

@@ -618,6 +618,7 @@ obs1$Var2 <- (obs1$Var2 -1) * 10
 
 observed1 <- data.frame("funct" =observed, "Z" =x$Z_true[c(1,40, 84),1], id = 1:3)
 
+rbPal <- colorRampPalette(c('red','blue'))
 observed1$Col <- rbPal(30)[as.numeric(cut(observed1$Z,breaks = 30))]
 col2 <- observed1$Col[2]
 observed1$Col[2] <- observed1$Col[3]
@@ -627,13 +628,13 @@ obs <- melt(observed1, id = c("id", "Z", "Col"))
 obs1$Z <- obs$Z
 obs1$Z <- as.factor(obs1$Z)
 obs1$Col <- obs$Col
-
+levels(obs1$Z) <- c("0", "0.5", "1")
 
 ggplot(obs1, aes(x = Var2, y = value, colour=Z))+
   geom_line(aes(colour = Z))+ scale_colour_manual(values = observed1$Col)+
-  xlab("") + ylab("") +
+  xlab("") + ylab("") + labs(colour = "Cluster 1") +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), legend.position = "none",axis.line = element_line(colour = "black"),
+        panel.background = element_blank(),axis.line = element_line(colour = "black"),
         plot.title = element_text(hjust = 0.5))
 
 cov1_true <- matrix(0, 100, 100)
@@ -720,7 +721,7 @@ rel_int_err_cov12 <- sum((cov12$CI_50)^2) * 100
 dir <- "/Users/nicholasmarco/Projects/Simulation/integrated_error/100_obs/trace1/"
 
 time <- seq(0, 990, 10)
-Cov_1 <- GetCovCI_S(dir, 50, 200, time, time, 1,1)
+Cov_1 <- GetCovCI_S(dir, 50, 200, time, time, 2,2)
 library(plotly)
 
 fig <- plot_ly(showscale = FALSE)
@@ -731,7 +732,7 @@ fig <- fig %>% add_surface(z = ~ Cov_1$CI_025, opacity = 0.20)
 fig
 
 time <- seq(0, 990, 10)
-Cov_1 <- GetCovCI_S(dir, 50, 200, time, time, 0,0)
+Cov_1 <- GetCovCI_S(dir, 50, 200, time, time, 1,1)
 library(plotly)
 
 fig <- plot_ly(showscale = FALSE)
@@ -742,7 +743,7 @@ fig <- fig %>% add_surface(z = ~ Cov_1$CI_025, opacity = 0.20)
 fig
 
 time <- seq(0, 990, 10)
-Cov_1 <- GetCovCI_S(dir, 50, 200, time, time, 1,0)
+Cov_1 <- GetCovCI_S(dir, 50, 200, time, time, 2,1)
 library(plotly)
 
 fig <- plot_ly(showscale = FALSE)

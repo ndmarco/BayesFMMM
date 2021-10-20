@@ -13,7 +13,6 @@ BFPMM_Templadder(
   M,
   tot_mcmc_iters,
   r_stored_iters,
-  t_star,
   c,
   b,
   nu_1,
@@ -48,8 +47,6 @@ BFPMM_Templadder(
 \item{tot_mcmc_iters}{Int containing total number of MCMC iterations}
 
 \item{r_stored_iters}{Int constaining number of iterations performed for each batch}
-
-\item{t_star}{Field (list) of vectors containing time points of interest that are not observed (optional)}
 
 \item{alpha1l}{Double containing hyperparameters for sampling from A}
 

@@ -12,7 +12,6 @@ BFPMM_Theta(
   P,
   M,
   tot_mcmc_iters,
-  t_star,
   c,
   b,
   nu_1,
@@ -45,8 +44,6 @@ BFPMM_Theta(
 \item{M}{int that indicates the number of slices used in Phi parameter}
 
 \item{tot_mcmc_iters}{Int containing total number of MCMC iterations}
-
-\item{t_star}{Field (list) of vectors containing time points of interest that are not observed (optional)}
 
 \item{c}{Vector containing hyperparmeters for pi}
 

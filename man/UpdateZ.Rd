@@ -10,11 +10,7 @@
 
 \item{y_obs}{Field of Vectors containing y at observed time points}
 
-\item{y_star}{Field of Matrices containing y at unobserved time points at all mcmc iterations}
-
 \item{B_obs}{Field of Matrices containing basis functions evaluated at observed time points}
-
-\item{B_star}{Field of Matrices containing basis functions evaluated at unobserved time points}
 
 \item{Phi}{Cube containing Phi parameters}
 

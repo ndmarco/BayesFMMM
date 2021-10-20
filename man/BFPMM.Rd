@@ -2,7 +2,6 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFPMM}
 \alias{BFPMM}
-\alias{BFPMM_Nu_Z}
 \title{Conducts un-tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.}
 \usage{
 BFPMM(
@@ -15,7 +14,6 @@ BFPMM(
   M,
   tot_mcmc_iters,
   r_stored_iters,
-  t_star,
   c,
   b,
   nu_1,
@@ -34,36 +32,6 @@ BFPMM(
   beta_0,
   directory
 )
-
-BFPMM_Nu_Z(
-  y_obs,
-  t_obs,
-  n_funct,
-  K,
-  P,
-  M,
-  tot_mcmc_iters,
-  n_temp_trans,
-  t_star,
-  c,
-  b,
-  nu_1,
-  alpha1l,
-  alpha2l,
-  beta1l,
-  beta2l,
-  a_Z_PM,
-  a_pi_PM,
-  var_alpha3,
-  var_epsilon1,
-  var_epsilon2,
-  alpha,
-  beta,
-  alpha_0,
-  beta_0,
-  beta_N_t,
-  N_t
-)
 }
 \arguments{
 \item{y_obs}{Field (list) of vectors containing the observed values}
@@ -81,8 +49,6 @@ BFPMM_Nu_Z(
 \item{tot_mcmc_iters}{Int containing total number of MCMC iterations}
 
 \item{r_stored_iters}{Int constaining number of iterations performed for each batch}
-
-\item{t_star}{Field (list) of vectors containing time points of interest that are not observed (optional)}
 
 \item{c}{Vector containing hyperparmeters for pi}
 
@@ -120,11 +86,7 @@ BFPMM_Nu_Z(
 }
 \value{
 params List of objects containing the MCMC samples from the last batch
-
-params List of objects containing the MCMC samples from the last batch
 }
 \description{
-Conducts un-tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
-
 Conducts un-tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
 }

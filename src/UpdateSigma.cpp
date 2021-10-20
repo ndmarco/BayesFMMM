@@ -19,9 +19,7 @@
 //' @param sigma Vector containing sigma for all mcmc iterations
 
 void updateSigma(const arma::field<arma::vec>& y_obs,
-                 const arma::field<arma::mat>& y_star,
                  const arma::field<arma::mat>& B_obs,
-                 const arma::field<arma::mat>& B_star,
                  const double alpha_0,
                  const double beta_0,
                  const arma::mat& nu,
@@ -48,22 +46,6 @@ void updateSigma(const arma::field<arma::vec>& y_obs,
       b_1 = b_1 + 0.5 * (b * b);
     }
     a = a + (y_obs(i,0).n_elem / 2);
-    if(B_star(i,0).n_elem > 0){
-      for(int l = 0; l < y_star(i,0).n_cols; l++){
-        b = y_star(i,0)(iter, l);
-        for(int k = 0; k < Z.n_cols; k++){
-          if(Z(i,k) != 0){
-            b = b - Z(i,k) * arma::dot(nu.row(k), B_star(i,0).row(l));
-            for(int n = 0; n < Phi.n_slices; n++){
-              b = b - Z(i,k) * chi(i,n) * arma::dot(Phi.slice(n).row(k),
-                          B_star(i,0).row(l));
-            }
-          }
-        }
-        b_1 = b_1 + 0.5 * (b * b);
-      }
-      a = a + (y_star(i,0).n_cols / 2);
-    }
   }
   b_1 = b_1 + beta_0;
   a = a + alpha_0;
@@ -94,9 +76,7 @@ void updateSigma(const arma::field<arma::vec>& y_obs,
 
 void updateSigmaTempered(const double& beta_i,
                          const arma::field<arma::vec>& y_obs,
-                         const arma::field<arma::mat>& y_star,
                          const arma::field<arma::mat>& B_obs,
-                         const arma::field<arma::mat>& B_star,
                          const double alpha_0,
                          const double beta_0,
                          const arma::mat& nu,
@@ -123,22 +103,6 @@ void updateSigmaTempered(const double& beta_i,
       b_1 = b_1 + (beta_i / 2) * (b * b);
     }
     a = a + ((beta_i * y_obs(i,0).n_elem) / 2);
-    if(B_star(i,0).n_elem > 0){
-      for(int l = 0; l < y_star(i,0).n_cols; l++){
-        b = y_star(i,0)(iter, l);
-        for(int k = 0; k < Z.n_cols; k++){
-          if(Z(i,k) != 0){
-            b = b - Z(i,k) * arma::dot(nu.row(k), B_star(i,0).row(l));
-            for(int n = 0; n < Phi.n_slices; n++){
-              b = b - Z(i,k) * chi(i,n) * arma::dot(Phi.slice(n).row(k),
-                          B_star(i,0).row(l));
-            }
-          }
-        }
-        b_1 = b_1 + (beta_i / 2) * (b * b);
-      }
-      a = a + ((beta_i * y_star(i,0).n_cols) / 2);
-    }
   }
   b_1 = b_1 + beta_0;
   a = a + alpha_0;
