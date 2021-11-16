@@ -178,15 +178,15 @@ Rcpp::List GetCovCI_Pw(const std::string dir,
   arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, n_MCMC * n_files);
   for(int i = 0; i < n_MCMC * n_files; i++){
     for(int j = 0; j < phi_samp.n_slices; j++){
-      cov_samp.slice(i) = cov_samp.slice(i) + (B1 * phi_samp(i,0).slice(j).row(l-1) *
-        (B2 * phi_samp(i,0).slice(j).row(m-1)).t());
+      cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
+        (B2 * phi_samp(i,0).slice(j).row(m-1).t()).t());
     }
   }
 
   // Initialize placeholders
-  arma::vec CI_975 = arma::zeros(time1.n_elem, time2.n_elem);
-  arma::vec CI_50 = arma::zeros(time1.n_elem, time2.n_elem);
-  arma::vec CI_025 = arma::zeros(time2.n_elem, time2.n_elem);
+  arma::mat CI_975 = arma::zeros(time1.n_elem, time2.n_elem);
+  arma::mat CI_50 = arma::zeros(time1.n_elem, time2.n_elem);
+  arma::mat CI_025 = arma::zeros(time2.n_elem, time2.n_elem);
 
   arma::vec p = {0.025, 0.5, 0.975};
   arma::vec q = arma::zeros(3);
@@ -263,8 +263,8 @@ Rcpp::List GetCovCI_S(const std::string dir,
   arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, n_MCMC * n_files);
   for(int i = 0; i < n_MCMC * n_files; i++){
     for(int j = 0; j < phi_samp.n_slices; j++){
-      cov_samp.slice(i) = cov_samp.slice(i) + (B1 * phi_samp(i,0).slice(j).row(l-1) *
-        (B2 * phi_samp(i,0).slice(j).row(m-1)).t());
+      cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
+        (B2 * (phi_samp(i,0).slice(j).row(m-1)).t()).t());
     }
   }
 
@@ -279,7 +279,7 @@ Rcpp::List GetCovCI_S(const std::string dir,
   }
 
   arma::vec C = arma::zeros(cov_samp.n_slices);
-  arma::vec ph1 = arma::zeros(time1.n_elem, time2.n_elem);
+  arma::mat ph1 = arma::zeros(time1.n_elem, time2.n_elem);
   for(int i = 0; i < n_MCMC * n_files; i++){
     for(int j = 0; j < time1.n_elem; j++){
       for(int k = 0; k < time2.n_elem; k++){
@@ -294,9 +294,9 @@ Rcpp::List GetCovCI_S(const std::string dir,
   q = arma::quantile(C, p);
 
   // Initialize placeholders
-  arma::vec CI_975 = arma::zeros(time1.n_elem, time2.n_elem);
-  arma::vec CI_50 = arma::zeros(time1.n_elem, time2.n_elem);
-  arma::vec CI_025 = arma::zeros(time2.n_elem, time2.n_elem);
+  arma::mat CI_975 = arma::zeros(time1.n_elem, time2.n_elem);
+  arma::mat CI_50 = arma::zeros(time1.n_elem, time2.n_elem);
+  arma::mat CI_025 = arma::zeros(time2.n_elem, time2.n_elem);
 
   for(int i = 0; i < time1.n_elem; i++){
     for(int j = 0; j < time2.n_elem; j++){

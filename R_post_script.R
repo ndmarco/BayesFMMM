@@ -471,6 +471,7 @@ Y <- as.matrix(Y)
 #get rid of ID value
 library(reshape2)
 library(ggplot2)
+
 Y <- split(Y, seq(nrow(Y)))
 time <- seq(6, 14, 0.25)
 data_g1 <- Y[demDat$Group ==2 & demDat$Age > 100,]
@@ -580,15 +581,13 @@ p2 <- ggplot(data= data_Z, aes(x = `Cluster.1` , y = NVIQ)) + geom_point() + xla
 grid.arrange(p1, p2, ncol = 2)
 
 ## Get Covariances
-Cov_1 <- GetCovCI_S(dir, 50, 200, time[[1]], time[[1]], 1,1)
+dir <- "/Users/nicholasmarco/Projects/Simulation/real_data/trace/"
+Cov_1 <- GetCovCI_S(dir, 50, 200, time[[1]], time[[1]], 1,2)
 
 library(plotly)
 
 fig <- plot_ly(showscale = FALSE)
-fig <- fig %>% add_surface(z = ~ Cov_1$CI_50)
-fig <- fig %>% add_surface(z = ~ Cov_1$CI_975, opacity = 0.20)
-fig <- fig %>% add_surface(z = ~ Cov_1$CI_025, opacity = 0.20)
-
+fig <- fig %>% add_surface(z = ~ Cov_1$CI_50, x = time[[1]], y = time[[1]])
 fig
 
 
