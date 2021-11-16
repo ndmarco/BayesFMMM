@@ -4,9 +4,7 @@
 \alias{UpdateZTempered}
 \title{Updates the Z Matrix using Tempered Transitions}
 \arguments{
-\item{alpha_3}{double containing current value of alpha_3}
-
-\item{a_Z_PM}{double containing hyperparameter for sampling Z}
+\item{n_known}{Int containing number of observations with known membership}
 
 \item{beta_i}{Double containing current temperature}
 
@@ -24,11 +22,13 @@
 
 \item{rho}{Double containing hyperparameter for proposal of new z_i state}
 
-\item{n_known}{Int containing number of observations with known membership}
-
 \item{iter}{Int containing current mcmc iteration}
 
 \item{tot_mcmc_iters}{Int containing total number of mcmc iterations}
+
+\item{alpha_3}{double containing current value of alpha_3}
+
+\item{a_Z_PM}{double containing hyperparameter for sampling Z}
 
 \item{Z_ph}{Matrix that acts as a placeholder for Z}
 
@@ -37,7 +37,7 @@
 \description{
 Updates the Z Matrix using Tempered Transitions
 
-Updates the Z Matrix using Tempered Transitions
-
 Updates the Z Matrix when we have a subset of known class memberships using Tempered Transitions
+
+Updates the Z Matrix using Tempered Transitions
 }

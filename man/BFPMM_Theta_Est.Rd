@@ -13,8 +13,10 @@ BFPMM_Theta_Est(
   Y,
   time,
   n_funct,
-  n_basis,
-  n_eigen
+  basis_degree,
+  n_eigen,
+  boundary_knots,
+  internal_knots
 )
 }
 \arguments{
@@ -34,9 +36,13 @@ BFPMM_Theta_Est(
 
 \item{n_funct}{Int containing the number of functions}
 
-\item{n_basis}{Int containing the number of basis functions}
-
 \item{n_eigen}{Int containing the number of eigenfunctions}
+
+\item{boundary_knots}{Vector containing the boundary points of our index domain of interest}
+
+\item{internal_knots}{Vector location of internal knots for B-splines}
+
+\item{basis}{degree Int containing the degree of B-splines used}
 }
 \value{
 BestChain List containing a summary of the chain conditioned on nu and Z

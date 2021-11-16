@@ -26,8 +26,10 @@ BFPMM_warm_start(
   Y,
   time,
   n_funct,
-  n_basis,
+  basis_degree,
   n_eigen,
+  boundary_knots,
+  internal_knots,
   thinning_num,
   dir
 )
@@ -75,13 +77,17 @@ BFPMM_warm_start(
 
 \item{n_funct}{Int containing the number of functions}
 
-\item{n_basis}{Int containing the number of basis functions}
-
 \item{n_eigen}{Int containing the number of eigenfunctions}
+
+\item{boundary_knots}{Vector containing the boundary points of our index domain of interest}
+
+\item{internal_knots}{Vector location of internal knots for B-splines}
 
 \item{thinning_num}{Int containing how often we should save MCMC iterations. Should be a divisible by r_stored_iters and tot_mcmc_iters}
 
 \item{dir}{String containing directory where the MCMC files should be saved}
+
+\item{basis}{degree Int containing the degree of B-splines used}
 }
 \description{
 Performs MCMC, with optional tempered transitions, using user specified starting points.

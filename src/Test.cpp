@@ -2340,3 +2340,39 @@ Rcpp::List TestBFPMM_MTT_warm_start(const double beta_N_t,
 
   return mod2;
 }
+
+//' Tests creation of B-splines
+//'
+//' @name TestBSpline
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestBSpline(){
+  arma::field<arma::vec> t_obs1(2,1);
+  t_obs1(0,0) =  arma::regspace(0, 10, 990);
+  t_obs1(1,0) =  arma::regspace(0, 30, 990);
+
+  splines2::BSpline bspline;
+  arma::vec internal_knots = {200, 400, 600, 800};
+  arma::vec boundary_knots = {0, 990};
+  int basis_degree = 3;
+  int n_basis = internal_knots.n_elem + basis_degree + 1;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_obs1(0,0), internal_knots, basis_degree,
+                              boundary_knots);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat{bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(2,1);
+  B_obs(0,0) = bspline_mat;
+
+  bspline = splines2::BSpline(t_obs1(1,0), internal_knots, basis_degree,
+                              boundary_knots);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat1{bspline.basis(true)};
+  B_obs(1,0) = bspline_mat1;
+
+  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("B", B_obs),
+                                        Rcpp::Named("n_basis", n_basis));
+  return mod2;
+}

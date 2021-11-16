@@ -620,6 +620,14 @@ TestBFPMM_MTT_warm_start <- function(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters
     .Call('_BayesFPMM_TestBFPMM_MTT_warm_start', PACKAGE = 'BayesFPMM', beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, dir)
 }
 
+#' Tests creation of B-splines
+#'
+#' @name TestBSpline
+#' @export
+TestBSpline <- function() {
+    .Call('_BayesFPMM_TestBSpline', PACKAGE = 'BayesFPMM')
+}
+
 #' computes the log pdf of a_1j
 #'
 #' @name lpdf_a1
@@ -650,6 +658,101 @@ NULL
 #' @param var_epsilon2 Double containing hyperparameter epsilon2
 #' @param iter Double containing MCMC iteration
 #' @param a Mat containing values of a
+NULL
+
+#' Gets log-pdf of z_i given zeta_{-z_i}
+#'
+#' @name lpdf_z
+#' @param y_obs Vector containing y at observed time points
+#' @param B_obs Matrix containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi vector containing the elements of pi
+#' @param Z Vector containing the ith row of Z
+#' @param sigma_sq double containing the sigma_sq variable
+#' @return lpdf_z double contianing the log-pdf
+NULL
+
+#' Gets log-pdf of z_i given zeta_{-z_i} using tempered trasitions
+#'
+#' @name lpdf_zTempered
+#' @param beta_i Double containing current temperature
+#' @param y_obs Vector containing y at observed time points
+#' @param B_obs Matrix containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi vector containing the elements of pi
+#' @param Z Vector containing the ith row of Z
+#' @param sigma_sq double containing the sigma_sq variable
+#' @return lpdf_z double contianing the log-pdf
+NULL
+
+#' Updates the Z Matrix
+#'
+#' @name UpdateZ
+#' @param y_obs Field of Vectors containing y at observed time points
+#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
+#' Updates the Z Matrix when we have a subset of known class memberships
+#'
+#' @name UpdateZ
+#' @param y_obs Field of Vectors containing y at observed time points
+#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param n_known Int containing number of observations with known membership
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
+#' Updates the Z Matrix using Tempered Transitions
+#'
+#' @name UpdateZTempered
+#' @param beta_i Double containing current temperature
+#' @param y_obs Field of Vectors containing y at observed time points
+#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
+#' Updates the Z Matrix when we have a subset of known class memberships using Tempered Transitions
+#'
+#' @name UpdateZTempered
+#' @param beta_i Double containing current temperature
+#' @param y_obs Field of Vectors containing y at observed time points
+#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param n_known Int containing number of observations with known membership
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
 NULL
 
 #' Gets log-pdf of z_i given zeta_{-z_i}
@@ -778,12 +881,14 @@ pi_proposal_density <- function(pi, alpha) {
 #' @param Y Field of vectors containing the observed values
 #' @param time Field of vecotrs containing the observed time points
 #' @param n_funct Int containing the number of functions
-#' @param n_basis Int containing the number of basis functions
+#' @param basis degree Int containing the degree of B-splines used
 #' @param n_eigen Int containing the number of eigenfunctions
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
 #' @returns BestChain List containing a summary of the best performing chain
 #' @export
-BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, n_basis, n_eigen) {
-    .Call('_BayesFPMM_BFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, n_basis, n_eigen)
+BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots) {
+    .Call('_BayesFPMM_BFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots)
 }
 
 #' Estimates the initial starting point of the rest of the parameters given an intial starting point for Z and nu
@@ -797,12 +902,14 @@ BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, 
 #' @param Y Field of vectors containing the observed values
 #' @param time Field of vecotrs containing the observed time points
 #' @param n_funct Int containing the number of functions
-#' @param n_basis Int containing the number of basis functions
+#' @param basis degree Int containing the degree of B-splines used
 #' @param n_eigen Int containing the number of eigenfunctions
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
 #' @returns BestChain List containing a summary of the chain conditioned on nu and Z
 #' @export
-BFPMM_Theta_Est <- function(tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, time, n_funct, n_basis, n_eigen) {
-    .Call('_BayesFPMM_BFPMM_Theta_Est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, time, n_funct, n_basis, n_eigen)
+BFPMM_Theta_Est <- function(tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots) {
+    .Call('_BayesFPMM_BFPMM_Theta_Est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots)
 }
 
 #' Performs MCMC, with optional tempered transitions, using user specified starting points.
@@ -829,107 +936,14 @@ BFPMM_Theta_Est <- function(tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, 
 #' @param Y Field of vectors containing the observed values
 #' @param time Field of vecotrs containing the observed time points
 #' @param n_funct Int containing the number of functions
-#' @param n_basis Int containing the number of basis functions
+#' @param basis degree Int containing the degree of B-splines used
 #' @param n_eigen Int containing the number of eigenfunctions
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
 #' @param thinning_num Int containing how often we should save MCMC iterations. Should be a divisible by r_stored_iters and tot_mcmc_iters
 #' @param dir String containing directory where the MCMC files should be saved
 #' @export
-BFPMM_warm_start <- function(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, Y, time, n_funct, n_basis, n_eigen, thinning_num, dir) {
-    .Call('_BayesFPMM_BFPMM_warm_start', PACKAGE = 'BayesFPMM', beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, Y, time, n_funct, n_basis, n_eigen, thinning_num, dir)
+BFPMM_warm_start <- function(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, thinning_num, dir) {
+    .Call('_BayesFPMM_BFPMM_warm_start', PACKAGE = 'BayesFPMM', beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, thinning_num, dir)
 }
-
-#' Gets log-pdf of z_i given zeta_{-z_i}
-#'
-#' @name lpdf_z
-#' @param y_obs Vector containing y at observed time points
-#' @param B_obs Matrix containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi vector containing the elements of pi
-#' @param Z Vector containing the ith row of Z
-#' @param sigma_sq double containing the sigma_sq variable
-#' @return lpdf_z double contianing the log-pdf
-NULL
-
-#' Gets log-pdf of z_i given zeta_{-z_i} using tempered trasitions
-#'
-#' @name lpdf_zTempered
-#' @param beta_i Double containing current temperature
-#' @param y_obs Vector containing y at observed time points
-#' @param B_obs Matrix containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi vector containing the elements of pi
-#' @param Z Vector containing the ith row of Z
-#' @param sigma_sq double containing the sigma_sq variable
-#' @return lpdf_z double contianing the log-pdf
-NULL
-
-#' Updates the Z Matrix
-#'
-#' @name UpdateZ
-#' @param y_obs Field of Vectors containing y at observed time points
-#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi Vector containing the elements of pi
-#' @param sigma_sq Double containing the sigma_sq variable
-#' @param rho Double containing hyperparameter for proposal of new z_i state
-#' @param iter Int containing current mcmc iteration
-#' @param tot_mcmc_iters Int containing total number of mcmc iterations
-#' @param Z_ph Matrix that acts as a placeholder for Z
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
-
-#' Updates the Z Matrix when we have a subset of known class memberships
-#'
-#' @name UpdateZ
-#' @param y_obs Field of Vectors containing y at observed time points
-#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi Vector containing the elements of pi
-#' @param sigma_sq Double containing the sigma_sq variable
-#' @param rho Double containing hyperparameter for proposal of new z_i state
-#' @param n_known Int containing number of observations with known membership
-#' @param iter Int containing current mcmc iteration
-#' @param tot_mcmc_iters Int containing total number of mcmc iterations
-#' @param Z_ph Matrix that acts as a placeholder for Z
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
-
-#' Updates the Z Matrix using Tempered Transitions
-#'
-#' @name UpdateZTempered
-#' @param beta_i Double containing current temperature
-#' @param y_obs Field of Vectors containing y at observed time points
-#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi Vector containing the elements of pi
-#' @param sigma_sq Double containing the sigma_sq variable
-#' @param rho Double containing hyperparameter for proposal of new z_i state
-#' @param iter Int containing current mcmc iteration
-#' @param tot_mcmc_iters Int containing total number of mcmc iterations
-#' @param Z_ph Matrix that acts as a placeholder for Z
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
-
-#' Updates the Z Matrix when we have a subset of known class memberships using Tempered Transitions
-#'
-#' @name UpdateZTempered
-#' @param beta_i Double containing current temperature
-#' @param y_obs Field of Vectors containing y at observed time points
-#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi Vector containing the elements of pi
-#' @param sigma_sq Double containing the sigma_sq variable
-#' @param rho Double containing hyperparameter for proposal of new z_i state
-#' @param n_known Int containing number of observations with known membership
-#' @param iter Int containing current mcmc iteration
-#' @param tot_mcmc_iters Int containing total number of mcmc iterations
-#' @param Z_ph Matrix that acts as a placeholder for Z
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
 

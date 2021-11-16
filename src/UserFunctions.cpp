@@ -26,8 +26,10 @@
 //' @param Y Field of vectors containing the observed values
 //' @param time Field of vecotrs containing the observed time points
 //' @param n_funct Int containing the number of functions
-//' @param n_basis Int containing the number of basis functions
+//' @param basis degree Int containing the degree of B-splines used
 //' @param n_eigen Int containing the number of eigenfunctions
+//' @param boundary_knots Vector containing the boundary points of our index domain of interest
+//' @param internal_knots Vector location of internal knots for B-splines
 //' @returns BestChain List containing a summary of the best performing chain
 //' @export
 // [[Rcpp::export]]
@@ -37,16 +39,19 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                    const arma::field<arma::vec> Y,
                                    const arma::field<arma::vec> time,
                                    const int n_funct,
-                                   const int n_basis,
-                                   const int n_eigen){
+                                   const int basis_degree,
+                                   const int n_eigen,
+                                   const arma::vec boundary_knots,
+                                   const arma::vec internal_knots){
   splines2::BSpline bspline;
   // Make B_obs
   arma::field<arma::mat> B_obs(n_funct,1);
+  int n_basis = internal_knots.n_elem + basis_degree + 1;
   for(int i = 0; i < n_funct; i++)
   {
-    // Create Bspline object with n_basis degrees of freedom
-    // n_basis - 3 - 1 internal nodes
-    bspline = splines2::BSpline(time(i,0), n_basis);
+    // Create Bspline object
+    bspline = splines2::BSpline(time(i,0), internal_knots, basis_degree,
+                                boundary_knots);
     // Get Basis matrix (100 x 8)
     arma::mat bspline_mat{bspline.basis(true)};
     B_obs(i,0) = bspline_mat;
@@ -99,8 +104,10 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @param Y Field of vectors containing the observed values
 //' @param time Field of vecotrs containing the observed time points
 //' @param n_funct Int containing the number of functions
-//' @param n_basis Int containing the number of basis functions
+//' @param basis degree Int containing the degree of B-splines used
 //' @param n_eigen Int containing the number of eigenfunctions
+//' @param boundary_knots Vector containing the boundary points of our index domain of interest
+//' @param internal_knots Vector location of internal knots for B-splines
 //' @returns BestChain List containing a summary of the chain conditioned on nu and Z
 //' @export
 // [[Rcpp::export]]
@@ -112,17 +119,20 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
                            const arma::field<arma::vec> Y,
                            const arma::field<arma::vec> time,
                            const int n_funct,
-                           const int n_basis,
-                           const int n_eigen){
+                           const int basis_degree,
+                           const int n_eigen,
+                           const arma::vec boundary_knots,
+                           const arma::vec internal_knots){
 
   splines2::BSpline bspline;
   // Make B_obs
   arma::field<arma::mat> B_obs(n_funct,1);
+  int n_basis = internal_knots.n_elem + basis_degree + 1;
   for(int i = 0; i < n_funct; i++)
   {
-    // Create Bspline object with n_basis degrees of freedom
-    // n_basis - 3 - 1 internal nodes
-    bspline = splines2::BSpline(time(i,0), n_basis);
+    // Create Bspline object
+    bspline = splines2::BSpline(time(i,0), internal_knots, basis_degree,
+                                boundary_knots);
     // Get Basis matrix (100 x 8)
     arma::mat bspline_mat{bspline.basis(true)};
     B_obs(i,0) = bspline_mat;
@@ -193,8 +203,10 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
 //' @param Y Field of vectors containing the observed values
 //' @param time Field of vecotrs containing the observed time points
 //' @param n_funct Int containing the number of functions
-//' @param n_basis Int containing the number of basis functions
+//' @param basis degree Int containing the degree of B-splines used
 //' @param n_eigen Int containing the number of eigenfunctions
+//' @param boundary_knots Vector containing the boundary points of our index domain of interest
+//' @param internal_knots Vector location of internal knots for B-splines
 //' @param thinning_num Int containing how often we should save MCMC iterations. Should be a divisible by r_stored_iters and tot_mcmc_iters
 //' @param dir String containing directory where the MCMC files should be saved
 //' @export
@@ -220,18 +232,21 @@ Rcpp::List BFPMM_warm_start(const double beta_N_t,
                             const arma::field<arma::vec> Y,
                             const arma::field<arma::vec> time,
                             const int n_funct,
-                            const int n_basis,
+                            const int basis_degree,
                             const int n_eigen,
+                            const arma::vec boundary_knots,
+                            const arma::vec internal_knots,
                             const double thinning_num,
                             const std::string dir){
   splines2::BSpline bspline;
   // Make B_obs
   arma::field<arma::mat> B_obs(n_funct,1);
+  int n_basis = internal_knots.n_elem + basis_degree + 1;
   for(int i = 0; i < n_funct; i++)
   {
-    // Create Bspline object with n_basis degrees of freedom
-    // n_basis - 3 - 1 internal nodes
-    bspline = splines2::BSpline(time(i,0), n_basis);
+    // Create Bspline object
+    bspline = splines2::BSpline(time(i,0), internal_knots, basis_degree,
+                                boundary_knots);
     // Get Basis matrix (100 x 8)
     arma::mat bspline_mat{bspline.basis(true)};
     B_obs(i,0) = bspline_mat;
