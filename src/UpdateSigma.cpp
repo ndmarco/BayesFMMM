@@ -5,12 +5,10 @@
 //'
 //' @name updateSigma
 //' @param y_obs Field of vectors containing observed time points
-//' @param y_obs Field of matrices containing unobserved time points for all iterations
 //' @param B_obs Field of matrices containing basis functions evaluated at observed time points
-//' @param B_star Field of matrices containing basis functions evaluated at unobserved time points
 //' @param alpha_0 Double containing hyperparameter
 //' @param beta_0 Double containing hyperparameter
-//' @param nu Matrix contianing current nu parameters
+//' @param nu Matrix containing current nu parameters
 //' @param Phi Cube containing current Phi parameters
 //' @param Z Matrix containing current Z parameters
 //' @param chi Matrix containing current chi parameters
@@ -58,15 +56,13 @@ void updateSigma(const arma::field<arma::vec>& y_obs,
 
 //' Updates the Sigma parameters using Tempered Transitions
 //'
-//' @name updateSigma
+//' @name updateSigmaTempered
 //' @param beta_i Double containing current temperature
 //' @param y_obs Field of vectors containing observed time points
-//' @param y_obs Field of matrices containing unobserved time points for all iterations
 //' @param B_obs Field of matrices containing basis functions evaluated at observed time points
-//' @param B_star Field of matrices containing basis functions evaluated at unobserved time points
 //' @param alpha_0 Double containing hyperparameter
 //' @param beta_0 Double containing hyperparameter
-//' @param nu Matrix contianing current nu parameters
+//' @param nu Matrix containing current nu parameters
 //' @param Phi Cube containing current Phi parameters
 //' @param Z Matrix containing current Z parameters
 //' @param chi Matrix containing current chi parameters
@@ -106,6 +102,99 @@ void updateSigmaTempered(const double& beta_i,
   }
   b_1 = b_1 + beta_0;
   a = a + alpha_0;
+  sigma(iter) = 1 / R::rgamma(a, 1/b_1);
+
+  if(iter < (tot_mcmc_iters - 1)){
+    sigma(iter + 1) = sigma(iter);
+  }
+}
+
+//' Updates the Sigma parameters for the multivariate model
+//'
+//' @name updateSigmaMV
+//' @param y_obs matrix containing observed vectors
+//' @param alpha_0 Double containing hyperparameter
+//' @param beta_0 Double containing hyperparameter
+//' @param nu Matrix containing current nu parameters
+//' @param Phi Cube containing current Phi parameters
+//' @param Z Matrix containing current Z parameters
+//' @param chi Matrix containing current chi parameters
+//' @param iter Int containing current MCMC iteration
+//' @param tot_mcmc_iters Int containing total number of MCMC iterations
+//' @param sigma Vector containing sigma for all mcmc iterations
+
+void updateSigmaMV(const arma::mat& y_obs,
+                   const double alpha_0,
+                   const double beta_0,
+                   const arma::mat& nu,
+                   const arma::cube& Phi,
+                   const arma::mat& Z,
+                   const arma::mat& chi,
+                   const int& iter,
+                   const int& tot_mcmc_iters,
+                   arma::vec& sigma){
+  double b_1 = 0;
+  arma::vec mean = arma::zeros(nu.n_cols);
+  for(int i = 0; i < Z.n_rows; i++){
+    mean = arma::zeros(nu.n_cols);
+    for(int k = 0; k < Z.n_elem; k++){
+      mean = mean + Z(i,k) * nu.row(k).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(i,k) * chi(i,m) * Phi.slice(m).row(k).t();
+      }
+    }
+    b_1 = b_1 + 0.5 * arma::dot(y_obs.row(i).t() - mean, y_obs.row(i).t() - mean);
+  }
+  b_1 = b_1 + beta_0;
+  double a = (y_obs.n_elem / 2) + alpha_0;
+  sigma(iter) = 1 / R::rgamma(a, 1/b_1);
+
+  if(iter < (tot_mcmc_iters - 1)){
+    sigma(iter + 1) = sigma(iter);
+  }
+}
+
+//' Updates the Sigma parameters using Tempered Transitions
+//'
+//' @name updateSigma
+//' @param beta_i Double containing current temperature
+//' @param y_obs matrix containing observed vectors
+//' @param alpha_0 Double containing hyperparameter
+//' @param beta_0 Double containing hyperparameter
+//' @param nu Matrix containing current nu parameters
+//' @param Phi Cube containing current Phi parameters
+//' @param Z Matrix containing current Z parameters
+//' @param chi Matrix containing current chi parameters
+//' @param iter Int containing current MCMC iteration
+//' @param tot_mcmc_iters Int containing total number of MCMC iterations
+//' @param sigma Vector containing sigma for all mcmc iterations
+
+void updateSigmaTemperedMV(const double& beta_i,
+                           const arma::mat& y_obs,
+                           const double alpha_0,
+                           const double beta_0,
+                           const arma::mat& nu,
+                           const arma::cube& Phi,
+                           const arma::mat& Z,
+                           const arma::mat& chi,
+                           const int& iter,
+                           const int& tot_mcmc_iters,
+                           arma::vec& sigma){
+  double b_1 = 0;
+  arma::vec mean = arma::zeros(nu.n_cols);
+  for(int i = 0; i < Z.n_rows; i++){
+    mean = arma::zeros(nu.n_cols);
+    for(int k = 0; k < Z.n_elem; k++){
+      mean = mean + Z(i,k) * nu.row(k).t();
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(i,k) * chi(i,m) * Phi.slice(m).row(k).t();
+      }
+    }
+    b_1 = b_1 + (beta_i / 2) *
+      arma::dot(y_obs.row(i).t() - mean, y_obs.row(i).t() - mean);
+  }
+  b_1 = b_1 + beta_0;
+  double a = ((beta_i * y_obs.n_elem) / 2) + alpha_0;
   sigma(iter) = 1 / R::rgamma(a, 1/b_1);
 
   if(iter < (tot_mcmc_iters - 1)){

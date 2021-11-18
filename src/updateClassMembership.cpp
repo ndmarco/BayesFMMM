@@ -372,7 +372,7 @@ double lpdf_zMV(const arma::rowvec& y_obs,
     lpdf = lpdf + Z(l) * log(pi(l)) + (1 - Z(l)) *  log(1 - pi(l));
   }
 
-  arma::vec mean = arma::zeros(nu.n_rows);
+  arma::vec mean = arma::zeros(nu.n_cols);
   for(int k = 0; k < Z.n_elem; k++){
     mean = mean + Z(k) * nu.row(k).t();
     for(int m = 0; m < Phi.n_slices; m++){
@@ -411,7 +411,7 @@ double lpdf_zTemperedMV(const double& beta_i,
     lpdf = lpdf + Z(l) * log(pi(l)) + (1 - Z(l)) *  log(1 - pi(l));
   }
 
-  arma::vec mean = arma::zeros(nu.n_rows);
+  arma::vec mean = arma::zeros(nu.n_cols);
   for(int k = 0; k < Z.n_elem; k++){
     mean = mean + Z(k) * nu.row(k).t();
     for(int m = 0; m < Phi.n_slices; m++){

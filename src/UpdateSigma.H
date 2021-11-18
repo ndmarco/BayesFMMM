@@ -28,4 +28,27 @@ void updateSigmaTempered(const double& beta_i,
                          const int& iter,
                          const int& tot_mcmc_iters,
                          arma::vec& sigma);
+
+void updateSigmaMV(const arma::mat& y_obs,
+                   const double alpha_0,
+                   const double beta_0,
+                   const arma::mat& nu,
+                   const arma::cube& Phi,
+                   const arma::mat& Z,
+                   const arma::mat& chi,
+                   const int& iter,
+                   const int& tot_mcmc_iters,
+                   arma::vec& sigma);
+
+void updateSigmaTemperedMV(const double& beta_i,
+                           const arma::mat& y_obs,
+                           const double alpha_0,
+                           const double beta_0,
+                           const arma::mat& nu,
+                           const arma::cube& Phi,
+                           const arma::mat& Z,
+                           const arma::mat& chi,
+                           const int& iter,
+                           const int& tot_mcmc_iters,
+                           arma::vec& sigma);
 #endif
