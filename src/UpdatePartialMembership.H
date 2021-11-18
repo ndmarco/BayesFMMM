@@ -32,4 +32,29 @@ void updateZTempered_PM(const double& beta_i,
                         const double& a_Z_PM,
                         arma::vec& Z_ph,
                         arma::cube& Z);
+
+void updateZMV(const arma::mat& y_obs,
+               const arma::cube& Phi,
+               const arma::mat& nu,
+               const arma::mat& chi,
+               const arma::vec& pi,
+               const double& sigma_sq,
+               const double& rho,
+               const int& iter,
+               const int& tot_mcmc_iters,
+               arma::mat& Z_ph,
+               arma::cube& Z);
+
+void updateZTemperedMV(const double& beta_i,
+                       const arma::mat& y_obs,
+                       const arma::cube& Phi,
+                       const arma::mat& nu,
+                       const arma::mat& chi,
+                       const arma::vec& pi,
+                       const double& sigma_sq,
+                       const double& rho,
+                       const int& iter,
+                       const int& tot_mcmc_iters,
+                       arma::mat& Z_ph,
+                       arma::cube& Z);
 #endif
