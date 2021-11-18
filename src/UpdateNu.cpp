@@ -151,7 +151,6 @@ void updateNuTempered(const double& beta_i,
 //' @param sigma Double containing current sigma parameter
 //' @param iter Int containing MCMC iteration
 //' @param tot_mcmc_iters Int containing total number of MCMC iterations
-//' @param P Matrix containing tridiagonal P matrix
 //' @param b_1 Vector acting as a placeholder for mean vector
 //' @param B_1 Matrix acting as placeholder for covariance matrix
 //' @param nu Cube containing MCMC samples for nu
@@ -163,7 +162,6 @@ void updateNuMV(const arma::mat& y_obs,
                 const double& sigma,
                 const int& iter,
                 const int& tot_mcmc_iters,
-                const arma::mat& P,
                 arma::vec& b_1,
                 arma::mat& B_1,
                 arma::cube& nu){
@@ -192,8 +190,8 @@ void updateNuMV(const arma::mat& y_obs,
     }
     b_1 = b_1 / sigma;
     B_1 = B_1 / sigma;
-    arma::mat D = arma::diagmat(tau);
-    B_1 = B_1 + arma::pinv(D);
+    arma::mat D = arma::diagmat((1 / tau(j)) * arma::ones(b_1.n_elem));
+    B_1 = B_1 + D;
     B_1 = arma::pinv(B_1);
     B_1 = (B_1 + B_1.t())/2;
     nu.slice(iter).row(j) = arma::mvnrnd(B_1 * b_1, B_1).t();
@@ -215,7 +213,6 @@ void updateNuMV(const arma::mat& y_obs,
 //' @param sigma Double containing current sigma parameter
 //' @param iter Int containing MCMC iteration
 //' @param tot_mcmc_iters Int containing total number of MCMC iterations
-//' @param P Matrix containing tridiagonal P matrix
 //' @param b_1 Vector acting as a placeholder for mean vector
 //' @param B_1 Matrix acting as placeholder for covariance matrix
 //' @param nu Cube containing MCMC samples for nu
@@ -228,12 +225,10 @@ void updateNuMVTempered(const double& beta_i,
                         const double& sigma,
                         const int& iter,
                         const int& tot_mcmc_iters,
-                        const arma::mat& P,
                         arma::vec& b_1,
                         arma::mat& B_1,
                         arma::cube& nu){
   double ph = 0;
-  // initialize P matrix
   for(int j = 0; j < nu.n_rows; j++){
     b_1.zeros();
     B_1.zeros();
@@ -257,8 +252,8 @@ void updateNuMVTempered(const double& beta_i,
     }
     b_1 = b_1 * (beta_i / sigma);
     B_1 = B_1 * (beta_i / sigma);
-    arma::mat D = arma::diagmat(tau);
-    B_1 = B_1 + arma::pinv(D);
+    arma::mat D = arma::diagmat((1 / tau(j)) * arma::ones(b_1.n_elem));
+    B_1 = B_1 + D;
     B_1 = arma::pinv(B_1);
     B_1 = (B_1 + B_1.t())/2;
     nu.slice(iter).row(j) = arma::mvnrnd(B_1 * b_1, B_1).t();
