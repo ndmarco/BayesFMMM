@@ -22,4 +22,21 @@ double CalculateTTAcceptance(const arma::vec& beta,
                              const arma::cube& Z,
                              const arma::cube& chi,
                              const arma::vec& sigma);
+
+double calculatePZetaMV(const double& beta_i,
+                        const arma::mat& y_obs,
+                        const arma::mat nu,
+                        const arma::cube& Phi,
+                        const arma::mat& Z,
+                        const arma::mat& chi,
+                        const int& iter,
+                        const double& sigma);
+
+double CalculateTTAcceptanceMV(const arma::vec& beta,
+                               const arma::mat& y_obs,
+                               const arma::cube& nu,
+                               const arma::field<arma::cube>& Phi,
+                               const arma::cube& Z,
+                               const arma::cube& chi,
+                               const arma::vec& sigma);
 #endif
