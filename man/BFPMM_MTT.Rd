@@ -2,7 +2,8 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFPMM_MTT}
 \alias{BFPMM_MTT}
-\title{Conducts a mixture of untempered sampling and termpered sampling to get posterior draws from the partial membership model}
+\alias{BFPMM_MTTMV}
+\title{Conducts a mixture of untempered sampling and tempered sampling to get posterior draws from the partial membership model}
 \usage{
 BFPMM_MTT(
   y_obs,
@@ -10,7 +11,39 @@ BFPMM_MTT(
   n_funct,
   thinning_num,
   K,
-  P,
+  basis_degree,
+  M,
+  boundary_knots,
+  internal_knots,
+  tot_mcmc_iters,
+  r_stored_iters,
+  n_temp_trans,
+  c,
+  b,
+  nu_1,
+  alpha1l,
+  alpha2l,
+  beta1l,
+  beta2l,
+  a_Z_PM,
+  a_pi_PM,
+  var_alpha3,
+  var_epsilon1,
+  var_epsilon2,
+  alpha,
+  beta,
+  alpha_0,
+  beta_0,
+  directory,
+  beta_N_t,
+  N_t
+)
+
+BFPMM_MTTMV(
+  y_obs,
+  n_funct,
+  thinning_num,
+  K,
   M,
   tot_mcmc_iters,
   r_stored_iters,
@@ -43,9 +76,11 @@ BFPMM_MTT(
 
 \item{n_funct}{Double containing number of functions observed}
 
-\item{P}{Int that indicates the number of b-spline basis functions}
+\item{M}{Int containing the number of eigenfunctions}
 
-\item{M}{int that indicates the number of slices used in Phi parameter}
+\item{boundary_knots}{Vector containing the boundary points of our index domain of interest}
+
+\item{internal_knots}{Vector location of internal knots for B-splines}
 
 \item{tot_mcmc_iters}{Int containing total number of MCMC iterations}
 
@@ -75,6 +110,8 @@ BFPMM_MTT(
 
 \item{directory}{String containing path to store batches of MCMC samples}
 
+\item{basis}{degree Int containing the degree of B-splines used}
+
 \item{rho}{Double containing hyperparmater for sampling from Z}
 
 \item{alpha_3}{Double hyperparameter for sampling from pi}
@@ -87,7 +124,11 @@ BFPMM_MTT(
 }
 \value{
 params List of objects containing the MCMC samples from the last batch
+
+params List of objects containing the MCMC samples from the last batch
 }
 \description{
-Conducts a mixture of untempered sampling and termpered sampling to get posterior draws from the partial membership model
+Conducts a mixture of untempered sampling and tempered sampling to get posterior draws from the partial membership model
+
+Conducts a mixture of untempered sampling and tempered sampling to get posterior draws from the partial membership model
 }

@@ -265,7 +265,7 @@ void updatePhiMV(const arma::mat& y_obs,
 //' @param M_1 Matrix acting as a placeholder for M in covariance
 //' @param Phi Field of Cubes containing all mcmc samples of Phi
 
-void updatePhiMVTempered(const double& beta_i,
+void updatePhiTemperedMV(const double& beta_i,
                          const arma::mat& y_obs,
                          const arma::mat& nu,
                          const arma::cube& gamma,

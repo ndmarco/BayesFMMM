@@ -9,8 +9,10 @@ BFPMM_Nu_Z(
   t_obs,
   n_funct,
   K,
-  P,
+  basis_degree,
   M,
+  boundary_knots,
+  internal_knots,
   tot_mcmc_iters,
   c,
   b,
@@ -37,9 +39,11 @@ BFPMM_Nu_Z(
 
 \item{n_funct}{Double containing number of functions observed}
 
-\item{P}{Int that indicates the number of b-spline basis functions}
+\item{M}{Int containing the number of eigenfunctions}
 
-\item{M}{int that indicates the number of slices used in Phi parameter}
+\item{boundary_knots}{Vector containing the boundary points of our index domain of interest}
+
+\item{internal_knots}{Vector location of internal knots for B-splines}
 
 \item{tot_mcmc_iters}{Int containing total number of MCMC iterations}
 
@@ -66,6 +70,8 @@ BFPMM_Nu_Z(
 \item{beta_0}{Double containing hyperparameters for sampling from sigma}
 
 \item{thinning_num}{Int that saves every (thinning_num) sample}
+
+\item{basis}{degree Int containing the degree of B-splines used}
 
 \item{r_stored_iters}{Int constaining number of iterations performed for each batch}
 

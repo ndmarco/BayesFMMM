@@ -46,7 +46,6 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   splines2::BSpline bspline;
   // Make B_obs
   arma::field<arma::mat> B_obs(n_funct,1);
-  int n_basis = internal_knots.n_elem + basis_degree + 1;
   for(int i = 0; i < n_funct; i++)
   {
     // Create Bspline object
@@ -61,14 +60,16 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   arma::vec c = arma::ones(k);
 
   // start MCMC sampling
-  Rcpp::List mod1 = BFPMM_Nu_Z(Y, time, n_funct, k, n_basis, n_eigen,
+  Rcpp::List mod1 = BFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
+                               boundary_knots, internal_knots,
                                tot_mcmc_iters,c, 800, 3, 2, 3, 1, 1, 1000, 1000,
                                0.05, sqrt(1), sqrt(1), 1, 10, 1, 1);
   arma::vec ph = mod1["loglik"];
   double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
 
   for(int i = 0; i < n_try; i++){
-    Rcpp::List modi = BFPMM_Nu_Z(Y, time, n_funct, k, n_basis, n_eigen,
+    Rcpp::List modi = BFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
+                                 boundary_knots, internal_knots,
                                  tot_mcmc_iters, c, 800, 3, 2, 3, 1, 1, 1000,
                                  1000, 0.05, sqrt(1), sqrt(1), 1,10, 1, 1);
     arma::vec ph1 = modi["loglik"];
@@ -127,7 +128,6 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
   splines2::BSpline bspline;
   // Make B_obs
   arma::field<arma::mat> B_obs(n_funct,1);
-  int n_basis = internal_knots.n_elem + basis_degree + 1;
   for(int i = 0; i < n_funct; i++)
   {
     // Create Bspline object
@@ -161,7 +161,8 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BFPMM_Theta(Y, time, n_funct, k, n_basis, n_eigen, tot_mcmc_iters,
+  Rcpp::List mod1 = BFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+                                boundary_knots, internal_knots, tot_mcmc_iters,
                                 c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
                                 sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est, nu_est);
 
@@ -241,7 +242,6 @@ Rcpp::List BFPMM_warm_start(const double beta_N_t,
   splines2::BSpline bspline;
   // Make B_obs
   arma::field<arma::mat> B_obs(n_funct,1);
-  int n_basis = internal_knots.n_elem + basis_degree + 1;
   for(int i = 0; i < n_funct; i++)
   {
     // Create Bspline object
@@ -336,7 +336,8 @@ Rcpp::List BFPMM_warm_start(const double beta_N_t,
 
   // start MCMC sampling
   Rcpp::List mod1 = BFPMM_MTT_warm_start(Y, time, n_funct, thinning_num, k,
-                                         n_basis, n_eigen, tot_mcmc_iters,
+                                         basis_degree, n_eigen, boundary_knots,
+                                         internal_knots, tot_mcmc_iters,
                                          r_stored_iters, n_temp_trans,
                                          c, 800, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
                                          sqrt(1), sqrt(1), 1, 10, 1, 1, dir,
@@ -360,3 +361,54 @@ Rcpp::List BFPMM_warm_start(const double beta_N_t,
 
   return mod2;
 }
+
+
+//' Reads in armadillo vector and returns it in R format
+//'
+//' @name ReadVec
+//' @param file String containing location where arma vector is stored
+//' @export
+// [[Rcpp::export]]
+arma::vec ReadVec(std::string file){
+  arma::vec B;
+  B.load(file);
+  return B;
+}
+
+//' Reads in armadillo matrix and returns it in R format
+//'
+//' @name ReadMat
+//' @param file String containing location where arma matrix is stored
+//' @export
+// [[Rcpp::export]]
+arma::mat ReadMat(std::string file){
+  arma::mat B;
+  B.load(file);
+  return B;
+}
+
+//' Reads in armadillo cube and returns it in R format
+//'
+//' @name ReadCube
+//' @param file String containing location where arma cube is stored
+//' @export
+// [[Rcpp::export]]
+arma::cube ReadCube(std::string file){
+  arma::cube B;
+  B.load(file);
+  return B;
+}
+
+//' Reads in armadillo field and returns it in R format
+//'
+//' @name ReadField
+//' @param directory String containing location where arma field is stored
+//' @export
+// [[Rcpp::export]]
+arma::field<arma::cube> ReadField(std::string file){
+  arma::field<arma::cube> B;
+  B.load(file);
+  return B;
+}
+
+

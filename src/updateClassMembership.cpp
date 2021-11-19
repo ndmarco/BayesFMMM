@@ -398,7 +398,7 @@ double lpdf_zMV(const arma::rowvec& y_obs,
 //' @return lpdf_z double containing the log-pdf
 
 double lpdf_zTemperedMV(const double& beta_i,
-                        const arma::vec& y_obs,
+                        const arma::rowvec& y_obs,
                         const arma::cube& Phi,
                         const arma::mat& nu,
                         const arma::rowvec& chi,

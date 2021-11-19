@@ -4,7 +4,7 @@
 \alias{lpdf_zMV}
 \title{Gets log-pdf of z_i given zeta_{-z_i} for multivariate model}
 \arguments{
-\item{y_obs}{Vector containing y at observed time points}
+\item{y_obs}{Vector containing ith observed point}
 
 \item{Phi}{Cube containing Phi parameters}
 
@@ -18,7 +18,11 @@
 }
 \value{
 lpdf_z double containing the log-pdf
+
+lpdf_z double containing the log-pdf
 }
 \description{
 Gets log-pdf of z_i given zeta_{-z_i} for multivariate model
+
+Gets log-pdf of z_i given zeta_{-z_i} for the multivariate model
 }

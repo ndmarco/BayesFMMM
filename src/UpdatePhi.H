@@ -46,7 +46,7 @@ void updatePhiMV(const arma::mat& y_obs,
                  arma::mat& M_1,
                  arma::field<arma::cube>& Phi);
 
-void updatePhiMVTempered(const double& beta_i,
+void updatePhiTemperedMV(const double& beta_i,
                          const arma::mat& y_obs,
                          const arma::mat& nu,
                          const arma::cube& gamma,

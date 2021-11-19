@@ -21,4 +21,11 @@ double calcDIC2(const arma::vec& y_obs,
                 const int i,
                 const int j,
                 const double& sigma);
+
+double calcLikelihoodMV(const arma::mat& y_obs,
+                        const arma::mat& nu,
+                        const arma::cube& Phi,
+                        const arma::mat& Z,
+                        const arma::mat& chi,
+                        const double& sigma);
 #endif

@@ -216,7 +216,7 @@ void updateNuMV(const arma::mat& y_obs,
 //' @param b_1 Vector acting as a placeholder for mean vector
 //' @param B_1 Matrix acting as placeholder for covariance matrix
 //' @param nu Cube containing MCMC samples for nu
-void updateNuMVTempered(const double& beta_i,
+void updateNuTemperedMV(const double& beta_i,
                         const arma::mat& y_obs,
                         const arma::vec& tau,
                         const arma::cube& Phi,

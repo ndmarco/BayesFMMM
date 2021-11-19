@@ -68,14 +68,16 @@ BFPMM_Templadder <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_s
     .Call('_BayesFPMM_BFPMM_Templadder', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, beta_N_t, N_t)
 }
 
-#' Conducts a mixture of untempered sampling and termpered sampling to get posterior draws from the partial membership model
+#' Conducts a mixture of untempered sampling and tempered sampling to get posterior draws from the partial membership model
 #'
 #' @name BFPMM_MTT
 #' @param y_obs Field (list) of vectors containing the observed values
 #' @param t_obs Field (list) of vectors containing time points of observed values
 #' @param n_funct Double containing number of functions observed
-#' @param P Int that indicates the number of b-spline basis functions
-#' @param M int that indicates the number of slices used in Phi parameter
+#' @param basis degree Int containing the degree of B-splines used
+#' @param M Int containing the number of eigenfunctions
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
 #' @param tot_mcmc_iters Int containing total number of MCMC iterations
 #' @param r_stored_iters Int constaining number of iterations performed for each batch
 #' @param rho Double containing hyperparmater for sampling from Z
@@ -97,8 +99,8 @@ BFPMM_Templadder <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_s
 #' @param directory String containing path to store batches of MCMC samples
 #' @returns params List of objects containing the MCMC samples from the last batch
 #' @export
-BFPMM_MTT <- function(y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t) {
-    .Call('_BayesFPMM_BFPMM_MTT', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t)
+BFPMM_MTT <- function(y_obs, t_obs, n_funct, thinning_num, K, basis_degree, M, boundary_knots, internal_knots, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t) {
+    .Call('_BayesFPMM_BFPMM_MTT', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, thinning_num, K, basis_degree, M, boundary_knots, internal_knots, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t)
 }
 
 #' Conducts un-tempered MCMC to mean and allocation parameters
@@ -108,8 +110,10 @@ BFPMM_MTT <- function(y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_ite
 #' @param t_obs Field (list) of vectors containing time points of observed values
 #' @param n_funct Double containing number of functions observed
 #' @param thinning_num Int that saves every (thinning_num) sample
-#' @param P Int that indicates the number of b-spline basis functions
-#' @param M int that indicates the number of slices used in Phi parameter
+#' @param basis degree Int containing the degree of B-splines used
+#' @param M Int containing the number of eigenfunctions
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
 #' @param tot_mcmc_iters Int containing total number of MCMC iterations
 #' @param r_stored_iters Int constaining number of iterations performed for each batch
 #' @param c Vector containing hyperparmeters for pi
@@ -131,8 +135,8 @@ BFPMM_MTT <- function(y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_ite
 #' @param directory String containing path to store batches of MCMC samples
 #' @returns params List of objects containing the MCMC samples from the last batch
 #' @export
-BFPMM_Nu_Z <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0) {
-    .Call('_BayesFPMM_BFPMM_Nu_Z', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+BFPMM_Nu_Z <- function(y_obs, t_obs, n_funct, K, basis_degree, M, boundary_knots, internal_knots, tot_mcmc_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0) {
+    .Call('_BayesFPMM_BFPMM_Nu_Z', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, basis_degree, M, boundary_knots, internal_knots, tot_mcmc_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #' Conducts un-tempered MCMC to estimate the posterior distribution of parameters not related to Z or Nu, conditioned on a value of Nu and Z
@@ -142,8 +146,10 @@ BFPMM_Nu_Z <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, c, b, nu_
 #' @param t_obs Field (list) of vectors containing time points of observed values
 #' @param n_funct Double containing number of functions observed
 #' @param thinning_num Int that saves every (thinning_num) sample
-#' @param P Int that indicates the number of b-spline basis functions
-#' @param M int that indicates the number of slices used in Phi parameter
+#' @param basis degree Int containing the degree of B-splines used
+#' @param M Int containing the number of eigenfunctions
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
 #' @param tot_mcmc_iters Int containing total number of MCMC iterations
 #' @param c Vector containing hyperparmeters for pi
 #' @param b double containing hyperparameter for alpha_3
@@ -165,8 +171,8 @@ BFPMM_Nu_Z <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, c, b, nu_
 #' @param nu_est Matrix containing nu values to be conditioned on
 #' @returns params List of objects containing the MCMC samples from the last batch
 #' @export
-BFPMM_Theta <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, Z_est, nu_est) {
-    .Call('_BayesFPMM_BFPMM_Theta', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, Z_est, nu_est)
+BFPMM_Theta <- function(y_obs, t_obs, n_funct, K, basis_degree, M, boundary_knots, internal_knots, tot_mcmc_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, Z_est, nu_est) {
+    .Call('_BayesFPMM_BFPMM_Theta', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, K, basis_degree, M, boundary_knots, internal_knots, tot_mcmc_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, Z_est, nu_est)
 }
 
 #' Conducts a mixture of untempered sampling and termpered sampling to get posterior draws from the partial membership model
@@ -175,8 +181,10 @@ BFPMM_Theta <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, c, b, nu
 #' @param y_obs Field (list) of vectors containing the observed values
 #' @param t_obs Field (list) of vectors containing time points of observed values
 #' @param n_funct Double containing number of functions observed
-#' @param P Int that indicates the number of b-spline basis functions
-#' @param M int that indicates the number of slices used in Phi parameter
+#' @param basis degree Int containing the degree of B-splines used
+#' @param M Int containing the number of eigenfunctions
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
 #' @param tot_mcmc_iters Int containing total number of MCMC iterations
 #' @param r_stored_iters Int constaining number of iterations performed for each batch
 #' @param t_star Field (list) of vectors containing time points of interest that are not observed (optional)
@@ -199,8 +207,43 @@ BFPMM_Theta <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, c, b, nu
 #' @param directory String containing path to store batches of MCMC samples
 #' @returns params List of objects containing the MCMC samples from the last batch
 #' @export
-BFPMM_MTT_warm_start <- function(y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est, delta_est, gamma_est, Phi_est, A_est, nu_est, tau_est, sigma_est, chi_est) {
-    .Call('_BayesFPMM_BFPMM_MTT_warm_start', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, thinning_num, K, P, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est, delta_est, gamma_est, Phi_est, A_est, nu_est, tau_est, sigma_est, chi_est)
+BFPMM_MTT_warm_start <- function(y_obs, t_obs, n_funct, thinning_num, K, basis_degree, M, boundary_knots, internal_knots, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est, delta_est, gamma_est, Phi_est, A_est, nu_est, tau_est, sigma_est, chi_est) {
+    .Call('_BayesFPMM_BFPMM_MTT_warm_start', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, thinning_num, K, basis_degree, M, boundary_knots, internal_knots, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est, delta_est, gamma_est, Phi_est, A_est, nu_est, tau_est, sigma_est, chi_est)
+}
+
+#' Conducts a mixture of untempered sampling and tempered sampling to get posterior draws from the partial membership model
+#'
+#' @name BFPMM_MTT
+#' @param y_obs Field (list) of vectors containing the observed values
+#' @param t_obs Field (list) of vectors containing time points of observed values
+#' @param n_funct Double containing number of functions observed
+#' @param basis degree Int containing the degree of B-splines used
+#' @param M Int containing the number of eigenfunctions
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
+#' @param tot_mcmc_iters Int containing total number of MCMC iterations
+#' @param r_stored_iters Int constaining number of iterations performed for each batch
+#' @param rho Double containing hyperparmater for sampling from Z
+#' @param alpha_3 Double hyperparameter for sampling from pi
+#' @param a_12 Vec containing hyperparameters for sampling from delta
+#' @param alpha1l Double containing hyperparameters for sampling from A
+#' @param alpha2l Double containing hyperparameters for sampling from A
+#' @param beta1l Double containing hyperparameters for sampling from A
+#' @param beta2l Double containing hyperparameters for sampling from A
+#' @param a_Z_PM Double containing hyperparameter used to sample from the posterior of Z
+#' @param a_pi_PM Double containing hyperparameter used to sample from the posterior of pi
+#' @param var_alpha3 Doubel containing hyperparameter for sampling from alpha_3
+#' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param alpha Double containing hyperparameters for sampling from tau
+#' @param beta Double containing hyperparameters for sampling from tau
+#' @param alpha_0 Double containing hyperparameters for sampling from sigma
+#' @param beta_0 Double containing hyperparameters for sampling from sigma
+#' @param directory String containing path to store batches of MCMC samples
+#' @returns params List of objects containing the MCMC samples from the last batch
+#' @export
+BFPMM_MTTMV <- function(y_obs, n_funct, thinning_num, K, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t) {
+    .Call('_BayesFPMM_BFPMM_MTTMV', PACKAGE = 'BayesFPMM', y_obs, n_funct, thinning_num, K, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t)
 }
 
 #' Generates multivariate normal random variable
@@ -364,268 +407,6 @@ Model_AIC <- function(dir, n_files, n_MCMC, time, Y) {
 #' @export
 Model_BIC <- function(dir, n_files, n_MCMC, time, Y) {
     .Call('_BayesFPMM_Model_BIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time, Y)
-}
-
-#' Tests updating Z
-#'
-#' @name TestUpdateZ
-#' @export
-TestUpdateZ <- function() {
-    .Call('_BayesFPMM_TestUpdateZ', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests updating Pi
-#'
-#' @name TestUpdatePi
-#' @export
-TestUpdatePi <- function() {
-    .Call('_BayesFPMM_TestUpdatePi', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests updating Phi
-#'
-#' @export
-TestUpdatePhi <- function() {
-    .Call('_BayesFPMM_TestUpdatePhi', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests updating Delta
-#'
-#' @name TestUpdateDelta
-#' @export
-TestUpdateDelta <- function() {
-    .Call('_BayesFPMM_TestUpdateDelta', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests updating A
-#'
-#' @name TestUpdateA
-#' @export
-TestUpdateA <- function() {
-    .Call('_BayesFPMM_TestUpdateA', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests updating Gamma
-#'
-#' @name TestUpdateGamma
-#' @export
-TestUpdateGamma <- function() {
-    .Call('_BayesFPMM_TestUpdateGamma', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests updating Nu
-#'
-#' @name TestUpdateNu
-#' @export
-TestUpdateNu <- function() {
-    .Call('_BayesFPMM_TestUpdateNu', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests updating Tau
-#'
-#' @name TestUpdateTau
-#' @export
-TestUpdateTau <- function() {
-    .Call('_BayesFPMM_TestUpdateTau', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests updating Sigma
-#'
-#' @name TestUpdateSigma
-#' @export
-TestUpdateSigma <- function() {
-    .Call('_BayesFPMM_TestUpdateSigma', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests updating chi
-#'
-#' @name TestUpdateChi
-#' @export
-TestUpdateChi <- function() {
-    .Call('_BayesFPMM_TestUpdateChi', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests Reading Matrix
-#'
-#' @name TestReadMat
-#' @export
-TestReadMat <- function(directory) {
-    .Call('_BayesFPMM_TestReadMat', PACKAGE = 'BayesFPMM', directory)
-}
-
-#' Tests Reading Cube
-#'
-#' @name TestReadCube
-#' @export
-TestReadCube <- function(directory) {
-    .Call('_BayesFPMM_TestReadCube', PACKAGE = 'BayesFPMM', directory)
-}
-
-#' Tests Reading Field
-#'
-#' @name TestReadField
-#' @export
-TestReadField <- function(directory) {
-    .Call('_BayesFPMM_TestReadField', PACKAGE = 'BayesFPMM', directory)
-}
-
-#' Tests BFOC function
-#'
-#' @name GetStuff
-#' @export
-GetStuff <- function(sigma_sq, dir, n_funct) {
-    .Call('_BayesFPMM_GetStuff', PACKAGE = 'BayesFPMM', sigma_sq, dir, n_funct)
-}
-
-#' Tests updating Z
-#'
-#' @name TestUpdateZ
-#' @export
-TestUpdateZTempered <- function(beta) {
-    .Call('_BayesFPMM_TestUpdateZTempered', PACKAGE = 'BayesFPMM', beta)
-}
-
-#' Tests updating Phi using temperature
-#'
-#' @export
-TestUpdatePhiTempered <- function(beta) {
-    .Call('_BayesFPMM_TestUpdatePhiTempered', PACKAGE = 'BayesFPMM', beta)
-}
-
-#' Tests updating Nu
-#'
-#' @name TestUpdateNuTemperd
-#' @export
-TestUpdateNuTempered <- function(beta) {
-    .Call('_BayesFPMM_TestUpdateNuTempered', PACKAGE = 'BayesFPMM', beta)
-}
-
-#' Tests updating Sigma
-#'
-#' @name TestUpdateSigmaTempered
-#' @export
-TestUpdateSigmaTempered <- function(beta) {
-    .Call('_BayesFPMM_TestUpdateSigmaTempered', PACKAGE = 'BayesFPMM', beta)
-}
-
-#' Tests updating chi
-#'
-#' @name TestUpdateChiTempered
-#' @export
-TestUpdateChiTempered <- function(beta) {
-    .Call('_BayesFPMM_TestUpdateChiTempered', PACKAGE = 'BayesFPMM', beta)
-}
-
-#' simulates parameters
-#'
-#' @name getparams
-#' @export
-getparms <- function(n_funct) {
-    invisible(.Call('_BayesFPMM_getparms', PACKAGE = 'BayesFPMM', n_funct))
-}
-
-#' Tests updating Z using partial membership model
-#'
-#' @name TestUpdateZ_PM
-#' @export
-TestUpdateZ_PM <- function() {
-    .Call('_BayesFPMM_TestUpdateZ_PM', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests updating pi using partial membership model
-#'
-#' @name TestUpdateZ_PM
-#' @export
-TestUpdatepi_PM <- function() {
-    .Call('_BayesFPMM_TestUpdatepi_PM', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests updating pi using partial membership model
-#'
-#' @name TestUpdateZ_PM
-#' @export
-TestUpdatealpha3_PM <- function() {
-    .Call('_BayesFPMM_TestUpdatealpha3_PM', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests the full Bayesian Functional Partial Membership Model
-#'
-#' @name TestBFPMM
-#' @export
-TestBFPMM <- function(tot_mcmc_iters, r_stored_iters, directory, sigma_sq) {
-    .Call('_BayesFPMM_TestBFPMM', PACKAGE = 'BayesFPMM', tot_mcmc_iters, r_stored_iters, directory, sigma_sq)
-}
-
-#' Tests updating Z using partial membership model
-#'
-#' @name TestUpdateZ_PM
-#' @export
-TestUpdateTemperedZ_PM <- function(beta) {
-    .Call('_BayesFPMM_TestUpdateTemperedZ_PM', PACKAGE = 'BayesFPMM', beta)
-}
-
-#' Tests BFOC function
-#'
-#' @name TestEstimateBFPMMTempladder
-#' @export
-TestEstimateBFPMMTempladder <- function(beta_N_t, N_t) {
-    .Call('_BayesFPMM_TestEstimateBFPMMTempladder', PACKAGE = 'BayesFPMM', beta_N_t, N_t)
-}
-
-#' Tests mixed sampling from the Bayesian Functional Partial Membership Model
-#'
-#' @name TestBFPMM_MTT
-#' @export
-TestBFPMM_MTT <- function(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq) {
-    .Call('_BayesFPMM_TestBFPMM_MTT', PACKAGE = 'BayesFPMM', beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq)
-}
-
-#' Tests BFOC function
-#'
-#' @name TestEstimateBFPMMTempladder
-#' @export
-getLikelihood <- function() {
-    .Call('_BayesFPMM_getLikelihood', PACKAGE = 'BayesFPMM')
-}
-
-#' Tests the full Bayesian Functional Partial Membership Model
-#'
-#' @name TestBFPMM_Nu_Z
-#' @export
-TestBFPMM_Nu_Z <- function(tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans) {
-    .Call('_BayesFPMM_TestBFPMM_Nu_Z', PACKAGE = 'BayesFPMM', tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans)
-}
-
-#' Tests the full Bayesian Functional Partial Membership Model
-#'
-#' @name TestBFPMM_Theta
-#' @export
-TestBFPMM_Theta <- function(tot_mcmc_iters, sigma_sq, Z_samp, nu_samp, burnin_prop, k, dir) {
-    .Call('_BayesFPMM_TestBFPMM_Theta', PACKAGE = 'BayesFPMM', tot_mcmc_iters, sigma_sq, Z_samp, nu_samp, burnin_prop, k, dir)
-}
-
-#' Tests the full Bayesian Functional Partial Membership Model
-#'
-#' @name TestBFPMM_Nu_Z
-#' @export
-TestBFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans, n_trys, k, dir) {
-    .Call('_BayesFPMM_TestBFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans, n_trys, k, dir)
-}
-
-#' Tests mixed sampling from the Bayesian Functional Partial Membership Model
-#'
-#' @name TestBFPMM_MTT
-#' @export
-TestBFPMM_MTT_warm_start <- function(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, dir) {
-    .Call('_BayesFPMM_TestBFPMM_MTT_warm_start', PACKAGE = 'BayesFPMM', beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, dir)
-}
-
-#' Tests creation of B-splines
-#'
-#' @name TestBSpline
-#' @export
-TestBSpline <- function() {
-    .Call('_BayesFPMM_TestBSpline', PACKAGE = 'BayesFPMM')
 }
 
 #' computes the log pdf of a_1j
@@ -822,7 +603,7 @@ NULL
 #' @param pi vector containing the elements of pi
 #' @param Z Vector containing the ith row of Z
 #' @param sigma_sq double containing the sigma_sq variable
-#' @return lpdf_z double contianing the log-pdf
+#' @return lpdf_z double containing the log-pdf
 NULL
 
 #' Gets log-pdf of z_i given zeta_{-z_i} using tempered trasitions
@@ -863,6 +644,66 @@ NULL
 #' @param beta_i Double containing current temperature
 #' @param y_obs Field of Vectors containing y at observed time points
 #' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param alpha_3 double containing current value of alpha_3
+#' @param a_Z_PM double containing hyperparameter for sampling Z
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
+#' Gets log-pdf of z_i given zeta_{-z_i} for the multivariate model
+#'
+#' @name lpdf_zMV
+#' @param y_obs Vector containing ith observed point
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi vector containing the elements of pi
+#' @param Z Vector containing the ith row of Z
+#' @param sigma_sq double containing the sigma_sq variable
+#' @return lpdf_z double containing the log-pdf
+NULL
+
+#' Gets log-pdf of z_i given zeta_{-z_i} using tempered transitions for the multivariate model
+#'
+#' @name lpdf_zTemperedMV
+#' @param beta_i Double containing current temperature
+#' @param y_obs Vector containing the ith observed point
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi vector containing the elements of pi
+#' @param Z Vector containing the ith row of Z
+#' @param sigma_sq double containing the sigma_sq variable
+#' @return lpdf_z double containing the log-pdf
+NULL
+
+#' Updates the Z Matrix
+#'
+#' @name UpdateZ_PMMV
+#' @param y_obs Matrix containing observed vectors
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param alpha_3 double containing current value of alpha_3
+#' @param a_Z_PM double containing hyperparameter for sampling Z
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
+#' Updates the Z Matrix using Tempered Transitions
+#'
+#' @name UpdateZTempered
+#' @param beta_i Double containing current temperature
+#' @param y_obs Matrix containing the observed vectors
 #' @param Phi Cube containing Phi parameters
 #' @param nu Matrix containing nu parameters
 #' @param pi Vector containing the elements of pi
@@ -1002,5 +843,41 @@ BFPMM_Theta_Est <- function(tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, 
 #' @export
 BFPMM_warm_start <- function(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, thinning_num, dir) {
     .Call('_BayesFPMM_BFPMM_warm_start', PACKAGE = 'BayesFPMM', beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, thinning_num, dir)
+}
+
+#' Reads in armadillo vector and returns it in R format
+#'
+#' @name ReadVec
+#' @param file String containing location where arma vector is stored
+#' @export
+ReadVec <- function(file) {
+    .Call('_BayesFPMM_ReadVec', PACKAGE = 'BayesFPMM', file)
+}
+
+#' Reads in armadillo matrix and returns it in R format
+#'
+#' @name ReadMat
+#' @param file String containing location where arma matrix is stored
+#' @export
+ReadMat <- function(file) {
+    .Call('_BayesFPMM_ReadMat', PACKAGE = 'BayesFPMM', file)
+}
+
+#' Reads in armadillo cube and returns it in R format
+#'
+#' @name ReadCube
+#' @param file String containing location where arma cube is stored
+#' @export
+ReadCube <- function(file) {
+    .Call('_BayesFPMM_ReadCube', PACKAGE = 'BayesFPMM', file)
+}
+
+#' Reads in armadillo field and returns it in R format
+#'
+#' @name ReadField
+#' @param directory String containing location where arma field is stored
+#' @export
+ReadField <- function(file) {
+    .Call('_BayesFPMM_ReadField', PACKAGE = 'BayesFPMM', file)
 }
 

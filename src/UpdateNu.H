@@ -46,7 +46,7 @@ void updateNuMV(const arma::mat& y_obs,
                 arma::mat& B_1,
                 arma::cube& nu);
 
-void updateNuMVTempered(const double& beta_i,
+void updateNuTemperedMV(const double& beta_i,
                         const arma::mat& y_obs,
                         const arma::vec& tau,
                         const arma::cube& Phi,

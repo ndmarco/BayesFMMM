@@ -21,7 +21,7 @@
 \value{
 lpdf_z double containing the log-pdf
 
-lpdf_z double contianing the log-pdf
+lpdf_z double containing the log-pdf
 }
 \description{
 Gets log-pdf of z_i given zeta_{-z_i}

@@ -6,7 +6,7 @@
 \arguments{
 \item{beta_i}{Double containing current temperature}
 
-\item{y_obs}{Vector containing y at observed time points}
+\item{y_obs}{Vector containing the ith observed point}
 
 \item{Phi}{Cube containing Phi parameters}
 
@@ -20,7 +20,11 @@
 }
 \value{
 lpdf_z double containing the log-pdf
+
+lpdf_z double containing the log-pdf
 }
 \description{
+Gets log-pdf of z_i given zeta_{-z_i} using tempered transitions for the multivariate model
+
 Gets log-pdf of z_i given zeta_{-z_i} using tempered transitions for the multivariate model
 }

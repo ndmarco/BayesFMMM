@@ -75,5 +75,38 @@ double calcDIC2(const arma::vec& y_obs,
   return lik;
 }
 
+//' Calculates the log likelihood of the multivariate model
+//'
+//' @name calcLikelihoodMV
+//' @param y_obs Matrix of observations containing observed vectors
+//' @param nu Matrix containing current nu parameters
+//' @param Phi Cube containing current Phi parameters
+//' @param Z Matrix containing current Z parameters
+//' @param chi Matrix containing current chi parameters
+//' @param sigma Double containing current sigma parameter
+//' @return log_lik Double containing the log likelihood of the model
+double calcLikelihoodMV(const arma::mat& y_obs,
+                        const arma::mat& nu,
+                        const arma::cube& Phi,
+                        const arma::mat& Z,
+                        const arma::mat& chi,
+                        const double& sigma){
+  double log_lik = 0;
+  arma::vec mean = arma::zeros(y_obs.n_cols);
+  for(int i = 0; i < chi.n_rows; i++){
+    mean = arma::zeros(y_obs.n_cols);
+    for(int k = 0; k < Z.n_cols; k++){
+      if(Z(i,k) != 0){
+        mean = mean + Z(i,k) * nu.row(k);
+        for(int n = 0; n < Phi.n_slices; n++){
+          mean = mean + Z(i,k) * chi(i,n) * Phi.slice(n).row(k);
+        }
+      }
+    }
+    log_lik = log_lik - ((y_obs.n_cols / 2) * std::log(2 * arma::datum::pi * sigma)) - (
+      (1 / (sigma * 2)) * arma::dot(y_obs.row(i).t() - mean, y_obs.row(i).t() - mean));
+  }
+  return log_lik;
+}
 
 
