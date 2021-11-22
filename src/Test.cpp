@@ -1855,8 +1855,12 @@
 //   }
 //   arma::vec c = arma::ones(2);
 //
+//   arma::vec internal_knots = {250, 500, 750};
+//   arma::vec boundary_knots = {0, 990};
+//
 //   // start MCMC sampling
-//   Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 8, 3, tot_mcmc_iters,
+//   Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 3, 3,
+//                                boundary_knots, internal_knots, tot_mcmc_iters,
 //                                c, 1, 3, 2, 3, 1, 1, 1000, 1000,
 //                                0.05, sqrt(1), sqrt(1), 1, 1, 1, 1);
 //
@@ -1887,7 +1891,7 @@
 //                            double burnin_prop, const int k,const std::string dir){
 //   // Make Z matrix
 //   arma::mat Z;
-//   Z.load(dir + "Z.txt");\
+//   Z.load(dir + "Z.txt");
 //   int n_funct = Z.n_rows;
 //
 //   arma::field<arma::vec> t_obs1(n_funct,1);
@@ -1995,8 +1999,11 @@
 //   //   }
 //   // }
 //
+//   arma::vec internal_knots = {250, 500, 750};
+//   arma::vec boundary_knots = {0, 990};
 //   // start MCMC sampling
-//   Rcpp::List mod1 = BFPMM_Theta(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
+//   Rcpp::List mod1 = BFPMM_Theta(y_obs, t_obs1, n_funct, k, 3, 3, boundary_knots,
+//                                 internal_knots, tot_mcmc_iters,
 //                                 c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
 //                                 sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est_rescale, nu_est_rescale);
 //
@@ -2026,7 +2033,7 @@
 //                                        const int n_trys, const int k, const std::string dir){
 //   // Make Z matrix
 //   arma::mat Z;
-//   Z.load(dir + "Z.txt");\
+//   Z.load(dir + "Z.txt");
 //   int n_funct = Z.n_rows;
 //
 //   arma::field<arma::vec> t_obs1(n_funct,1);
@@ -2080,17 +2087,22 @@
 //   }
 //   arma::vec c = arma::ones(k);
 //
+//   arma::vec internal_knots = {250, 500, 750};
+//   arma::vec boundary_knots = {0, 990};
+//
 //   // start MCMC sampling
-//   Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
-//                                c, 1, 3, 2, 3, 1, 1,
-//                                1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1);
+//   Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 3, 3,
+//                                boundary_knots, internal_knots, tot_mcmc_iters,
+//                                c, 1, 3, 2, 3, 1, 1, 1000, 1000,
+//                                0.05, sqrt(1), sqrt(1), 1, 1, 1, 1);
 //   arma::vec ph = mod1["loglik"];
 //   double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
 //
 //   for(int i = 0; i < n_trys; i++){
-//     Rcpp::List modi = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, k, 8, 3, tot_mcmc_iters,
-//                                  c, 1, 3, 2, 3, 1, 1,
-//                                  1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1);
+//     Rcpp::List modi = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 3, 3,
+//                                  boundary_knots, internal_knots, tot_mcmc_iters,
+//                                  c, 1, 3, 2, 3, 1, 1, 1000, 1000,
+//                                  0.05, sqrt(1), sqrt(1), 1, 1, 1, 1);
 //     arma::vec ph1 = modi["loglik"];
 //     if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
 //       mod1 = modi;
@@ -2144,7 +2156,7 @@
 //
 //   // Make Z matrix
 //   arma::mat Z;
-//   Z.load(dir + "Z.txt");\
+//   Z.load(dir + "Z.txt");
 //   int n_funct = Z.n_rows;
 //
 //   arma::field<arma::vec> t_obs1(n_funct,1);
@@ -2279,14 +2291,17 @@
 //       chi_est(i,j) = arma::median(ph_chi);
 //     }
 //   }
+//   arma::vec internal_knots = {250, 500, 750};
+//   arma::vec boundary_knots = {0, 990};
 //
 //   // start MCMC sampling
-//   Rcpp::List mod1 = BFPMM_MTT_warm_start(y_obs, t_obs1, n_funct, 50, k, 8, 3, tot_mcmc_iters,
-//                               r_stored_iters, n_temp_trans, c, 1, 3, 2,
-//                               3, 1, 1, 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1,
-//                               directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est,
-//                               delta_est, gamma_est, Phi_est, A_est, nu_est,
-//                                tau_est, sigma_est, chi_est);
+//   Rcpp::List mod1 = BFPMM_MTT_warm_start(y_obs, t_obs1, n_funct, 50, k, 3, 3,
+//                                          boundary_knots, internal_knots, tot_mcmc_iters,
+//                                          r_stored_iters, n_temp_trans, c, 1, 3, 2,
+//                                          3, 1, 1, 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1,
+//                                          directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est,
+//                                          delta_est, gamma_est, Phi_est, A_est, nu_est,
+//                                          tau_est, sigma_est, chi_est);
 //
 //   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("Z_true", Z),
 //                                         Rcpp::Named("y_obs", y_obs),
@@ -2319,7 +2334,7 @@
 //   t_obs1(1,0) =  arma::regspace(0, 30, 990);
 //
 //   splines2::BSpline bspline;
-//   arma::vec internal_knots = {200, 400, 600, 800};
+//   arma::vec internal_knots = {250, 500, 750};
 //   arma::vec boundary_knots = {0, 990};
 //   int basis_degree = 3;
 //   int n_basis = internal_knots.n_elem + basis_degree + 1;

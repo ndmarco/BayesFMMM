@@ -74,6 +74,8 @@ BFPMM_Templadder <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_s
 #' @param y_obs Field (list) of vectors containing the observed values
 #' @param t_obs Field (list) of vectors containing time points of observed values
 #' @param n_funct Double containing number of functions observed
+#' @param thinning_num Int containing how often we save an MCMC iteration
+#' @param K Int containing the number of clusters
 #' @param basis degree Int containing the degree of B-splines used
 #' @param M Int containing the number of eigenfunctions
 #' @param boundary_knots Vector containing the boundary points of our index domain of interest
@@ -89,7 +91,7 @@ BFPMM_Templadder <- function(y_obs, t_obs, n_funct, K, P, M, tot_mcmc_iters, r_s
 #' @param beta2l Double containing hyperparameters for sampling from A
 #' @param a_Z_PM Double containing hyperparameter used to sample from the posterior of Z
 #' @param a_pi_PM Double containing hyperparameter used to sample from the posterior of pi
-#' @param var_alpha3 Doubel containing hyperparameter for sampling from alpha_3
+#' @param var_alpha3 Double containing hyperparameter for sampling from alpha_3
 #' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameters for sampling from tau
@@ -109,13 +111,13 @@ BFPMM_MTT <- function(y_obs, t_obs, n_funct, thinning_num, K, basis_degree, M, b
 #' @param y_obs Field (list) of vectors containing the observed values
 #' @param t_obs Field (list) of vectors containing time points of observed values
 #' @param n_funct Double containing number of functions observed
-#' @param thinning_num Int that saves every (thinning_num) sample
+#' @param K Int containing the number of clusters
 #' @param basis degree Int containing the degree of B-splines used
 #' @param M Int containing the number of eigenfunctions
 #' @param boundary_knots Vector containing the boundary points of our index domain of interest
 #' @param internal_knots Vector location of internal knots for B-splines
 #' @param tot_mcmc_iters Int containing total number of MCMC iterations
-#' @param r_stored_iters Int constaining number of iterations performed for each batch
+#' @param r_stored_iters Int containing number of iterations performed for each batch
 #' @param c Vector containing hyperparmeters for pi
 #' @param b double containing hyperparameter for alpha_3
 #' @param a_12 Vector containing hyperparameters for sampling from delta
@@ -145,7 +147,7 @@ BFPMM_Nu_Z <- function(y_obs, t_obs, n_funct, K, basis_degree, M, boundary_knots
 #' @param y_obs Field (list) of vectors containing the observed values
 #' @param t_obs Field (list) of vectors containing time points of observed values
 #' @param n_funct Double containing number of functions observed
-#' @param thinning_num Int that saves every (thinning_num) sample
+#' @param K Int containing the number of clusters
 #' @param basis degree Int containing the degree of B-splines used
 #' @param M Int containing the number of eigenfunctions
 #' @param boundary_knots Vector containing the boundary points of our index domain of interest
@@ -181,6 +183,8 @@ BFPMM_Theta <- function(y_obs, t_obs, n_funct, K, basis_degree, M, boundary_knot
 #' @param y_obs Field (list) of vectors containing the observed values
 #' @param t_obs Field (list) of vectors containing time points of observed values
 #' @param n_funct Double containing number of functions observed
+#' @param thinning_num Int containing how often we save an MCMC iteration
+#' @param K Int containing the number of clusters
 #' @param basis degree Int containing the degree of B-splines used
 #' @param M Int containing the number of eigenfunctions
 #' @param boundary_knots Vector containing the boundary points of our index domain of interest
@@ -211,16 +215,13 @@ BFPMM_MTT_warm_start <- function(y_obs, t_obs, n_funct, thinning_num, K, basis_d
     .Call('_BayesFPMM_BFPMM_MTT_warm_start', PACKAGE = 'BayesFPMM', y_obs, t_obs, n_funct, thinning_num, K, basis_degree, M, boundary_knots, internal_knots, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est, delta_est, gamma_est, Phi_est, A_est, nu_est, tau_est, sigma_est, chi_est)
 }
 
-#' Conducts a mixture of untempered sampling and tempered sampling to get posterior draws from the partial membership model
+#' Conducts a mixture of untempered sampling and tempered sampling to get posterior draws from the multivariate partial membership model
 #'
-#' @name BFPMM_MTT
-#' @param y_obs Field (list) of vectors containing the observed values
-#' @param t_obs Field (list) of vectors containing time points of observed values
-#' @param n_funct Double containing number of functions observed
-#' @param basis degree Int containing the degree of B-splines used
+#' @name BFPMM_MTTMV
+#' @param y_obs Matrix of observed vectors
+#' @param thinning_num Int containing how often we save an MCMC iteration
+#' @param K Int containing the number of clusters
 #' @param M Int containing the number of eigenfunctions
-#' @param boundary_knots Vector containing the boundary points of our index domain of interest
-#' @param internal_knots Vector location of internal knots for B-splines
 #' @param tot_mcmc_iters Int containing total number of MCMC iterations
 #' @param r_stored_iters Int constaining number of iterations performed for each batch
 #' @param rho Double containing hyperparmater for sampling from Z
@@ -242,8 +243,106 @@ BFPMM_MTT_warm_start <- function(y_obs, t_obs, n_funct, thinning_num, K, basis_d
 #' @param directory String containing path to store batches of MCMC samples
 #' @returns params List of objects containing the MCMC samples from the last batch
 #' @export
-BFPMM_MTTMV <- function(y_obs, n_funct, thinning_num, K, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t) {
-    .Call('_BayesFPMM_BFPMM_MTTMV', PACKAGE = 'BayesFPMM', y_obs, n_funct, thinning_num, K, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t)
+BFPMM_MTTMV <- function(y_obs, thinning_num, K, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t) {
+    .Call('_BayesFPMM_BFPMM_MTTMV', PACKAGE = 'BayesFPMM', y_obs, thinning_num, K, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t)
+}
+
+#' Conducts un-tempered MCMC to mean and allocation parameters for the multivariate model
+#'
+#' @name BFPMM_Nu_ZMV
+#' @param y_obs Matrix of observed vectors
+#' @param K Int containing the number of clusters
+#' @param M Int containing the number of eigenvectors
+#' @param tot_mcmc_iters Int containing total number of MCMC iterations
+#' @param r_stored_iters Int containing number of iterations performed for each batch
+#' @param c Vector containing hyperparmeters for pi
+#' @param b double containing hyperparameter for alpha_3
+#' @param a_12 Vector containing hyperparameters for sampling from delta
+#' @param alpha1l Double containing hyperparameters for sampling from A
+#' @param alpha2l Double containing hyperparameters for sampling from A
+#' @param beta1l Double containing hyperparameters for sampling from A
+#' @param beta2l Double containing hyperparameters for sampling from A
+#' @param var_pi Double containing variance parameter of the random walk MH for pi parameter
+#' @param var_Z Double containing variance parameter of the random walk MH for Z parameter
+#' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+#' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param alpha Double containing hyperparameters for sampling from tau
+#' @param beta Double containing hyperparameters for sampling from tau
+#' @param alpha_0 Double containing hyperparameters for sampling from sigma
+#' @param beta_0 Double containing hyperparameters for sampling from sigma
+#' @param directory String containing path to store batches of MCMC samples
+#' @returns params List of objects containing the MCMC samples from the last batch
+#' @export
+BFPMM_Nu_ZMV <- function(y_obs, K, M, tot_mcmc_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0) {
+    .Call('_BayesFPMM_BFPMM_Nu_ZMV', PACKAGE = 'BayesFPMM', y_obs, K, M, tot_mcmc_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+}
+
+#' Conducts un-tempered MCMC to estimate the posterior distribution of parameters not related to Z or Nu, conditioned on a value of Nu and Z
+#'
+#' @name BFPMM_Theta
+#' @param y_obs Matrix of observed vectors
+#' @param K Int containing the number of clusters
+#' @param basis degree Int containing the degree of B-splines used
+#' @param M Int containing the number of eigenfunctions
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
+#' @param tot_mcmc_iters Int containing total number of MCMC iterations
+#' @param c Vector containing hyperparmeters for pi
+#' @param b double containing hyperparameter for alpha_3
+#' @param a_12 Vector containing hyperparameters for sampling from delta
+#' @param alpha1l Double containing hyperparameters for sampling from A
+#' @param alpha2l Double containing hyperparameters for sampling from A
+#' @param beta1l Double containing hyperparameters for sampling from A
+#' @param beta2l Double containing hyperparameters for sampling from A
+#' @param var_pi Double containing variance parameter of the random walk MH for pi parameter
+#' @param var_Z Double containing variance parameter of the random walk MH for Z parameter
+#' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+#' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param alpha Double containing hyperparameters for sampling from tau
+#' @param beta Double containing hyperparameters for sampling from tau
+#' @param alpha_0 Double containing hyperparameters for sampling from sigma
+#' @param beta_0 Double containing hyperparameters for sampling from sigma
+#' @param Z_est Matrix containing Z values to be conditioned on
+#' @param nu_est Matrix containing nu values to be conditioned on
+#' @returns params List of objects containing the MCMC samples from the last batch
+#' @export
+BFPMM_ThetaMV <- function(y_obs, K, M, tot_mcmc_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, Z_est, nu_est) {
+    .Call('_BayesFPMM_BFPMM_ThetaMV', PACKAGE = 'BayesFPMM', y_obs, K, M, tot_mcmc_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, Z_est, nu_est)
+}
+
+#' Conducts a mixture of untempered sampling and termpered sampling to get posterior draws from the partial membership model
+#'
+#' @name BFPMM_MTT_warm_startMV
+#' @param y_obs Matrix of observed vectors
+#' @param thinning_num Int containing how often we save an MCMC iteration
+#' @param K Int containing the number of clusters
+#' @param M Int containing the number of eigenfunctions
+#' @param tot_mcmc_iters Int containing total number of MCMC iterations
+#' @param r_stored_iters Int constaining number of iterations performed for each batch
+#' @param t_star Field (list) of vectors containing time points of interest that are not observed (optional)
+#' @param rho Double containing hyperparmater for sampling from Z
+#' @param alpha_3 Double hyperparameter for sampling from pi
+#' @param a_12 Vec containing hyperparameters for sampling from delta
+#' @param alpha1l Double containing hyperparameters for sampling from A
+#' @param alpha2l Double containing hyperparameters for sampling from A
+#' @param beta1l Double containing hyperparameters for sampling from A
+#' @param beta2l Double containing hyperparameters for sampling from A
+#' @param a_Z_PM Double containing hyperparameter used to sample from the posterior of Z
+#' @param a_pi_PM Double containing hyperparameter used to sample from the posterior of pi
+#' @param var_alpha3 Doubel containing hyperparameter for sampling from alpha_3
+#' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param alpha Double containing hyperparameters for sampling from tau
+#' @param beta Double containing hyperparameters for sampling from tau
+#' @param alpha_0 Double containing hyperparameters for sampling from sigma
+#' @param beta_0 Double containing hyperparameters for sampling from sigma
+#' @param directory String containing path to store batches of MCMC samples
+#' @returns params List of objects containing the MCMC samples from the last batch
+#' @export
+BFPMM_MTT_warm_startMV <- function(y_obs, thinning_num, K, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est, delta_est, gamma_est, Phi_est, A_est, nu_est, tau_est, sigma_est, chi_est) {
+    .Call('_BayesFPMM_BFPMM_MTT_warm_startMV', PACKAGE = 'BayesFPMM', y_obs, thinning_num, K, M, tot_mcmc_iters, r_stored_iters, n_temp_trans, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0, directory, beta_N_t, N_t, Z_est, pi_est, alpha_3_est, delta_est, gamma_est, Phi_est, A_est, nu_est, tau_est, sigma_est, chi_est)
 }
 
 #' Generates multivariate normal random variable
