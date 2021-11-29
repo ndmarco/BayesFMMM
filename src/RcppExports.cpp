@@ -559,6 +559,352 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// TestUpdateZ
+Rcpp::List TestUpdateZ();
+RcppExport SEXP _BayesFPMM_TestUpdateZ() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateZ());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdatePi
+Rcpp::List TestUpdatePi();
+RcppExport SEXP _BayesFPMM_TestUpdatePi() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdatePi());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdatePhi
+Rcpp::List TestUpdatePhi();
+RcppExport SEXP _BayesFPMM_TestUpdatePhi() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdatePhi());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateDelta
+Rcpp::List TestUpdateDelta();
+RcppExport SEXP _BayesFPMM_TestUpdateDelta() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateDelta());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateA
+Rcpp::List TestUpdateA();
+RcppExport SEXP _BayesFPMM_TestUpdateA() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateA());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateGamma
+Rcpp::List TestUpdateGamma();
+RcppExport SEXP _BayesFPMM_TestUpdateGamma() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateGamma());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateNu
+Rcpp::List TestUpdateNu();
+RcppExport SEXP _BayesFPMM_TestUpdateNu() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateNu());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateTau
+Rcpp::List TestUpdateTau();
+RcppExport SEXP _BayesFPMM_TestUpdateTau() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateTau());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateSigma
+Rcpp::List TestUpdateSigma();
+RcppExport SEXP _BayesFPMM_TestUpdateSigma() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateSigma());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateChi
+Rcpp::List TestUpdateChi();
+RcppExport SEXP _BayesFPMM_TestUpdateChi() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateChi());
+    return rcpp_result_gen;
+END_RCPP
+}
+// GetStuff
+Rcpp::List GetStuff(double sigma_sq, const std::string dir, const int n_funct);
+RcppExport SEXP _BayesFPMM_GetStuff(SEXP sigma_sqSEXP, SEXP dirSEXP, SEXP n_functSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type sigma_sq(sigma_sqSEXP);
+    Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_funct(n_functSEXP);
+    rcpp_result_gen = Rcpp::wrap(GetStuff(sigma_sq, dir, n_funct));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateZTempered
+Rcpp::List TestUpdateZTempered(const double beta);
+RcppExport SEXP _BayesFPMM_TestUpdateZTempered(SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestUpdateZTempered(beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdatePhiTempered
+Rcpp::List TestUpdatePhiTempered(const double beta);
+RcppExport SEXP _BayesFPMM_TestUpdatePhiTempered(SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestUpdatePhiTempered(beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateNuTempered
+Rcpp::List TestUpdateNuTempered(const double beta);
+RcppExport SEXP _BayesFPMM_TestUpdateNuTempered(SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestUpdateNuTempered(beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateSigmaTempered
+Rcpp::List TestUpdateSigmaTempered(const double beta);
+RcppExport SEXP _BayesFPMM_TestUpdateSigmaTempered(SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestUpdateSigmaTempered(beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateChiTempered
+Rcpp::List TestUpdateChiTempered(const double beta);
+RcppExport SEXP _BayesFPMM_TestUpdateChiTempered(SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestUpdateChiTempered(beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getparms
+void getparms(int n_funct);
+RcppExport SEXP _BayesFPMM_getparms(SEXP n_functSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n_funct(n_functSEXP);
+    getparms(n_funct);
+    return R_NilValue;
+END_RCPP
+}
+// TestUpdateZ_PM
+Rcpp::List TestUpdateZ_PM();
+RcppExport SEXP _BayesFPMM_TestUpdateZ_PM() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateZ_PM());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdatepi_PM
+Rcpp::List TestUpdatepi_PM();
+RcppExport SEXP _BayesFPMM_TestUpdatepi_PM() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdatepi_PM());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdatealpha3_PM
+Rcpp::List TestUpdatealpha3_PM();
+RcppExport SEXP _BayesFPMM_TestUpdatealpha3_PM() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdatealpha3_PM());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestBFPMM
+Rcpp::List TestBFPMM(const int tot_mcmc_iters, const int r_stored_iters, const std::string directory, const double sigma_sq);
+RcppExport SEXP _BayesFPMM_TestBFPMM(SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP directorySEXP, SEXP sigma_sqSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type tot_mcmc_iters(tot_mcmc_itersSEXP);
+    Rcpp::traits::input_parameter< const int >::type r_stored_iters(r_stored_itersSEXP);
+    Rcpp::traits::input_parameter< const std::string >::type directory(directorySEXP);
+    Rcpp::traits::input_parameter< const double >::type sigma_sq(sigma_sqSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestBFPMM(tot_mcmc_iters, r_stored_iters, directory, sigma_sq));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateTemperedZ_PM
+Rcpp::List TestUpdateTemperedZ_PM(double beta);
+RcppExport SEXP _BayesFPMM_TestUpdateTemperedZ_PM(SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestUpdateTemperedZ_PM(beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestEstimateBFPMMTempladder
+Rcpp::List TestEstimateBFPMMTempladder(const double beta_N_t, const int N_t);
+RcppExport SEXP _BayesFPMM_TestEstimateBFPMMTempladder(SEXP beta_N_tSEXP, SEXP N_tSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double >::type beta_N_t(beta_N_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type N_t(N_tSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestEstimateBFPMMTempladder(beta_N_t, N_t));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestBFPMM_Nu_Z
+Rcpp::List TestBFPMM_Nu_Z(const int tot_mcmc_iters, const double sigma_sq, const double beta_N_t, const int N_t, const int n_temp_trans);
+RcppExport SEXP _BayesFPMM_TestBFPMM_Nu_Z(SEXP tot_mcmc_itersSEXP, SEXP sigma_sqSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP n_temp_transSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type tot_mcmc_iters(tot_mcmc_itersSEXP);
+    Rcpp::traits::input_parameter< const double >::type sigma_sq(sigma_sqSEXP);
+    Rcpp::traits::input_parameter< const double >::type beta_N_t(beta_N_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type N_t(N_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_temp_trans(n_temp_transSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestBFPMM_Nu_Z(tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestBFPMM_Theta
+Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq, const arma::cube Z_samp, const arma::cube nu_samp, double burnin_prop, const int k, const std::string dir);
+RcppExport SEXP _BayesFPMM_TestBFPMM_Theta(SEXP tot_mcmc_itersSEXP, SEXP sigma_sqSEXP, SEXP Z_sampSEXP, SEXP nu_sampSEXP, SEXP burnin_propSEXP, SEXP kSEXP, SEXP dirSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type tot_mcmc_iters(tot_mcmc_itersSEXP);
+    Rcpp::traits::input_parameter< const double >::type sigma_sq(sigma_sqSEXP);
+    Rcpp::traits::input_parameter< const arma::cube >::type Z_samp(Z_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::cube >::type nu_samp(nu_sampSEXP);
+    Rcpp::traits::input_parameter< double >::type burnin_prop(burnin_propSEXP);
+    Rcpp::traits::input_parameter< const int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestBFPMM_Theta(tot_mcmc_iters, sigma_sq, Z_samp, nu_samp, burnin_prop, k, dir));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestBFPMM_Nu_Z_multiple_try
+Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double sigma_sq, const double beta_N_t, const int N_t, const int n_temp_trans, const int n_trys, const int k, const std::string dir);
+RcppExport SEXP _BayesFPMM_TestBFPMM_Nu_Z_multiple_try(SEXP tot_mcmc_itersSEXP, SEXP sigma_sqSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP n_temp_transSEXP, SEXP n_trysSEXP, SEXP kSEXP, SEXP dirSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type tot_mcmc_iters(tot_mcmc_itersSEXP);
+    Rcpp::traits::input_parameter< const double >::type sigma_sq(sigma_sqSEXP);
+    Rcpp::traits::input_parameter< const double >::type beta_N_t(beta_N_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type N_t(N_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_temp_trans(n_temp_transSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_trys(n_trysSEXP);
+    Rcpp::traits::input_parameter< const int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestBFPMM_Nu_Z_multiple_try(tot_mcmc_iters, sigma_sq, beta_N_t, N_t, n_temp_trans, n_trys, k, dir));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestBFPMM_MTT_warm_start
+Rcpp::List TestBFPMM_MTT_warm_start(const double beta_N_t, const int N_t, const int n_temp_trans, const int tot_mcmc_iters, const int r_stored_iters, const std::string directory, const double sigma_sq, const arma::cube Z_samp, const arma::mat pi_samp, const arma::vec alpha_3_samp, const arma::mat delta_samp, const arma::field<arma::cube> gamma_samp, const arma::field<arma::cube> Phi_samp, const arma::mat A_samp, const arma::cube nu_samp, const arma::mat tau_samp, const arma::vec sigma_samp, const arma::cube chi_samp, const double burnin_prop, const int k, const std::string dir);
+RcppExport SEXP _BayesFPMM_TestBFPMM_MTT_warm_start(SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP n_temp_transSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP directorySEXP, SEXP sigma_sqSEXP, SEXP Z_sampSEXP, SEXP pi_sampSEXP, SEXP alpha_3_sampSEXP, SEXP delta_sampSEXP, SEXP gamma_sampSEXP, SEXP Phi_sampSEXP, SEXP A_sampSEXP, SEXP nu_sampSEXP, SEXP tau_sampSEXP, SEXP sigma_sampSEXP, SEXP chi_sampSEXP, SEXP burnin_propSEXP, SEXP kSEXP, SEXP dirSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double >::type beta_N_t(beta_N_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type N_t(N_tSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_temp_trans(n_temp_transSEXP);
+    Rcpp::traits::input_parameter< const int >::type tot_mcmc_iters(tot_mcmc_itersSEXP);
+    Rcpp::traits::input_parameter< const int >::type r_stored_iters(r_stored_itersSEXP);
+    Rcpp::traits::input_parameter< const std::string >::type directory(directorySEXP);
+    Rcpp::traits::input_parameter< const double >::type sigma_sq(sigma_sqSEXP);
+    Rcpp::traits::input_parameter< const arma::cube >::type Z_samp(Z_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type pi_samp(pi_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type alpha_3_samp(alpha_3_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type delta_samp(delta_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::cube> >::type gamma_samp(gamma_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::cube> >::type Phi_samp(Phi_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type A_samp(A_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::cube >::type nu_samp(nu_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type tau_samp(tau_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type sigma_samp(sigma_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::cube >::type chi_samp(chi_sampSEXP);
+    Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
+    Rcpp::traits::input_parameter< const int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestBFPMM_MTT_warm_start(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, directory, sigma_sq, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, dir));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestBSpline
+Rcpp::List TestBSpline();
+RcppExport SEXP _BayesFPMM_TestBSpline() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestBSpline());
+    return rcpp_result_gen;
+END_RCPP
+}
+// TestUpdateZ_MV
+Rcpp::List TestUpdateZ_MV();
+RcppExport SEXP _BayesFPMM_TestUpdateZ_MV() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(TestUpdateZ_MV());
+    return rcpp_result_gen;
+END_RCPP
+}
 // Z_proposal_density
 double Z_proposal_density(const arma::vec& Z, const arma::vec& alpha);
 RcppExport SEXP _BayesFPMM_Z_proposal_density(SEXP ZSEXP, SEXP alphaSEXP) {
@@ -730,6 +1076,35 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_Model_DIC", (DL_FUNC) &_BayesFPMM_Model_DIC, 5},
     {"_BayesFPMM_Model_AIC", (DL_FUNC) &_BayesFPMM_Model_AIC, 5},
     {"_BayesFPMM_Model_BIC", (DL_FUNC) &_BayesFPMM_Model_BIC, 5},
+    {"_BayesFPMM_TestUpdateZ", (DL_FUNC) &_BayesFPMM_TestUpdateZ, 0},
+    {"_BayesFPMM_TestUpdatePi", (DL_FUNC) &_BayesFPMM_TestUpdatePi, 0},
+    {"_BayesFPMM_TestUpdatePhi", (DL_FUNC) &_BayesFPMM_TestUpdatePhi, 0},
+    {"_BayesFPMM_TestUpdateDelta", (DL_FUNC) &_BayesFPMM_TestUpdateDelta, 0},
+    {"_BayesFPMM_TestUpdateA", (DL_FUNC) &_BayesFPMM_TestUpdateA, 0},
+    {"_BayesFPMM_TestUpdateGamma", (DL_FUNC) &_BayesFPMM_TestUpdateGamma, 0},
+    {"_BayesFPMM_TestUpdateNu", (DL_FUNC) &_BayesFPMM_TestUpdateNu, 0},
+    {"_BayesFPMM_TestUpdateTau", (DL_FUNC) &_BayesFPMM_TestUpdateTau, 0},
+    {"_BayesFPMM_TestUpdateSigma", (DL_FUNC) &_BayesFPMM_TestUpdateSigma, 0},
+    {"_BayesFPMM_TestUpdateChi", (DL_FUNC) &_BayesFPMM_TestUpdateChi, 0},
+    {"_BayesFPMM_GetStuff", (DL_FUNC) &_BayesFPMM_GetStuff, 3},
+    {"_BayesFPMM_TestUpdateZTempered", (DL_FUNC) &_BayesFPMM_TestUpdateZTempered, 1},
+    {"_BayesFPMM_TestUpdatePhiTempered", (DL_FUNC) &_BayesFPMM_TestUpdatePhiTempered, 1},
+    {"_BayesFPMM_TestUpdateNuTempered", (DL_FUNC) &_BayesFPMM_TestUpdateNuTempered, 1},
+    {"_BayesFPMM_TestUpdateSigmaTempered", (DL_FUNC) &_BayesFPMM_TestUpdateSigmaTempered, 1},
+    {"_BayesFPMM_TestUpdateChiTempered", (DL_FUNC) &_BayesFPMM_TestUpdateChiTempered, 1},
+    {"_BayesFPMM_getparms", (DL_FUNC) &_BayesFPMM_getparms, 1},
+    {"_BayesFPMM_TestUpdateZ_PM", (DL_FUNC) &_BayesFPMM_TestUpdateZ_PM, 0},
+    {"_BayesFPMM_TestUpdatepi_PM", (DL_FUNC) &_BayesFPMM_TestUpdatepi_PM, 0},
+    {"_BayesFPMM_TestUpdatealpha3_PM", (DL_FUNC) &_BayesFPMM_TestUpdatealpha3_PM, 0},
+    {"_BayesFPMM_TestBFPMM", (DL_FUNC) &_BayesFPMM_TestBFPMM, 4},
+    {"_BayesFPMM_TestUpdateTemperedZ_PM", (DL_FUNC) &_BayesFPMM_TestUpdateTemperedZ_PM, 1},
+    {"_BayesFPMM_TestEstimateBFPMMTempladder", (DL_FUNC) &_BayesFPMM_TestEstimateBFPMMTempladder, 2},
+    {"_BayesFPMM_TestBFPMM_Nu_Z", (DL_FUNC) &_BayesFPMM_TestBFPMM_Nu_Z, 5},
+    {"_BayesFPMM_TestBFPMM_Theta", (DL_FUNC) &_BayesFPMM_TestBFPMM_Theta, 7},
+    {"_BayesFPMM_TestBFPMM_Nu_Z_multiple_try", (DL_FUNC) &_BayesFPMM_TestBFPMM_Nu_Z_multiple_try, 8},
+    {"_BayesFPMM_TestBFPMM_MTT_warm_start", (DL_FUNC) &_BayesFPMM_TestBFPMM_MTT_warm_start, 21},
+    {"_BayesFPMM_TestBSpline", (DL_FUNC) &_BayesFPMM_TestBSpline, 0},
+    {"_BayesFPMM_TestUpdateZ_MV", (DL_FUNC) &_BayesFPMM_TestUpdateZ_MV, 0},
     {"_BayesFPMM_Z_proposal_density", (DL_FUNC) &_BayesFPMM_Z_proposal_density, 2},
     {"_BayesFPMM_pi_proposal_density", (DL_FUNC) &_BayesFPMM_pi_proposal_density, 2},
     {"_BayesFPMM_BFPMM_Nu_Z_multiple_try", (DL_FUNC) &_BayesFPMM_BFPMM_Nu_Z_multiple_try, 10},

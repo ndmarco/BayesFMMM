@@ -30,7 +30,7 @@ double lpdf_z(const arma::vec& y_obs,
   double mean = 0;
 
   for(int l = 0; l < pi.n_elem; l++){
-    lpdf = lpdf + Z(l) * ((alpha_3* pi(l) - 1) * std::log(Z(l)));
+    lpdf = lpdf + ((alpha_3* pi(l) - 1) * std::log(Z(l)));
   }
 
   for(int l = 0; l < B_obs.n_rows; l++){
@@ -275,7 +275,7 @@ double lpdf_zMV(const arma::rowvec& y_obs,
   double lpdf = 0;
 
   for(int l = 0; l < pi.n_elem; l++){
-    lpdf = lpdf + Z(l) * ((alpha_3* pi(l) - 1) * std::log(Z(l)));
+    lpdf = lpdf + ((alpha_3* pi(l) - 1) * std::log(Z(l)));
   }
 
   arma::vec mean = arma::zeros(nu.n_cols);
@@ -286,7 +286,7 @@ double lpdf_zMV(const arma::rowvec& y_obs,
     }
   }
 
-  lpdf = lpdf + (arma::dot(y_obs.t() - mean, y_obs.t() - mean) /
+  lpdf = lpdf - (arma::dot(y_obs.t() - mean, y_obs.t() - mean) /
     (2 * sigma_sq));
 
   return lpdf;
@@ -328,7 +328,7 @@ double lpdf_zTemperedMV(const double& beta_i,
     }
   }
 
-  lpdf = lpdf + ((beta_i * arma::dot(y_obs.t() - mean, y_obs.t() - mean)) /
+  lpdf = lpdf - ((beta_i * arma::dot(y_obs.t() - mean, y_obs.t() - mean)) /
     (2 * sigma_sq));
 
   return lpdf;
