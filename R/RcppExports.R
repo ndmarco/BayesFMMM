@@ -738,6 +738,14 @@ TestUpdateZ_MV <- function() {
     .Call('_BayesFPMM_TestUpdateZ_MV', PACKAGE = 'BayesFPMM')
 }
 
+#' Tests creation of B-splines
+#'
+#' @name TestBSpline
+#' @export
+TestBSplineTensor <- function() {
+    .Call('_BayesFPMM_TestBSplineTensor', PACKAGE = 'BayesFPMM')
+}
+
 #' computes the log pdf of a_1j
 #'
 #' @name lpdf_a1
@@ -768,6 +776,158 @@ NULL
 #' @param var_epsilon2 Double containing hyperparameter epsilon2
 #' @param iter Double containing MCMC iteration
 #' @param a Mat containing values of a
+NULL
+
+#' Gets log-pdf of z_i given zeta_{-z_i}
+#'
+#' @name lpdf_z
+#' @param y_obs Vector containing y at observed time points
+#' @param B_obs Matrix containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi vector containing the elements of pi
+#' @param Z Vector containing the ith row of Z
+#' @param sigma_sq double containing the sigma_sq variable
+#' @return lpdf_z double containing the log-pdf
+NULL
+
+#' Gets log-pdf of z_i given zeta_{-z_i} using tempered trasitions
+#'
+#' @name lpdf_zTempered
+#' @param beta_i Double containing current temperature
+#' @param y_obs Vector containing y at observed time points
+#' @param B_obs Matrix containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi vector containing the elements of pi
+#' @param Z Vector containing the ith row of Z
+#' @param sigma_sq double containing the sigma_sq variable
+#' @return lpdf_z double containing the log-pdf
+NULL
+
+#' Updates the Z Matrix
+#'
+#' @name UpdateZ
+#' @param y_obs Field of Vectors containing y at observed time points
+#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
+#' Updates the Z Matrix when we have a subset of known class memberships
+#'
+#' @name UpdateZ
+#' @param y_obs Field of Vectors containing y at observed time points
+#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param n_known Int containing number of observations with known membership
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
+#' Updates the Z Matrix using Tempered Transitions
+#'
+#' @name UpdateZTempered
+#' @param beta_i Double containing current temperature
+#' @param y_obs Field of Vectors containing y at observed time points
+#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
+#' Updates the Z Matrix when we have a subset of known class memberships using Tempered Transitions
+#'
+#' @name UpdateZTempered
+#' @param beta_i Double containing current temperature
+#' @param y_obs Field of Vectors containing y at observed time points
+#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param n_known Int containing number of observations with known membership
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
+#' Gets log-pdf of z_i given zeta_{-z_i} for multivariate model
+#'
+#' @name lpdf_zMV
+#' @param y_obs Vector containing y at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi vector containing the elements of pi
+#' @param Z Vector containing the ith row of Z
+#' @param sigma_sq double containing the sigma_sq variable
+#' @return lpdf_z double containing the log-pdf
+NULL
+
+#' Gets log-pdf of z_i given zeta_{-z_i} using tempered transitions for the multivariate model
+#'
+#' @name lpdf_zTemperedMV
+#' @param beta_i Double containing current temperature
+#' @param y_obs Vector containing y at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi vector containing the elements of pi
+#' @param Z Vector containing the ith row of Z
+#' @param sigma_sq double containing the sigma_sq variable
+#' @return lpdf_z double containing the log-pdf
+NULL
+
+#' Updates the Z Matrix for multivariate model
+#'
+#' @name UpdateZMV
+#' @param y_obs Matrix containing observed vectors
+#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
+NULL
+
+#' Updates the Z Matrix using Tempered Transitions for multivariate model
+#'
+#' @name UpdateZTemperedMV
+#' @param beta_i Double containing current temperature
+#' @param y_obs Matrix containing observed vectors
+#' @param Phi Cube containing Phi parameters
+#' @param nu Matrix containing nu parameters
+#' @param pi Vector containing the elements of pi
+#' @param sigma_sq Double containing the sigma_sq variable
+#' @param rho Double containing hyperparameter for proposal of new z_i state
+#' @param iter Int containing current mcmc iteration
+#' @param tot_mcmc_iters Int containing total number of mcmc iterations
+#' @param Z_ph Matrix that acts as a placeholder for Z
+#' @param Z Cube that contains all past, current, and future MCMC draws
 NULL
 
 #' Gets log-pdf of z_i given zeta_{-z_i}
@@ -1057,156 +1217,4 @@ ReadCube <- function(file) {
 ReadField <- function(file) {
     .Call('_BayesFPMM_ReadField', PACKAGE = 'BayesFPMM', file)
 }
-
-#' Gets log-pdf of z_i given zeta_{-z_i}
-#'
-#' @name lpdf_z
-#' @param y_obs Vector containing y at observed time points
-#' @param B_obs Matrix containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi vector containing the elements of pi
-#' @param Z Vector containing the ith row of Z
-#' @param sigma_sq double containing the sigma_sq variable
-#' @return lpdf_z double containing the log-pdf
-NULL
-
-#' Gets log-pdf of z_i given zeta_{-z_i} using tempered trasitions
-#'
-#' @name lpdf_zTempered
-#' @param beta_i Double containing current temperature
-#' @param y_obs Vector containing y at observed time points
-#' @param B_obs Matrix containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi vector containing the elements of pi
-#' @param Z Vector containing the ith row of Z
-#' @param sigma_sq double containing the sigma_sq variable
-#' @return lpdf_z double containing the log-pdf
-NULL
-
-#' Updates the Z Matrix
-#'
-#' @name UpdateZ
-#' @param y_obs Field of Vectors containing y at observed time points
-#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi Vector containing the elements of pi
-#' @param sigma_sq Double containing the sigma_sq variable
-#' @param rho Double containing hyperparameter for proposal of new z_i state
-#' @param iter Int containing current mcmc iteration
-#' @param tot_mcmc_iters Int containing total number of mcmc iterations
-#' @param Z_ph Matrix that acts as a placeholder for Z
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
-
-#' Updates the Z Matrix when we have a subset of known class memberships
-#'
-#' @name UpdateZ
-#' @param y_obs Field of Vectors containing y at observed time points
-#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi Vector containing the elements of pi
-#' @param sigma_sq Double containing the sigma_sq variable
-#' @param rho Double containing hyperparameter for proposal of new z_i state
-#' @param n_known Int containing number of observations with known membership
-#' @param iter Int containing current mcmc iteration
-#' @param tot_mcmc_iters Int containing total number of mcmc iterations
-#' @param Z_ph Matrix that acts as a placeholder for Z
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
-
-#' Updates the Z Matrix using Tempered Transitions
-#'
-#' @name UpdateZTempered
-#' @param beta_i Double containing current temperature
-#' @param y_obs Field of Vectors containing y at observed time points
-#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi Vector containing the elements of pi
-#' @param sigma_sq Double containing the sigma_sq variable
-#' @param rho Double containing hyperparameter for proposal of new z_i state
-#' @param iter Int containing current mcmc iteration
-#' @param tot_mcmc_iters Int containing total number of mcmc iterations
-#' @param Z_ph Matrix that acts as a placeholder for Z
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
-
-#' Updates the Z Matrix when we have a subset of known class memberships using Tempered Transitions
-#'
-#' @name UpdateZTempered
-#' @param beta_i Double containing current temperature
-#' @param y_obs Field of Vectors containing y at observed time points
-#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi Vector containing the elements of pi
-#' @param sigma_sq Double containing the sigma_sq variable
-#' @param rho Double containing hyperparameter for proposal of new z_i state
-#' @param n_known Int containing number of observations with known membership
-#' @param iter Int containing current mcmc iteration
-#' @param tot_mcmc_iters Int containing total number of mcmc iterations
-#' @param Z_ph Matrix that acts as a placeholder for Z
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
-
-#' Gets log-pdf of z_i given zeta_{-z_i} for multivariate model
-#'
-#' @name lpdf_zMV
-#' @param y_obs Vector containing y at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi vector containing the elements of pi
-#' @param Z Vector containing the ith row of Z
-#' @param sigma_sq double containing the sigma_sq variable
-#' @return lpdf_z double containing the log-pdf
-NULL
-
-#' Gets log-pdf of z_i given zeta_{-z_i} using tempered transitions for the multivariate model
-#'
-#' @name lpdf_zTemperedMV
-#' @param beta_i Double containing current temperature
-#' @param y_obs Vector containing y at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi vector containing the elements of pi
-#' @param Z Vector containing the ith row of Z
-#' @param sigma_sq double containing the sigma_sq variable
-#' @return lpdf_z double containing the log-pdf
-NULL
-
-#' Updates the Z Matrix for multivariate model
-#'
-#' @name UpdateZMV
-#' @param y_obs Matrix containing observed vectors
-#' @param B_obs Field of Matrices containing basis functions evaluated at observed time points
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi Vector containing the elements of pi
-#' @param sigma_sq Double containing the sigma_sq variable
-#' @param rho Double containing hyperparameter for proposal of new z_i state
-#' @param iter Int containing current mcmc iteration
-#' @param tot_mcmc_iters Int containing total number of mcmc iterations
-#' @param Z_ph Matrix that acts as a placeholder for Z
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
-
-#' Updates the Z Matrix using Tempered Transitions for multivariate model
-#'
-#' @name UpdateZTemperedMV
-#' @param beta_i Double containing current temperature
-#' @param y_obs Matrix containing observed vectors
-#' @param Phi Cube containing Phi parameters
-#' @param nu Matrix containing nu parameters
-#' @param pi Vector containing the elements of pi
-#' @param sigma_sq Double containing the sigma_sq variable
-#' @param rho Double containing hyperparameter for proposal of new z_i state
-#' @param iter Int containing current mcmc iteration
-#' @param tot_mcmc_iters Int containing total number of mcmc iterations
-#' @param Z_ph Matrix that acts as a placeholder for Z
-#' @param Z Cube that contains all past, current, and future MCMC draws
-NULL
 
