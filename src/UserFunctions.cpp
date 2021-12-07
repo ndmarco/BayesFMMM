@@ -99,11 +99,11 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @name BFPMM_Theta_Est
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param Z_samp Cube containing initial chain of Z parameters from BFPMM_Nu_Z_multiple_try
-//' @param nu_samp Cube containing intial chain of nu paramaeters from BFPMM_Nu_Z_multiple_try
+//' @param nu_samp Cube containing initial chain of nu parameters from BFPMM_Nu_Z_multiple_try
 //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 //' @param k Int containing the number of clusters
 //' @param Y Field of vectors containing the observed values
-//' @param time Field of vecotrs containing the observed time points
+//' @param time Field of vectors containing the observed time points
 //' @param n_funct Int containing the number of functions
 //' @param basis degree Int containing the degree of B-splines used
 //' @param n_eigen Int containing the number of eigenfunctions

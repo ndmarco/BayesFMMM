@@ -12,14 +12,14 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // BFPMM
-Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& thinning_num, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory);
+Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const int& n_funct, const int& thinning_num, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory);
 RcppExport SEXP _BayesFPMM_BFPMM(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP thinning_numSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type y_obs(y_obsSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type t_obs(t_obsSEXP);
-    Rcpp::traits::input_parameter< const double& >::type n_funct(n_functSEXP);
+    Rcpp::traits::input_parameter< const int& >::type n_funct(n_functSEXP);
     Rcpp::traits::input_parameter< const int& >::type thinning_num(thinning_numSEXP);
     Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
     Rcpp::traits::input_parameter< const int& >::type P(PSEXP);
@@ -48,14 +48,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // BFPMM_Templadder
-Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const double& beta_N_t, const int& N_t);
+Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const int& n_funct, const int& K, const int& P, const int& M, const int& tot_mcmc_iters, const int& r_stored_iters, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const double& beta_N_t, const int& N_t);
 RcppExport SEXP _BayesFPMM_BFPMM_Templadder(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP PSEXP, SEXP MSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type y_obs(y_obsSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type t_obs(t_obsSEXP);
-    Rcpp::traits::input_parameter< const double& >::type n_funct(n_functSEXP);
+    Rcpp::traits::input_parameter< const int& >::type n_funct(n_functSEXP);
     Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
     Rcpp::traits::input_parameter< const int& >::type P(PSEXP);
     Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
@@ -84,14 +84,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // BFPMM_MTT
-Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& thinning_num, const int& K, const int basis_degree, const int& M, const arma::vec boundary_knots, const arma::vec internal_knots, const int& tot_mcmc_iters, const int& r_stored_iters, const int& n_temp_trans, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory, const double& beta_N_t, const int& N_t);
+Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const int& n_funct, const int& thinning_num, const int& K, const int basis_degree, const int& M, const arma::vec boundary_knots, const arma::vec internal_knots, const int& tot_mcmc_iters, const int& r_stored_iters, const int& n_temp_trans, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory, const double& beta_N_t, const int& N_t);
 RcppExport SEXP _BayesFPMM_BFPMM_MTT(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP thinning_numSEXP, SEXP KSEXP, SEXP basis_degreeSEXP, SEXP MSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP n_temp_transSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type y_obs(y_obsSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type t_obs(t_obsSEXP);
-    Rcpp::traits::input_parameter< const double& >::type n_funct(n_functSEXP);
+    Rcpp::traits::input_parameter< const int& >::type n_funct(n_functSEXP);
     Rcpp::traits::input_parameter< const int& >::type thinning_num(thinning_numSEXP);
     Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
     Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
@@ -125,14 +125,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // BFPMM_Nu_Z
-Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& K, const int basis_degree, const int& M, const arma::vec boundary_knots, const arma::vec internal_knots, const int& tot_mcmc_iters, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0);
+Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const int& n_funct, const int& K, const int basis_degree, const int& M, const arma::vec boundary_knots, const arma::vec internal_knots, const int& tot_mcmc_iters, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0);
 RcppExport SEXP _BayesFPMM_BFPMM_Nu_Z(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP basis_degreeSEXP, SEXP MSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP tot_mcmc_itersSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type y_obs(y_obsSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type t_obs(t_obsSEXP);
-    Rcpp::traits::input_parameter< const double& >::type n_funct(n_functSEXP);
+    Rcpp::traits::input_parameter< const int& >::type n_funct(n_functSEXP);
     Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
     Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
     Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
@@ -160,14 +160,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // BFPMM_Theta
-Rcpp::List BFPMM_Theta(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& K, const int basis_degree, const int& M, const arma::vec boundary_knots, const arma::vec internal_knots, const int& tot_mcmc_iters, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const arma::mat& Z_est, const arma::mat& nu_est);
+Rcpp::List BFPMM_Theta(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const int& n_funct, const int& K, const int basis_degree, const int& M, const arma::vec boundary_knots, const arma::vec internal_knots, const int& tot_mcmc_iters, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const arma::mat& Z_est, const arma::mat& nu_est);
 RcppExport SEXP _BayesFPMM_BFPMM_Theta(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP KSEXP, SEXP basis_degreeSEXP, SEXP MSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP tot_mcmc_itersSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP Z_estSEXP, SEXP nu_estSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type y_obs(y_obsSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type t_obs(t_obsSEXP);
-    Rcpp::traits::input_parameter< const double& >::type n_funct(n_functSEXP);
+    Rcpp::traits::input_parameter< const int& >::type n_funct(n_functSEXP);
     Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
     Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
     Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
@@ -197,14 +197,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // BFPMM_MTT_warm_start
-Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const double& n_funct, const int& thinning_num, const int& K, const int basis_degree, const int& M, const arma::vec boundary_knots, const arma::vec internal_knots, const int& tot_mcmc_iters, const int& r_stored_iters, const int& n_temp_trans, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory, const double& beta_N_t, const int& N_t, const arma::mat& Z_est, const arma::vec& pi_est, const double& alpha_3_est, const arma::vec& delta_est, const arma::cube& gamma_est, const arma::cube& Phi_est, const arma::vec& A_est, const arma::mat& nu_est, const arma::vec& tau_est, const double& sigma_est, const arma::mat& chi_est);
+Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs, const arma::field<arma::vec>& t_obs, const int& n_funct, const int& thinning_num, const int& K, const int basis_degree, const int& M, const arma::vec boundary_knots, const arma::vec internal_knots, const int& tot_mcmc_iters, const int& r_stored_iters, const int& n_temp_trans, const arma::vec& c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0, const std::string directory, const double& beta_N_t, const int& N_t, const arma::mat& Z_est, const arma::vec& pi_est, const double& alpha_3_est, const arma::vec& delta_est, const arma::cube& gamma_est, const arma::cube& Phi_est, const arma::vec& A_est, const arma::mat& nu_est, const arma::vec& tau_est, const double& sigma_est, const arma::mat& chi_est);
 RcppExport SEXP _BayesFPMM_BFPMM_MTT_warm_start(SEXP y_obsSEXP, SEXP t_obsSEXP, SEXP n_functSEXP, SEXP thinning_numSEXP, SEXP KSEXP, SEXP basis_degreeSEXP, SEXP MSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP n_temp_transSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP directorySEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP Z_estSEXP, SEXP pi_estSEXP, SEXP alpha_3_estSEXP, SEXP delta_estSEXP, SEXP gamma_estSEXP, SEXP Phi_estSEXP, SEXP A_estSEXP, SEXP nu_estSEXP, SEXP tau_estSEXP, SEXP sigma_estSEXP, SEXP chi_estSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type y_obs(y_obsSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec>& >::type t_obs(t_obsSEXP);
-    Rcpp::traits::input_parameter< const double& >::type n_funct(n_functSEXP);
+    Rcpp::traits::input_parameter< const int& >::type n_funct(n_functSEXP);
     Rcpp::traits::input_parameter< const int& >::type thinning_num(thinning_numSEXP);
     Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
     Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
