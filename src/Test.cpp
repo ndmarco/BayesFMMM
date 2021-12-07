@@ -2296,10 +2296,37 @@ Rcpp::List TestBSplineTensor(){
 
   arma::vec basis_degree = {3,3};
 
-  arma::field<arma::mat> B = Kronecker_B_Spline(t_obs1, 2, basis_degree,
-                                                boundary_knots, internal_knots);
+  arma::field<arma::mat> B = TensorBSpline(t_obs1, 2, basis_degree,
+                                             boundary_knots, internal_knots);
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("t", t_obs1),
                                         Rcpp::Named("B", B));
+  return mod2;
+}
+
+
+//' Tests creation of B-splines
+//'
+//' @name TestBSpline
+//' @export
+// [[Rcpp::export]]
+Rcpp::List TestPmat(){
+  arma::field<arma::mat> t_obs1(2,1);
+  t_obs1(0,0) = arma::zeros(100,2);
+  t_obs1(0,0).col(0) =  arma::regspace(0, 10, 990);
+  t_obs1(0,0).col(1) =  arma::regspace(0, 10, 990);
+  t_obs1(1,0) =  t_obs1(0,0);
+
+  splines2::BSpline bspline;
+  arma::field<arma::vec> internal_knots(2,1);
+  internal_knots(0,0) = {250, 500, 750};
+  internal_knots(1,0) = {250, 500, 750};
+  arma::mat boundary_knots = {{0,990}, {0,990}};
+
+  arma::vec basis_degree = {3,3};
+
+  arma::mat P = GetP(basis_degree,internal_knots);
+  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("t", t_obs1),
+                                        Rcpp::Named("P", P));
   return mod2;
 }
 

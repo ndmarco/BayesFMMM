@@ -16,13 +16,14 @@
 #include "CalculateLikelihood.H"
 #include "CalculateTTAcceptance.H"
 #include "UpdateAlpha3.H"
+#include "BSplines.H"
 
 //' Conducts un-tempered MCMC to estimate the posterior distribution in an unsupervised setting. MCMC samples will be stored in batches to a specified path.
 //'
 //' @name BFPMM
 //' @param y_obs Field (list) of vectors containing the observed values
 //' @param t_obs Field (list) of vectors containing time points of observed values
-//' @param n_funct Double containing number of functions observed
+//' @param n_funct Int containing number of functions observed
 //' @param thinning_num Int that saves every (thinning_num) sample
 //' @param P Int that indicates the number of b-spline basis functions
 //' @param M int that indicates the number of slices used in Phi parameter
@@ -283,7 +284,7 @@ Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
 //' @name BFPMM_Templadder
 //' @param y_obs Field (list) of vectors containing the observed values
 //' @param t_obs Field (list) of vectors containing time points of observed values
-//' @param n_funct Double containing number of functions observed
+//' @param n_funct Int containing number of functions observed
 //' @param P Int that indicates the number of b-spline basis functions
 //' @param M int that indicates the number of slices used in Phi parameter
 //' @param tot_mcmc_iters Int containing total number of MCMC iterations
@@ -530,7 +531,7 @@ Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs,
 //' @name BFPMM_MTT
 //' @param y_obs Field (list) of vectors containing the observed values
 //' @param t_obs Field (list) of vectors containing time points of observed values
-//' @param n_funct Double containing number of functions observed
+//' @param n_funct Int containing number of functions observed
 //' @param thinning_num Int containing how often we save an MCMC iteration
 //' @param K Int containing the number of clusters
 //' @param basis degree Int containing the degree of B-splines used
@@ -953,7 +954,7 @@ Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
 //' @name BFPMM_Nu_Z
 //' @param y_obs Field (list) of vectors containing the observed values
 //' @param t_obs Field (list) of vectors containing time points of observed values
-//' @param n_funct Double containing number of functions observed
+//' @param n_funct Int containing number of functions observed
 //' @param K Int containing the number of clusters
 //' @param basis degree Int containing the degree of B-splines used
 //' @param M Int containing the number of eigenfunctions
@@ -1123,7 +1124,7 @@ Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
 //' @name BFPMM_Theta
 //' @param y_obs Field (list) of vectors containing the observed values
 //' @param t_obs Field (list) of vectors containing time points of observed values
-//' @param n_funct Double containing number of functions observed
+//' @param n_funct Int containing number of functions observed
 //' @param K Int containing the number of clusters
 //' @param basis degree Int containing the degree of B-splines used
 //' @param M Int containing the number of eigenfunctions
@@ -1310,7 +1311,7 @@ Rcpp::List BFPMM_Theta(const arma::field<arma::vec>& y_obs,
 //' @name BFPMM_MTT_warm_start
 //' @param y_obs Field (list) of vectors containing the observed values
 //' @param t_obs Field (list) of vectors containing time points of observed values
-//' @param n_funct Double containing number of functions observed
+//' @param n_funct Int containing number of functions observed
 //' @param thinning_num Int containing how often we save an MCMC iteration
 //' @param K Int containing the number of clusters
 //' @param basis degree Int containing the degree of B-splines used
@@ -2853,5 +2854,157 @@ Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
                                          Rcpp::Named("loglik", loglik));
   return params;
 }
+
+
+//' Conducts un-tempered MCMC to mean and allocation parameters for multivariate functional data
+//'
+//' @name BMFPMM_Nu_Z
+//' @param y_obs Field (list) of vectors containing the observed values
+//' @param t_obs Field (list) of matrix containing time points of observed values
+//' @param n_funct Int containing number of functions observed
+//' @param K Int containing the number of clusters
+//' @param basis degree Int containing the degree of B-splines used
+//' @param M Int containing the number of eigenfunctions
+//' @param boundary_knots Vector containing the boundary points of our index domain of interest
+//' @param internal_knots Vector location of internal knots for B-splines
+//' @param tot_mcmc_iters Int containing total number of MCMC iterations
+//' @param r_stored_iters Int containing number of iterations performed for each batch
+//' @param c Vector containing hyperparmeters for pi
+//' @param b double containing hyperparameter for alpha_3
+//' @param a_12 Vector containing hyperparameters for sampling from delta
+//' @param alpha1l Double containing hyperparameters for sampling from A
+//' @param alpha2l Double containing hyperparameters for sampling from A
+//' @param beta1l Double containing hyperparameters for sampling from A
+//' @param beta2l Double containing hyperparameters for sampling from A
+//' @param var_pi Double containing variance parameter of the random walk MH for pi parameter
+//' @param var_Z Double containing variance parameter of the random walk MH for Z parameter
+//' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+//' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+//' @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+//' @param alpha Double containing hyperparameters for sampling from tau
+//' @param beta Double containing hyperparameters for sampling from tau
+//' @param alpha_0 Double containing hyperparameters for sampling from sigma
+//' @param beta_0 Double containing hyperparameters for sampling from sigma
+//' @param directory String containing path to store batches of MCMC samples
+//' @returns params List of objects containing the MCMC samples from the last batch
+//' @export
+// [[Rcpp::export]]
+Rcpp::List BMFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
+                       const arma::field<arma::mat>& t_obs,
+                       const int& n_funct,
+                       const int& K,
+                       const arma::vec& basis_degree,
+                       const int& M,
+                       const arma::mat& boundary_knots,
+                       const arma::field<arma::vec>& internal_knots,
+                       const int& tot_mcmc_iters,
+                       const arma::vec& c,
+                       const double& b,
+                       const double& nu_1,
+                       const double& alpha1l,
+                       const double& alpha2l,
+                       const double& beta1l,
+                       const double& beta2l,
+                       const double& a_Z_PM,
+                       const double& a_pi_PM,
+                       const double& var_alpha3,
+                       const double& var_epsilon1,
+                       const double& var_epsilon2,
+                       const double& alpha,
+                       const double& beta,
+                       const double& alpha_0,
+                       const double& beta_0){
+  // Make B_obs
+  arma::field<arma::mat> B_obs = TensorBSpline(t_obs, n_funct, basis_degree,
+                                               boundary_knots, internal_knots);
+
+  arma::mat P_mat = GetP(basis_degree,internal_knots);
+
+  int P = P_mat.n_cols;
+  arma::cube nu(K, P, tot_mcmc_iters, arma::fill::randn);
+  arma::cube chi(n_funct, M, tot_mcmc_iters, arma::fill::zeros);
+  arma::mat pi(K, tot_mcmc_iters, arma::fill::zeros);
+  arma::vec pi_ph = arma::zeros(K);
+  pi.col(0) = rdirichlet(c);
+  arma::vec sigma(tot_mcmc_iters, arma::fill::ones);
+  arma::vec Z_ph = arma::zeros(K);
+  arma::vec alpha_3 = arma::ones(tot_mcmc_iters);
+  arma::cube Z = arma::randi<arma::cube>(n_funct, K, tot_mcmc_iters,
+                                         arma::distr_param(0,1));
+
+  for(int i = 0; i < n_funct; i++){
+    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+  }
+
+  arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
+  arma::field<arma::cube> gamma(tot_mcmc_iters,1);
+  arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
+  arma::vec tilde_tau(M, arma::fill::ones);
+  arma::mat A = arma::ones(tot_mcmc_iters, 2);
+  arma::vec loglik = arma::zeros(tot_mcmc_iters);
+
+  for(int i = 0; i < tot_mcmc_iters; i++){
+    gamma(i,0) = arma::cube(K, P, M, arma::fill::ones);
+    Phi(i,0) = arma::zeros(K, P, M);
+  }
+
+  arma::vec m_1(P, arma::fill::zeros);
+  arma::mat M_1(P, P, arma::fill::zeros);
+  arma::mat tau(tot_mcmc_iters, K, arma::fill::ones);
+
+  arma::vec b_1(P, arma::fill::zeros);
+  arma::mat B_1(P, P, arma::fill::zeros);
+
+  for(int i = 0; i < tot_mcmc_iters; i++){
+    updateZ_PM(y_obs, B_obs, Phi(i,0),
+               nu.slice(i), chi.slice(i),
+               pi.col(i), sigma(i),
+               i, tot_mcmc_iters, alpha_3(i),
+               a_Z_PM, Z_ph, Z);
+    updatePi_PM(alpha_3(i) ,Z.slice(i), c,
+                (i), tot_mcmc_iters, a_pi_PM, pi_ph, pi);
+
+    updateAlpha3(pi.col(i), b, Z.slice(i),
+                 (i), tot_mcmc_iters, var_alpha3, alpha_3);
+
+    tilde_tau(0) = delta(0, (i));
+    for(int j = 1; j < M; j++){
+      tilde_tau(j) = tilde_tau(j-1) * delta(j,(i));
+    }
+
+    updateNu(y_obs, B_obs, tau.row((i)).t(),
+             Phi((i),0), Z.slice((i)),
+             chi.slice((i)), sigma((i)),
+             (i), tot_mcmc_iters, P_mat, b_1, B_1, nu);
+
+    updateTau(alpha, beta, nu.slice((i)), (i),
+              tot_mcmc_iters, P_mat, tau);
+
+    updateSigma(y_obs, B_obs, alpha_0, beta_0,
+                nu.slice((i)), Phi((i),0),
+                Z.slice((i)), chi.slice((i)),
+                (i), tot_mcmc_iters, sigma);
+
+    // Calculate log likelihood
+    loglik((i)) =  calcLikelihood(y_obs, B_obs, nu.slice((i)),
+           Phi((i),0), Z.slice((i)), chi.slice((i)), sigma((i)));
+    if(((i+1) % 100) == 0){
+      Rcpp::Rcout << "Iteration: " << i+1 << "\n";
+      Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i)-19, (i))) << "\n";
+      Rcpp::checkUserInterrupt();
+    }
+  }
+  Rcpp::List params = Rcpp::List::create(Rcpp::Named("nu", nu),
+                                         Rcpp::Named("pi", pi),
+                                         Rcpp::Named("alpha_3", alpha_3),
+                                         Rcpp::Named("A", A),
+                                         Rcpp::Named("delta", delta),
+                                         Rcpp::Named("sigma", sigma),
+                                         Rcpp::Named("tau", tau),
+                                         Rcpp::Named("Z", Z),
+                                         Rcpp::Named("loglik", loglik));
+  return params;
+}
+
 
 
