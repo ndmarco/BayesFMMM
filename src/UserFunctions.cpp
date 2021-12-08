@@ -16,15 +16,16 @@
 #include "BFPMM.H"
 #include "UpdateAlpha3.H"
 #include "LabelSwitch.H"
+#include "BSplines.H"
 
-//' Function for finding a good initial starting point for nu parameters and Z parameters, with option for temperered transitions
+//' Function for finding a good initial starting point for nu parameters and Z parameters for functional data, with option for tempered transitions
 //'
 //' @name BFPMM_Nu_Z_multiple_try
-//' @param tot_mcmc_iters Int conatining the number of MCMC iterations per try
+//' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 //' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
 //' @param Y Field of vectors containing the observed values
-//' @param time Field of vecotrs containing the observed time points
+//' @param time Field of vectors containing the observed time points
 //' @param n_funct Int containing the number of functions
 //' @param basis degree Int containing the degree of B-splines used
 //' @param n_eigen Int containing the number of eigenfunctions
@@ -94,7 +95,7 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   return BestChain;
 }
 
-//' Estimates the initial starting point of the rest of the parameters given an intial starting point for Z and nu
+//' Estimates the initial starting point of the rest of the parameters given an initial starting point for Z and nu for functional data
 //'
 //' @name BFPMM_Theta_Est
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
@@ -180,29 +181,29 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
   return BestChain;
 }
 
-//' Performs MCMC, with optional tempered transitions, using user specified starting points.
+//' Performs MCMC for functional data, with optional tempered transitions, using user specified starting points
 //'
 //' @name BFPMM_warm_start
 //' @param beta_N_t Double containing the maximum weight for tempered transisitons
 //' @param N_t Int containing total number of tempered transitions. If no tempered transitions are desired, pick a small integer
 //' @param n_temp_trans Int containing how often tempered transitions are performed. If no tempered transitions are desired, pick a integer larger than tot_mcmc_iters
-//' @param tot_mcmc_iters Int conatining the number of MCMC iterations
+//' @param tot_mcmc_iters Int containing the number of MCMC iterations
 //' @param r_stored_iters Int containing number of MCMC iterations stored in memory before writing to directory
 //' @param Z_samp Cube containing initial chain of Z parameters
-//' @param pi_samp Matrix containing intial chain of pi parameters
-//' @param alpha_3_samp Vector containing intial chain of alpha_3 parameters
+//' @param pi_samp Matrix containing initial chain of pi parameters
+//' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters
 //' @param delta_samp Matrix containing initial chain of delta parameters
 //' @param gamma_samp Field of cubes containing initial chain of gamma parameters
 //' @param Phi_samp Field of cubes containing initial chain of phi parameters
-//' @param A_samp Matrix containing intial chain of A parameters
-//' @param nu_samp Cube containing intial chain of nu paramaeters
+//' @param A_samp Matrix containing initial chain of A parameters
+//' @param nu_samp Cube containing initial chain of nu parameters
 //' @param tau_samp Matrix containing initial chain of tau parameters
 //' @param sigma_samp Vector containing initial chain of sigma parameters
 //' @param chi_samp Cube containing initial chain of chi parameters
 //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 //' @param k Int containing the number of clusters
 //' @param Y Field of vectors containing the observed values
-//' @param time Field of vecotrs containing the observed time points
+//' @param time Field of vectors containing the observed time points
 //' @param n_funct Int containing the number of functions
 //' @param basis degree Int containing the degree of B-splines used
 //' @param n_eigen Int containing the number of eigenfunctions
@@ -399,16 +400,185 @@ arma::cube ReadCube(std::string file){
   return B;
 }
 
-//' Reads in armadillo field and returns it in R format
+//' Reads in armadillo field of cubes and returns it in R format
 //'
-//' @name ReadField
+//' @name ReadFieldCube
 //' @param directory String containing location where arma field is stored
 //' @export
 // [[Rcpp::export]]
-arma::field<arma::cube> ReadField(std::string file){
+arma::field<arma::cube> ReadFieldCube(std::string file){
   arma::field<arma::cube> B;
   B.load(file);
   return B;
+}
+
+//' Reads in armadillo field of matrices and returns it in R format
+//'
+//' @name ReadFieldMat
+//' @param directory String containing location where arma field is stored
+//' @export
+// [[Rcpp::export]]
+arma::field<arma::mat> ReadFieldMat(std::string file){
+  arma::field<arma::mat> B;
+  B.load(file);
+  return B;
+}
+
+//' Reads in armadillo field of vectors and returns it in R format
+//'
+//' @name ReadFieldVec
+//' @param directory String containing location where arma field is stored
+//' @export
+// [[Rcpp::export]]
+arma::field<arma::vec> ReadFieldVec(std::string file){
+  arma::field<arma::vec> B;
+  B.load(file);
+  return B;
+}
+
+//' Function for finding a good initial starting point for nu parameters and Z parameters for multivariate functional data, with option for temperered transitions
+//'
+//' @name BMFPMM_Nu_Z_multiple_try
+//' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
+//' @param n_try Int containing how many different chains are tried
+//' @param k Int containing the number of clusters
+//' @param Y Field of vectors containing the observed values
+//' @param time field of matrices that contain the observed time points (each column is a dimension)
+//' @param n_funct Int containing the number of functions
+//' @param basis_degree vector containing the desired basis degree for each dimension
+//' @param n_eigen Int containing the number of eigenfunctions
+//' @param boundary_knots matrix containing the boundary knots for each dimension (each row is a dimension)
+//' @param internal_knots field of vectors containing the internal knots for each dimension
+//' @returns BestChain List containing a summary of the best performing chain
+//' @export
+// [[Rcpp::export]]
+Rcpp::List BMFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
+                                    const int n_try,
+                                    const int k,
+                                    const arma::field<arma::vec> Y,
+                                    const arma::field<arma::mat> time,
+                                    const int n_funct,
+                                    const arma::vec basis_degree,
+                                    const int n_eigen,
+                                    const arma::mat boundary_knots,
+                                    const arma::field<arma::vec> internal_knots){
+
+  arma::field<arma::mat> B_obs = TensorBSpline(time, n_funct, basis_degree,
+                                               boundary_knots, internal_knots);
+
+
+  // placeholder
+  arma::vec c = arma::ones(k);
+
+  // start MCMC sampling
+  Rcpp::List mod1 = BMFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
+                               boundary_knots, internal_knots,
+                               tot_mcmc_iters,c, 800, 3, 2, 3, 1, 1, 1000, 1000,
+                               0.05, sqrt(1), sqrt(1), 1, 10, 1, 1);
+  arma::vec ph = mod1["loglik"];
+  double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+
+  for(int i = 0; i < n_try; i++){
+    Rcpp::List modi = BMFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
+                                 boundary_knots, internal_knots,
+                                 tot_mcmc_iters, c, 800, 3, 2, 3, 1, 1, 1000,
+                                 1000, 0.05, sqrt(1), sqrt(1), 1,10, 1, 1);
+    arma::vec ph1 = modi["loglik"];
+    if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
+      mod1 = modi;
+      min_likelihood = arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+    }
+
+  }
+
+  Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
+                                             Rcpp::Named("nu", mod1["nu"]),
+                                             Rcpp::Named("pi", mod1["pi"]),
+                                             Rcpp::Named("alpha_3", mod1["alpha_3"]),
+                                             Rcpp::Named("A", mod1["A"]),
+                                             Rcpp::Named("delta", mod1["delta"]),
+                                             Rcpp::Named("sigma", mod1["sigma"]),
+                                             Rcpp::Named("tau", mod1["tau"]),
+                                             Rcpp::Named("Z", mod1["Z"]),
+                                             Rcpp::Named("loglik", mod1["loglik"]));
+
+  return BestChain;
+}
+
+//' Estimates the initial starting point of the rest of the parameters given an initial starting point for Z and nu for multivariate functional data
+//'
+//' @name BMFPMM_Theta_Est
+//' @param tot_mcmc_iters Int containing the total number of MCMC iterations
+//' @param Z_samp Cube containing initial chain of Z parameters from BFPMM_Nu_Z_multiple_try
+//' @param nu_samp Cube containing initial chain of nu parameters from BFPMM_Nu_Z_multiple_try
+//' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
+//' @param k Int containing the number of clusters
+//' @param Y Field of vectors containing the observed values
+//' @param time Field of vectors containing the observed time points
+//' @param n_funct Int containing the number of functions
+//' @param basis degree Int containing the degree of B-splines used
+//' @param n_eigen Int containing the number of eigenfunctions
+//' @param boundary_knots Vector containing the boundary points of our index domain of interest
+//' @param internal_knots Vector location of internal knots for B-splines
+//' @returns BestChain List containing a summary of the chain conditioned on nu and Z
+//' @export
+// [[Rcpp::export]]
+Rcpp::List BMFPMM_Theta_Est(const int tot_mcmc_iters,
+                           const arma::cube Z_samp,
+                           const arma::cube nu_samp,
+                           double burnin_prop,
+                           const int k,
+                           const arma::field<arma::vec> Y,
+                           const arma::field<arma::mat> time,
+                           const int n_funct,
+                           const arma::vec basis_degree,
+                           const int n_eigen,
+                           const arma::mat boundary_knots,
+                           const arma::field<arma::vec> internal_knots){
+
+  arma::field<arma::mat> B_obs = TensorBSpline(time, n_funct, basis_degree,
+                                               boundary_knots, internal_knots);
+
+  arma::vec c = arma::ones(k);
+
+  int n_nu = nu_samp.n_slices;
+  arma::mat Z_est = arma::zeros(n_funct, Z_samp.n_cols);
+  arma::mat nu_est = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+  arma::vec ph_Z = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+  arma::vec ph_nu = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+  for(int i = 0; i < Z_est.n_cols; i++){
+    for(int j = 0; j < Z_est.n_rows; j++){
+      for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+        ph_Z(l - std::round(n_nu * burnin_prop)) = Z_samp(j,i,l);
+      }
+      Z_est(j,i) = arma::median(ph_Z);
+    }
+    for(int j = 0; j < nu_samp.n_cols; j++){
+      for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+        ph_nu(l - std::round(n_nu * burnin_prop)) = nu_samp(i,j,l);
+      }
+      nu_est(i,j) = arma::median(ph_nu);
+    }
+  }
+
+  // start MCMC sampling
+  Rcpp::List mod1 = BMFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+                                 boundary_knots, internal_knots, tot_mcmc_iters,
+                                 c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
+                                 sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est, nu_est);
+
+  Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
+                                             Rcpp::Named("chi", mod1["chi"]),
+                                             Rcpp::Named("A", mod1["A"]),
+                                             Rcpp::Named("delta", mod1["delta"]),
+                                             Rcpp::Named("sigma", mod1["sigma"]),
+                                             Rcpp::Named("tau", mod1["tau"]),
+                                             Rcpp::Named("gamma", mod1["gamma"]),
+                                             Rcpp::Named("Phi", mod1["Phi"]),
+                                             Rcpp::Named("Nu_est", nu_est),
+                                             Rcpp::Named("loglik", mod1["loglik"]));
+
+  return BestChain;
 }
 
 
