@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFPMM_Theta_Est}
 \alias{BFPMM_Theta_Est}
-\title{Estimates the initial starting point of the rest of the parameters given an intial starting point for Z and nu}
+\title{Estimates the initial starting point of the rest of the parameters given an initial starting point for Z and nu for functional data}
 \usage{
 BFPMM_Theta_Est(
   tot_mcmc_iters,
@@ -24,7 +24,7 @@ BFPMM_Theta_Est(
 
 \item{Z_samp}{Cube containing initial chain of Z parameters from BFPMM_Nu_Z_multiple_try}
 
-\item{nu_samp}{Cube containing intial chain of nu paramaeters from BFPMM_Nu_Z_multiple_try}
+\item{nu_samp}{Cube containing initial chain of nu parameters from BFPMM_Nu_Z_multiple_try}
 
 \item{burnin_prop}{Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters}
 
@@ -32,7 +32,7 @@ BFPMM_Theta_Est(
 
 \item{Y}{Field of vectors containing the observed values}
 
-\item{time}{Field of vecotrs containing the observed time points}
+\item{time}{Field of vectors containing the observed time points}
 
 \item{n_funct}{Int containing the number of functions}
 
@@ -48,5 +48,5 @@ BFPMM_Theta_Est(
 BestChain List containing a summary of the chain conditioned on nu and Z
 }
 \description{
-Estimates the initial starting point of the rest of the parameters given an intial starting point for Z and nu
+Estimates the initial starting point of the rest of the parameters given an initial starting point for Z and nu for functional data
 }

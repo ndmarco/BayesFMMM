@@ -37,7 +37,9 @@ BFPMM_Nu_Z(
 
 \item{t_obs}{Field (list) of vectors containing time points of observed values}
 
-\item{n_funct}{Double containing number of functions observed}
+\item{n_funct}{Int containing number of functions observed}
+
+\item{K}{Int containing the number of clusters}
 
 \item{M}{Int containing the number of eigenfunctions}
 
@@ -69,11 +71,9 @@ BFPMM_Nu_Z(
 
 \item{beta_0}{Double containing hyperparameters for sampling from sigma}
 
-\item{thinning_num}{Int that saves every (thinning_num) sample}
-
 \item{basis}{degree Int containing the degree of B-splines used}
 
-\item{r_stored_iters}{Int constaining number of iterations performed for each batch}
+\item{r_stored_iters}{Int containing number of iterations performed for each batch}
 
 \item{a_12}{Vector containing hyperparameters for sampling from delta}
 

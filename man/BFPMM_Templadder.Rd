@@ -38,7 +38,7 @@ BFPMM_Templadder(
 
 \item{t_obs}{Field (list) of vectors containing time points of observed values}
 
-\item{n_funct}{Double containing number of functions observed}
+\item{n_funct}{Int containing number of functions observed}
 
 \item{P}{Int that indicates the number of b-spline basis functions}
 

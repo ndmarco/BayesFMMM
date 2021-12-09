@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFPMM_warm_start}
 \alias{BFPMM_warm_start}
-\title{Performs MCMC, with optional tempered transitions, using user specified starting points.}
+\title{Performs MCMC for functional data, with optional tempered transitions, using user specified starting points}
 \usage{
 BFPMM_warm_start(
   beta_N_t,
@@ -41,15 +41,15 @@ BFPMM_warm_start(
 
 \item{n_temp_trans}{Int containing how often tempered transitions are performed. If no tempered transitions are desired, pick a integer larger than tot_mcmc_iters}
 
-\item{tot_mcmc_iters}{Int conatining the number of MCMC iterations}
+\item{tot_mcmc_iters}{Int containing the number of MCMC iterations}
 
 \item{r_stored_iters}{Int containing number of MCMC iterations stored in memory before writing to directory}
 
 \item{Z_samp}{Cube containing initial chain of Z parameters}
 
-\item{pi_samp}{Matrix containing intial chain of pi parameters}
+\item{pi_samp}{Matrix containing initial chain of pi parameters}
 
-\item{alpha_3_samp}{Vector containing intial chain of alpha_3 parameters}
+\item{alpha_3_samp}{Vector containing initial chain of alpha_3 parameters}
 
 \item{delta_samp}{Matrix containing initial chain of delta parameters}
 
@@ -57,9 +57,9 @@ BFPMM_warm_start(
 
 \item{Phi_samp}{Field of cubes containing initial chain of phi parameters}
 
-\item{A_samp}{Matrix containing intial chain of A parameters}
+\item{A_samp}{Matrix containing initial chain of A parameters}
 
-\item{nu_samp}{Cube containing intial chain of nu paramaeters}
+\item{nu_samp}{Cube containing initial chain of nu parameters}
 
 \item{tau_samp}{Matrix containing initial chain of tau parameters}
 
@@ -73,7 +73,7 @@ BFPMM_warm_start(
 
 \item{Y}{Field of vectors containing the observed values}
 
-\item{time}{Field of vecotrs containing the observed time points}
+\item{time}{Field of vectors containing the observed time points}
 
 \item{n_funct}{Int containing the number of functions}
 
@@ -90,5 +90,5 @@ BFPMM_warm_start(
 \item{basis}{degree Int containing the degree of B-splines used}
 }
 \description{
-Performs MCMC, with optional tempered transitions, using user specified starting points.
+Performs MCMC for functional data, with optional tempered transitions, using user specified starting points
 }

@@ -38,7 +38,7 @@ BFPMM(
 
 \item{t_obs}{Field (list) of vectors containing time points of observed values}
 
-\item{n_funct}{Double containing number of functions observed}
+\item{n_funct}{Int containing number of functions observed}
 
 \item{thinning_num}{Int that saves every (thinning_num) sample}
 

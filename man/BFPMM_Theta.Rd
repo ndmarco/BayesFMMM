@@ -2,6 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFPMM_Theta}
 \alias{BFPMM_Theta}
+\alias{BFPMM_ThetaMV}
 \title{Conducts un-tempered MCMC to estimate the posterior distribution of parameters not related to Z or Nu, conditioned on a value of Nu and Z}
 \usage{
 BFPMM_Theta(
@@ -33,13 +34,40 @@ BFPMM_Theta(
   Z_est,
   nu_est
 )
+
+BFPMM_ThetaMV(
+  y_obs,
+  K,
+  M,
+  tot_mcmc_iters,
+  c,
+  b,
+  nu_1,
+  alpha1l,
+  alpha2l,
+  beta1l,
+  beta2l,
+  a_Z_PM,
+  a_pi_PM,
+  var_alpha3,
+  var_epsilon1,
+  var_epsilon2,
+  alpha,
+  beta,
+  alpha_0,
+  beta_0,
+  Z_est,
+  nu_est
+)
 }
 \arguments{
-\item{y_obs}{Field (list) of vectors containing the observed values}
+\item{y_obs}{Matrix of observed vectors}
 
 \item{t_obs}{Field (list) of vectors containing time points of observed values}
 
-\item{n_funct}{Double containing number of functions observed}
+\item{n_funct}{Int containing number of functions observed}
+
+\item{K}{Int containing the number of clusters}
 
 \item{M}{Int containing the number of eigenfunctions}
 
@@ -75,8 +103,6 @@ BFPMM_Theta(
 
 \item{nu_est}{Matrix containing nu values to be conditioned on}
 
-\item{thinning_num}{Int that saves every (thinning_num) sample}
-
 \item{basis}{degree Int containing the degree of B-splines used}
 
 \item{a_12}{Vector containing hyperparameters for sampling from delta}
@@ -91,7 +117,11 @@ BFPMM_Theta(
 }
 \value{
 params List of objects containing the MCMC samples from the last batch
+
+params List of objects containing the MCMC samples from the last batch
 }
 \description{
+Conducts un-tempered MCMC to estimate the posterior distribution of parameters not related to Z or Nu, conditioned on a value of Nu and Z
+
 Conducts un-tempered MCMC to estimate the posterior distribution of parameters not related to Z or Nu, conditioned on a value of Nu and Z
 }

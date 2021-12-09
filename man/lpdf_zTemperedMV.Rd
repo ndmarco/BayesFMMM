@@ -6,7 +6,7 @@
 \arguments{
 \item{beta_i}{Double containing current temperature}
 
-\item{y_obs}{Vector containing the ith observed point}
+\item{y_obs}{Vector containing y at observed time points}
 
 \item{Phi}{Cube containing Phi parameters}
 

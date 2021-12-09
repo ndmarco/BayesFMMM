@@ -2,7 +2,6 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFPMM_MTT}
 \alias{BFPMM_MTT}
-\alias{BFPMM_MTTMV}
 \title{Conducts a mixture of untempered sampling and tempered sampling to get posterior draws from the partial membership model}
 \usage{
 BFPMM_MTT(
@@ -38,43 +37,17 @@ BFPMM_MTT(
   beta_N_t,
   N_t
 )
-
-BFPMM_MTTMV(
-  y_obs,
-  n_funct,
-  thinning_num,
-  K,
-  M,
-  tot_mcmc_iters,
-  r_stored_iters,
-  n_temp_trans,
-  c,
-  b,
-  nu_1,
-  alpha1l,
-  alpha2l,
-  beta1l,
-  beta2l,
-  a_Z_PM,
-  a_pi_PM,
-  var_alpha3,
-  var_epsilon1,
-  var_epsilon2,
-  alpha,
-  beta,
-  alpha_0,
-  beta_0,
-  directory,
-  beta_N_t,
-  N_t
-)
 }
 \arguments{
 \item{y_obs}{Field (list) of vectors containing the observed values}
 
 \item{t_obs}{Field (list) of vectors containing time points of observed values}
 
-\item{n_funct}{Double containing number of functions observed}
+\item{n_funct}{Int containing number of functions observed}
+
+\item{thinning_num}{Int containing how often we save an MCMC iteration}
+
+\item{K}{Int containing the number of clusters}
 
 \item{M}{Int containing the number of eigenfunctions}
 
@@ -98,7 +71,7 @@ BFPMM_MTTMV(
 
 \item{a_pi_PM}{Double containing hyperparameter used to sample from the posterior of pi}
 
-\item{var_alpha3}{Doubel containing hyperparameter for sampling from alpha_3}
+\item{var_alpha3}{Double containing hyperparameter for sampling from alpha_3}
 
 \item{alpha}{Double containing hyperparameters for sampling from tau}
 
@@ -124,11 +97,7 @@ BFPMM_MTTMV(
 }
 \value{
 params List of objects containing the MCMC samples from the last batch
-
-params List of objects containing the MCMC samples from the last batch
 }
 \description{
-Conducts a mixture of untempered sampling and tempered sampling to get posterior draws from the partial membership model
-
 Conducts a mixture of untempered sampling and tempered sampling to get posterior draws from the partial membership model
 }

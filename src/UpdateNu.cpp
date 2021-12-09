@@ -165,7 +165,6 @@ void updateNuMV(const arma::mat& y_obs,
                 arma::vec& b_1,
                 arma::mat& B_1,
                 arma::cube& nu){
-  double ph = 0;
   // initialize P matrix
   for(int j = 0; j < nu.n_rows; j++){
     b_1.zeros();
@@ -228,7 +227,7 @@ void updateNuTemperedMV(const double& beta_i,
                         arma::vec& b_1,
                         arma::mat& B_1,
                         arma::cube& nu){
-  double ph = 0;
+
   for(int j = 0; j < nu.n_rows; j++){
     b_1.zeros();
     B_1.zeros();

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFPMM_Nu_Z_multiple_try}
 \alias{BFPMM_Nu_Z_multiple_try}
-\title{Function for finding a good initial starting point for nu parameters and Z parameters, with option for temperered transitions}
+\title{Function for finding a good initial starting point for nu parameters and Z parameters for functional data, with option for tempered transitions}
 \usage{
 BFPMM_Nu_Z_multiple_try(
   tot_mcmc_iters,
@@ -18,7 +18,7 @@ BFPMM_Nu_Z_multiple_try(
 )
 }
 \arguments{
-\item{tot_mcmc_iters}{Int conatining the number of MCMC iterations per try}
+\item{tot_mcmc_iters}{Int containing the number of MCMC iterations per try}
 
 \item{n_try}{Int containing how many different chains are tried}
 
@@ -26,7 +26,7 @@ BFPMM_Nu_Z_multiple_try(
 
 \item{Y}{Field of vectors containing the observed values}
 
-\item{time}{Field of vecotrs containing the observed time points}
+\item{time}{Field of vectors containing the observed time points}
 
 \item{n_funct}{Int containing the number of functions}
 
@@ -42,5 +42,5 @@ BFPMM_Nu_Z_multiple_try(
 BestChain List containing a summary of the best performing chain
 }
 \description{
-Function for finding a good initial starting point for nu parameters and Z parameters, with option for temperered transitions
+Function for finding a good initial starting point for nu parameters and Z parameters for functional data, with option for tempered transitions
 }
