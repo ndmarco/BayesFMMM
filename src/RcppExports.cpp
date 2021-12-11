@@ -977,23 +977,13 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// TestBSplineTensor
-Rcpp::List TestBSplineTensor();
-RcppExport SEXP _BayesFPMM_TestBSplineTensor() {
+// TestBStuff
+Rcpp::List TestBStuff();
+RcppExport SEXP _BayesFPMM_TestBStuff() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(TestBSplineTensor());
-    return rcpp_result_gen;
-END_RCPP
-}
-// TestPmat
-Rcpp::List TestPmat();
-RcppExport SEXP _BayesFPMM_TestPmat() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(TestPmat());
+    rcpp_result_gen = Rcpp::wrap(TestBStuff());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1209,6 +1199,8 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP run_testthat_tests(SEXP);
+
 static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_BFPMM", (DL_FUNC) &_BayesFPMM_BFPMM, 26},
     {"_BayesFPMM_BFPMM_Templadder", (DL_FUNC) &_BayesFPMM_BFPMM_Templadder, 26},
@@ -1263,8 +1255,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_TestBFPMM_MTT_warm_start", (DL_FUNC) &_BayesFPMM_TestBFPMM_MTT_warm_start, 21},
     {"_BayesFPMM_TestBSpline", (DL_FUNC) &_BayesFPMM_TestBSpline, 0},
     {"_BayesFPMM_TestUpdateZ_MV", (DL_FUNC) &_BayesFPMM_TestUpdateZ_MV, 0},
-    {"_BayesFPMM_TestBSplineTensor", (DL_FUNC) &_BayesFPMM_TestBSplineTensor, 0},
-    {"_BayesFPMM_TestPmat", (DL_FUNC) &_BayesFPMM_TestPmat, 0},
+    {"_BayesFPMM_TestBStuff", (DL_FUNC) &_BayesFPMM_TestBStuff, 0},
     {"_BayesFPMM_Z_proposal_density", (DL_FUNC) &_BayesFPMM_Z_proposal_density, 2},
     {"_BayesFPMM_pi_proposal_density", (DL_FUNC) &_BayesFPMM_pi_proposal_density, 2},
     {"_BayesFPMM_BFPMM_Nu_Z_multiple_try", (DL_FUNC) &_BayesFPMM_BFPMM_Nu_Z_multiple_try, 10},
@@ -1278,6 +1269,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_ReadFieldVec", (DL_FUNC) &_BayesFPMM_ReadFieldVec, 1},
     {"_BayesFPMM_BMFPMM_Nu_Z_multiple_try", (DL_FUNC) &_BayesFPMM_BMFPMM_Nu_Z_multiple_try, 10},
     {"_BayesFPMM_BMFPMM_Theta_Est", (DL_FUNC) &_BayesFPMM_BMFPMM_Theta_Est, 12},
+    {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
     {NULL, NULL, 0}
 };
 

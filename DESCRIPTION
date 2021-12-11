@@ -12,6 +12,8 @@ Imports: Rcpp (>= 1.0.5)
 LinkingTo: Rcpp,
            RcppArmadillo,
            RcppDist,
-           splines2 (>= 0.3.0)
+           splines2 (>= 0.3.0),
+           testthat
+Suggests: xml2
 RoxygenNote: 7.1.2
 Encoding: UTF-8

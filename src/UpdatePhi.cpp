@@ -201,7 +201,6 @@ void updatePhiMV(const arma::mat& y_obs,
                  arma::field<arma::cube>& Phi){
   m_1.zeros();
   M_1.zeros();
-  double ph = 0;
 
   for(int j =  0; j < Phi(iter,0).n_rows; j ++){
     for(int m = 0; m < Phi(iter,0).n_slices; m++){
@@ -280,7 +279,6 @@ void updatePhiTemperedMV(const double& beta_i,
                          arma::field<arma::cube>& Phi){
   m_1.zeros();
   M_1.zeros();
-  double ph = 0;
 
   for(int j =  0; j < Phi(iter,0).n_rows; j ++){
     for(int m = 0; m < Phi(iter,0).n_slices; m++){

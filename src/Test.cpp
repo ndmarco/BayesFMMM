@@ -2281,7 +2281,7 @@ Rcpp::List TestUpdateZ_MV(){
 //' @name TestBSpline
 //' @export
 // [[Rcpp::export]]
-Rcpp::List TestBSplineTensor(){
+Rcpp::List TestBStuff(){
   arma::field<arma::mat> t_obs1(2,1);
   t_obs1(0,0) = arma::zeros(100,2);
   t_obs1(0,0).col(0) =  arma::regspace(0, 10, 990);
@@ -2298,37 +2298,47 @@ Rcpp::List TestBSplineTensor(){
 
   arma::field<arma::mat> B = TensorBSpline(t_obs1, 2, basis_degree,
                                              boundary_knots, internal_knots);
-  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("t", t_obs1),
-                                        Rcpp::Named("B", B));
+  Rcpp::Environment base("package:base");
+  Rcpp::Function sys_file = base["system.file"];
+  Rcpp::StringVector path = sys_file("test-data", "Tensor_BSpline.txt",
+                                     Rcpp::_["package"] = "BayesFPMM");
+  std::string string_path = Rcpp::as<std::string>(path[0]);
+
+  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("string_path", string_path),
+                                        Rcpp::Named("path", path));
+
+  // arma::mat B_1 = B(0,0);
+  // B_1.save("/Users/nicholasmarco/Projects/BayesFPMM/inst/test-data/Tensor_BSpline.txt", arma::arma_ascii);
+
   return mod2;
 }
-
-
-//' Tests creation of B-splines
-//'
-//' @name TestBSpline
-//' @export
-// [[Rcpp::export]]
-Rcpp::List TestPmat(){
-  arma::field<arma::mat> t_obs1(2,1);
-  t_obs1(0,0) = arma::zeros(100,2);
-  t_obs1(0,0).col(0) =  arma::regspace(0, 10, 990);
-  t_obs1(0,0).col(1) =  arma::regspace(0, 10, 990);
-  t_obs1(1,0) =  t_obs1(0,0);
-
-  splines2::BSpline bspline;
-  arma::field<arma::vec> internal_knots(2,1);
-  internal_knots(0,0) = {250, 500, 750};
-  internal_knots(1,0) = {250, 500, 750};
-  arma::mat boundary_knots = {{0,990}, {0,990}};
-
-  arma::vec basis_degree = {3,3};
-
-  arma::mat P = GetP(basis_degree,internal_knots);
-  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("t", t_obs1),
-                                        Rcpp::Named("P", P));
-  return mod2;
-}
+//
+//
+// //' Tests creation of B-splines
+// //'
+// //' @name TestBSpline
+// //' @export
+// // [[Rcpp::export]]
+// Rcpp::List TestPmat(){
+//   arma::field<arma::mat> t_obs1(2,1);
+//   t_obs1(0,0) = arma::zeros(100,2);
+//   t_obs1(0,0).col(0) =  arma::regspace(0, 10, 990);
+//   t_obs1(0,0).col(1) =  arma::regspace(0, 10, 990);
+//   t_obs1(1,0) =  t_obs1(0,0);
+//
+//   splines2::BSpline bspline;
+//   arma::field<arma::vec> internal_knots(2,1);
+//   internal_knots(0,0) = {250, 500, 750};
+//   internal_knots(1,0) = {250, 500, 750};
+//   arma::mat boundary_knots = {{0,990}, {0,990}};
+//
+//   arma::vec basis_degree = {3,3};
+//
+//   arma::mat P = GetP(basis_degree,internal_knots);
+//   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("t", t_obs1),
+//                                         Rcpp::Named("P", P));
+//   return mod2;
+// }
 
 
 
