@@ -2,15 +2,10 @@
 % Please edit documentation in R/RcppExports.R
 \name{TestBSpline}
 \alias{TestBSpline}
-\alias{TestPmat}
 \title{Tests creation of B-splines}
 \usage{
 TestBSpline()
-
-TestPmat()
 }
 \description{
-Tests creation of B-splines
-
 Tests creation of B-splines
 }

@@ -810,14 +810,6 @@ TestUpdateZ_MV <- function() {
     .Call('_BayesFPMM_TestUpdateZ_MV', PACKAGE = 'BayesFPMM')
 }
 
-#' Tests creation of B-splines
-#'
-#' @name TestBSpline
-#' @export
-TestPmat <- function() {
-    .Call('_BayesFPMM_TestPmat', PACKAGE = 'BayesFPMM')
-}
-
 #' computes the log pdf of a_1j
 #'
 #' @name lpdf_a1
