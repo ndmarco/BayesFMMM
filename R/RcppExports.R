@@ -814,8 +814,8 @@ TestUpdateZ_MV <- function() {
 #'
 #' @name TestBSpline
 #' @export
-TestBStuff <- function() {
-    .Call('_BayesFPMM_TestBStuff', PACKAGE = 'BayesFPMM')
+TestPmat <- function() {
+    .Call('_BayesFPMM_TestPmat', PACKAGE = 'BayesFPMM')
 }
 
 #' computes the log pdf of a_1j

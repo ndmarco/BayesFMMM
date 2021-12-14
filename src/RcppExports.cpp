@@ -977,13 +977,13 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// TestBStuff
-Rcpp::List TestBStuff();
-RcppExport SEXP _BayesFPMM_TestBStuff() {
+// TestPmat
+Rcpp::List TestPmat();
+RcppExport SEXP _BayesFPMM_TestPmat() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(TestBStuff());
+    rcpp_result_gen = Rcpp::wrap(TestPmat());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1255,7 +1255,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_TestBFPMM_MTT_warm_start", (DL_FUNC) &_BayesFPMM_TestBFPMM_MTT_warm_start, 21},
     {"_BayesFPMM_TestBSpline", (DL_FUNC) &_BayesFPMM_TestBSpline, 0},
     {"_BayesFPMM_TestUpdateZ_MV", (DL_FUNC) &_BayesFPMM_TestUpdateZ_MV, 0},
-    {"_BayesFPMM_TestBStuff", (DL_FUNC) &_BayesFPMM_TestBStuff, 0},
+    {"_BayesFPMM_TestPmat", (DL_FUNC) &_BayesFPMM_TestPmat, 0},
     {"_BayesFPMM_Z_proposal_density", (DL_FUNC) &_BayesFPMM_Z_proposal_density, 2},
     {"_BayesFPMM_pi_proposal_density", (DL_FUNC) &_BayesFPMM_pi_proposal_density, 2},
     {"_BayesFPMM_BFPMM_Nu_Z_multiple_try", (DL_FUNC) &_BayesFPMM_BFPMM_Nu_Z_multiple_try, 10},

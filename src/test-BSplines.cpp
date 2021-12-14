@@ -31,7 +31,7 @@ arma::mat TestBSplineTensor(){
 //' Tests creation of P matrix used for updating Nu
 //'
 //' @name TestBSpline
-arma::mat TestPmat(){
+arma::mat TestPMat(){
   arma::field<arma::mat> t_obs1(2,1);
   t_obs1(0,0) = arma::zeros(100,2);
   t_obs1(0,0).col(0) =  arma::regspace(0, 10, 990);
@@ -65,5 +65,19 @@ context("Tensor B-Spline unit tests") {
     B_true.load(string_path);
     expect_true(arma::approx_equal(TestBSplineTensor(), B_true, "absdiff", 1e-7));
   }
+}
 
+// Tests creation of multivariate B-splines
+context("Tensor P matrix for Nu") {
+
+  test_that("creation of P matrix") {
+    Rcpp::Environment base("package:base");
+    Rcpp::Function sys_file = base["system.file"];
+    Rcpp::StringVector path = sys_file("inst", "test-data", "P_mat.txt",
+                                       Rcpp::_["package"] = "BayesFPMM");
+    std::string string_path = Rcpp::as<std::string>(path[0]);
+    arma::mat P_true;
+    P_true.load(string_path);
+    expect_true(arma::approx_equal(TestPMat(), P_true, "absdiff", 1e-7));
+  }
 }
