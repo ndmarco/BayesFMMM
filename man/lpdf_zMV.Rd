@@ -2,9 +2,9 @@
 % Please edit documentation in R/RcppExports.R
 \name{lpdf_zMV}
 \alias{lpdf_zMV}
-\title{Gets log-pdf of z_i given zeta_{-z_i} for the multivariate model}
+\title{Gets log-pdf of z_i given zeta_{-z_i} for multivariate model}
 \arguments{
-\item{y_obs}{Vector containing y at observed time points}
+\item{y_obs}{Vector containing ith observed point}
 
 \item{Phi}{Cube containing Phi parameters}
 
@@ -22,7 +22,7 @@ lpdf_z double containing the log-pdf
 lpdf_z double containing the log-pdf
 }
 \description{
-Gets log-pdf of z_i given zeta_{-z_i} for the multivariate model
-
 Gets log-pdf of z_i given zeta_{-z_i} for multivariate model
+
+Gets log-pdf of z_i given zeta_{-z_i} for the multivariate model
 }
