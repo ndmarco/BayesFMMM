@@ -16,6 +16,9 @@
 #include "UpdateSigma.H"
 #include "UpdateChi.H"
 #include "CalculateLikelihood.H"
+#include "CalculateTTAcceptance.H"
+#include "UpdateAlpha3.H"
+#include "BSplines.H"
 
 
 Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
