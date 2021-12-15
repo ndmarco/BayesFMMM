@@ -1,22 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include <splines2Armadillo.h>
-#include "Distributions.H"
-#include "UpdateClassMembership.H"
-#include "UpdatePartialMembership.H"
-#include "UpdatePi.H"
-#include "UpdatePhi.H"
-#include "UpdateDelta.H"
-#include "UpdateA.H"
-#include "UpdateGamma.H"
-#include "UpdateNu.H"
-#include "UpdateTau.H"
-#include "UpdateSigma.H"
-#include "UpdateChi.H"
-#include "BFPMM.H"
-#include "UpdateAlpha3.H"
-#include "LabelSwitch.H"
-#include "BSplines.H"
+#include <BayesFPMM.h>
 
 //' Function for finding a good initial starting point for nu parameters and Z parameters for functional data, with option for tempered transitions
 //'
@@ -27,7 +12,7 @@
 //' @param Y Field of vectors containing the observed values
 //' @param time Field of vectors containing the observed time points
 //' @param n_funct Int containing the number of functions
-//' @param basis degree Int containing the degree of B-splines used
+//' @param basis_degree Int containing the degree of B-splines used
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param boundary_knots Vector containing the boundary points of our index domain of interest
 //' @param internal_knots Vector location of internal knots for B-splines
@@ -61,18 +46,18 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   arma::vec c = arma::ones(k);
 
   // start MCMC sampling
-  Rcpp::List mod1 = BFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
-                               boundary_knots, internal_knots,
-                               tot_mcmc_iters,c, 800, 3, 2, 3, 1, 1, 1000, 1000,
-                               0.05, sqrt(1), sqrt(1), 1, 10, 1, 1);
+  Rcpp::List mod1 = BayesFPMM::BFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
+                                          boundary_knots, internal_knots,
+                                          tot_mcmc_iters,c, 800, 3, 2, 3, 1, 1, 1000, 1000,
+                                          0.05, sqrt(1), sqrt(1), 1, 10, 1, 1);
   arma::vec ph = mod1["loglik"];
   double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
 
   for(int i = 0; i < n_try; i++){
-    Rcpp::List modi = BFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
-                                 boundary_knots, internal_knots,
-                                 tot_mcmc_iters, c, 800, 3, 2, 3, 1, 1, 1000,
-                                 1000, 0.05, sqrt(1), sqrt(1), 1,10, 1, 1);
+    Rcpp::List modi = BayesFPMM::BFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
+                                            boundary_knots, internal_knots,
+                                            tot_mcmc_iters, c, 800, 3, 2, 3, 1, 1, 1000,
+                                            1000, 0.05, sqrt(1), sqrt(1), 1,10, 1, 1);
     arma::vec ph1 = modi["loglik"];
     if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
       mod1 = modi;
@@ -106,7 +91,7 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @param Y Field of vectors containing the observed values
 //' @param time Field of vectors containing the observed time points
 //' @param n_funct Int containing the number of functions
-//' @param basis degree Int containing the degree of B-splines used
+//' @param basis_degree Int containing the degree of B-splines used
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param boundary_knots Vector containing the boundary points of our index domain of interest
 //' @param internal_knots Vector location of internal knots for B-splines
@@ -162,10 +147,10 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
-                                boundary_knots, internal_knots, tot_mcmc_iters,
-                                c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
-                                sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est, nu_est);
+  Rcpp::List mod1 = BayesFPMM::BFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+                                           boundary_knots, internal_knots, tot_mcmc_iters,
+                                           c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
+                                           sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est, nu_est);
 
   Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
                                              Rcpp::Named("chi", mod1["chi"]),
@@ -205,7 +190,7 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
 //' @param Y Field of vectors containing the observed values
 //' @param time Field of vectors containing the observed time points
 //' @param n_funct Int containing the number of functions
-//' @param basis degree Int containing the degree of B-splines used
+//' @param basis_degree Int containing the degree of B-splines used
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param boundary_knots Vector containing the boundary points of our index domain of interest
 //' @param internal_knots Vector location of internal knots for B-splines
@@ -336,15 +321,15 @@ Rcpp::List BFPMM_warm_start(const double beta_N_t,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BFPMM_MTT_warm_start(Y, time, n_funct, thinning_num, k,
-                                         basis_degree, n_eigen, boundary_knots,
-                                         internal_knots, tot_mcmc_iters,
-                                         r_stored_iters, n_temp_trans,
-                                         c, 800, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
-                                         sqrt(1), sqrt(1), 1, 10, 1, 1, dir,
-                                         beta_N_t, N_t, Z_est, pi_est, alpha_3_est,
-                                         delta_est, gamma_est, Phi_est, A_est,
-                                         nu_est, tau_est, sigma_est, chi_est);
+  Rcpp::List mod1 = BayesFPMM::BFPMM_MTT_warm_start(Y, time, n_funct, thinning_num, k,
+                                                    basis_degree, n_eigen, boundary_knots,
+                                                    internal_knots, tot_mcmc_iters,
+                                                    r_stored_iters, n_temp_trans,
+                                                    c, 800, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
+                                                    sqrt(1), sqrt(1), 1, 10, 1, 1, dir,
+                                                    beta_N_t, N_t, Z_est, pi_est, alpha_3_est,
+                                                    delta_est, gamma_est, Phi_est, A_est,
+                                                    nu_est, tau_est, sigma_est, chi_est);
 
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
                                         Rcpp::Named("nu", mod1["nu"]),
@@ -403,7 +388,7 @@ arma::cube ReadCube(std::string file){
 //' Reads in armadillo field of cubes and returns it in R format
 //'
 //' @name ReadFieldCube
-//' @param directory String containing location where arma field is stored
+//' @param file String containing location where arma field is stored
 //' @export
 // [[Rcpp::export]]
 arma::field<arma::cube> ReadFieldCube(std::string file){
@@ -415,7 +400,7 @@ arma::field<arma::cube> ReadFieldCube(std::string file){
 //' Reads in armadillo field of matrices and returns it in R format
 //'
 //' @name ReadFieldMat
-//' @param directory String containing location where arma field is stored
+//' @param file String containing location where arma field is stored
 //' @export
 // [[Rcpp::export]]
 arma::field<arma::mat> ReadFieldMat(std::string file){
@@ -427,7 +412,7 @@ arma::field<arma::mat> ReadFieldMat(std::string file){
 //' Reads in armadillo field of vectors and returns it in R format
 //'
 //' @name ReadFieldVec
-//' @param directory String containing location where arma field is stored
+//' @param file String containing location where arma field is stored
 //' @export
 // [[Rcpp::export]]
 arma::field<arma::vec> ReadFieldVec(std::string file){
@@ -463,26 +448,26 @@ Rcpp::List BMFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                     const arma::mat boundary_knots,
                                     const arma::field<arma::vec> internal_knots){
 
-  arma::field<arma::mat> B_obs = TensorBSpline(time, n_funct, basis_degree,
-                                               boundary_knots, internal_knots);
+  arma::field<arma::mat> B_obs = BayesFPMM::TensorBSpline(time, n_funct, basis_degree,
+                                                          boundary_knots, internal_knots);
 
 
   // placeholder
   arma::vec c = arma::ones(k);
 
   // start MCMC sampling
-  Rcpp::List mod1 = BMFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
-                               boundary_knots, internal_knots,
-                               tot_mcmc_iters,c, 800, 3, 2, 3, 1, 1, 1000, 1000,
-                               0.05, sqrt(1), sqrt(1), 1, 10, 1, 1);
+  Rcpp::List mod1 = BayesFPMM::BMFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
+                                           boundary_knots, internal_knots,
+                                           tot_mcmc_iters,c, 800, 3, 2, 3, 1, 1, 1000, 1000,
+                                           0.05, sqrt(1), sqrt(1), 1, 10, 1, 1);
   arma::vec ph = mod1["loglik"];
   double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
 
   for(int i = 0; i < n_try; i++){
-    Rcpp::List modi = BMFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
-                                 boundary_knots, internal_knots,
-                                 tot_mcmc_iters, c, 800, 3, 2, 3, 1, 1, 1000,
-                                 1000, 0.05, sqrt(1), sqrt(1), 1,10, 1, 1);
+    Rcpp::List modi = BayesFPMM::BMFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
+                                             boundary_knots, internal_knots,
+                                             tot_mcmc_iters, c, 800, 3, 2, 3, 1, 1, 1000,
+                                             1000, 0.05, sqrt(1), sqrt(1), 1,10, 1, 1);
     arma::vec ph1 = modi["loglik"];
     if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
       mod1 = modi;
@@ -516,7 +501,7 @@ Rcpp::List BMFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @param Y Field of vectors containing the observed values
 //' @param time Field of vectors containing the observed time points
 //' @param n_funct Int containing the number of functions
-//' @param basis degree Int containing the degree of B-splines used
+//' @param basis_degree Int containing the degree of B-splines used
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param boundary_knots Vector containing the boundary points of our index domain of interest
 //' @param internal_knots Vector location of internal knots for B-splines
@@ -536,8 +521,8 @@ Rcpp::List BMFPMM_Theta_Est(const int tot_mcmc_iters,
                            const arma::mat boundary_knots,
                            const arma::field<arma::vec> internal_knots){
 
-  arma::field<arma::mat> B_obs = TensorBSpline(time, n_funct, basis_degree,
-                                               boundary_knots, internal_knots);
+  arma::field<arma::mat> B_obs = BayesFPMM::TensorBSpline(time, n_funct, basis_degree,
+                                                          boundary_knots, internal_knots);
 
   arma::vec c = arma::ones(k);
 
@@ -562,10 +547,10 @@ Rcpp::List BMFPMM_Theta_Est(const int tot_mcmc_iters,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BMFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
-                                 boundary_knots, internal_knots, tot_mcmc_iters,
-                                 c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
-                                 sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est, nu_est);
+  Rcpp::List mod1 = BayesFPMM::BMFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+                                            boundary_knots, internal_knots, tot_mcmc_iters,
+                                            c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
+                                            sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est, nu_est);
 
   Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
                                              Rcpp::Named("chi", mod1["chi"]),

@@ -7,7 +7,7 @@
 ReadFieldVec(file)
 }
 \arguments{
-\item{directory}{String containing location where arma field is stored}
+\item{file}{String containing location where arma field is stored}
 }
 \description{
 Reads in armadillo field of vectors and returns it in R format

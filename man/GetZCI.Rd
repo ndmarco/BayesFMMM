@@ -9,10 +9,10 @@ GetZCI(dir, n_files)
 \arguments{
 \item{dir}{String containing the directory where the MCMC files are located}
 
-\item{n_files}{Int containing the number of files per parameter}
+\item{n_files}{Integer containing the number of files per parameter}
 }
 \value{
-CI list containing the 97.5th , 50th, and 2.5th credible values
+CI List containing the 97.5th , 50th, and 2.5th credible values
 }
 \description{
 Calculates the credible interval for membership parameters Z

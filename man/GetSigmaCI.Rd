@@ -2,13 +2,14 @@
 % Please edit documentation in R/RcppExports.R
 \name{GetSigmaCI}
 \alias{GetSigmaCI}
-\alias{GetSigamCI}
 \title{Calculates the credible interval for sigma squared}
 \usage{
-GetSigamCI(dir, n_files)
+GetSigmaCI(dir, n_files)
 }
 \arguments{
 \item{dir}{String containing the directory where the MCMC files are located}
+
+\item{n_files}{Integer containing the number of MCMC files}
 }
 \value{
 CI list containing the 97.5th , 50th, and 2.5th pointwise credible values

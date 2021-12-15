@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <splines2Armadillo.h>
 #include <cmath>
-#include "CalculateLikelihood.H"
+#include <BayesFPMM.h>
 
 //' Calculates the Pointwise credible interval for the mean
 //'
@@ -316,10 +316,11 @@ Rcpp::List GetCovCI_S(const std::string dir,
 //'
 //' @name GetSigmaCI
 //' @param dir String containing the directory where the MCMC files are located
+//' @param n_files Integer containing the number of MCMC files
 //' @return CI list containing the 97.5th , 50th, and 2.5th pointwise credible values
 //' @export
 // [[Rcpp::export]]
-Rcpp::List GetSigamCI(const std::string dir,
+Rcpp::List GetSigmaCI(const std::string dir,
                       const int n_files){
   arma::vec sigma_i;
   sigma_i.load(dir + "Sigma0.txt");
@@ -349,8 +350,8 @@ Rcpp::List GetSigamCI(const std::string dir,
 //'
 //' @name GetZCI
 //' @param dir String containing the directory where the MCMC files are located
-//' @param n_files Int containing the number of files per parameter
-//' @return CI list containing the 97.5th , 50th, and 2.5th credible values
+//' @param n_files Integer containing the number of files per parameter
+//' @return CI List containing the 97.5th , 50th, and 2.5th credible values
 //' @export
 // [[Rcpp::export]]
 Rcpp::List GetZCI(const std::string dir,
@@ -476,9 +477,9 @@ double Model_DIC(const std::string dir,
 
   double expected_log_f = 0;
   for(int i = 0; i < nu_samp.n_slices; i++){
-    expected_log_f = expected_log_f + calcLikelihood(Y, B_obs, nu_samp.slice(i),
-                                                     phi_samp(i,0), Z_samp.slice(i),
-                                                     chi_samp.slice(i), sigma_samp(i));
+    expected_log_f = expected_log_f + BayesFPMM::calcLikelihood(Y, B_obs, nu_samp.slice(i),
+                                                                phi_samp(i,0), Z_samp.slice(i),
+                                                                chi_samp.slice(i), sigma_samp(i));
   }
   expected_log_f = expected_log_f / nu_samp.n_slices;
 
@@ -488,9 +489,9 @@ double Model_DIC(const std::string dir,
     for(int j = 0; j < time(i,0).n_elem; j++){
       f_hat_ij = 0;
       for(int n = 0; n < nu_samp.n_slices; n++){
-        f_hat_ij = f_hat_ij + calcDIC2(Y(i,0), B_obs(i,0), nu_samp.slice(n), phi_samp(n,0),
-                                       Z_samp.slice(n), chi_samp.slice(n), i, j,
-                                       sigma_samp(n));
+        f_hat_ij = f_hat_ij + BayesFPMM::calcDIC2(Y(i,0), B_obs(i,0), nu_samp.slice(n), phi_samp(n,0),
+                                                  Z_samp.slice(n), chi_samp.slice(n), i, j,
+                                                  sigma_samp(n));
       }
       f_hat = f_hat + std::log(f_hat_ij / nu_samp.n_slices);
     }

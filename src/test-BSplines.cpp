@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include <testthat.h>
-#include "BSplines.H"
+#include <BayesFPMM.h>
 
 //' Tests creation of tensor product B-splines for multivariate functional data
 //'
@@ -21,8 +21,8 @@ arma::mat TestBSplineTensor(){
 
   arma::vec basis_degree = {3,3};
 
-  arma::field<arma::mat> B = TensorBSpline(t_obs1, 2, basis_degree,
-                                           boundary_knots, internal_knots);
+  arma::field<arma::mat> B = BayesFPMM::TensorBSpline(t_obs1, 2, basis_degree,
+                                                      boundary_knots, internal_knots);
 
   return B(0,0);
 }
@@ -46,7 +46,7 @@ arma::mat TestPMat(){
 
   arma::vec basis_degree = {3,3};
 
-  arma::mat P = GetP(basis_degree,internal_knots);
+  arma::mat P = BayesFPMM::GetP(basis_degree,internal_knots);
 
   return P;
 }
