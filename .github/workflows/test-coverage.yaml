@@ -23,9 +23,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
-          extra-packages: rcmdcheck, covr
-
-      - uses: r-lib/actions/check-r-package@v1
+          extra-packages: covr
 
       - name: Test coverage
         run: covr::codecov(token = "${{secrets.CODECOV_TOKEN}}")

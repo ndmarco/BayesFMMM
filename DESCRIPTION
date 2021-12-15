@@ -13,7 +13,8 @@ LinkingTo: Rcpp,
            RcppDist,
            splines2 (>= 0.3.0),
            testthat
+Suggests: xml2,
+          covr
 Depends: R (>= 3.0.2)
-Suggests: xml2
 RoxygenNote: 7.1.2
 Encoding: UTF-8
