@@ -1,89 +1,9 @@
-// #include <RcppArmadillo.h>
-// #include <cmath>
-// #include <splines2Armadillo.h>
-// #include <BayesFPMM.h>
-//
-// //' Tests updating Z
-// //'
-// //' @name TestUpdateZ
-// //' @export
-// // [[Rcpp::export]]
-// Rcpp::List TestUpdateZ()
-// {
-//   // Set space of functions
-//   arma::vec t_obs =  arma::regspace(0, 10, 990);
-//   splines2::BSpline bspline;
-//   // Create Bspline object with 8 degrees of freedom
-//   // 8 - 3 - 1 internal nodes
-//   bspline = splines2::BSpline(t_obs, 8);
-//   // Get Basis matrix (100 x 8)
-//   arma::mat bspline_mat{bspline.basis(true)};
-//   // Make B_obs
-//   arma::field<arma::mat> B_obs(100,1);
-//
-//   for(int i = 0; i < 100; i++)
-//   {
-//     B_obs(i,0) = bspline_mat;
-//   }
-//
-//   // Make nu matrix
-//   arma::mat nu(3,8);
-//   nu = {{2, 0, 1, 0, 0, 0, 1, 3},
-//         {1, 3, 0, 2, 0, 0, 3, 0},
-//         {5, 2, 5, 0, 3, 4, 1, 0}};
-//
-//
-//   // Make Phi matrix
-//   arma::cube Phi(3,8,5);
-//   for(int i=0; i < 5; i++)
-//   {
-//     Phi.slice(i) = (5-i) * 0.1 * arma::randu<arma::mat>(3,8);
-//   }
-//   double sigma_sq = 0.001;
-//
-//   // Make chi matrix
-//   arma::mat chi(100, 5, arma::fill::randn);
-//
-//
-//   // Make Z matrix
-//   arma::mat Z = arma::randi<arma::mat>(100, 3, arma::distr_param(0,1));
-//   Z.col(0) = arma::vec(100, arma::fill::ones);
-//
-//   arma::field<arma::vec> y_obs(100, 1);
-//   arma::vec mean = arma::zeros(8);
-//
-//   for(int j = 0; j < 100; j++){
-//     mean = arma::zeros(8);
-//     for(int l = 0; l < 3; l++){
-//       mean = mean + Z(j,l) * nu.row(l).t();
-//       for(int m = 0; m < Phi.n_slices; m++){
-//         mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
-//       }
-//     }
-//     y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
-//       arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
-//   }
-//
-//   // Initialize pi
-//   arma::vec pi = {0.95, 0.5, 0.5};
-//
-//   // Initialize placeholder
-//   arma::mat Z_ph = arma::zeros(100, 3);
-//
-//   //Initialize Z_samp
-//    arma::cube Z_samp = arma::ones(100, 3, 100);
-//   for(int i = 0; i < 100; i++)
-//   {
-//     updateZ(y_obs, B_obs, Phi, nu, chi, pi,
-//             sigma_sq, 0.6, i, 100, Z_ph, Z_samp);
-//   }
-//
-//   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Z_samp", Z_samp),
-//                                       Rcpp::Named("Z",Z),
-//                                       Rcpp::Named("f_obs", y_obs));
-//   return mod;
-// }
-//
+#include <RcppArmadillo.h>
+#include <cmath>
+#include <splines2Armadillo.h>
+#include <BayesFPMM.h>
+
+
 //
 // //' Tests updating Pi
 // //'
@@ -2224,3 +2144,99 @@
 // }
 //
 //
+
+
+// //' Tests updating Z using partial membership model
+// //'
+// //' @name TestUpdateZ_PM
+// //' @export
+// // [[Rcpp::export]]
+// Rcpp::List TestUpdateZ_PM(){
+//   // Set space of functions
+//   arma::vec t_obs =  arma::regspace(0, 10, 990);
+//   splines2::BSpline bspline;
+//   // Create Bspline object with 8 degrees of freedom
+//   // 8 - 3 - 1 internal nodes
+//   bspline = splines2::BSpline(t_obs, 8);
+//   // Get Basis matrix (100 x 8)
+//   arma::mat bspline_mat{bspline.basis(true)};
+//   // Make B_obs
+//   arma::field<arma::mat> B_obs(20,1);
+//
+//   for(int i = 0; i < 20; i++){
+//     B_obs(i,0) = bspline_mat;
+//   }
+//
+//   // Make nu matrix
+//   arma::mat nu(3,8);
+//   nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+//   {1, 3, 0, 2, 0, 0, 3, 0},
+//   {5, 2, 5, 0, 3, 4, 1, 0}};
+//
+//
+//   // Make Phi matrix
+//   arma::cube Phi(3,8,5);
+//   for(int i=0; i < 5; i++)
+//   {
+//     Phi.slice(i) = (5-i) * 0.2 * arma::randu<arma::mat>(3,8);
+//   }
+//   double sigma_sq = 0.0001;
+//
+//   // Make chi matrix
+//   arma::mat chi(20, 5, arma::fill::randn);
+//
+//
+//   // Make Z matrix
+//   arma::mat Z(20, 3);
+//   arma::mat alpha(20,3, arma::fill::ones);
+//   for(int i = 0; i < Z.n_rows; i++){
+//     Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+//   }
+//
+//   arma::field<arma::vec> y_obs(20, 1);
+//   arma::vec mean = arma::zeros(8);
+//
+//   for(int j = 0; j < 20; j++){
+//     mean = arma::zeros(8);
+//     for(int l = 0; l < 3; l++){
+//       mean = mean + Z(j,l) * nu.row(l).t();
+//       for(int m = 0; m < Phi.n_slices; m++){
+//         mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+//       }
+//     }
+//     y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+//       arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+//   }
+//
+//   // Initialize pi
+//   arma::vec pi = {1, 1, 1};
+//
+//   // Initialize placeholder
+//   arma::vec Z_ph = arma::zeros(3);
+//
+//
+//   //Initialize Z_samp
+//   arma::cube Z_samp = arma::ones(20, 3, 5000);
+//   for(int i = 0; i < 20; i++){
+//     Z_samp.slice(0).row(i) = BayesFPMM::rdirichlet(pi).t();
+//   }
+//   for(int i = 0; i < 5000; i++){
+//     BayesFPMM::updateZ_PM(y_obs, B_obs, Phi, nu, chi, pi,
+//                           sigma_sq, i, 5000, 1.0, 2000, Z_ph, Z_samp);
+//   }
+//   arma::mat Z_est = arma::zeros(20, 3);
+//   arma::vec ph_Z = arma::zeros(500);
+//   for(int i = 0; i < 20; i++){
+//     for(int j = 0; j < 3; j++){
+//       for(int l = 4500; l < 5000; l++){
+//         ph_Z(l - 4500) = Z_samp(i,j,l);
+//       }
+//       Z_est(i,j) = arma::median(ph_Z);
+//     }
+//   }
+//
+//   Rcpp::List mod= Rcpp::List::create(Rcpp::Named("true", Z),
+//                                      Rcpp::Named("est", Z_est),
+//                                      Rcpp::Named("chain", Z_samp));
+//   return mod;
+// }

@@ -68,7 +68,7 @@ context("Tensor B-Spline unit tests") {
 }
 
 // Tests creation of multivariate B-splines
-context("Tensor P matrix for Nu") {
+context("Tensor P matrix for Nu unit test") {
 
   test_that("creation of P matrix") {
     Rcpp::Environment base("package:base");
