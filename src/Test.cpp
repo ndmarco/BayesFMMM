@@ -2326,3 +2326,89 @@
 //                                      Rcpp::Named("est", Z_samp));
 //   return mod;
 // }
+
+// //' @export
+// // [[Rcpp::export]]
+// arma::cube TestUpdateTemperedZ_MV(){
+//   // Make nu matrix
+//   arma::mat nu(3,8);
+//   nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+//   {1, 3, 0, 2, 0, 0, 3, 0},
+//   {5, 2, 5, 0, 3, 4, 1, 0}};
+//
+//
+//   // Make Phi matrix
+//   arma::cube Phi(3,8,5);
+//   for(int i=0; i < 5; i++)
+//   {
+//     Phi.slice(i) = (5-i) * 0.2 * arma::randu<arma::mat>(3,8);
+//   }
+//   double sigma_sq = 0.001;
+//
+//   // Make chi matrix
+//   arma::mat chi(20, 5, arma::fill::randn);
+//
+//
+//   // Make Z matrix
+//   arma::mat Z(20, 3);
+//   arma::mat alpha(20,3, arma::fill::ones);
+//   alpha = alpha * 10;
+//   for(int i = 0; i < Z.n_rows; i++){
+//     Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+//   }
+//
+//   arma::mat y_obs = arma::zeros(20, 8);
+//   arma::vec mean = arma::zeros(8);
+//
+//   for(int j = 0; j < 20; j++){
+//     mean = arma::zeros(8);
+//     for(int l = 0; l < 3; l++){
+//       mean = mean + Z(j,l) * nu.row(l).t();
+//       for(int m = 0; m < Phi.n_slices; m++){
+//         mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+//       }
+//     }
+//     y_obs.row(j) = arma::mvnrnd(mean, sigma_sq *
+//       arma::eye(mean.n_elem, mean.n_elem)).t();
+//   }
+//
+//   // Initialize pi
+//   arma::vec pi = {10, 10, 10};
+//
+//   // Initialize placeholder
+//   arma::vec Z_ph = arma::zeros(3);
+//
+//   //Initialize Z_samp
+//   arma::cube Z_samp = arma::ones(20, 3, 500);
+//   for(int i = 0; i < 20; i++){
+//     Z_samp.slice(0).row(i) = BayesFPMM::rdirichlet(pi).t();
+//   }
+//   double beta = 0.05;
+//
+//   for(int i = 0; i < 500; i++)
+//   {
+//     BayesFPMM::updateZTempered_PMMV(beta, y_obs, Phi, nu, chi, pi,
+//                                     sigma_sq, i, 500, 1.0, 2000, Z_ph, Z_samp);
+//   }
+//   arma::mat Z_est = arma::zeros(20, 3);
+//   arma::vec ph_Z = arma::zeros(500);
+//   for(int i = 0; i < 20; i++){
+//     for(int j = 0; j < 3; j++){
+//       for(int l = 200; l < 500; l++){
+//         ph_Z(l - 200) = Z_samp(i,j,l);
+//       }
+//       Z_est(i,j) = arma::median(ph_Z);
+//     }
+//   }
+//   // normalize
+//   for(int i = 0; i < 20; i++){
+//     for(int j = 0; j < 3; j++){
+//       Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
+//     }
+//   }
+//
+//   arma::cube mod = arma::zeros(20, 3, 2);
+//   mod.slice(0) = Z_est;
+//   mod.slice(1) = Z;
+//   return mod;
+// }

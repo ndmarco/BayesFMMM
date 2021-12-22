@@ -146,6 +146,13 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
     }
   }
 
+  // normalize
+  for(int i = 0; i < Z_est.n_rows; i++){
+    for(int j = 0; j < Z_est.n_cols; j++){
+      Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
+    }
+  }
+
   // start MCMC sampling
   Rcpp::List mod1 = BayesFPMM::BFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
                                            boundary_knots, internal_knots, tot_mcmc_iters,
@@ -261,6 +268,13 @@ Rcpp::List BFPMM_warm_start(const double beta_N_t,
         ph_nu(l - std::round(n_nu * burnin_prop)) = nu_samp(i,j,l);
       }
       nu_est(i,j) = arma::median(ph_nu);
+    }
+  }
+
+  // normalize
+  for(int i = 0; i < Z_est.n_rows; i++){
+    for(int j = 0; j < Z_est.n_cols; j++){
+      Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
     }
   }
 
