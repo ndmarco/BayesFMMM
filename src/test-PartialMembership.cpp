@@ -93,9 +93,7 @@ arma::cube TestUpdateZ_PM(){
 
   // normalize
   for(int i = 0; i < 20; i++){
-    for(int j = 0; j < 3; j++){
-      Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
-    }
+    Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
   }
 
   arma::cube mod = arma::zeros(20, 3, 2);
@@ -185,7 +183,7 @@ arma::cube TestUpdateTemperedZ_PM(){
   }
 
   arma::mat Z_est = arma::zeros(20, 3);
-  arma::vec ph_Z = arma::zeros(500);
+  arma::vec ph_Z = arma::zeros(300);
   for(int i = 0; i < 20; i++){
     for(int j = 0; j < 3; j++){
       for(int l = 200; l < 500; l++){
@@ -197,9 +195,7 @@ arma::cube TestUpdateTemperedZ_PM(){
 
   // normalize
   for(int i = 0; i < 20; i++){
-    for(int j = 0; j < 3; j++){
-      Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
-    }
+    Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
   }
   arma::cube mod = arma::zeros(20, 3, 2);
   mod.slice(0) = Z_est;
@@ -270,7 +266,7 @@ arma::cube TestUpdateZ_MV(){
                             sigma_sq, i, 500, 1.0, 2000, Z_ph, Z_samp);
   }
   arma::mat Z_est = arma::zeros(20, 3);
-  arma::vec ph_Z = arma::zeros(500);
+  arma::vec ph_Z = arma::zeros(300);
   for(int i = 0; i < 20; i++){
     for(int j = 0; j < 3; j++){
       for(int l = 200; l < 500; l++){
@@ -282,9 +278,7 @@ arma::cube TestUpdateZ_MV(){
 
   // normalize
   for(int i = 0; i < 20; i++){
-    for(int j = 0; j < 3; j++){
-      Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
-    }
+    Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
   }
 
   arma::cube mod = arma::zeros(20, 3, 2);
@@ -359,7 +353,7 @@ arma::cube TestUpdateTemperedZ_MV(){
                                     sigma_sq, i, 500, 1.0, 2000, Z_ph, Z_samp);
   }
   arma::mat Z_est = arma::zeros(20, 3);
-  arma::vec ph_Z = arma::zeros(500);
+  arma::vec ph_Z = arma::zeros(300);
   for(int i = 0; i < 20; i++){
     for(int j = 0; j < 3; j++){
       for(int l = 200; l < 500; l++){
@@ -370,9 +364,7 @@ arma::cube TestUpdateTemperedZ_MV(){
   }
   // normalize
   for(int i = 0; i < 20; i++){
-    for(int j = 0; j < 3; j++){
-      Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
-    }
+    Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
   }
 
   arma::cube mod = arma::zeros(20, 3, 2);
@@ -380,6 +372,82 @@ arma::cube TestUpdateTemperedZ_MV(){
   mod.slice(1) = Z;
   return mod;
 }
+
+// Tests updating pi using partial membership model
+//
+// @name TestUpdateZ_PM
+arma::mat TestUpdatepi(){
+  // Make Z matrix
+  arma::mat Z(100, 3);
+  arma::vec c(3, arma::fill::randu);
+  arma::vec pi = BayesFPMM::rdirichlet(c);
+
+  // setting alpha_3 = 100
+  arma:: vec alpha = pi * 100;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+  }
+
+  // Initialize placeholder
+  arma::vec pi_ph = arma::zeros(3);
+
+
+  //Initialize Z_samp
+  arma::mat pi_samp = arma::ones(3, 500);
+
+  pi_samp.col(0) = BayesFPMM::rdirichlet(c);
+
+  for(int i = 0; i < 500; i++)
+  {
+    BayesFPMM::updatePi_PM(100, Z, c, i, 500, 100, pi_ph, pi_samp);
+  }
+
+  arma::vec pi_est = arma::zeros(3);
+  arma::vec ph_pi = arma::zeros(300);
+  for(int j = 0; j < 3; j++){
+    for(int l = 200; l < 500; l++){
+      ph_pi(l - 200) = pi_samp(j,l);
+    }
+    pi_est(j) = arma::median(ph_pi);
+  }
+  // normalize
+  for(int j = 0; j < 3; j++){
+    pi_est = pi_est / arma::accu(pi_est);
+  }
+
+  arma::mat mod = arma::zeros(3, 2);
+  mod.col(0) = pi_est;
+  mod.col(1) = pi;
+  return mod;
+}
+
+// Tests updating pi using partial membership model
+//
+// @name TestUpdateZ_PM
+double TestUpdatealpha3(){
+
+  // Make Z matrix
+  arma::mat Z(100, 3);
+  arma::vec c(3, arma::fill::ones);
+  arma::vec pi = BayesFPMM::rdirichlet(c);
+
+  // setting alpha_3 = 10
+  arma:: vec alpha = pi * 10;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+  }
+
+  arma::vec alpha_3(10000, arma::fill::ones);
+
+  for(int i = 0; i < 10000; i++)
+  {
+    BayesFPMM::updateAlpha3(pi, 0.1, Z, i, 10000, 0.05, alpha_3);
+  }
+  double mod = arma::median(alpha_3.subvec(2000,9999));
+
+  return mod;
+}
+
 
 // Tests sampling of Z
 context("Functional model Z unit test") {
@@ -393,7 +461,7 @@ context("Functional model Z unit test") {
     bool similar = true;
     for(int i = 0; i < est.n_rows; i++){
       for(int j = 0; j < est.n_cols; j++){
-        if(std::abs(est(i,j) - truth(i,j)) > 0.05){
+        if(std::abs(est(i,j) - truth(i,j)) > 0.02){
           similar = false;
         }
       }
@@ -411,7 +479,7 @@ context("Functional model Z unit test") {
     bool similar = true;
     for(int i = 0; i < est.n_rows; i++){
       for(int j = 0; j < est.n_cols; j++){
-        if(std::abs(est(i,j) - truth(i,j)) > 0.05){
+        if(std::abs(est(i,j) - truth(i,j)) > 0.02){
           similar = false;
         }
       }
@@ -429,7 +497,7 @@ context("Functional model Z unit test") {
     bool similar = true;
     for(int i = 0; i < est.n_rows; i++){
       for(int j = 0; j < est.n_cols; j++){
-        if(std::abs(est(i,j) - truth(i,j)) > 0.05){
+        if(std::abs(est(i,j) - truth(i,j)) > 0.02){
           similar = false;
         }
       }
@@ -451,6 +519,34 @@ context("Functional model Z unit test") {
           similar = false;
         }
       }
+    }
+    expect_true(similar == true);
+  }
+
+  test_that("Sampler for pi is working"){
+    Rcpp::Environment base_env("package:base");
+    Rcpp::Function set_seed_r = base_env["set.seed"];
+    set_seed_r(1);
+    arma::mat x = TestUpdatepi();
+    arma::vec est = x.col(0);
+    arma::vec truth = x.col(1);
+    bool similar = true;
+    for(int i = 0; i < est.n_elem; i++){
+      if(std::abs(est(i) - truth(i)) > 0.02){
+        similar = false;
+      }
+    }
+    expect_true(similar == true);
+  }
+
+  test_that("Sampler for alpha_3 is working"){
+    Rcpp::Environment base_env("package:base");
+    Rcpp::Function set_seed_r = base_env["set.seed"];
+    set_seed_r(1);
+    double x = TestUpdatealpha3();
+    bool similar = true;
+    if(std::abs(x - 10) > 2){
+      similar = false;
     }
     expect_true(similar == true);
   }

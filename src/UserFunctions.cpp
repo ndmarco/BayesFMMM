@@ -273,10 +273,10 @@ Rcpp::List BFPMM_warm_start(const double beta_N_t,
 
   // normalize
   for(int i = 0; i < Z_est.n_rows; i++){
-    for(int j = 0; j < Z_est.n_cols; j++){
-      Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
-    }
+    Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
   }
+
+  pi_est = pi_est / arma::accu(pi_est);
 
   int n_Phi = sigma_samp.n_elem;
 

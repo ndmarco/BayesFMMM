@@ -1237,24 +1237,25 @@
 // //' @name TestUpdateZ_PM
 // //' @export
 // // [[Rcpp::export]]
-// Rcpp::List TestUpdatealpha3_PM(){
+// Rcpp::List TestUpdatealpha3(){
 //
 //   // Make Z matrix
 //   arma::mat Z(100, 3);
 //   arma::vec c(3, arma::fill::ones);
-//   arma::vec pi = rdirichlet(c);
+//   arma::vec pi = BayesFPMM::rdirichlet(c);
 //
 //   // setting alpha_3 = 10
 //   arma:: vec alpha = pi * 10;
 //   for(int i = 0; i < Z.n_rows; i++){
-//     Z.row(i) = rdirichlet(alpha).t();
+//     Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
 //   }
 //
-//   arma::vec alpha_3(1000, arma::fill::ones);
+//   arma::vec alpha_3(10000, arma::fill::ones);
+//   alpha_3 = alpha_3;
 //
-//   for(int i = 0; i < 1000; i++)
+//   for(int i = 0; i < 10000; i++)
 //   {
-//     updateAlpha3(pi, 0.5, Z, i, 1000, 0.05, alpha_3);
+//     BayesFPMM::updateAlpha3(pi, 0.1, Z, i, 10000, 0.05, alpha_3);
 //   }
 //
 //   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("alpha3_samp", alpha_3),
