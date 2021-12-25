@@ -450,8 +450,8 @@ double TestUpdatealpha3(){
 
 
 // Tests sampling of Z
-context("Functional model Z unit test") {
-  test_that("Sampler for Z is working") {
+context("Unit tests for Z parameters") {
+  test_that("Sampler for Z parameters") {
     Rcpp::Environment base_env("package:base");
     Rcpp::Function set_seed_r = base_env["set.seed"];
     set_seed_r(1);
@@ -469,7 +469,7 @@ context("Functional model Z unit test") {
     expect_true(similar == true);
   }
 
-  test_that("Sampler for Z using tempered transitions is working") {
+  test_that("Sampler for Z using tempered transitions") {
     Rcpp::Environment base_env("package:base");
     Rcpp::Function set_seed_r = base_env["set.seed"];
     set_seed_r(1);
@@ -487,7 +487,7 @@ context("Functional model Z unit test") {
     expect_true(similar == true);
   }
 
-  test_that("Sampler for Z in multivariate case is working") {
+  test_that("Sampler for Z in multivariate case") {
     Rcpp::Environment base_env("package:base");
     Rcpp::Function set_seed_r = base_env["set.seed"];
     set_seed_r(1);
@@ -505,7 +505,7 @@ context("Functional model Z unit test") {
     expect_true(similar == true);
   }
 
-  test_that("Sampler for Z in multivariate case using tempered transitions is working") {
+  test_that("Sampler for Z in multivariate case using tempered transitions") {
     Rcpp::Environment base_env("package:base");
     Rcpp::Function set_seed_r = base_env["set.seed"];
     set_seed_r(1);
@@ -523,7 +523,7 @@ context("Functional model Z unit test") {
     expect_true(similar == true);
   }
 
-  test_that("Sampler for pi is working"){
+  test_that("Sampler for pi"){
     Rcpp::Environment base_env("package:base");
     Rcpp::Function set_seed_r = base_env["set.seed"];
     set_seed_r(1);
@@ -539,7 +539,7 @@ context("Functional model Z unit test") {
     expect_true(similar == true);
   }
 
-  test_that("Sampler for alpha_3 is working"){
+  test_that("Sampler for alpha_3"){
     Rcpp::Environment base_env("package:base");
     Rcpp::Function set_seed_r = base_env["set.seed"];
     set_seed_r(1);
