@@ -2514,3 +2514,102 @@
 //   mod.slice(0) = nu_est;
 //   return mod;
 // }
+
+
+// //' @export
+// // [[Rcpp::export]]
+// Rcpp::List TestUpdatePhi1()
+// {
+//   // Set space of functions
+//   arma::vec t_obs =  arma::regspace(0, 10, 990);
+//   splines2::BSpline bspline;
+//   // Create Bspline object with 8 degrees of freedom
+//   // 8 - 3 - 1 internal nodes
+//   bspline = splines2::BSpline(t_obs, 8);
+//   // Get Basis matrix (100 x 8)
+//   arma::mat bspline_mat{bspline.basis(true)};
+//   // Make B_obs
+//   arma::field<arma::mat> B_obs(40,1);
+//
+//
+//   for(int i = 0; i < 40; i++)
+//   {
+//     B_obs(i,0) = bspline_mat;
+//   }
+//
+//   // Make nu matrix
+//   arma::mat nu(3,8);
+//   nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+//   {1, 3, 0, 2, 0, 0, 3, 0},
+//   {5, 2, 5, 0, 3, 4, 1, 0}};
+//
+//
+//   // Make Phi matrix
+//   arma::cube Phi(3,8,2);
+//   for(int i=0; i < 2; i++)
+//   {
+//     Phi.slice(i) = (2-i) * arma::randn<arma::mat>(3,8);
+//   }
+//   double sigma_sq = 0.001;
+//
+//   // Make chi matrix
+//   arma::mat chi(40, 2, arma::fill::randn);
+//
+//
+//   // Make Z matrix
+//   arma::mat Z(40, 3);
+//   arma::mat alpha(40,3, arma::fill::ones);
+//   alpha = alpha * 10;
+//   for(int i = 0; i < Z.n_rows; i++){
+//     Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+//   }
+//
+//   arma::field<arma::vec> y_obs(40, 1);
+//   arma::vec mean = arma::zeros(8);
+//
+//   for(int j = 0; j < 40; j++){
+//     mean = arma::zeros(8);
+//     for(int l = 0; l < 3; l++){
+//       mean = mean + Z(j,l) * nu.row(l).t();
+//       for(int m = 0; m < Phi.n_slices; m++){
+//         mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+//       }
+//     }
+//     y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+//       arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+//   }
+//
+//   // Initialize pi
+//   arma::vec pi = {0.5, 0.5, 0.5};
+//
+//   arma::field<arma::cube> Phi_samp(250, 1);
+//   for(int i = 0; i < 250 ; i++){
+//     Phi_samp(i,0) = arma::randn(Phi.n_rows, Phi.n_cols, Phi.n_slices);
+//   }
+//   arma::vec m_1(Phi.n_cols, arma::fill::zeros);
+//   arma::mat M_1(Phi.n_cols, Phi.n_cols, arma::fill::zeros);
+//   arma::cube gamma(Phi.n_rows, Phi.n_cols, Phi.n_slices, arma::fill::ones);
+//   gamma = gamma * 10;
+//   arma::vec tilde_tau = {1, 2};
+//   for(int i = 0; i < 250; i++){
+//     BayesFPMM::updatePhi(y_obs, B_obs, nu, gamma, tilde_tau, Z, chi,
+//               sigma_sq, i, 250, m_1, M_1, Phi_samp);
+//   }
+//
+//   arma::vec phi_ph = arma::zeros(150);
+//   arma::cube phi_est = arma::zeros(3,8,2);
+//   for(int i = 0; i < 3; i++){
+//     for(int j = 0; j < 8; j++){
+//       for(int l = 0; l < 2; l++){
+//         for(int k = 100; k < 250; k++){
+//           phi_ph(k - 100) = Phi_samp(k,0)(i,j,l);
+//         }
+//         phi_est(i,j,l) = arma::median(phi_ph);
+//       }
+//     }
+//   }
+//   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("Phi", Phi),
+//                                       Rcpp::Named("Phi_samp", Phi_samp),
+//                                       Rcpp::Named("Phi_est", phi_est));
+//   return mod;
+// }
