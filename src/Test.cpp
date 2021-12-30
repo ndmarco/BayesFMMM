@@ -120,13 +120,13 @@
 // //' @name TestUpdateDelta
 // //' @export
 // // [[Rcpp::export]]
-// Rcpp::List TestUpdateDelta(){
+// Rcpp::List TestUpdateDelta1(){
 //   // Specify hyperparameters
 //   arma::vec a_12 = {2, 2};
 //   // Make Delta vector
 //   arma::vec Delta = arma::zeros(5);
 //   for(int i=0; i < 5; i++){
-//     Delta(i) = R::rgamma(4, 1);
+//     Delta(i) = R::rgamma(2, 1);
 //   }
 //   // Make Gamma cube
 //   arma::cube Gamma(3,8,5);
@@ -151,7 +151,7 @@
 //         }
 //       }
 //     }
-//     updateDelta(Phi, Gamma, a_12, m, 10000, delta);
+//     BayesFPMM::updateDelta(Phi, Gamma, a_12, m, 10000, delta);
 //   }
 //   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("delta", Delta),
 //                                       Rcpp::Named("gamma", Gamma),
@@ -159,13 +159,13 @@
 //                                       Rcpp::Named("delta_samp", delta));
 //   return mod;
 // }
-//
+// //
 // //' Tests updating A
 // //'
 // //' @name TestUpdateA
 // //' @export
 // // [[Rcpp::export]]
-// Rcpp::List TestUpdateA(){
+// Rcpp::List TestUpdateA1(){
 //   double a_1 = 2;
 //   double a_2 = 3;
 //   arma::vec delta = arma::zeros(5);
@@ -182,64 +182,45 @@
 //         delta(j) = R::rgamma(a_2, 1);
 //       }
 //     }
-//     updateA(alpha1, beta1, alpha2, beta2, delta, sqrt(1), sqrt(1), i, 1000, A);
+//     BayesFPMM::updateA(alpha1, beta1, alpha2, beta2, delta, sqrt(1), sqrt(1), i, 1000, A);
 //   }
 //
-//   double lpdf_true = lpdf_a2(alpha2, beta2, 2.0, delta);
-//   double lpdf_false = lpdf_a2(alpha2, beta2, 1.0, delta);
-//   double lpdf_true1 = lpdf_a1(alpha1, beta1, 3.0, delta(0));
-//   double lpdf_false1 = lpdf_a1(alpha1, beta1, 2.0, delta(0));
-//   double sum = 0;
-//   for(int i = 1; i < delta.n_elem; i++){
-//     sum = sum + (0.05 - 1) * log(delta(i));
-//   }
+//
 //   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("a_1", a_1),
 //                                       Rcpp::Named("a_2", a_2),
-//                                       Rcpp::Named("A", A),
-//                                       Rcpp::Named("delta", delta.n_elem - 1),
-//                                       Rcpp::Named("lpdf_1", (delta.n_elem - 1)),
-//                                       Rcpp::Named("lpdf_2", (alpha2 - 1) * log(0.05)),
-//                                       Rcpp::Named("lpdf_3", -(0.05 * beta2)),
-//                                       Rcpp::Named("lpdf_4", sum),
-//                                       Rcpp::Named("lpdf_true", lpdf_true),
-//                                       Rcpp::Named("lpdf_false", lpdf_false),
-//                                       Rcpp::Named("lpdf_true1", lpdf_true1),
-//                                       Rcpp::Named("lpdf_false1", lpdf_false1));
+//                                       Rcpp::Named("A", A));
 //   return mod;
 // }
-//
+// //
 // //' Tests updating Gamma
 // //'
 // //' @name TestUpdateGamma
 // //' @export
 // // [[Rcpp::export]]
-// Rcpp::List TestUpdateGamma(){
+// Rcpp::List TestUpdateGamma1(){
 //   // Specify hyperparameters
-//   double nu = 3;
+//   double nu = 0.5;
 //   // Make Delta vector
-//   arma::vec Delta = arma::zeros(5);
-//   for(int i=0; i < 5; i++){
-//     Delta(i) = R::rgamma(4, 1);
-//   }
+//   arma::vec Delta = {2,3};
 //   // Make Gamma cube
-//   arma::cube Gamma(3,8,5);
-//   for(int i=0; i < 5; i++){
+//   arma::cube Gamma(3,8,2);
+//   for(int i=0; i < 2; i++){
 //     for(int j = 0; j < 3; j++){
 //       for(int k = 0; k < 8; k++){
-//         Gamma(j,k,i) =  R::rgamma(nu, 1/nu);
+//         Gamma(j,k,i) =  R::rgamma(nu/2, 2/nu);
 //       }
 //     }
 //   }
 //
 //   // Make Phi matrix
-//   arma::cube Phi(3,8,5);
+//   arma::cube Phi(3,8,2);
 //   arma::field<arma::cube> gamma(1000,1);
 //   for(int i = 0; i < 1000; i++){
-//     gamma(i,0) = arma::zeros(3,8,5);
+//     gamma(i,0) = arma::zeros(3,8,2);
 //   }
 //   for(int m = 0; m < 1000; m++){
 //     double tau  = 1;
-//     for(int i=0; i < 5; i++){
+//     for(int i=0; i < 2; i++){
 //       tau = tau * Delta(i);
 //       for(int j=0; j < 3; j++){
 //         for(int k=0; k < 8; k++){
@@ -247,11 +228,23 @@
 //         }
 //       }
 //     }
-//     updateGamma(nu, Delta, Phi, m, 1000, gamma);
+//     BayesFPMM::updateGamma(0.001, Delta, Phi, m, 250, gamma);
+//   }
+//   arma::vec gamma_ph = arma::zeros(1000);
+//   arma::cube gamma_est = arma::zeros(3,8,2);
+//   for(int i = 0; i < 3; i++){
+//     for(int j = 0; j < 8; j++){
+//       for(int l = 0; l < 2; l++){
+//         for(int k = 0; k < 1000; k++){
+//           gamma_ph(k) = gamma(k,0)(i,j,l);
+//         }
+//         gamma_est(i,j,l) = arma::median(gamma_ph);
+//       }
+//     }
 //   }
 //   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("gamma", Gamma),
 //                                       Rcpp::Named("gamma_iter", gamma),
-//                                       Rcpp::Named("phi", Phi),
+//                                       Rcpp::Named("gamma_est", gamma_est),
 //                                       Rcpp::Named("delta", Delta));
 //   return mod;
 // }
