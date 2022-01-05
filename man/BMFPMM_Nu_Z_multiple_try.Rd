@@ -24,9 +24,9 @@ BMFPMM_Nu_Z_multiple_try(
 
 \item{k}{Int containing the number of clusters}
 
-\item{Y}{Field of vectors containing the observed values}
+\item{Y}{List of vectors containing the observed values}
 
-\item{time}{field of matrices that contain the observed time points (each column is a dimension)}
+\item{time}{List of matrices that contain the observed time points (each column is a dimension)}
 
 \item{n_funct}{Int containing the number of functions}
 
@@ -36,7 +36,7 @@ BMFPMM_Nu_Z_multiple_try(
 
 \item{boundary_knots}{matrix containing the boundary knots for each dimension (each row is a dimension)}
 
-\item{internal_knots}{field of vectors containing the internal knots for each dimension}
+\item{internal_knots}{List of vectors containing the internal knots for each dimension}
 }
 \value{
 BestChain List containing a summary of the best performing chain

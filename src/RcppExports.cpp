@@ -144,7 +144,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // BFPMM_Nu_Z_multiple_try
-Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const int n_try, const int k, const arma::field<arma::vec> Y, const arma::field<arma::vec> time, const int n_funct, const int basis_degree, const int n_eigen, const arma::vec boundary_knots, const arma::vec internal_knots, Rcpp::Nullable<Rcpp::NumericVector> c, const double& b, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0);
+Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const int n_try, const int k, const arma::field<arma::vec> Y, const arma::field<arma::vec> time, const int n_funct, const int basis_degree, const int n_eigen, const arma::vec boundary_knots, const arma::vec internal_knots, Rcpp::Nullable<Rcpp::NumericVector> c, const double b, const double alpha1l, const double alpha2l, const double beta1l, const double beta2l, const double a_Z_PM, const double a_pi_PM, const double var_alpha3, const double var_epsilon1, const double var_epsilon2, const double alpha, const double beta, const double alpha_0, const double beta_0);
 RcppExport SEXP _BayesFPMM_BFPMM_Nu_Z_multiple_try(SEXP tot_mcmc_itersSEXP, SEXP n_trySEXP, SEXP kSEXP, SEXP YSEXP, SEXP timeSEXP, SEXP n_functSEXP, SEXP basis_degreeSEXP, SEXP n_eigenSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP cSEXP, SEXP bSEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -160,33 +160,31 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec >::type boundary_knots(boundary_knotsSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericVector> >::type c(cSEXP);
-    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
-    Rcpp::traits::input_parameter< const double& >::type alpha1l(alpha1lSEXP);
-    Rcpp::traits::input_parameter< const double& >::type alpha2l(alpha2lSEXP);
-    Rcpp::traits::input_parameter< const double& >::type beta1l(beta1lSEXP);
-    Rcpp::traits::input_parameter< const double& >::type beta2l(beta2lSEXP);
-    Rcpp::traits::input_parameter< const double& >::type a_Z_PM(a_Z_PMSEXP);
-    Rcpp::traits::input_parameter< const double& >::type a_pi_PM(a_pi_PMSEXP);
-    Rcpp::traits::input_parameter< const double& >::type var_alpha3(var_alpha3SEXP);
-    Rcpp::traits::input_parameter< const double& >::type var_epsilon1(var_epsilon1SEXP);
-    Rcpp::traits::input_parameter< const double& >::type var_epsilon2(var_epsilon2SEXP);
-    Rcpp::traits::input_parameter< const double& >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type alpha_0(alpha_0SEXP);
-    Rcpp::traits::input_parameter< const double& >::type beta_0(beta_0SEXP);
+    Rcpp::traits::input_parameter< const double >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha1l(alpha1lSEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha2l(alpha2lSEXP);
+    Rcpp::traits::input_parameter< const double >::type beta1l(beta1lSEXP);
+    Rcpp::traits::input_parameter< const double >::type beta2l(beta2lSEXP);
+    Rcpp::traits::input_parameter< const double >::type a_Z_PM(a_Z_PMSEXP);
+    Rcpp::traits::input_parameter< const double >::type a_pi_PM(a_pi_PMSEXP);
+    Rcpp::traits::input_parameter< const double >::type var_alpha3(var_alpha3SEXP);
+    Rcpp::traits::input_parameter< const double >::type var_epsilon1(var_epsilon1SEXP);
+    Rcpp::traits::input_parameter< const double >::type var_epsilon2(var_epsilon2SEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const double >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha_0(alpha_0SEXP);
+    Rcpp::traits::input_parameter< const double >::type beta_0(beta_0SEXP);
     rcpp_result_gen = Rcpp::wrap(BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0));
     return rcpp_result_gen;
 END_RCPP
 }
-// BFPMM_Theta_Est
-Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters, const arma::cube Z_samp, const arma::cube nu_samp, double burnin_prop, const int k, const arma::field<arma::vec> Y, const arma::field<arma::vec> time, const int n_funct, const int basis_degree, const int n_eigen, const arma::vec boundary_knots, const arma::vec internal_knots, Rcpp::Nullable<Rcpp::NumericVector> c, const double& b, const double& nu_1, const double& alpha1l, const double& alpha2l, const double& beta1l, const double& beta2l, const double& a_Z_PM, const double& a_pi_PM, const double& var_alpha3, const double& var_epsilon1, const double& var_epsilon2, const double& alpha, const double& beta, const double& alpha_0, const double& beta_0);
-RcppExport SEXP _BayesFPMM_BFPMM_Theta_Est(SEXP tot_mcmc_itersSEXP, SEXP Z_sampSEXP, SEXP nu_sampSEXP, SEXP burnin_propSEXP, SEXP kSEXP, SEXP YSEXP, SEXP timeSEXP, SEXP n_functSEXP, SEXP basis_degreeSEXP, SEXP n_eigenSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP) {
+// BFPMM_Theta_est
+Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters, double burnin_prop, const int k, const arma::field<arma::vec> Y, const arma::field<arma::vec> time, const int n_funct, const int basis_degree, const int n_eigen, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::cube Z_samp, const arma::cube nu_samp, Rcpp::Nullable<Rcpp::NumericVector> c, const double b, const double nu_1, const double alpha1l, const double alpha2l, const double beta1l, const double beta2l, const double a_Z_PM, const double a_pi_PM, const double var_alpha3, const double var_epsilon1, const double var_epsilon2, const double alpha, const double beta, const double alpha_0, const double beta_0);
+RcppExport SEXP _BayesFPMM_BFPMM_Theta_est(SEXP tot_mcmc_itersSEXP, SEXP burnin_propSEXP, SEXP kSEXP, SEXP YSEXP, SEXP timeSEXP, SEXP n_functSEXP, SEXP basis_degreeSEXP, SEXP n_eigenSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP Z_sampSEXP, SEXP nu_sampSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const int >::type tot_mcmc_iters(tot_mcmc_itersSEXP);
-    Rcpp::traits::input_parameter< const arma::cube >::type Z_samp(Z_sampSEXP);
-    Rcpp::traits::input_parameter< const arma::cube >::type nu_samp(nu_sampSEXP);
     Rcpp::traits::input_parameter< double >::type burnin_prop(burnin_propSEXP);
     Rcpp::traits::input_parameter< const int >::type k(kSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type Y(YSEXP);
@@ -196,37 +194,44 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int >::type n_eigen(n_eigenSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type boundary_knots(boundary_knotsSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
+    Rcpp::traits::input_parameter< const arma::cube >::type Z_samp(Z_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::cube >::type nu_samp(nu_sampSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericVector> >::type c(cSEXP);
-    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
-    Rcpp::traits::input_parameter< const double& >::type nu_1(nu_1SEXP);
-    Rcpp::traits::input_parameter< const double& >::type alpha1l(alpha1lSEXP);
-    Rcpp::traits::input_parameter< const double& >::type alpha2l(alpha2lSEXP);
-    Rcpp::traits::input_parameter< const double& >::type beta1l(beta1lSEXP);
-    Rcpp::traits::input_parameter< const double& >::type beta2l(beta2lSEXP);
-    Rcpp::traits::input_parameter< const double& >::type a_Z_PM(a_Z_PMSEXP);
-    Rcpp::traits::input_parameter< const double& >::type a_pi_PM(a_pi_PMSEXP);
-    Rcpp::traits::input_parameter< const double& >::type var_alpha3(var_alpha3SEXP);
-    Rcpp::traits::input_parameter< const double& >::type var_epsilon1(var_epsilon1SEXP);
-    Rcpp::traits::input_parameter< const double& >::type var_epsilon2(var_epsilon2SEXP);
-    Rcpp::traits::input_parameter< const double& >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type alpha_0(alpha_0SEXP);
-    Rcpp::traits::input_parameter< const double& >::type beta_0(beta_0SEXP);
-    rcpp_result_gen = Rcpp::wrap(BFPMM_Theta_Est(tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0));
+    Rcpp::traits::input_parameter< const double >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const double >::type nu_1(nu_1SEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha1l(alpha1lSEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha2l(alpha2lSEXP);
+    Rcpp::traits::input_parameter< const double >::type beta1l(beta1lSEXP);
+    Rcpp::traits::input_parameter< const double >::type beta2l(beta2lSEXP);
+    Rcpp::traits::input_parameter< const double >::type a_Z_PM(a_Z_PMSEXP);
+    Rcpp::traits::input_parameter< const double >::type a_pi_PM(a_pi_PMSEXP);
+    Rcpp::traits::input_parameter< const double >::type var_alpha3(var_alpha3SEXP);
+    Rcpp::traits::input_parameter< const double >::type var_epsilon1(var_epsilon1SEXP);
+    Rcpp::traits::input_parameter< const double >::type var_epsilon2(var_epsilon2SEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const double >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha_0(alpha_0SEXP);
+    Rcpp::traits::input_parameter< const double >::type beta_0(beta_0SEXP);
+    rcpp_result_gen = Rcpp::wrap(BFPMM_Theta_est(tot_mcmc_iters, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0));
     return rcpp_result_gen;
 END_RCPP
 }
 // BFPMM_warm_start
-Rcpp::List BFPMM_warm_start(const double beta_N_t, const int N_t, const int n_temp_trans, const int tot_mcmc_iters, const int r_stored_iters, const arma::cube Z_samp, const arma::mat pi_samp, const arma::vec alpha_3_samp, const arma::mat delta_samp, const arma::field<arma::cube> gamma_samp, const arma::field<arma::cube> Phi_samp, const arma::mat A_samp, const arma::cube nu_samp, const arma::mat tau_samp, const arma::vec sigma_samp, const arma::cube chi_samp, const double burnin_prop, const int k, const arma::field<arma::vec> Y, const arma::field<arma::vec> time, const int n_funct, const int basis_degree, const int n_eigen, const arma::vec boundary_knots, const arma::vec internal_knots, const double thinning_num, const std::string dir);
-RcppExport SEXP _BayesFPMM_BFPMM_warm_start(SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP n_temp_transSEXP, SEXP tot_mcmc_itersSEXP, SEXP r_stored_itersSEXP, SEXP Z_sampSEXP, SEXP pi_sampSEXP, SEXP alpha_3_sampSEXP, SEXP delta_sampSEXP, SEXP gamma_sampSEXP, SEXP Phi_sampSEXP, SEXP A_sampSEXP, SEXP nu_sampSEXP, SEXP tau_sampSEXP, SEXP sigma_sampSEXP, SEXP chi_sampSEXP, SEXP burnin_propSEXP, SEXP kSEXP, SEXP YSEXP, SEXP timeSEXP, SEXP n_functSEXP, SEXP basis_degreeSEXP, SEXP n_eigenSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP thinning_numSEXP, SEXP dirSEXP) {
+Rcpp::List BFPMM_warm_start(const int tot_mcmc_iters, const double burnin_prop, const int k, const arma::field<arma::vec> Y, const arma::field<arma::vec> time, const int n_funct, const int basis_degree, const int n_eigen, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::cube Z_samp, const arma::mat pi_samp, const arma::vec alpha_3_samp, const arma::mat delta_samp, const arma::field<arma::cube> gamma_samp, const arma::field<arma::cube> Phi_samp, const arma::mat A_samp, const arma::cube nu_samp, const arma::mat tau_samp, const arma::vec sigma_samp, const arma::cube chi_samp, Rcpp::Nullable<Rcpp::CharacterVector> dir, const double thinning_num, const double beta_N_t, int N_t, int n_temp_trans, int r_stored_iters, Rcpp::Nullable<Rcpp::NumericVector> c, const double b, const double nu_1, const double alpha1l, const double alpha2l, const double beta1l, const double beta2l, const double a_Z_PM, const double a_pi_PM, const double var_alpha3, const double var_epsilon1, const double var_epsilon2, const double alpha, const double beta, const double alpha_0, const double beta_0);
+RcppExport SEXP _BayesFPMM_BFPMM_warm_start(SEXP tot_mcmc_itersSEXP, SEXP burnin_propSEXP, SEXP kSEXP, SEXP YSEXP, SEXP timeSEXP, SEXP n_functSEXP, SEXP basis_degreeSEXP, SEXP n_eigenSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP Z_sampSEXP, SEXP pi_sampSEXP, SEXP alpha_3_sampSEXP, SEXP delta_sampSEXP, SEXP gamma_sampSEXP, SEXP Phi_sampSEXP, SEXP A_sampSEXP, SEXP nu_sampSEXP, SEXP tau_sampSEXP, SEXP sigma_sampSEXP, SEXP chi_sampSEXP, SEXP dirSEXP, SEXP thinning_numSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP n_temp_transSEXP, SEXP r_stored_itersSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const double >::type beta_N_t(beta_N_tSEXP);
-    Rcpp::traits::input_parameter< const int >::type N_t(N_tSEXP);
-    Rcpp::traits::input_parameter< const int >::type n_temp_trans(n_temp_transSEXP);
     Rcpp::traits::input_parameter< const int >::type tot_mcmc_iters(tot_mcmc_itersSEXP);
-    Rcpp::traits::input_parameter< const int >::type r_stored_iters(r_stored_itersSEXP);
+    Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
+    Rcpp::traits::input_parameter< const int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_funct(n_functSEXP);
+    Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_eigen(n_eigenSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type boundary_knots(boundary_knotsSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
     Rcpp::traits::input_parameter< const arma::cube >::type Z_samp(Z_sampSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type pi_samp(pi_sampSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type alpha_3_samp(alpha_3_sampSEXP);
@@ -238,18 +243,29 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat >::type tau_samp(tau_sampSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type sigma_samp(sigma_sampSEXP);
     Rcpp::traits::input_parameter< const arma::cube >::type chi_samp(chi_sampSEXP);
-    Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
-    Rcpp::traits::input_parameter< const int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type time(timeSEXP);
-    Rcpp::traits::input_parameter< const int >::type n_funct(n_functSEXP);
-    Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
-    Rcpp::traits::input_parameter< const int >::type n_eigen(n_eigenSEXP);
-    Rcpp::traits::input_parameter< const arma::vec >::type boundary_knots(boundary_knotsSEXP);
-    Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::CharacterVector> >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const double >::type thinning_num(thinning_numSEXP);
-    Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
-    rcpp_result_gen = Rcpp::wrap(BFPMM_warm_start(beta_N_t, N_t, n_temp_trans, tot_mcmc_iters, r_stored_iters, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, thinning_num, dir));
+    Rcpp::traits::input_parameter< const double >::type beta_N_t(beta_N_tSEXP);
+    Rcpp::traits::input_parameter< int >::type N_t(N_tSEXP);
+    Rcpp::traits::input_parameter< int >::type n_temp_trans(n_temp_transSEXP);
+    Rcpp::traits::input_parameter< int >::type r_stored_iters(r_stored_itersSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericVector> >::type c(cSEXP);
+    Rcpp::traits::input_parameter< const double >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const double >::type nu_1(nu_1SEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha1l(alpha1lSEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha2l(alpha2lSEXP);
+    Rcpp::traits::input_parameter< const double >::type beta1l(beta1lSEXP);
+    Rcpp::traits::input_parameter< const double >::type beta2l(beta2lSEXP);
+    Rcpp::traits::input_parameter< const double >::type a_Z_PM(a_Z_PMSEXP);
+    Rcpp::traits::input_parameter< const double >::type a_pi_PM(a_pi_PMSEXP);
+    Rcpp::traits::input_parameter< const double >::type var_alpha3(var_alpha3SEXP);
+    Rcpp::traits::input_parameter< const double >::type var_epsilon1(var_epsilon1SEXP);
+    Rcpp::traits::input_parameter< const double >::type var_epsilon2(var_epsilon2SEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const double >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha_0(alpha_0SEXP);
+    Rcpp::traits::input_parameter< const double >::type beta_0(beta_0SEXP);
+    rcpp_result_gen = Rcpp::wrap(BFPMM_warm_start(tot_mcmc_iters, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -375,8 +391,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_Model_AIC", (DL_FUNC) &_BayesFPMM_Model_AIC, 5},
     {"_BayesFPMM_Model_BIC", (DL_FUNC) &_BayesFPMM_Model_BIC, 5},
     {"_BayesFPMM_BFPMM_Nu_Z_multiple_try", (DL_FUNC) &_BayesFPMM_BFPMM_Nu_Z_multiple_try, 25},
-    {"_BayesFPMM_BFPMM_Theta_Est", (DL_FUNC) &_BayesFPMM_BFPMM_Theta_Est, 28},
-    {"_BayesFPMM_BFPMM_warm_start", (DL_FUNC) &_BayesFPMM_BFPMM_warm_start, 27},
+    {"_BayesFPMM_BFPMM_Theta_est", (DL_FUNC) &_BayesFPMM_BFPMM_Theta_est, 28},
+    {"_BayesFPMM_BFPMM_warm_start", (DL_FUNC) &_BayesFPMM_BFPMM_warm_start, 43},
     {"_BayesFPMM_ReadVec", (DL_FUNC) &_BayesFPMM_ReadVec, 1},
     {"_BayesFPMM_ReadMat", (DL_FUNC) &_BayesFPMM_ReadMat, 1},
     {"_BayesFPMM_ReadCube", (DL_FUNC) &_BayesFPMM_ReadCube, 1},

@@ -1439,11 +1439,11 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
   arma::vec beta_ladder(N_t, arma::fill::ones);
   beta_ladder(N_t - 1) = beta_N_t;
   double geom_mult = std::pow(beta_N_t, 1.0/N_t);
-  Rcpp::Rcout << "geom_mult: " << geom_mult << "\n";
+  // Rcpp::Rcout << "geom_mult: " << geom_mult << "\n";
   for(int i = 1; i < N_t; i++){
     beta_ladder(i) = beta_ladder(i-1) * geom_mult;
     // beta_ladder(i) = 1 - ((1- beta_N_t) *(std::pow(i/ (N_t - 1.0), 2.0)));
-    Rcpp::Rcout << "beta_i: " << beta_ladder(i) << "\n";
+    // Rcpp::Rcout << "beta_i: " << beta_ladder(i) << "\n";
   }
   // Create storage for tempered transitions
   arma::cube nu_TT(K, P, (2 * N_t) + 1, arma::fill::randn);

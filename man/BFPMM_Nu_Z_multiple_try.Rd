@@ -65,7 +65,15 @@ BFPMM_Nu_Z_multiple_try(
 
 \item{beta2l}{Double containing hyperparameter for sampling from A}
 
+\item{a_Z_PM}{Double containing hyperparameter of the random walk MH for Z parameter}
+
+\item{a_pi_PM}{Double containing hyperparameter of the random walk MH for pi parameter}
+
 \item{var_alpha3}{Double containing variance parameter of the random walk MH for alpha_3 parameter}
+
+\item{var_epsilon1}{Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm}
+
+\item{var_epsilon2}{Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm}
 
 \item{alpha}{Double containing hyperparameter for sampling from tau}
 
@@ -74,14 +82,6 @@ BFPMM_Nu_Z_multiple_try(
 \item{alpha_0}{Double containing hyperparameter for sampling from sigma}
 
 \item{beta_0}{Double containing hyperparameter for sampling from sigma}
-
-\item{var_pi}{Double containing variance parameter of the random walk MH for pi parameter}
-
-\item{var_Z}{Double containing variance parameter of the random walk MH for Z parameter}
-
-\item{var_epslion1}{Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm}
-
-\item{var_epslion2}{Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm}
 }
 \value{
 a List containing:

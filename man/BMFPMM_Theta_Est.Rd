@@ -30,9 +30,9 @@ BMFPMM_Theta_Est(
 
 \item{k}{Int containing the number of clusters}
 
-\item{Y}{Field of vectors containing the observed values}
+\item{Y}{List of vectors containing the observed values}
 
-\item{time}{Field of vectors containing the observed time points}
+\item{time}{List of vectors containing the observed time points}
 
 \item{n_funct}{Int containing the number of functions}
 
