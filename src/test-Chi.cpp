@@ -88,7 +88,7 @@ arma::field<arma::mat> TestUpdateChi(){
   return mod;
 }
 
-// Tests updating chi
+// Tests updating chi using tempered transitions
 //
 arma::field<arma::mat> TestUpdateChiTempered(){
   // Set space of functions
@@ -173,7 +173,7 @@ arma::field<arma::mat> TestUpdateChiTempered(){
   return mod;
 }
 
-// Tests updating Nu
+// Tests updating Nu for multivariate model
 //
 // @name TestUpdateNu
 arma::field<arma::mat> TestUpdateChiMV(){
@@ -241,7 +241,7 @@ arma::field<arma::mat> TestUpdateChiMV(){
   return mod;
 }
 
-// Tests updating Nu
+// Tests updating Nu for using tempered transitions for a multivariate model
 //
 // @name TestUpdateNu
 arma::field<arma::mat> TestUpdateChiTemperedMV(){

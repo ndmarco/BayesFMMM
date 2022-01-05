@@ -976,8 +976,6 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
 // @param alpha Double containing hyperparameters for sampling from tau
 // @param beta Double containing hyperparameters for sampling from tau
 // @param alpha_0 Double containing hyperparameters for sampling from sigma
-// @param beta_0 Double containing hyperparameters for sampling from sigma
-// @param directory String containing path to store batches of MCMC samples
 // @returns params List of objects containing the MCMC samples from the last batch
 inline Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
                              const arma::field<arma::vec>& t_obs,
@@ -990,7 +988,6 @@ inline Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
                              const int& tot_mcmc_iters,
                              const arma::vec& c,
                              const double& b,
-                             const double& nu_1,
                              const double& alpha1l,
                              const double& alpha2l,
                              const double& beta1l,
@@ -1128,22 +1125,21 @@ inline Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
 // @param boundary_knots Vector containing the boundary points of our index domain of interest
 // @param internal_knots Vector location of internal knots for B-splines
 // @param tot_mcmc_iters Int containing total number of MCMC iterations
-// @param c Vector containing hyperparmeters for pi
-// @param b double containing hyperparameter for alpha_3
-// @param a_12 Vector containing hyperparameters for sampling from delta
-// @param alpha1l Double containing hyperparameters for sampling from A
-// @param alpha2l Double containing hyperparameters for sampling from A
-// @param beta1l Double containing hyperparameters for sampling from A
-// @param beta2l Double containing hyperparameters for sampling from A
+// @param c Vector containing hyperparmeter for pi
+// @param b double containing hyperparamete for alpha_3
+// @param alpha1l Double containing hyperparameter for sampling from A
+// @param alpha2l Double containing hyperparameter for sampling from A
+// @param beta1l Double containing hyperparameter for sampling from A
+// @param beta2l Double containing hyperparameter for sampling from A
 // @param var_pi Double containing variance parameter of the random walk MH for pi parameter
 // @param var_Z Double containing variance parameter of the random walk MH for Z parameter
 // @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
-// @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
-// @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
-// @param alpha Double containing hyperparameters for sampling from tau
-// @param beta Double containing hyperparameters for sampling from tau
-// @param alpha_0 Double containing hyperparameters for sampling from sigma
-// @param beta_0 Double containing hyperparameters for sampling from sigma
+// @param var_epslion1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param var_epslion2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param alpha Double containing hyperparameter for sampling from tau
+// @param beta Double containing hyperparameter for sampling from tau
+// @param alpha_0 Double containing hyperparameter for sampling from sigma
+// @param beta_0 Double containing hyperparameter for sampling from sigma
 // @param Z_est Matrix containing Z values to be conditioned on
 // @param nu_est Matrix containing nu values to be conditioned on
 // @returns params List of objects containing the MCMC samples from the last batch
@@ -2169,7 +2165,6 @@ inline Rcpp::List BFPMM_Nu_ZMV(const arma::mat& y_obs,
                                const int& tot_mcmc_iters,
                                const arma::vec& c,
                                const double& b,
-                               const double& nu_1,
                                const double& alpha1l,
                                const double& alpha2l,
                                const double& beta1l,

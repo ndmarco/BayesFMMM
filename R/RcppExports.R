@@ -3,7 +3,7 @@
 
 #' Calculates the Pointwise credible interval for the mean
 #'
-#' @name GetMeanCI_Pw
+#' @name GetMeanCI_PW
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
 #' @param time Vector containing time points of interest
@@ -29,7 +29,7 @@ GetMeanCI_S <- function(dir, n_files, time, k) {
 
 #' Calculates the Pointwise credible interval for the covariance function between two clusters
 #'
-#' @name GetCovCI_Pw
+#' @name GetCovCI_PW
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
 #' @param n_MCMC Int containing the number of saved MCMC iterations per file
@@ -39,8 +39,8 @@ GetMeanCI_S <- function(dir, n_files, time, k) {
 #' @param m Int containing the 2nd cluster group of which you want to get the credible interval for
 #' @return CI list containing the 97.5th , 50th, and 2.5th pointwise credible functions
 #' @export
-GetCovCI_Pw <- function(dir, n_files, n_MCMC, time1, time2, l, m) {
-    .Call('_BayesFPMM_GetCovCI_Pw', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time1, time2, l, m)
+GetCovCI_PW <- function(dir, n_files, n_MCMC, time1, time2, l, m) {
+    .Call('_BayesFPMM_GetCovCI_PW', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time1, time2, l, m)
 }
 
 #' Calculates the Simultaneous credible interval for the covariance function between two clusters
@@ -123,23 +123,104 @@ Model_BIC <- function(dir, n_files, n_MCMC, time, Y) {
     .Call('_BayesFPMM_Model_BIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time, Y)
 }
 
-#' Function for finding a good initial starting point for nu parameters and Z parameters for functional data, with option for tempered transitions
+#' Find initial starting position for nu and Z parameters for functional data
+#'
+#' Function for finding a good initial starting point for nu parameters and Z
+#' parameters for functional data, with option for tempered transitions. This
+#' function tries running multiple different MCMC chains to find the optimal
+#' starting position. This function will return the chain that has the highest
+#' log-likelihood average in the last 100 MCMC iterations.
 #'
 #' @name BFPMM_Nu_Z_multiple_try
 #' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 #' @param n_try Int containing how many different chains are tried
 #' @param k Int containing the number of clusters
-#' @param Y Field of vectors containing the observed values
-#' @param time Field of vectors containing the observed time points
+#' @param Y List of vectors containing the observed values
+#' @param time List of vectors containing the observed time points
 #' @param n_funct Int containing the number of functions
 #' @param basis_degree Int containing the degree of B-splines used
 #' @param n_eigen Int containing the number of eigenfunctions
 #' @param boundary_knots Vector containing the boundary points of our index domain of interest
 #' @param internal_knots Vector location of internal knots for B-splines
-#' @returns BestChain List containing a summary of the best performing chain
+#' @param c Vector containing hyperparmeters for sampling from pi (If left NULL, the one vector will be used)
+#' @param b Double containing hyperparameter for sampling from alpha_3
+#' @param alpha1l Double containing hyperparameter for sampling from A
+#' @param alpha2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A
+#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param var_pi Double containing variance parameter of the random walk MH for pi parameter
+#' @param var_Z Double containing variance parameter of the random walk MH for Z parameter
+#' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+#' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param var_epslion2 Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param alpha Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#' @returns a List containing:
+#' \describe{
+#'   \item{\code{B}}{The basis functions evaluated at the observed time points}
+#'   \item{\code{nu}}{Nu samples from the chain with the highest average log-likelihood}
+#'   \item{\code{pi}}{Pi samples from the chain with the highest average log-likelihood}
+#'   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
+#'   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
+#'   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
+#'   \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
+#'   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
+#'   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
+#'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+#' }
+#'
+#' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+#'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
+#'   \item{\code{k}}{must be an integer larger than or equal to 2}
+#'   \item{\code{n_funct}}{must be an integer larger than 1}
+#'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+#'   \item{\code{n_eigen}}{must be greater than or equal to 1}
+#'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+#'   \item{\code{c}}{must be greater than 0 and have k elements}
+#'   \item{\code{b}}{must be positive}
+#'   \item{\code{alpha1l}}{must be positive}
+#'   \item{\code{beta1l}}{must be positive}
+#'   \item{\code{alpha2l}}{must be positive}
+#'   \item{\code{beta1l}}{must be positive}
+#'   \item{\code{a_Z_PM}}{must be positive}
+#'   \item{\code{a_pi_PM}}{must be positive}
+#'   \item{\code{var_alpha3}}{must be positive}
+#'   \item{\code{var_epsilon1}}{must be positive}
+#'   \item{\code{var_epsilon2}}{must be positive}
+#'   \item{\code{alpha}}{must be positive}
+#'   \item{\code{beta}}{must be positive}
+#'   \item{\code{alpha_0}}{must be positive}
+#'   \item{\code{beta_0}}{must be positive}
+#' }
+#'
+#' @examples
+#' ## Load sample data
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFPMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFPMM"))
+#'
+#' ## Set Hyperparameters
+#' tot_mcmc_iters = 150
+#' n_try = 1
+#' k = 2
+#' n_funct = 40
+#' basis_degree = 3
+#' n_eigen = 3
+#' boundary_knots = c(0, 1000)
+#' internal_knots = c(250, 500, 750)
+#'
+#' ## Run function
+#' x <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+#'                              basis_degree, n_eigen, boundary_knots,
+#'                              internal_knots)
+#'
 #' @export
-BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots) {
-    .Call('_BayesFPMM_BFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots)
+BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 800, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFPMM_BFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #' Estimates the initial starting point of the rest of the parameters given an initial starting point for Z and nu for functional data
@@ -157,10 +238,65 @@ BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, 
 #' @param n_eigen Int containing the number of eigenfunctions
 #' @param boundary_knots Vector containing the boundary points of our index domain of interest
 #' @param internal_knots Vector location of internal knots for B-splines
-#' @returns BestChain List containing a summary of the chain conditioned on nu and Z
+#' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
+#' @param b double containing hyperparamete for sampling from alpha_3
+#' @param nu_1 double containing hyperparameter for sampling from gamma
+#' @param alpha1l Double containing hyperparameter for sampling from A
+#' @param alpha2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A
+#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
+#' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
+#' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+#' @param var_epslion1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param var_epslion2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param alpha Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#' @returns a List containing:
+#' \describe{
+#'   \item{\code{B}}{The basis functions evaluated at the observed time points}
+#'   \item{\code{chi}}{chi samples from MCMC chain}
+#'   \item{\code{A}}{A samples from MCMC chain}
+#'   \item{\code{delta}}{delta samples from MCMC chain}
+#'   \item{\code{sigma}}{sigma samples from MCMC chain}
+#'   \item{\code{tau}}{tau samples from MCMC chain}
+#'   \item{\code{gamma}}{gamma samples from the chain with the highest average log-likelihood}
+#'   \item{\code{Phi}}{Phi samples from MCMC chain}
+#'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+#' }
+#' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+#'   \item{\code{burnin_prop}}{must be between 0 and 1}
+#'   \item{\code{k}}{must be an integer larger than or equal to 2}
+#'   \item{\code{n_funct}}{must be an integer larger than 1}
+#'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+#'   \item{\code{n_eigen}}{must be greater than or equal to 1}
+#'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+#'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+#'   \item{\code{c}}{must be greater than 0 and have k elements}
+#'   \item{\code{b}}{must be positive}
+#'   \item{\code{nu_1}}{must be positive}
+#'   \item{\code{alpha1l}}{must be positive}
+#'   \item{\code{beta1l}}{must be positive}
+#'   \item{\code{alpha2l}}{must be positive}
+#'   \item{\code{beta1l}}{must be positive}
+#'   \item{\code{a_Z_PM}}{must be positive}
+#'   \item{\code{a_pi_PM}}{must be positive}
+#'   \item{\code{var_alpha3}}{must be positive}
+#'   \item{\code{var_epsilon1}}{must be positive}
+#'   \item{\code{var_epsilon2}}{must be positive}
+#'   \item{\code{alpha}}{must be positive}
+#'   \item{\code{beta}}{must be positive}
+#'   \item{\code{alpha_0}}{must be positive}
+#'   \item{\code{beta_0}}{must be positive}
+#' }
 #' @export
-BFPMM_Theta_Est <- function(tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots) {
-    .Call('_BayesFPMM_BFPMM_Theta_Est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots)
+BFPMM_Theta_Est <- function(tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 1, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFPMM_BFPMM_Theta_Est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, Z_samp, nu_samp, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #' Performs MCMC for functional data, with optional tempered transitions, using user specified starting points

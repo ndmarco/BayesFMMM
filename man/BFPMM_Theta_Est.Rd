@@ -16,7 +16,23 @@ BFPMM_Theta_Est(
   basis_degree,
   n_eigen,
   boundary_knots,
-  internal_knots
+  internal_knots,
+  c = NULL,
+  b = 1,
+  nu_1 = 3,
+  alpha1l = 2,
+  alpha2l = 3,
+  beta1l = 1,
+  beta2l = 1,
+  a_Z_PM = 1000,
+  a_pi_PM = 1000,
+  var_alpha3 = 0.05,
+  var_epsilon1 = 1,
+  var_epsilon2 = 1,
+  alpha = 1,
+  beta = 10,
+  alpha_0 = 1,
+  beta_0 = 1
 )
 }
 \arguments{
@@ -43,10 +59,84 @@ BFPMM_Theta_Est(
 \item{boundary_knots}{Vector containing the boundary points of our index domain of interest}
 
 \item{internal_knots}{Vector location of internal knots for B-splines}
+
+\item{c}{Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)}
+
+\item{b}{double containing hyperparamete for sampling from alpha_3}
+
+\item{nu_1}{double containing hyperparameter for sampling from gamma}
+
+\item{alpha1l}{Double containing hyperparameter for sampling from A}
+
+\item{alpha2l}{Double containing hyperparameter for sampling from A}
+
+\item{beta1l}{Double containing hyperparameter for sampling from A}
+
+\item{beta2l}{Double containing hyperparameter for sampling from A}
+
+\item{a_Z_PM}{Double containing hyperparameter of the random walk MH for Z parameter}
+
+\item{a_pi_PM}{Double containing hyperparameter of the random walk MH for pi parameter}
+
+\item{var_alpha3}{Double containing variance parameter of the random walk MH for alpha_3 parameter}
+
+\item{alpha}{Double containing hyperparameter for sampling from tau}
+
+\item{beta}{Double containing hyperparameter for sampling from tau}
+
+\item{alpha_0}{Double containing hyperparameter for sampling from sigma}
+
+\item{beta_0}{Double containing hyperparameter for sampling from sigma}
+
+\item{var_epslion1}{Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm}
+
+\item{var_epslion2}{Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm}
 }
 \value{
-BestChain List containing a summary of the chain conditioned on nu and Z
+a List containing:
+\describe{
+  \item{\code{B}}{The basis functions evaluated at the observed time points}
+  \item{\code{chi}}{chi samples from MCMC chain}
+  \item{\code{A}}{A samples from MCMC chain}
+  \item{\code{delta}}{delta samples from MCMC chain}
+  \item{\code{sigma}}{sigma samples from MCMC chain}
+  \item{\code{tau}}{tau samples from MCMC chain}
+  \item{\code{gamma}}{gamma samples from the chain with the highest average log-likelihood}
+  \item{\code{Phi}}{Phi samples from MCMC chain}
+  \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+}
 }
 \description{
 Estimates the initial starting point of the rest of the parameters given an initial starting point for Z and nu for functional data
 }
+\section{Warning}{
+
+The following must be true:
+\describe{
+  \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+  \item{\code{burnin_prop}}{must be between 0 and 1}
+  \item{\code{k}}{must be an integer larger than or equal to 2}
+  \item{\code{n_funct}}{must be an integer larger than 1}
+  \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+  \item{\code{n_eigen}}{must be greater than or equal to 1}
+  \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+  \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+  \item{\code{c}}{must be greater than 0 and have k elements}
+  \item{\code{b}}{must be positive}
+  \item{\code{nu_1}}{must be positive}
+  \item{\code{alpha1l}}{must be positive}
+  \item{\code{beta1l}}{must be positive}
+  \item{\code{alpha2l}}{must be positive}
+  \item{\code{beta1l}}{must be positive}
+  \item{\code{a_Z_PM}}{must be positive}
+  \item{\code{a_pi_PM}}{must be positive}
+  \item{\code{var_alpha3}}{must be positive}
+  \item{\code{var_epsilon1}}{must be positive}
+  \item{\code{var_epsilon2}}{must be positive}
+  \item{\code{alpha}}{must be positive}
+  \item{\code{beta}}{must be positive}
+  \item{\code{alpha_0}}{must be positive}
+  \item{\code{beta_0}}{must be positive}
+}
+}
+

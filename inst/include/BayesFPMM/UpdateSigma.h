@@ -138,7 +138,7 @@ inline void updateSigmaMV(const arma::mat& y_obs,
   arma::vec mean = arma::zeros(nu.n_cols);
   for(int i = 0; i < Z.n_rows; i++){
     mean = arma::zeros(nu.n_cols);
-    for(int k = 0; k < Z.n_elem; k++){
+    for(int k = 0; k < Z.n_cols; k++){
       mean = mean + Z(i,k) * nu.row(k).t();
       for(int m = 0; m < Phi.n_slices; m++){
         mean = mean + Z(i,k) * chi(i,m) * Phi.slice(m).row(k).t();
@@ -184,7 +184,7 @@ inline void updateSigmaTemperedMV(const double& beta_i,
   arma::vec mean = arma::zeros(nu.n_cols);
   for(int i = 0; i < Z.n_rows; i++){
     mean = arma::zeros(nu.n_cols);
-    for(int k = 0; k < Z.n_elem; k++){
+    for(int k = 0; k < Z.n_cols; k++){
       mean = mean + Z(i,k) * nu.row(k).t();
       for(int m = 0; m < Phi.n_slices; m++){
         mean = mean + Z(i,k) * chi(i,m) * Phi.slice(m).row(k).t();

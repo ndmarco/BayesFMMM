@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFPMM_Nu_Z_multiple_try}
 \alias{BFPMM_Nu_Z_multiple_try}
-\title{Function for finding a good initial starting point for nu parameters and Z parameters for functional data, with option for tempered transitions}
+\title{Find initial starting position for nu and Z parameters for functional data}
 \usage{
 BFPMM_Nu_Z_multiple_try(
   tot_mcmc_iters,
@@ -14,7 +14,22 @@ BFPMM_Nu_Z_multiple_try(
   basis_degree,
   n_eigen,
   boundary_knots,
-  internal_knots
+  internal_knots,
+  c = NULL,
+  b = 800,
+  alpha1l = 2,
+  alpha2l = 3,
+  beta1l = 1,
+  beta2l = 1,
+  a_Z_PM = 1000,
+  a_pi_PM = 1000,
+  var_alpha3 = 0.05,
+  var_epsilon1 = 1,
+  var_epsilon2 = 1,
+  alpha = 1,
+  beta = 10,
+  alpha_0 = 1,
+  beta_0 = 1
 )
 }
 \arguments{
@@ -24,9 +39,9 @@ BFPMM_Nu_Z_multiple_try(
 
 \item{k}{Int containing the number of clusters}
 
-\item{Y}{Field of vectors containing the observed values}
+\item{Y}{List of vectors containing the observed values}
 
-\item{time}{Field of vectors containing the observed time points}
+\item{time}{List of vectors containing the observed time points}
 
 \item{n_funct}{Int containing the number of functions}
 
@@ -37,10 +52,106 @@ BFPMM_Nu_Z_multiple_try(
 \item{boundary_knots}{Vector containing the boundary points of our index domain of interest}
 
 \item{internal_knots}{Vector location of internal knots for B-splines}
+
+\item{c}{Vector containing hyperparmeters for sampling from pi (If left NULL, the one vector will be used)}
+
+\item{b}{Double containing hyperparameter for sampling from alpha_3}
+
+\item{alpha1l}{Double containing hyperparameter for sampling from A}
+
+\item{alpha2l}{Double containing hyperparameter for sampling from A}
+
+\item{beta1l}{Double containing hyperparameter for sampling from A}
+
+\item{beta2l}{Double containing hyperparameter for sampling from A}
+
+\item{var_alpha3}{Double containing variance parameter of the random walk MH for alpha_3 parameter}
+
+\item{alpha}{Double containing hyperparameter for sampling from tau}
+
+\item{beta}{Double containing hyperparameter for sampling from tau}
+
+\item{alpha_0}{Double containing hyperparameter for sampling from sigma}
+
+\item{beta_0}{Double containing hyperparameter for sampling from sigma}
+
+\item{var_pi}{Double containing variance parameter of the random walk MH for pi parameter}
+
+\item{var_Z}{Double containing variance parameter of the random walk MH for Z parameter}
+
+\item{var_epslion1}{Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm}
+
+\item{var_epslion2}{Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm}
 }
 \value{
-BestChain List containing a summary of the best performing chain
+a List containing:
+\describe{
+  \item{\code{B}}{The basis functions evaluated at the observed time points}
+  \item{\code{nu}}{Nu samples from the chain with the highest average log-likelihood}
+  \item{\code{pi}}{Pi samples from the chain with the highest average log-likelihood}
+  \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
+  \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
+  \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
+  \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
+  \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
+  \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
+  \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+}
 }
 \description{
-Function for finding a good initial starting point for nu parameters and Z parameters for functional data, with option for tempered transitions
+Function for finding a good initial starting point for nu parameters and Z
+parameters for functional data, with option for tempered transitions. This
+function tries running multiple different MCMC chains to find the optimal
+starting position. This function will return the chain that has the highest
+log-likelihood average in the last 100 MCMC iterations.
+}
+\section{Warning}{
+
+The following must be true:
+\describe{
+  \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+  \item{\code{n_try}}{must be an integer larger than or equal to 1}
+  \item{\code{k}}{must be an integer larger than or equal to 2}
+  \item{\code{n_funct}}{must be an integer larger than 1}
+  \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+  \item{\code{n_eigen}}{must be greater than or equal to 1}
+  \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+  \item{\code{c}}{must be greater than 0 and have k elements}
+  \item{\code{b}}{must be positive}
+  \item{\code{alpha1l}}{must be positive}
+  \item{\code{beta1l}}{must be positive}
+  \item{\code{alpha2l}}{must be positive}
+  \item{\code{beta1l}}{must be positive}
+  \item{\code{a_Z_PM}}{must be positive}
+  \item{\code{a_pi_PM}}{must be positive}
+  \item{\code{var_alpha3}}{must be positive}
+  \item{\code{var_epsilon1}}{must be positive}
+  \item{\code{var_epsilon2}}{must be positive}
+  \item{\code{alpha}}{must be positive}
+  \item{\code{beta}}{must be positive}
+  \item{\code{alpha_0}}{must be positive}
+  \item{\code{beta_0}}{must be positive}
+}
+}
+
+\examples{
+## Load sample data
+Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFPMM"))
+time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFPMM"))
+
+## Set Hyperparameters
+tot_mcmc_iters = 150
+n_try = 1
+k = 2
+n_funct = 40
+basis_degree = 3
+n_eigen = 3
+boundary_knots = c(0, 1000)
+internal_knots = c(250, 500, 750)
+
+## Run function
+x <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+                             basis_degree, n_eigen, boundary_knots,
+                             internal_knots)
+
 }

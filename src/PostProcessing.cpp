@@ -5,7 +5,7 @@
 
 //' Calculates the Pointwise credible interval for the mean
 //'
-//' @name GetMeanCI_Pw
+//' @name GetMeanCI_PW
 //' @param dir String containing the directory where the MCMC files are located
 //' @param n_files Int containing the number of files per parameter
 //' @param time Vector containing time points of interest
@@ -126,7 +126,7 @@ Rcpp::List GetMeanCI_S(const std::string dir,
 
 //' Calculates the Pointwise credible interval for the covariance function between two clusters
 //'
-//' @name GetCovCI_Pw
+//' @name GetCovCI_PW
 //' @param dir String containing the directory where the MCMC files are located
 //' @param n_files Int containing the number of files per parameter
 //' @param n_MCMC Int containing the number of saved MCMC iterations per file
@@ -137,7 +137,7 @@ Rcpp::List GetMeanCI_S(const std::string dir,
 //' @return CI list containing the 97.5th , 50th, and 2.5th pointwise credible functions
 //' @export
 // [[Rcpp::export]]
-Rcpp::List GetCovCI_Pw(const std::string dir,
+Rcpp::List GetCovCI_PW(const std::string dir,
                        const int n_files,
                        const int n_MCMC,
                        const arma::vec time1,

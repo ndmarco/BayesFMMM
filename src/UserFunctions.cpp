@@ -3,20 +3,101 @@
 #include <splines2Armadillo.h>
 #include <BayesFPMM.h>
 
-//' Function for finding a good initial starting point for nu parameters and Z parameters for functional data, with option for tempered transitions
+//' Find initial starting position for nu and Z parameters for functional data
+//'
+//' Function for finding a good initial starting point for nu parameters and Z
+//' parameters for functional data, with option for tempered transitions. This
+//' function tries running multiple different MCMC chains to find the optimal
+//' starting position. This function will return the chain that has the highest
+//' log-likelihood average in the last 100 MCMC iterations.
 //'
 //' @name BFPMM_Nu_Z_multiple_try
 //' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 //' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
-//' @param Y Field of vectors containing the observed values
-//' @param time Field of vectors containing the observed time points
+//' @param Y List of vectors containing the observed values
+//' @param time List of vectors containing the observed time points
 //' @param n_funct Int containing the number of functions
 //' @param basis_degree Int containing the degree of B-splines used
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param boundary_knots Vector containing the boundary points of our index domain of interest
 //' @param internal_knots Vector location of internal knots for B-splines
-//' @returns BestChain List containing a summary of the best performing chain
+//' @param c Vector containing hyperparmeters for sampling from pi (If left NULL, the one vector will be used)
+//' @param b Double containing hyperparameter for sampling from alpha_3
+//' @param alpha1l Double containing hyperparameter for sampling from A
+//' @param alpha2l Double containing hyperparameter for sampling from A
+//' @param beta1l Double containing hyperparameter for sampling from A
+//' @param beta2l Double containing hyperparameter for sampling from A
+//' @param var_pi Double containing variance parameter of the random walk MH for pi parameter
+//' @param var_Z Double containing variance parameter of the random walk MH for Z parameter
+//' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+//' @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+//' @param var_epslion2 Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm
+//' @param alpha Double containing hyperparameter for sampling from tau
+//' @param beta Double containing hyperparameter for sampling from tau
+//' @param alpha_0 Double containing hyperparameter for sampling from sigma
+//' @param beta_0 Double containing hyperparameter for sampling from sigma
+//' @returns a List containing:
+//' \describe{
+//'   \item{\code{B}}{The basis functions evaluated at the observed time points}
+//'   \item{\code{nu}}{Nu samples from the chain with the highest average log-likelihood}
+//'   \item{\code{pi}}{Pi samples from the chain with the highest average log-likelihood}
+//'   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
+//'   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
+//'   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
+//'   \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
+//'   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
+//'   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
+//'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+//' }
+//'
+//' @section Warning:
+//' The following must be true:
+//' \describe{
+//'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+//'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
+//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{n_funct}}{must be an integer larger than 1}
+//'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+//'   \item{\code{n_eigen}}{must be greater than or equal to 1}
+//'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{b}}{must be positive}
+//'   \item{\code{alpha1l}}{must be positive}
+//'   \item{\code{beta1l}}{must be positive}
+//'   \item{\code{alpha2l}}{must be positive}
+//'   \item{\code{beta1l}}{must be positive}
+//'   \item{\code{a_Z_PM}}{must be positive}
+//'   \item{\code{a_pi_PM}}{must be positive}
+//'   \item{\code{var_alpha3}}{must be positive}
+//'   \item{\code{var_epsilon1}}{must be positive}
+//'   \item{\code{var_epsilon2}}{must be positive}
+//'   \item{\code{alpha}}{must be positive}
+//'   \item{\code{beta}}{must be positive}
+//'   \item{\code{alpha_0}}{must be positive}
+//'   \item{\code{beta_0}}{must be positive}
+//' }
+//'
+//' @examples
+//' ## Load sample data
+//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFPMM"))
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFPMM"))
+//'
+//' ## Set Hyperparameters
+//' tot_mcmc_iters = 150
+//' n_try = 1
+//' k = 2
+//' n_funct = 40
+//' basis_degree = 3
+//' n_eigen = 3
+//' boundary_knots = c(0, 1000)
+//' internal_knots = c(250, 500, 750)
+//'
+//' ## Run function
+//' x <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//'                              basis_degree, n_eigen, boundary_knots,
+//'                              internal_knots)
+//'
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
@@ -28,12 +109,118 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                    const int basis_degree,
                                    const int n_eigen,
                                    const arma::vec boundary_knots,
-                                   const arma::vec internal_knots){
+                                   const arma::vec internal_knots,
+                                   Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
+                                   const double& b = 800,
+                                   const double& alpha1l = 2,
+                                   const double& alpha2l= 3,
+                                   const double& beta1l = 1,
+                                   const double& beta2l = 1,
+                                   const double& a_Z_PM = 1000,
+                                   const double& a_pi_PM = 1000,
+                                   const double& var_alpha3 = 0.05,
+                                   const double& var_epsilon1 = 1,
+                                   const double& var_epsilon2 = 1,
+                                   const double& alpha = 1,
+                                   const double& beta = 10,
+                                   const double& alpha_0 = 1,
+                                   const double& beta_0 =1){
+  // generate warnings
+  if(tot_mcmc_iters <  100){
+    Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
+  }
+  if(n_try <  1){
+    Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
+  }
+  if(k <  2){
+    Rcpp::stop("'k' must be an integer greater than or equal to 2");
+  }
+  if(n_funct <  1){
+    Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
+  }
+  if(basis_degree <  1){
+    Rcpp::stop("'basis_degree' must be an integer greater than or equal to 1");
+  }
+  if(n_eigen <  1){
+    Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
+  }
+  if(n_funct <  1){
+    Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
+  }
+  for(int i = 0; i < internal_knots.n_elem; i++){
+    if(boundary_knots(0) >= internal_knots(i)){
+       Rcpp::stop("at least one element in 'internal_knots' is less than or equal to first boundary knot");
+    }
+    if(boundary_knots(1) <= internal_knots(i)){
+      Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
+    }
+  }
+
+  if(b <= 0){
+    Rcpp::stop("'b' must be positive");
+  }
+  if(alpha1l <= 0){
+    Rcpp::stop("'alpha1l' must be positive");
+  }
+  if(beta1l <= 0){
+    Rcpp::stop("'beta1l' must be positive");
+  }
+  if(alpha2l <= 0){
+    Rcpp::stop("'alpha2l' must be positive");
+  }
+  if(beta2l <= 0){
+    Rcpp::stop("'beta2l' must be positive");
+  }
+  if(a_Z_PM <= 0){
+    Rcpp::stop("'a_Z_PM' must be positive");
+  }
+  if(a_pi_PM <= 0){
+    Rcpp::stop("'a_pi_PM' must be positive");
+  }
+  if(var_alpha3 <= 0){
+    Rcpp::stop("'var_alpha3' must be positive");
+  }
+  if(var_epsilon1 <= 0){
+    Rcpp::stop("'var_epsilon1' must be positive");
+  }
+  if(var_epsilon2 <= 0){
+    Rcpp::stop("'var_epsilon2' must be positive");
+  }
+  if(alpha <= 0){
+    Rcpp::stop("'alpha' must be positive");
+  }
+  if(beta <= 0){
+    Rcpp::stop("'beta' must be positive");
+  }
+  if(alpha_0 <= 0){
+    Rcpp::stop("'alpha_0' must be positive");
+  }
+  if(beta_0 <= 0){
+    Rcpp::stop("'beta_0' must be positive");
+  }
+
+  // initialize hyperparameter c
+  arma::vec c1 = arma::ones(k);
+  if(c.isNotNull()) {
+    Rcpp::NumericVector c_(c);
+    c1 = Rcpp::as<arma::vec>(c_);
+  }
+
+  // generate warning for c
+  if(c1.n_elem != k){
+    Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+  }
+  for(int i = 0; i < k; i++){
+    if(c1(i) <= 0){
+      Rcpp::stop("all elements of 'c' must be positive");
+    }
+  }
+
+  //Create B-splines
   splines2::BSpline bspline;
   // Make B_obs
   arma::field<arma::mat> B_obs(n_funct,1);
-  for(int i = 0; i < n_funct; i++)
-  {
+  for(int i = 0; i < n_funct; i++){
     // Create Bspline object
     bspline = splines2::BSpline(time(i,0), internal_knots, basis_degree,
                                 boundary_knots);
@@ -42,22 +229,23 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
     B_obs(i,0) = bspline_mat;
   }
 
-  // placeholder
-  arma::vec c = arma::ones(k);
-
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFPMM::BFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
-                                          boundary_knots, internal_knots,
-                                          tot_mcmc_iters,c, 800, 3, 2, 3, 1, 1, 1000, 1000,
-                                          0.05, sqrt(1), sqrt(1), 1, 10, 1, 1);
+  Rcpp::List mod1 = BayesFPMM::BFPMM_Nu_Z(Y, time, n_funct, k, basis_degree,
+                                          n_eigen, boundary_knots, internal_knots,
+                                          tot_mcmc_iters, c1, b, alpha1l,
+                                          alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
+                                          var_alpha3, var_epsilon1, var_epsilon2,
+                                          alpha, beta, alpha_0, beta_0);
   arma::vec ph = mod1["loglik"];
   double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
 
   for(int i = 0; i < n_try; i++){
-    Rcpp::List modi = BayesFPMM::BFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
-                                            boundary_knots, internal_knots,
-                                            tot_mcmc_iters, c, 800, 3, 2, 3, 1, 1, 1000,
-                                            1000, 0.05, sqrt(1), sqrt(1), 1,10, 1, 1);
+    Rcpp::List modi = BayesFPMM::BFPMM_Nu_Z(Y, time, n_funct, k, basis_degree,
+                                            n_eigen, boundary_knots, internal_knots,
+                                            tot_mcmc_iters, c1, b, alpha1l,
+                                            alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
+                                            var_alpha3, var_epsilon1, var_epsilon2,
+                                            alpha, beta, alpha_0, beta_0);
     arma::vec ph1 = modi["loglik"];
     if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
       mod1 = modi;
@@ -66,7 +254,7 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
   }
 
-  Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
+  Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B", B_obs),
                                              Rcpp::Named("nu", mod1["nu"]),
                                              Rcpp::Named("pi", mod1["pi"]),
                                              Rcpp::Named("alpha_3", mod1["alpha_3"]),
@@ -95,7 +283,62 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param boundary_knots Vector containing the boundary points of our index domain of interest
 //' @param internal_knots Vector location of internal knots for B-splines
-//' @returns BestChain List containing a summary of the chain conditioned on nu and Z
+//' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
+//' @param b double containing hyperparamete for sampling from alpha_3
+//' @param nu_1 double containing hyperparameter for sampling from gamma
+//' @param alpha1l Double containing hyperparameter for sampling from A
+//' @param alpha2l Double containing hyperparameter for sampling from A
+//' @param beta1l Double containing hyperparameter for sampling from A
+//' @param beta2l Double containing hyperparameter for sampling from A
+//' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
+//' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
+//' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+//' @param var_epslion1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+//' @param var_epslion2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+//' @param alpha Double containing hyperparameter for sampling from tau
+//' @param beta Double containing hyperparameter for sampling from tau
+//' @param alpha_0 Double containing hyperparameter for sampling from sigma
+//' @param beta_0 Double containing hyperparameter for sampling from sigma
+//' @returns a List containing:
+//' \describe{
+//'   \item{\code{B}}{The basis functions evaluated at the observed time points}
+//'   \item{\code{chi}}{chi samples from MCMC chain}
+//'   \item{\code{A}}{A samples from MCMC chain}
+//'   \item{\code{delta}}{delta samples from MCMC chain}
+//'   \item{\code{sigma}}{sigma samples from MCMC chain}
+//'   \item{\code{tau}}{tau samples from MCMC chain}
+//'   \item{\code{gamma}}{gamma samples from the chain with the highest average log-likelihood}
+//'   \item{\code{Phi}}{Phi samples from MCMC chain}
+//'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+//' }
+//' @section Warning:
+//' The following must be true:
+//' \describe{
+//'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+//'   \item{\code{burnin_prop}}{must be between 0 and 1}
+//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{n_funct}}{must be an integer larger than 1}
+//'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+//'   \item{\code{n_eigen}}{must be greater than or equal to 1}
+//'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+//'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{b}}{must be positive}
+//'   \item{\code{nu_1}}{must be positive}
+//'   \item{\code{alpha1l}}{must be positive}
+//'   \item{\code{beta1l}}{must be positive}
+//'   \item{\code{alpha2l}}{must be positive}
+//'   \item{\code{beta1l}}{must be positive}
+//'   \item{\code{a_Z_PM}}{must be positive}
+//'   \item{\code{a_pi_PM}}{must be positive}
+//'   \item{\code{var_alpha3}}{must be positive}
+//'   \item{\code{var_epsilon1}}{must be positive}
+//'   \item{\code{var_epsilon2}}{must be positive}
+//'   \item{\code{alpha}}{must be positive}
+//'   \item{\code{beta}}{must be positive}
+//'   \item{\code{alpha_0}}{must be positive}
+//'   \item{\code{beta_0}}{must be positive}
+//' }
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
@@ -109,7 +352,117 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
                            const int basis_degree,
                            const int n_eigen,
                            const arma::vec boundary_knots,
-                           const arma::vec internal_knots){
+                           const arma::vec internal_knots,
+                           Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
+                           const double& b = 1,
+                           const double& nu_1 = 3,
+                           const double& alpha1l = 2,
+                           const double& alpha2l = 3,
+                           const double& beta1l =1,
+                           const double& beta2l = 1,
+                           const double& a_Z_PM = 1000,
+                           const double& a_pi_PM = 1000,
+                           const double& var_alpha3 = 0.05,
+                           const double& var_epsilon1 = 1,
+                           const double& var_epsilon2 = 1,
+                           const double& alpha = 1,
+                           const double& beta = 10,
+                           const double& alpha_0 = 1,
+                           const double& beta_0 = 1){
+  // generate warnings
+  if(tot_mcmc_iters <  100){
+    Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
+  }
+  if(burnin_prop < 0){
+    if(burnin_prop >= 1){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+  }
+  if(k <  2){
+    Rcpp::stop("'k' must be an integer greater than or equal to 2");
+  }
+  if(n_funct <  1){
+    Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
+  }
+  if(basis_degree <  1){
+    Rcpp::stop("'basis_degree' must be an integer greater than or equal to 1");
+  }
+  if(n_eigen <  1){
+    Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
+  }
+  if(n_funct <  1){
+    Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
+  }
+  for(int i = 0; i < internal_knots.n_elem; i++){
+    if(boundary_knots(0) >= internal_knots(i)){
+      Rcpp::stop("at least one element in 'internal_knots' is less than or equal to first boundary knot");
+    }
+    if(boundary_knots(1) <= internal_knots(i)){
+      Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
+    }
+  }
+  if(b <= 0){
+    Rcpp::stop("'b' must be positive");
+  }
+  if(nu_1 <= 0){
+    Rcpp::stop("'nu_1' must be positive");
+  }
+  if(alpha1l <= 0){
+    Rcpp::stop("'alpha1l' must be positive");
+  }
+  if(beta1l <= 0){
+    Rcpp::stop("'beta1l' must be positive");
+  }
+  if(alpha2l <= 0){
+    Rcpp::stop("'alpha2l' must be positive");
+  }
+  if(beta2l <= 0){
+    Rcpp::stop("'beta2l' must be positive");
+  }
+  if(a_Z_PM <= 0){
+    Rcpp::stop("'a_Z_PM' must be positive");
+  }
+  if(a_pi_PM <= 0){
+    Rcpp::stop("'a_pi_PM' must be positive");
+  }
+  if(var_alpha3 <= 0){
+    Rcpp::stop("'var_alpha3' must be positive");
+  }
+  if(var_epsilon1 <= 0){
+    Rcpp::stop("'var_epsilon1' must be positive");
+  }
+  if(var_epsilon2 <= 0){
+    Rcpp::stop("'var_epsilon2' must be positive");
+  }
+  if(alpha <= 0){
+    Rcpp::stop("'alpha' must be positive");
+  }
+  if(beta <= 0){
+    Rcpp::stop("'beta' must be positive");
+  }
+  if(alpha_0 <= 0){
+    Rcpp::stop("'alpha_0' must be positive");
+  }
+  if(beta_0 <= 0){
+    Rcpp::stop("'beta_0' must be positive");
+  }
+
+  // initialize hyperparameter c
+  arma::vec c1 = arma::ones(k);
+  if(c.isNotNull()) {
+    Rcpp::NumericVector c_(c);
+    c1 = Rcpp::as<arma::vec>(c_);
+  }
+
+  // generate warning for c
+  if(c1.n_elem != k){
+    Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+  }
+  for(int i = 0; i < k; i++){
+    if(c1(i) <= 0){
+      Rcpp::stop("all elements of 'c' must be positive");
+    }
+  }
 
   splines2::BSpline bspline;
   // Make B_obs
@@ -123,8 +476,6 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
     arma::mat bspline_mat{bspline.basis(true)};
     B_obs(i,0) = bspline_mat;
   }
-
-  arma::vec c = arma::ones(k);
 
   int n_nu = nu_samp.n_slices;
   arma::mat Z_est = arma::zeros(n_funct, Z_samp.n_cols);
@@ -156,10 +507,12 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
   // start MCMC sampling
   Rcpp::List mod1 = BayesFPMM::BFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
                                            boundary_knots, internal_knots, tot_mcmc_iters,
-                                           c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
-                                           sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est, nu_est);
+                                           c1, b, nu_1, alpha1l, alpha2l, beta1l,
+                                           beta2l, a_Z_PM, a_pi_PM, var_alpha3,
+                                           var_epsilon1, var_epsilon2, alpha, beta,
+                                           alpha_0, beta_0, Z_est, nu_est);
 
-  Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
+  Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B", B_obs),
                                              Rcpp::Named("chi", mod1["chi"]),
                                              Rcpp::Named("A", mod1["A"]),
                                              Rcpp::Named("delta", mod1["delta"]),
@@ -167,7 +520,6 @@ Rcpp::List BFPMM_Theta_Est(const int tot_mcmc_iters,
                                              Rcpp::Named("tau", mod1["tau"]),
                                              Rcpp::Named("gamma", mod1["gamma"]),
                                              Rcpp::Named("Phi", mod1["Phi"]),
-                                             Rcpp::Named("Nu_est", nu_est),
                                              Rcpp::Named("loglik", mod1["loglik"]));
 
   return BestChain;

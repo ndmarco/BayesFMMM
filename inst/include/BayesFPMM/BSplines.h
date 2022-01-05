@@ -16,10 +16,10 @@ namespace BayesFPMM {
 // @param internal_knots field of vectors containing the internal knots for each dimension
 // @returns B Field of matrices containing the tensor b-splines
 inline arma::field<arma::mat> TensorBSpline(const arma::field<arma::mat>& t_obs,
-                                     const int n_funct,
-                                     const arma::vec& basis_degree,
-                                     const arma::mat& boundary_knots,
-                                     const arma::field<arma::vec>& internal_knots){
+                                            const int n_funct,
+                                            const arma::vec& basis_degree,
+                                            const arma::mat& boundary_knots,
+                                            const arma::field<arma::vec>& internal_knots){
   int dim = t_obs(0,0).n_cols;
   int P = 1;
   arma::vec dim_counter = arma::ones(dim);
