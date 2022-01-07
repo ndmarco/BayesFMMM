@@ -2,13 +2,51 @@
 % Please edit documentation in R/RcppExports.R
 \name{ReadFieldCube}
 \alias{ReadFieldCube}
-\title{Reads in armadillo field of cubes and returns it in R format}
+\title{Reads saved parameter data (gamma, Phi)}
 \usage{
 ReadFieldCube(file)
 }
 \arguments{
-\item{file}{String containing location where arma field is stored}
+\item{file}{String containing location where armadillo field of cubes is stored}
+}
+\value{
+FieldCube List of arrays containing the saved data
 }
 \description{
-Reads in armadillo field of cubes and returns it in R format
+Reads armadillo field of cubes type data and returns it as a list of arrays
+in R. The following parameters can be read in using this function: gamma and
+Phi.
+}
+\examples{
+## set file path
+file <- system.file("test-data", "Phi.txt", package = "BayesFPMM")
+
+## Read in file
+Phi <- ReadFieldCube(file)
+
+#############################################################
+## For reading in a group of files you can use the following:
+#
+## Set number of files you want to read in
+# n_files <- 50
+#
+## Set number of samples per file
+# n_samp <- 100
+#
+## Set dim of parameter
+# dim1 <- 3
+# dim2 <- 8
+# dim3 <- 2
+#
+## Set directory
+# dir <- "~/nu"
+#
+## initialize placeholder
+# Phi <- array(0, dim = c(dim1, dim2, dim3, n_files * n_samp))
+# for(i in 0:(n_files - 1)){
+#   nu_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
+#   nu[,,((n_samp * i) + 1):(n_samp * (i+1))] <- pi_i
+#}
+#############################################################
+
 }

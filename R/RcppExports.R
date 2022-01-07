@@ -483,55 +483,220 @@ BFPMM_warm_start <- function(tot_mcmc_iters, burnin_prop, k, Y, time, n_funct, b
     .Call('_BayesFPMM_BFPMM_warm_start', PACKAGE = 'BayesFPMM', tot_mcmc_iters, burnin_prop, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
-#' Reads in armadillo vector and returns it in R format
+#' Reads saved parameter data (sigma, alpha_3)
+#'
+#' Reads armadillo vector type data and returns it as a vector in R. The following
+#' parameters can be read in using this function: sigma and alpha_3.
 #'
 #' @name ReadVec
-#' @param file String containing location where arma vector is stored
+#' @param file String containing location where armadillo vector is stored
+#' @returns Vec Vector containing the saved data
+#'
+#' @examples
+#' ## set file path
+#' file <- system.file("test-data", "sigma.txt", package = "BayesFPMM")
+#'
+#' ## Read in file
+#' sigma <- ReadVec(file)
+#'
+#' #############################################################
+#' ## For reading in a group of files you can use the following:
+#' #
+#' ## Set number of files you want to read in
+#' # n_files <- 50
+#' #
+#' ## Set number of samples per file
+#' # n_samp <- 100
+#' #
+#' ## Set directory
+#' # dir <- "~/sigma"
+#' #
+#' ## initialize placeholder
+#' # sigma <- rep(0, n_files * n_samp)
+#' # for(i in 0:(n_files - 1)){
+#' #   sigma_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
+#' #   sigma[((n_samp * i) + 1):(n_samp * (i+1))] <- sigma_i
+#' #}
+#' #############################################################
+#'
 #' @export
 ReadVec <- function(file) {
     .Call('_BayesFPMM_ReadVec', PACKAGE = 'BayesFPMM', file)
 }
 
-#' Reads in armadillo matrix and returns it in R format
+#' Reads saved parameter data (pi, A, delta, tau)
+#'
+#' Reads armadillo matrix type data and returns it as a matirx in R. The following
+#' parameters can be read in using this function: pi, A, delta, and tau.
 #'
 #' @name ReadMat
-#' @param file String containing location where arma matrix is stored
+#' @param file String containing location where armadillo matrix is stored
+#' @returns Mat Matrix containing the saved data
+#'
+#' @examples
+#' ## set file path
+#' file <- system.file("test-data", "pi.txt", package = "BayesFPMM")
+#'
+#' ## Read in file
+#' pi <- ReadMat(file)
+#'
+#' #############################################################
+#' ## For reading in a group of files you can use the following:
+#' #
+#' ## Set number of files you want to read in
+#' # n_files <- 50
+#' #
+#' ## Set number of samples per file
+#' # n_samp <- 100
+#' #
+#' ## Set dim of parameter
+#' # dim <- 3
+#' #
+#' ## Set directory
+#' # dir <- "~/pi"
+#' #
+#' ## initialize placeholder
+#' # pi <- mat(0, dim, n_files * n_samp)
+#' # for(i in 0:(n_files - 1)){
+#' #   pi_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
+#' #   pi[,((n_samp * i) + 1):(n_samp * (i+1))] <- pi_i
+#' #}
+#' #############################################################
+#'
 #' @export
 ReadMat <- function(file) {
     .Call('_BayesFPMM_ReadMat', PACKAGE = 'BayesFPMM', file)
 }
 
-#' Reads in armadillo cube and returns it in R format
+#' Reads saved parameter data (nu, chi, Z)
+#'
+#' Reads armadillo cube type data and returns it as an array in R. The following
+#' parameters can be read in using this function: nu, chi, and Z.
 #'
 #' @name ReadCube
-#' @param file String containing location where arma cube is stored
+#' @param file String containing location where armadillo cube is stored
+#' @returns Cube Array containing the saved data
+#'
+#' @examples
+#' ## set file path
+#' file <- system.file("test-data", "nu.txt", package = "BayesFPMM")
+#'
+#' ## Read in file
+#' nu <- ReadCube(file)
+#'
+#' #############################################################
+#' ## For reading in a group of files you can use the following:
+#' #
+#' ## Set number of files you want to read in
+#' # n_files <- 50
+#' #
+#' ## Set number of samples per file
+#' # n_samp <- 100
+#' #
+#' ## Set dim of parameter
+#' # dim1 <- 3
+#' # dim2 <- 8
+#' #
+#' ## Set directory
+#' # dir <- "~/nu"
+#' #
+#' ## initialize placeholder
+#' # nu <- array(0, dim = c(dim1, dim2, n_files * n_samp))
+#' # for(i in 0:(n_files - 1)){
+#' #   nu_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
+#' #   nu[,,((n_samp * i) + 1):(n_samp * (i+1))] <- pi_i
+#' #}
+#' #############################################################
+#'
 #' @export
 ReadCube <- function(file) {
     .Call('_BayesFPMM_ReadCube', PACKAGE = 'BayesFPMM', file)
 }
 
-#' Reads in armadillo field of cubes and returns it in R format
+#' Reads saved parameter data (gamma, Phi)
+#'
+#' Reads armadillo field of cubes type data and returns it as a list of arrays
+#' in R. The following parameters can be read in using this function: gamma and
+#' Phi.
 #'
 #' @name ReadFieldCube
-#' @param file String containing location where arma field is stored
+#' @param file String containing location where armadillo field of cubes is stored
+#' @returns FieldCube List of arrays containing the saved data
+#'
+#' @examples
+#' ## set file path
+#' file <- system.file("test-data", "Phi.txt", package = "BayesFPMM")
+#'
+#' ## Read in file
+#' Phi <- ReadFieldCube(file)
+#'
+#' #############################################################
+#' ## For reading in a group of files you can use the following:
+#' #
+#' ## Set number of files you want to read in
+#' # n_files <- 50
+#' #
+#' ## Set number of samples per file
+#' # n_samp <- 100
+#' #
+#' ## Set dim of parameter
+#' # dim1 <- 3
+#' # dim2 <- 8
+#' # dim3 <- 2
+#' #
+#' ## Set directory
+#' # dir <- "~/nu"
+#' #
+#' ## initialize placeholder
+#' # Phi <- array(0, dim = c(dim1, dim2, dim3, n_files * n_samp))
+#' # for(i in 0:(n_files - 1)){
+#' #   nu_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
+#' #   nu[,,((n_samp * i) + 1):(n_samp * (i+1))] <- pi_i
+#' #}
+#' #############################################################
+#'
 #' @export
 ReadFieldCube <- function(file) {
     .Call('_BayesFPMM_ReadFieldCube', PACKAGE = 'BayesFPMM', file)
 }
 
-#' Reads in armadillo field of matrices and returns it in R format
+#' Reads saved armadillo data
+#'
+#' Reads armadillo field of matrices type data and returns it as a list of matrices
+#' in R.
 #'
 #' @name ReadFieldMat
-#' @param file String containing location where arma field is stored
+#' @param file String containing location where armadillo field of matrices is stored
+#' @returns FieldMatrix List of matrices containing the saved data
+#'
+#' @examples
+#' ## set file path
+#' file <- system.file("test-data", "fieldmat.txt", package = "BayesFPMM")
+#'
+#' ## Read in file
+#' samp_data <- ReadFieldMat(file)
+#'
 #' @export
 ReadFieldMat <- function(file) {
     .Call('_BayesFPMM_ReadFieldMat', PACKAGE = 'BayesFPMM', file)
 }
 
-#' Reads in armadillo field of vectors and returns it in R format
+#' Reads saved armadillo data
+#'
+#' Reads armadillo field of vectors type data and returns it as a list of vectors
+#' in R.
 #'
 #' @name ReadFieldVec
-#' @param file String containing location where arma field is stored
+#' @param file String containing location where armadillo field of vectors is stored
+#' @returns FieldVec List of vectors containing the saved data
+#'
+#' @examples
+#' ## set file path
+#' file <- system.file("test-data", "fieldvec.txt", package = "BayesFPMM")
+#'
+#' ## Read in file
+#' samp_data <- ReadFieldVec(file)
+#'
 #' @export
 ReadFieldVec <- function(file) {
     .Call('_BayesFPMM_ReadFieldVec', PACKAGE = 'BayesFPMM', file)

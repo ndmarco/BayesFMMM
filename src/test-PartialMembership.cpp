@@ -379,7 +379,7 @@ arma::cube TestUpdateTemperedZ_MV(){
 arma::mat TestUpdatepi(){
   // Make Z matrix
   arma::mat Z(100, 3);
-  arma::vec c(3, arma::fill::randu);
+  arma::vec c(3, arma::fill::ones);
   arma::vec pi = BayesFPMM::rdirichlet(c);
 
   // setting alpha_3 = 100
@@ -399,7 +399,7 @@ arma::mat TestUpdatepi(){
 
   for(int i = 0; i < 500; i++)
   {
-    BayesFPMM::updatePi_PM(100, Z, c, i, 500, 100, pi_ph, pi_samp);
+    BayesFPMM::updatePi_PM(100, Z, c, i, 500, 1000, pi_ph, pi_samp);
   }
 
   arma::vec pi_est = arma::zeros(3);

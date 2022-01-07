@@ -2,13 +2,48 @@
 % Please edit documentation in R/RcppExports.R
 \name{ReadMat}
 \alias{ReadMat}
-\title{Reads in armadillo matrix and returns it in R format}
+\title{Reads saved parameter data (pi, A, delta, tau)}
 \usage{
 ReadMat(file)
 }
 \arguments{
-\item{file}{String containing location where arma matrix is stored}
+\item{file}{String containing location where armadillo matrix is stored}
+}
+\value{
+Mat Matrix containing the saved data
 }
 \description{
-Reads in armadillo matrix and returns it in R format
+Reads armadillo matrix type data and returns it as a matirx in R. The following
+parameters can be read in using this function: pi, A, delta, and tau.
+}
+\examples{
+## set file path
+file <- system.file("test-data", "pi.txt", package = "BayesFPMM")
+
+## Read in file
+pi <- ReadMat(file)
+
+#############################################################
+## For reading in a group of files you can use the following:
+#
+## Set number of files you want to read in
+# n_files <- 50
+#
+## Set number of samples per file
+# n_samp <- 100
+#
+## Set dim of parameter
+# dim <- 3
+#
+## Set directory
+# dir <- "~/pi"
+#
+## initialize placeholder
+# pi <- mat(0, dim, n_files * n_samp)
+# for(i in 0:(n_files - 1)){
+#   pi_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
+#   pi[,((n_samp * i) + 1):(n_samp * (i+1))] <- pi_i
+#}
+#############################################################
+
 }

@@ -2,13 +2,25 @@
 % Please edit documentation in R/RcppExports.R
 \name{ReadFieldMat}
 \alias{ReadFieldMat}
-\title{Reads in armadillo field of matrices and returns it in R format}
+\title{Reads saved armadillo data}
 \usage{
 ReadFieldMat(file)
 }
 \arguments{
-\item{file}{String containing location where arma field is stored}
+\item{file}{String containing location where armadillo field of matrices is stored}
+}
+\value{
+FieldMatrix List of matrices containing the saved data
 }
 \description{
-Reads in armadillo field of matrices and returns it in R format
+Reads armadillo field of matrices type data and returns it as a list of matrices
+in R.
+}
+\examples{
+## set file path
+file <- system.file("test-data", "fieldmat.txt", package = "BayesFPMM")
+
+## Read in file
+samp_data <- ReadFieldMat(file)
+
 }

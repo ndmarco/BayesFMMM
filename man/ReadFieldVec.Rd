@@ -2,13 +2,25 @@
 % Please edit documentation in R/RcppExports.R
 \name{ReadFieldVec}
 \alias{ReadFieldVec}
-\title{Reads in armadillo field of vectors and returns it in R format}
+\title{Reads saved armadillo data}
 \usage{
 ReadFieldVec(file)
 }
 \arguments{
-\item{file}{String containing location where arma field is stored}
+\item{file}{String containing location where armadillo field of vectors is stored}
+}
+\value{
+FieldVec List of vectors containing the saved data
 }
 \description{
-Reads in armadillo field of vectors and returns it in R format
+Reads armadillo field of vectors type data and returns it as a list of vectors
+in R.
+}
+\examples{
+## set file path
+file <- system.file("test-data", "fieldvec.txt", package = "BayesFPMM")
+
+## Read in file
+samp_data <- ReadFieldVec(file)
+
 }

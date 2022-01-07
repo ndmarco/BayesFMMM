@@ -2,13 +2,45 @@
 % Please edit documentation in R/RcppExports.R
 \name{ReadVec}
 \alias{ReadVec}
-\title{Reads in armadillo vector and returns it in R format}
+\title{Reads saved parameter data (sigma, alpha_3)}
 \usage{
 ReadVec(file)
 }
 \arguments{
-\item{file}{String containing location where arma vector is stored}
+\item{file}{String containing location where armadillo vector is stored}
+}
+\value{
+Vec Vector containing the saved data
 }
 \description{
-Reads in armadillo vector and returns it in R format
+Reads armadillo vector type data and returns it as a vector in R. The following
+parameters can be read in using this function: sigma and alpha_3.
+}
+\examples{
+## set file path
+file <- system.file("test-data", "sigma.txt", package = "BayesFPMM")
+
+## Read in file
+sigma <- ReadVec(file)
+
+#############################################################
+## For reading in a group of files you can use the following:
+#
+## Set number of files you want to read in
+# n_files <- 50
+#
+## Set number of samples per file
+# n_samp <- 100
+#
+## Set directory
+# dir <- "~/sigma"
+#
+## initialize placeholder
+# sigma <- rep(0, n_files * n_samp)
+# for(i in 0:(n_files - 1)){
+#   sigma_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
+#   sigma[((n_samp * i) + 1):(n_samp * (i+1))] <- sigma_i
+#}
+#############################################################
+
 }
