@@ -6,7 +6,6 @@
 \usage{
 BFPMM_Theta_est(
   tot_mcmc_iters,
-  burnin_prop,
   k,
   Y,
   time,
@@ -17,6 +16,7 @@ BFPMM_Theta_est(
   internal_knots,
   Z_samp,
   nu_samp,
+  burnin_prop = 0.8,
   c = NULL,
   b = 1,
   nu_1 = 3,
@@ -38,8 +38,6 @@ BFPMM_Theta_est(
 \arguments{
 \item{tot_mcmc_iters}{Int containing the total number of MCMC iterations}
 
-\item{burnin_prop}{Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters}
-
 \item{k}{Int containing the number of clusters}
 
 \item{Y}{List of vectors containing the observed values}
@@ -56,9 +54,11 @@ BFPMM_Theta_est(
 
 \item{internal_knots}{Vector location of internal knots for B-splines}
 
-\item{Z_samp}{Cube containing initial chain of Z parameters from BFPMM_Nu_Z_multiple_try}
+\item{Z_samp}{Cube containing initial chain of Z parameters from \code{BFPMM_Nu_Z_multiple_try}}
 
-\item{nu_samp}{Cube containing initial chain of nu parameters from BFPMM_Nu_Z_multiple_try}
+\item{nu_samp}{Cube containing initial chain of nu parameters from \code{BFPMM_Nu_Z_multiple_try}}
+
+\item{burnin_prop}{Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters}
 
 \item{c}{Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)}
 
@@ -150,15 +150,14 @@ Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFPMM"))
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFPMM"))
 
 ## Set Hyperparameters
-tot_mcmc_iters = 150
-n_try = 1
-k = 2
-n_funct = 40
-basis_degree = 3
-n_eigen = 3
-boundary_knots = c(0, 1000)
-internal_knots = c(250, 500, 750)
-burnin_prop = 0.5
+tot_mcmc_iters <- 150
+n_try <- 1
+k <- 2
+n_funct <- 40
+basis_degree <- 3
+n_eigen <- 3
+boundary_knots <- c(0, 1000)
+internal_knots <- c(250, 500, 750)
 
 ## Get Estimates of Z and nu
 est1 <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
@@ -166,7 +165,7 @@ est1 <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
                                 internal_knots)
 
 ## Run function
-est2 <- BFPMM_Theta_est(tot_mcmc_iters, burnin_prop, k, Y, time, n_funct,
+est2 <- BFPMM_Theta_est(tot_mcmc_iters, k, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
                         internal_knots, est1$Z, est1$nu)
 

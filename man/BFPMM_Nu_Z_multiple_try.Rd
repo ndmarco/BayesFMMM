@@ -140,14 +140,14 @@ Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFPMM"))
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFPMM"))
 
 ## Set Hyperparameters
-tot_mcmc_iters = 150
-n_try = 1
-k = 2
-n_funct = 40
-basis_degree = 3
-n_eigen = 3
-boundary_knots = c(0, 1000)
-internal_knots = c(250, 500, 750)
+tot_mcmc_iters <- 150
+n_try <- 1
+k <- 2
+n_funct <- 40
+basis_degree <- 3
+n_eigen <- 3
+boundary_knots <- c(0, 1000)
+internal_knots <- c(250, 500, 750)
 
 ## Run function
 x <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,

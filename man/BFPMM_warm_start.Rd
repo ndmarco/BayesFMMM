@@ -2,11 +2,10 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFPMM_warm_start}
 \alias{BFPMM_warm_start}
-\title{Performs MCMC given an informed set of starting points}
+\title{Performs MCMC for functional model given an informed set of starting points}
 \usage{
 BFPMM_warm_start(
   tot_mcmc_iters,
-  burnin_prop,
   k,
   Y,
   time,
@@ -26,6 +25,7 @@ BFPMM_warm_start(
   tau_samp,
   sigma_samp,
   chi_samp,
+  burnin_prop = 0.8,
   dir = NULL,
   thinning_num = 1,
   beta_N_t = 1,
@@ -52,8 +52,6 @@ BFPMM_warm_start(
 }
 \arguments{
 \item{tot_mcmc_iters}{Int containing the total number of MCMC iterations}
-
-\item{burnin_prop}{Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters}
 
 \item{k}{Int containing the number of clusters}
 
@@ -92,6 +90,8 @@ BFPMM_warm_start(
 \item{sigma_samp}{Vector containing initial chain of sigma parameters (from \code{BFPMM_Theta_est})}
 
 \item{chi_samp}{Cube containing initial chain of chi parameters (from \code{BFPMM_Theta_est})}
+
+\item{burnin_prop}{Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters}
 
 \item{dir}{String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)}
 
@@ -214,15 +214,14 @@ Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFPMM"))
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFPMM"))
 
 ## Set Hyperparameters
-tot_mcmc_iters = 150
-n_try = 1
-k = 2
-n_funct = 40
-basis_degree = 3
-n_eigen = 3
-boundary_knots = c(0, 1000)
-internal_knots = c(250, 500, 750)
-burnin_prop = 0.5
+tot_mcmc_iters <- 150
+n_try <- 1
+k <- 2
+n_funct <- 40
+basis_degree <- 3
+n_eigen <- 3
+boundary_knots <- c(0, 1000)
+internal_knots <- c(250, 500, 750)
 
 ## Get Estimates of Z and nu
 est1 <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
@@ -230,11 +229,11 @@ est1 <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
                                 internal_knots)
 
 ## Get estimates of other parameters
-est2 <- BFPMM_Theta_est(tot_mcmc_iters, burnin_prop, k, Y, time, n_funct,
+est2 <- BFPMM_Theta_est(tot_mcmc_iters, k, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
                         internal_knots, est1$Z, est1$nu)
 
-MCMC.chain <-BFPMM_warm_start(tot_mcmc_iters, burnin_prop, k, Y, time, n_funct,
+MCMC.chain <-BFPMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
                               basis_degree, n_eigen, boundary_knots,
                               internal_knots, est1$Z, est1$pi, est1$alpha_3,
                               est2$delta, est2$gamma, est2$Phi, est2$A,

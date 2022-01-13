@@ -2726,15 +2726,204 @@
 
 // //' @export
 // // [[Rcpp::export]]
-// void Stuff(){
-//   arma::field<arma::mat> B_obs(20,1);
-//   for(int i = 0; i < 20; i++){
-//     B_obs(i,0) = arma::randn(2,4);
+// Rcpp::List Stuff(){
+//   // Make nu matrix
+//   arma::mat nu = arma::randn(2,10) * 2;
+//
+//
+//   // Make Phi matrix
+//   arma::cube Phi(2,10,2);
+//   for(int i=0; i < 2; i++)
+//   {
+//     Phi.slice(i) = (2-i) * 0.2 * arma::randu<arma::mat>(2,10);
 //   }
-//   arma::field<arma::vec> B(20,1);
-//   for(int i = 0; i < 20; i++){
-//     B(i,0) = arma::randn(5);
+//   double sigma_sq = 0.001;
+//
+//   // Make chi matrix
+//   arma::mat chi(20, 2, arma::fill::randn);
+//
+//
+//   // Make Z matrix
+//   arma::mat Z(20, 3);
+//   arma::mat alpha(20,3, arma::fill::ones);
+//   alpha = alpha * 10;
+//   for(int i = 0; i < Z.n_rows; i++){
+//     Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
 //   }
-//   B_obs.save("/Users/nicholasmarco/Projects/BayesFPMM/inst/test-data/fieldmat.txt");
-//   B.save("/Users/nicholasmarco/Projects/BayesFPMM/inst/test-data/fieldvec.txt");
+//
+//   arma::mat y_obs = arma::zeros(20, 10);
+//   arma::vec mean = arma::zeros(10);
+//
+//   for(int j = 0; j < 20; j++){
+//     mean = arma::zeros(10);
+//     for(int l = 0; l < 2; l++){
+//       mean = mean + Z(j,l) * nu.row(l).t();
+//       for(int m = 0; m < Phi.n_slices; m++){
+//         mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+//       }
+//     }
+//     y_obs.row(j) = arma::mvnrnd(mean, sigma_sq *
+//       arma::eye(mean.n_elem, mean.n_elem)).t();
+//   }
+//   Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("nu", nu),
+//                                              Rcpp::Named("chi", chi),
+//                                              Rcpp::Named("sigma_sq",sigma_sq),
+//                                              Rcpp::Named("Phi", Phi),
+//                                              Rcpp::Named("Z", Z),
+//                                              Rcpp::Named("Y",y_obs));
+//   return(BestChain);
+//   //
+//   //   arma::cube Nu_samp = arma::randn(nu.n_rows, nu.n_cols, 500);
+//   //   arma::vec b_1(nu.n_cols, arma::fill::zeros);
+//   //   arma::mat B_1(nu.n_cols, nu.n_cols, arma::fill::zeros);
+//   //   arma::mat P(nu.n_cols, nu.n_cols, arma::fill::zeros);
+//   //   P.zeros();
+//   //   for(int j = 0; j < P.n_rows; j++){
+//   //     P(0,0) = 1;
+//   //     if(j > 0){
+//   //       P(j,j) = 2;
+//   //       P(j-1,j) = -1;
+//   //       P(j,j-1) = -1;
+//   //     }
+//   //     P(P.n_rows - 1, P.n_rows - 1) = 1;
+//   //   }
+//   //   arma::vec tau(nu.n_rows, arma::fill::ones);
+//   //   tau = tau / 10;
+//   //   for(int i = 0; i < 500; i++){
+//   //     BayesFPMM::updateNu(y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
+//   //                         P, b_1, B_1, Nu_samp);
+//   //   }
+//   //   Nu_samp.save("/Users/nicholasmarco/Projects/BayesFPMM/inst/test-data/nu.txt", arma::arma_ascii);
+//   //   arma::cube mod = arma::zeros(3,8,2);
+//   //   arma::vec nu_ph = arma::zeros(200);
+//   //   arma::mat nu_est = arma::zeros(3,8);
+//   //   for(int i = 0; i < 3; i++){
+//   //     for(int j = 0; j < 8; j++){
+//   //       for(int k = 300; k < 500; k++){
+//   //         nu_ph(k - 300) = Nu_samp(i,j,k);
+//   //       }
+//   //       nu_est(i,j) = arma::median(nu_ph);
+//   //     }
+//   //   }
+//   //   mod.slice(1) = nu;
+//   //   mod.slice(0) = nu_est;
+//   //   return mod;
+// }
+//
+//
+// //' @export
+// // [[Rcpp::export]]
+// Rcpp::List Stuff1(){
+//   arma::vec t =  arma::regspace(0, 90, 990);
+//   arma::mat t1 = arma::zeros(144, 2);
+//   int counter = 0;
+//   for(int i = 0; i < 12; i++){
+//     for(int j = 0; j < 12; j++){
+//       t1(counter, 0) = t(i);
+//       t1(counter, 1) = t(j);
+//       counter = counter + 1;
+//     }
+//   }
+//   arma::field<arma::mat> t_obs(100,1);
+//   for(int i = 0; i < 100; i++){
+//     t_obs(i,0) = t1;
+//   }
+//
+//   int n_funct = 100;
+//   arma::vec basis_degree = {2,2};
+//   arma::mat boundary_knots = arma::zeros(2,2);
+//   boundary_knots.row(0) = {0, 990};
+//   boundary_knots.row(1) = {0, 990};
+//   arma::field<arma::vec> internal_knots(2,1);
+//   internal_knots(0,0) = {250, 500, 750};
+//   internal_knots(1,0) = {250, 500, 750};
+//
+//   arma::field<arma::mat> B_obs = BayesFPMM::TensorBSpline(t_obs, n_funct, basis_degree,
+//                                                           boundary_knots, internal_knots);
+//
+//   // Make nu matrix
+//   arma::mat nu = arma::randn(2, 36) * 2;
+//
+//   // Make Phi matrix
+//   arma::cube Phi(2,36,2);
+//   for(int i=0; i < 2; i++)
+//   {
+//     Phi.slice(i) = (2-i) * 0.2 * arma::randn<arma::mat>(2,36);
+//   }
+//   double sigma_sq = 0.001;
+//
+//   // Make chi matrix
+//   arma::mat chi(100, 2, arma::fill::randn);
+//
+//
+//   //Make Z
+//   arma::mat Z(100, 2);
+//   arma::vec c(2, arma::fill::ones);
+//   arma::vec pi = BayesFPMM::rdirichlet(c);
+//
+//   // setting alpha_3 = 10
+//   arma:: vec alpha = pi * 10;
+//   for(int i = 0; i < Z.n_rows; i++){
+//     Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+//   }
+//
+//   arma::field<arma::vec> y_obs(100, 1);
+//   arma::vec mean = arma::zeros(36);
+//
+//   for(int j = 0; j < 100; j++){
+//     mean = arma::zeros(36);
+//     for(int l = 0; l < 2; l++){
+//       mean = mean + Z(j,l) * nu.row(l).t();
+//       for(int m = 0; m < Phi.n_slices; m++){
+//         mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+//       }
+//     }
+//     y_obs(j, 0) = arma::mvnrnd(B_obs(j,0) * mean, sigma_sq *
+//       arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+//   }
+//
+//   Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("nu", nu),
+//                                              Rcpp::Named("chi", chi),
+//                                              Rcpp::Named("sigma_sq",sigma_sq),
+//                                              Rcpp::Named("Phi", Phi),
+//                                              Rcpp::Named("Z", Z),
+//                                              Rcpp::Named("Y",y_obs),
+//                                              Rcpp::Named("time", t_obs));
+//   return(BestChain);
+//   //
+//   //   arma::cube Nu_samp = arma::randn(nu.n_rows, nu.n_cols, 500);
+//   //   arma::vec b_1(nu.n_cols, arma::fill::zeros);
+//   //   arma::mat B_1(nu.n_cols, nu.n_cols, arma::fill::zeros);
+//   //   arma::mat P(nu.n_cols, nu.n_cols, arma::fill::zeros);
+//   //   P.zeros();
+//   //   for(int j = 0; j < P.n_rows; j++){
+//   //     P(0,0) = 1;
+//   //     if(j > 0){
+//   //       P(j,j) = 2;
+//   //       P(j-1,j) = -1;
+//   //       P(j,j-1) = -1;
+//   //     }
+//   //     P(P.n_rows - 1, P.n_rows - 1) = 1;
+//   //   }
+//   //   arma::vec tau(nu.n_rows, arma::fill::ones);
+//   //   tau = tau / 10;
+//   //   for(int i = 0; i < 500; i++){
+//   //     BayesFPMM::updateNu(y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
+//   //                         P, b_1, B_1, Nu_samp);
+//   //   }
+//   //   Nu_samp.save("/Users/nicholasmarco/Projects/BayesFPMM/inst/test-data/nu.txt", arma::arma_ascii);
+//   //   arma::cube mod = arma::zeros(3,8,2);
+//   //   arma::vec nu_ph = arma::zeros(200);
+//   //   arma::mat nu_est = arma::zeros(3,8);
+//   //   for(int i = 0; i < 3; i++){
+//   //     for(int j = 0; j < 8; j++){
+//   //       for(int k = 300; k < 500; k++){
+//   //         nu_ph(k - 300) = Nu_samp(i,j,k);
+//   //       }
+//   //       nu_est(i,j) = arma::median(nu_ph);
+//   //     }
+//   //   }
+//   //   mod.slice(1) = nu;
+//   //   mod.slice(0) = nu_est;
+//   //   return mod;
 // }
