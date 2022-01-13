@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFPMM_Theta_est}
 \alias{BFPMM_Theta_est}
-\title{Find initial starting points for parameters given nu and Z parameters}
+\title{Find initial starting points for parameters given nu and Z parameters for functional data}
 \usage{
 BFPMM_Theta_est(
   tot_mcmc_iters,

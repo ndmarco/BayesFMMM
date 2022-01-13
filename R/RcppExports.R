@@ -223,7 +223,7 @@ BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, 
     .Call('_BayesFPMM_BFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
-#' Find initial starting points for parameters given nu and Z parameters
+#' Find initial starting points for parameters given nu and Z parameters for functional data
 #'
 #' This function is meant to be used after using \code{BFPMM_NU_Z_multiple_try}.
 #' This function samples from the rest of the model parameters given a fixed value of
@@ -331,7 +331,7 @@ BFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n
     .Call('_BayesFPMM_BFPMM_Theta_est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
-#' Performs MCMC for functional model given an informed set of starting points
+#' Performs MCMC for functional models given an informed set of starting points
 #'
 #' This function is meant to be used after using \code{BFPMM_Nu_Z_multiple_try}
 #' and \code{BFPMM_Theta_est}. This function will use the outputs of these two
@@ -1142,5 +1142,224 @@ BHDFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree
 #' @export
 BMVPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, c = NULL, b = 800, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFPMM_BMVPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, n_eigen, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+}
+
+#' Find initial starting points for parameters given nu and Z parameters for multivariate data
+#'
+#' This function is meant to be used after using \code{BMVPMM_NU_Z_multiple_try}.
+#' This function samples from the rest of the model parameters given a fixed value of
+#' nu and Z. The fixed value of nu and Z are found by using the best markov chain
+#' found in \code{BMVPMM_NU_Z_multiple_try}. Once this function is ran, the results
+#' can be used in \code{BMVPMM_warm_start}.
+#'
+#' @name BMVPMM_Theta_est
+#' @param tot_mcmc_iters Int containing the total number of MCMC iterations
+#' @param k Int containing the number of clusters
+#' @param Y Matrix of observed vectors (each row is n observation)
+#' @param n_eigen Int containing the number of eigenfunctions
+#' @param Z_samp Cube containing initial chain of Z parameters from \code{BFPMM_Nu_Z_multiple_try}
+#' @param nu_samp Cube containing initial chain of nu parameters from \code{BFPMM_Nu_Z_multiple_try}
+#' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
+#' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
+#' @param b double containing hyperparamete for sampling from alpha_3
+#' @param nu_1 double containing hyperparameter for sampling from gamma
+#' @param alpha1l Double containing hyperparameter for sampling from A
+#' @param alpha2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A
+#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
+#' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
+#' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+#' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param alpha Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#' @returns a List containing:
+#' \describe{
+#'   \item{\code{chi}}{chi samples from MCMC chain}
+#'   \item{\code{A}}{A samples from MCMC chain}
+#'   \item{\code{delta}}{delta samples from MCMC chain}
+#'   \item{\code{sigma}}{sigma samples from MCMC chain}
+#'   \item{\code{tau}}{tau samples from MCMC chain}
+#'   \item{\code{gamma}}{gamma samples from the MCMC chain}
+#'   \item{\code{Phi}}{Phi samples from MCMC chain}
+#'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+#' }
+#' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+#'   \item{\code{k}}{must be an integer larger than or equal to 2}
+#'   \item{\code{n_eigen}}{must be greater than or equal to 1}
+#'   \item{\code{burnin_prop}}{must be between 0 and 1}
+#'   \item{\code{c}}{must be greater than 0 and have k elements}
+#'   \item{\code{b}}{must be positive}
+#'   \item{\code{nu_1}}{must be positive}
+#'   \item{\code{alpha1l}}{must be positive}
+#'   \item{\code{beta1l}}{must be positive}
+#'   \item{\code{alpha2l}}{must be positive}
+#'   \item{\code{beta1l}}{must be positive}
+#'   \item{\code{a_Z_PM}}{must be positive}
+#'   \item{\code{a_pi_PM}}{must be positive}
+#'   \item{\code{var_alpha3}}{must be positive}
+#'   \item{\code{var_epsilon1}}{must be positive}
+#'   \item{\code{var_epsilon2}}{must be positive}
+#'   \item{\code{alpha}}{must be positive}
+#'   \item{\code{beta}}{must be positive}
+#'   \item{\code{alpha_0}}{must be positive}
+#'   \item{\code{beta_0}}{must be positive}
+#' }
+#'
+#' @examples
+#' ## Load sample data
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFPMM"))
+#'
+#' ## Set Hyperparameters
+#' tot_mcmc_iters <- 150
+#' n_try <- 1
+#' k <- 2
+#' n_eigen <- 2
+#'
+#' ## Run function
+#' est1 <- BMVPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+#'
+#' ## Run function
+#' est2 <- BMVPMM_Theta_est(tot_mcmc_iters, k, Y, n_eigen, est1$Z, est1$nu)
+#'
+#' @export
+BMVPMM_Theta_est <- function(tot_mcmc_iters, k, Y, n_eigen, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 1, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFPMM_BMVPMM_Theta_est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, n_eigen, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+}
+
+#' Performs MCMC for multivariate models given an informed set of starting points
+#'
+#' This function is meant to be used after using \code{BMVPMM_Nu_Z_multiple_try}
+#' and \code{BMVPMM_Theta_est}. This function will use the outputs of these two
+#' functions to start the MCMC chain in a good location. Since the posterior distribution
+#' can often be multimodal, it is important to have a good starting position.
+#' To help move across modes, this function allows users to use tempered transitions
+#' every \code{n_temp_trans} iterations. By using a mixture of tempered transitions
+#' and un-tempered transitions, we can allow the chain to explore multiple modes without
+#' while keeping sampling relatively computationally efficient. To save on RAM usage, we
+#' allow users to specify how many samples are kept in memory using \code{r_stored_iters}.
+#' If \code{r_stored_iters} is less than \code{tot_mcmc_iters}, then a thinned version
+#' of the chain is stored in the user specified directory (\code{dir}). The samples from each
+#' parameter can be viewed using the following functions: \code{ReadFieldCube},
+#' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
+#' \code{ReadVec}.
+#'
+#' @name BMVPMM_warm_start
+#' @param tot_mcmc_iters Int containing the total number of MCMC iterations
+#' @param k Int containing the number of clusters
+#' @param Y Matrix of observed vectors (each row is n observation)
+#' @param n_eigen Int containing the number of eigenfunctions
+#' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFPMM_NU_Z_multiple_try})
+#' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFPMM_NU_Z_multiple_try})
+#' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFPMM_NU_Z_multiple_try})
+#' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFPMM_Theta_est})
+#' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFPMM_Theta_est})
+#' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFPMM_Theta_est})
+#' @param A_samp Matrix containing initial chain of A parameters (from \code{BFPMM_Theta_est})
+#' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFPMM_NU_Z_multiple_try})
+#' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFPMM_NU_Z_multiple_try})
+#' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFPMM_Theta_est})
+#' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFPMM_Theta_est})
+#' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
+#' @param dir String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)
+#' @param thinning_num Int containing how often we should save MCMC iterations
+#' @param beta_N_t Double containing the maximum weight for tempered transitions
+#' @param N_t Int containing total number of tempered transitions
+#' @param n_temp_trans Int containing how often tempered transitions are performed (if 0, then no tempered transitions are performed)
+#' @param r_stored_iters Int containing how many MCMC iterations are stored in RAM (if 0, then all MCMC iterations are stored in RAM)
+#' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
+#' @param b double containing hyperparamete for sampling from alpha_3
+#' @param nu_1 double containing hyperparameter for sampling from gamma
+#' @param alpha1l Double containing hyperparameter for sampling from A
+#' @param alpha2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A
+#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
+#' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
+#' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+#' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+#' @param alpha Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#'
+#' @returns a List containing:
+#' \describe{
+#'   \item{\code{nu}}{Nu samples from the MCMC chain}
+#'   \item{\code{chi}}{chi samples from the MCMC chain}
+#'   \item{\code{pi}}{pi samples from the MCMC chain}
+#'   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
+#'   \item{\code{A}}{A samples from MCMC chain}
+#'   \item{\code{delta}}{delta samples from the MCMC chain}
+#'   \item{\code{sigma}}{sigma samples from the MCMC chain}
+#'   \item{\code{tau}}{tau samples from the MCMC chain}
+#'   \item{\code{gamma}}{gamma samples from the MCMC chain}
+#'   \item{\code{Phi}}{Phi samples from the MCMC chain}
+#'   \item{\code{Z}}{Z samples from the MCMC chain}
+#'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+#' }
+#'
+#' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+#'   \item{\code{burnin_prop}}{must be between 0 and 1}
+#'   \item{\code{k}}{must be an integer larger than or equal to 2}
+#'   \item{\code{n_eigen}}{must be greater than or equal to 1}
+#'   \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
+#'   \item{\code{n_thinning}}{must be a positive integer}
+#'   \item{\code{beta_N_t}}{must be between 1 and 0}
+#'   \item{\code{N_t}}{must be a positive integer}
+#'   \item{\code{n_temp_trans}}{must be a non-negative integer}
+#'   \item{\code{r_stored_iters}}{must be a non-negative integer}
+#'   \item{\code{c}}{must be greater than 0 and have k elements}
+#'   \item{\code{b}}{must be positive}
+#'   \item{\code{nu_1}}{must be positive}
+#'   \item{\code{alpha1l}}{must be positive}
+#'   \item{\code{beta1l}}{must be positive}
+#'   \item{\code{alpha2l}}{must be positive}
+#'   \item{\code{beta1l}}{must be positive}
+#'   \item{\code{a_Z_PM}}{must be positive}
+#'   \item{\code{a_pi_PM}}{must be positive}
+#'   \item{\code{var_alpha3}}{must be positive}
+#'   \item{\code{var_epsilon1}}{must be positive}
+#'   \item{\code{var_epsilon2}}{must be positive}
+#'   \item{\code{alpha}}{must be positive}
+#'   \item{\code{beta}}{must be positive}
+#'   \item{\code{alpha_0}}{must be positive}
+#'   \item{\code{beta_0}}{must be positive}
+#' }
+#'
+#'@examples
+#' ## Load sample data
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFPMM"))
+#'
+#' ## Set Hyperparameters
+#' tot_mcmc_iters <- 150
+#' n_try <- 1
+#' k <- 2
+#' n_eigen <- 2
+#'
+#' ## Run function
+#' est1 <- BMVPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+#'
+#' ## Run function
+#' est2 <- BMVPMM_Theta_est(tot_mcmc_iters, k, Y, n_eigen, est1$Z, est1$nu)
+#'
+#' MCMC.chain <-BMVPMM_warm_start(tot_mcmc_iters, k, Y, n_eigen,
+#'                                est1$Z, est1$pi, est1$alpha_3,
+#'                                est2$delta, est2$gamma, est2$Phi, est2$A,
+#'                                est1$nu, est1$tau, est2$sigma, est2$chi)
+#'
+#' @export
+BMVPMM_warm_start <- function(tot_mcmc_iters, k, Y, n_eigen, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 1, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFPMM_BMVPMM_warm_start', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, n_eigen, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 

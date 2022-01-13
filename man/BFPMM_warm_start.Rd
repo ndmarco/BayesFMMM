@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFPMM_warm_start}
 \alias{BFPMM_warm_start}
-\title{Performs MCMC for functional model given an informed set of starting points}
+\title{Performs MCMC for functional models given an informed set of starting points}
 \usage{
 BFPMM_warm_start(
   tot_mcmc_iters,
