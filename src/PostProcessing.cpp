@@ -312,16 +312,47 @@ Rcpp::List GetCovCI_S(const std::string dir,
   return(CI);
 }
 
-//' Calculates the credible interval for sigma squared
+//' Calculates the credible interval for sigma squared for all types of data
 //'
 //' @name GetSigmaCI
 //' @param dir String containing the directory where the MCMC files are located
 //' @param n_files Integer containing the number of MCMC files
-//' @return CI list containing the 97.5th , 50th, and 2.5th pointwise credible values
+//' @param uci Double containing the desired percentile for the upper bound of the credible interval
+//' @param lci Double containing the desired percentile for the lower bound of the credible interval
+//' @returns a List containing:
+//' \describe{
+//'   \item{\code{nu}}{Nu samples from the MCMC chain}
+//'   \item{\code{chi}}{chi samples from the MCMC chain}
+//'   \item{\code{pi}}{pi samples from the MCMC chain}
+//'   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
+//'   \item{\code{A}}{A samples from MCMC chain}
+//'   \item{\code{delta}}{delta samples from the MCMC chain}
+//'   \item{\code{sigma}}{sigma samples from the MCMC chain}
+//'   \item{\code{tau}}{tau samples from the MCMC chain}
+//'   \item{\code{gamma}}{gamma samples from the MCMC chain}
+//'   \item{\code{Phi}}{Phi samples from the MCMC chain}
+//'   \item{\code{Z}}{Z samples from the MCMC chain}
+//'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+//' }
 //' @export
 // [[Rcpp::export]]
 Rcpp::List GetSigmaCI(const std::string dir,
-                      const int n_files){
+                      const int n_files,
+                      const double uci = 0.975,
+                      const double lci = 0.025){
+  if(uci <= 0.5){
+    Rcpp::stop("'uci' must be a double greater than 0.5 but less than 1");
+  }
+  if(uci >=  1){
+    Rcpp::stop("'uci' must be a double greater than 0.5 but less than 1");
+  }
+  if(lci >= 0.5){
+    Rcpp::stop("'lci' must be a double greater than 0 but less than 0.5");
+  }
+  if(lci <= 0){
+    Rcpp::stop("'lci' must be a double greater than 0 but less than 0.5");
+  }
+
   arma::vec sigma_i;
   sigma_i.load(dir + "Sigma0.txt");
   arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
@@ -331,31 +362,39 @@ Rcpp::List GetSigmaCI(const std::string dir,
     sigma_samp.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
   }
 
-  arma::vec p = {0.025, 0.5, 0.975};
+  arma::vec p = {lci, 0.5, uci};
   arma::vec q = arma::zeros(3);
   q = arma::quantile(sigma_samp, p);
 
-  double CI_975 = q(0);
+  double CI_U = q(0);
   double CI_50 = q(1);
-  double CI_025 = q(2);
+  double CI_L = q(2);
 
-  Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_975", CI_975),
+  Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_U", CI_U),
                                       Rcpp::Named("CI_50", CI_50),
-                                      Rcpp::Named("CI_025", CI_025));
+                                      Rcpp::Named("CI_L", CI_L));
 
   return(CI);
 }
 
 //' Calculates the credible interval for membership parameters Z
 //'
+//' This function constructs credible intervals using the MCMC samples of the
+//' parameters. This function will handle high dimensional functional data,
+//' functional data, and multivariate data.
+//'
 //' @name GetZCI
 //' @param dir String containing the directory where the MCMC files are located
 //' @param n_files Integer containing the number of files per parameter
+//' @param uci Double containing the desired percentile for the upper bound of the credible interval
+//' @param lci Double containing the desired percentile for the lower bound of the credible interval
 //' @return CI List containing the 97.5th , 50th, and 2.5th credible values
 //' @export
 // [[Rcpp::export]]
 Rcpp::List GetZCI(const std::string dir,
-                  const int n_files){
+                  const int n_files,
+                  const double uci = 0.975,
+                  const double lci = 0.025){
   arma::cube Z_i;
   Z_i.load(dir + "Z0.txt");
   arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);

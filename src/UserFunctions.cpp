@@ -406,9 +406,10 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
     Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
   }
   if(burnin_prop < 0){
-    if(burnin_prop >= 1){
-      Rcpp::stop("'burnin_prop' must be between 0 and 1");
-    }
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(burnin_prop >= 1){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
   }
   if(k <  2){
     Rcpp::stop("'k' must be an integer greater than or equal to 2");
@@ -753,9 +754,10 @@ Rcpp::List BFPMM_warm_start(const int tot_mcmc_iters,
     Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
   }
   if(burnin_prop < 0){
-    if(burnin_prop >= 1){
-      Rcpp::stop("'burnin_prop' must be between 0 and 1");
-    }
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(burnin_prop >= 1){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
   }
   if(k <  2){
     Rcpp::stop("'k' must be an integer greater than or equal to 2");
@@ -1670,9 +1672,10 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
     Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
   }
   if(burnin_prop < 0){
-    if(burnin_prop >= 1){
-      Rcpp::stop("'burnin_prop' must be between 0 and 1");
-    }
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(burnin_prop >= 1){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
   }
   if(k <  2){
     Rcpp::stop("'k' must be an integer greater than or equal to 2");
@@ -2010,9 +2013,10 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
     Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
   }
   if(burnin_prop < 0){
-    if(burnin_prop >= 1){
-      Rcpp::stop("'burnin_prop' must be between 0 and 1");
-    }
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(burnin_prop >= 1){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
   }
   if(k <  2){
     Rcpp::stop("'k' must be an integer greater than or equal to 2");
@@ -2610,9 +2614,10 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
     Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
   }
   if(burnin_prop < 0){
-    if(burnin_prop >= 1){
-      Rcpp::stop("'burnin_prop' must be between 0 and 1");
-    }
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(burnin_prop >= 1){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
   }
   if(k <  2){
     Rcpp::stop("'k' must be an integer greater than or equal to 2");
@@ -2900,9 +2905,10 @@ Rcpp::List BMVPMM_warm_start(const int tot_mcmc_iters,
     Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
   }
   if(burnin_prop < 0){
-    if(burnin_prop >= 1){
-      Rcpp::stop("'burnin_prop' must be between 0 and 1");
-    }
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(burnin_prop >= 1){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
   }
   if(k <  2){
     Rcpp::stop("'k' must be an integer greater than or equal to 2");
