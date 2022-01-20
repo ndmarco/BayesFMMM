@@ -4,16 +4,22 @@
 \alias{GetZCI}
 \title{Calculates the credible interval for membership parameters Z}
 \usage{
-GetZCI(dir, n_files)
+GetZCI(dir, n_files, uci = 0.975, lci = 0.025)
 }
 \arguments{
 \item{dir}{String containing the directory where the MCMC files are located}
 
 \item{n_files}{Integer containing the number of files per parameter}
+
+\item{uci}{Double containing the desired percentile for the upper bound of the credible interval}
+
+\item{lci}{Double containing the desired percentile for the lower bound of the credible interval}
 }
 \value{
 CI List containing the 97.5th , 50th, and 2.5th credible values
 }
 \description{
-Calculates the credible interval for membership parameters Z
+This function constructs credible intervals using the MCMC samples of the
+parameters. This function will handle high dimensional functional data,
+functional data, and multivariate data.
 }

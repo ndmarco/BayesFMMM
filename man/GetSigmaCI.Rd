@@ -2,18 +2,36 @@
 % Please edit documentation in R/RcppExports.R
 \name{GetSigmaCI}
 \alias{GetSigmaCI}
-\title{Calculates the credible interval for sigma squared}
+\title{Calculates the credible interval for sigma squared for all types of data}
 \usage{
-GetSigmaCI(dir, n_files)
+GetSigmaCI(dir, n_files, uci = 0.975, lci = 0.025)
 }
 \arguments{
 \item{dir}{String containing the directory where the MCMC files are located}
 
 \item{n_files}{Integer containing the number of MCMC files}
+
+\item{uci}{Double containing the desired percentile for the upper bound of the credible interval}
+
+\item{lci}{Double containing the desired percentile for the lower bound of the credible interval}
 }
 \value{
-CI list containing the 97.5th , 50th, and 2.5th pointwise credible values
+a List containing:
+\describe{
+  \item{\code{nu}}{Nu samples from the MCMC chain}
+  \item{\code{chi}}{chi samples from the MCMC chain}
+  \item{\code{pi}}{pi samples from the MCMC chain}
+  \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
+  \item{\code{A}}{A samples from MCMC chain}
+  \item{\code{delta}}{delta samples from the MCMC chain}
+  \item{\code{sigma}}{sigma samples from the MCMC chain}
+  \item{\code{tau}}{tau samples from the MCMC chain}
+  \item{\code{gamma}}{gamma samples from the MCMC chain}
+  \item{\code{Phi}}{Phi samples from the MCMC chain}
+  \item{\code{Z}}{Z samples from the MCMC chain}
+  \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+}
 }
 \description{
-Calculates the credible interval for sigma squared
+Calculates the credible interval for sigma squared for all types of data
 }

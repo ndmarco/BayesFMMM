@@ -59,26 +59,48 @@ GetCovCI_S <- function(dir, n_files, n_MCMC, time1, time2, l, m) {
     .Call('_BayesFPMM_GetCovCI_S', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time1, time2, l, m)
 }
 
-#' Calculates the credible interval for sigma squared
+#' Calculates the credible interval for sigma squared for all types of data
 #'
 #' @name GetSigmaCI
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Integer containing the number of MCMC files
-#' @return CI list containing the 97.5th , 50th, and 2.5th pointwise credible values
+#' @param uci Double containing the desired percentile for the upper bound of the credible interval
+#' @param lci Double containing the desired percentile for the lower bound of the credible interval
+#' @returns a List containing:
+#' \describe{
+#'   \item{\code{nu}}{Nu samples from the MCMC chain}
+#'   \item{\code{chi}}{chi samples from the MCMC chain}
+#'   \item{\code{pi}}{pi samples from the MCMC chain}
+#'   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
+#'   \item{\code{A}}{A samples from MCMC chain}
+#'   \item{\code{delta}}{delta samples from the MCMC chain}
+#'   \item{\code{sigma}}{sigma samples from the MCMC chain}
+#'   \item{\code{tau}}{tau samples from the MCMC chain}
+#'   \item{\code{gamma}}{gamma samples from the MCMC chain}
+#'   \item{\code{Phi}}{Phi samples from the MCMC chain}
+#'   \item{\code{Z}}{Z samples from the MCMC chain}
+#'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+#' }
 #' @export
-GetSigmaCI <- function(dir, n_files) {
-    .Call('_BayesFPMM_GetSigmaCI', PACKAGE = 'BayesFPMM', dir, n_files)
+GetSigmaCI <- function(dir, n_files, uci = 0.975, lci = 0.025) {
+    .Call('_BayesFPMM_GetSigmaCI', PACKAGE = 'BayesFPMM', dir, n_files, uci, lci)
 }
 
 #' Calculates the credible interval for membership parameters Z
 #'
+#' This function constructs credible intervals using the MCMC samples of the
+#' parameters. This function will handle high dimensional functional data,
+#' functional data, and multivariate data.
+#'
 #' @name GetZCI
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Integer containing the number of files per parameter
+#' @param uci Double containing the desired percentile for the upper bound of the credible interval
+#' @param lci Double containing the desired percentile for the lower bound of the credible interval
 #' @return CI List containing the 97.5th , 50th, and 2.5th credible values
 #' @export
-GetZCI <- function(dir, n_files) {
-    .Call('_BayesFPMM_GetZCI', PACKAGE = 'BayesFPMM', dir, n_files)
+GetZCI <- function(dir, n_files, uci = 0.975, lci = 0.025) {
+    .Call('_BayesFPMM_GetZCI', PACKAGE = 'BayesFPMM', dir, n_files, uci, lci)
 }
 
 #' Calculates the DIC of a model
@@ -121,6 +143,11 @@ Model_AIC <- function(dir, n_files, n_MCMC, time, Y) {
 #' @export
 Model_BIC <- function(dir, n_files, n_MCMC, time, Y) {
     .Call('_BayesFPMM_Model_BIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time, Y)
+}
+
+#' @export
+Stuff1 <- function() {
+    .Call('_BayesFPMM_Stuff1', PACKAGE = 'BayesFPMM')
 }
 
 #' Find initial starting position for nu and Z parameters for functional data

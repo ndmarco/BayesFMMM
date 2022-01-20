@@ -121,9 +121,9 @@ inline double calculatePZetaMV(const double& beta_i,
     mean = arma::zeros(y_obs.n_cols);
     for(int k = 0; k < Z.n_cols; k++){
       if(Z(i,k) != 0){
-        mean = mean + Z(i,k) * nu.row(k);
+        mean = mean + Z(i,k) * nu.row(k).t();
         for(int n = 0; n < Phi.n_slices; n++){
-          mean = mean + Z(i,k) * chi(i,n) * Phi.slice(n).row(k);
+          mean = mean + Z(i,k) * chi(i,n) * Phi.slice(n).row(k).t();
         }
       }
     }

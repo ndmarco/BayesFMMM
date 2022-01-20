@@ -75,26 +75,30 @@ BEGIN_RCPP
 END_RCPP
 }
 // GetSigmaCI
-Rcpp::List GetSigmaCI(const std::string dir, const int n_files);
-RcppExport SEXP _BayesFPMM_GetSigmaCI(SEXP dirSEXP, SEXP n_filesSEXP) {
+Rcpp::List GetSigmaCI(const std::string dir, const int n_files, const double uci, const double lci);
+RcppExport SEXP _BayesFPMM_GetSigmaCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP uciSEXP, SEXP lciSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
-    rcpp_result_gen = Rcpp::wrap(GetSigmaCI(dir, n_files));
+    Rcpp::traits::input_parameter< const double >::type uci(uciSEXP);
+    Rcpp::traits::input_parameter< const double >::type lci(lciSEXP);
+    rcpp_result_gen = Rcpp::wrap(GetSigmaCI(dir, n_files, uci, lci));
     return rcpp_result_gen;
 END_RCPP
 }
 // GetZCI
-Rcpp::List GetZCI(const std::string dir, const int n_files);
-RcppExport SEXP _BayesFPMM_GetZCI(SEXP dirSEXP, SEXP n_filesSEXP) {
+Rcpp::List GetZCI(const std::string dir, const int n_files, const double uci, const double lci);
+RcppExport SEXP _BayesFPMM_GetZCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP uciSEXP, SEXP lciSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
-    rcpp_result_gen = Rcpp::wrap(GetZCI(dir, n_files));
+    Rcpp::traits::input_parameter< const double >::type uci(uciSEXP);
+    Rcpp::traits::input_parameter< const double >::type lci(lciSEXP);
+    rcpp_result_gen = Rcpp::wrap(GetZCI(dir, n_files, uci, lci));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -140,6 +144,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type time(timeSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type Y(YSEXP);
     rcpp_result_gen = Rcpp::wrap(Model_BIC(dir, n_files, n_MCMC, time, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Stuff1
+Rcpp::List Stuff1();
+RcppExport SEXP _BayesFPMM_Stuff1() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(Stuff1());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -580,11 +594,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_GetMeanCI_S", (DL_FUNC) &_BayesFPMM_GetMeanCI_S, 4},
     {"_BayesFPMM_GetCovCI_PW", (DL_FUNC) &_BayesFPMM_GetCovCI_PW, 7},
     {"_BayesFPMM_GetCovCI_S", (DL_FUNC) &_BayesFPMM_GetCovCI_S, 7},
-    {"_BayesFPMM_GetSigmaCI", (DL_FUNC) &_BayesFPMM_GetSigmaCI, 2},
-    {"_BayesFPMM_GetZCI", (DL_FUNC) &_BayesFPMM_GetZCI, 2},
+    {"_BayesFPMM_GetSigmaCI", (DL_FUNC) &_BayesFPMM_GetSigmaCI, 4},
+    {"_BayesFPMM_GetZCI", (DL_FUNC) &_BayesFPMM_GetZCI, 4},
     {"_BayesFPMM_Model_DIC", (DL_FUNC) &_BayesFPMM_Model_DIC, 5},
     {"_BayesFPMM_Model_AIC", (DL_FUNC) &_BayesFPMM_Model_AIC, 5},
     {"_BayesFPMM_Model_BIC", (DL_FUNC) &_BayesFPMM_Model_BIC, 5},
+    {"_BayesFPMM_Stuff1", (DL_FUNC) &_BayesFPMM_Stuff1, 0},
     {"_BayesFPMM_BFPMM_Nu_Z_multiple_try", (DL_FUNC) &_BayesFPMM_BFPMM_Nu_Z_multiple_try, 25},
     {"_BayesFPMM_BFPMM_Theta_est", (DL_FUNC) &_BayesFPMM_BFPMM_Theta_est, 28},
     {"_BayesFPMM_BFPMM_warm_start", (DL_FUNC) &_BayesFPMM_BFPMM_warm_start, 43},
