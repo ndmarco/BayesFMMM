@@ -182,7 +182,6 @@ The following must be true:
   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
-  \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
   \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
   \item{\code{n_thinning}}{must be a positive integer}
   \item{\code{beta_N_t}}{must be between 1 and 0}

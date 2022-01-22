@@ -124,7 +124,6 @@ The following must be true:
   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
-  \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
   \item{\code{c}}{must be greater than 0 and have k elements}
   \item{\code{b}}{must be positive}
   \item{\code{nu_1}}{must be positive}

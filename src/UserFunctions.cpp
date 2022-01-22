@@ -327,7 +327,6 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
 //'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
-//'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
 //'   \item{\code{c}}{must be greater than 0 and have k elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{nu_1}}{must be positive}
@@ -660,7 +659,6 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
 //'   \item{\code{n_funct}}{must be an integer larger than 1}
 //'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
-//'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
 //'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
 //'   \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
 //'   \item{\code{n_thinning}}{must be a positive integer}
@@ -1620,7 +1618,6 @@ Rcpp::List BHDFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
 //'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
-//'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
 //'   \item{\code{c}}{must be greater than 0 and have k elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{nu_1}}{must be positive}
@@ -1947,7 +1944,6 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
 //'   \item{\code{n_funct}}{must be an integer larger than 1}
 //'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
-//'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
 //'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
 //'   \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
 //'   \item{\code{n_thinning}}{must be a positive integer}
