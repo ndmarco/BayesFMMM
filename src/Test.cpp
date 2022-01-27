@@ -2728,34 +2728,42 @@
 // // [[Rcpp::export]]
 // Rcpp::List Stuff(){
 //   // Make nu matrix
-//   arma::mat nu = arma::randn(2,10) * 2;
+//   arma::mat nu = arma::randn(2,8) * 2;
 //
 //
 //   // Make Phi matrix
-//   arma::cube Phi(2,10,2);
+//   arma::cube Phi(2,8,2);
 //   for(int i=0; i < 2; i++)
 //   {
-//     Phi.slice(i) = (2-i) * 0.2 * arma::randu<arma::mat>(2,10);
+//     Phi.slice(i) = (2-i) * 0.2 * arma::randu<arma::mat>(2,8);
 //   }
 //   double sigma_sq = 0.001;
 //
 //   // Make chi matrix
-//   arma::mat chi(20, 2, arma::fill::randn);
+//   arma::mat chi(100, 2, arma::fill::randn);
 //
 //
 //   // Make Z matrix
-//   arma::mat Z(20, 3);
-//   arma::mat alpha(20,3, arma::fill::ones);
+//   arma::mat Z(100, 2);
+//   arma::mat alpha(100,2, arma::fill::ones);
 //   alpha = alpha * 10;
+//   for(int i = 0; i < 20; i++){
+//     alpha(i,0) = 10;
+//     alpha(i,1) = 1;
+//   }
+//   for(int i = 20; i < 40; i++){
+//     alpha(i,1) = 10;
+//     alpha(i,0) = 1;
+//   }
 //   for(int i = 0; i < Z.n_rows; i++){
 //     Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
 //   }
 //
-//   arma::mat y_obs = arma::zeros(20, 10);
-//   arma::vec mean = arma::zeros(10);
+//   arma::mat y_obs = arma::zeros(100, 8);
+//   arma::vec mean = arma::zeros(8);
 //
-//   for(int j = 0; j < 20; j++){
-//     mean = arma::zeros(10);
+//   for(int j = 0; j < 100; j++){
+//     mean = arma::zeros(8);
 //     for(int l = 0; l < 2; l++){
 //       mean = mean + Z(j,l) * nu.row(l).t();
 //       for(int m = 0; m < Phi.n_slices; m++){
@@ -2772,6 +2780,7 @@
 //                                              Rcpp::Named("Z", Z),
 //                                              Rcpp::Named("Y",y_obs));
 //   return(BestChain);
+// }
 //   //
 //   //   arma::cube Nu_samp = arma::randn(nu.n_rows, nu.n_cols, 500);
 //   //   arma::vec b_1(nu.n_cols, arma::fill::zeros);
@@ -2814,95 +2823,102 @@
 // //' @export
 // // [[Rcpp::export]]
 // Rcpp::List Stuff1(){
-//   arma::vec t_obs =  arma::regspace(0, 10, 990);
-//   splines2::BSpline bspline;
-//   // Create Bspline object with 8 degrees of freedom
-//   // 8 - 3 - 1 internal nodes
-//   bspline = splines2::BSpline(t_obs, 8);
-//   // Get Basis matrix (20 x 8)
-//   arma::mat bspline_mat{bspline.basis(true)};
-//   // Make B_obs
-//   arma::field<arma::mat> B_obs(20,1);
+//   // arma::vec t_obs =  arma::regspace(0, 10, 990);
+//   // splines2::BSpline bspline;
+//   // // Create Bspline object with 8 degrees of freedom
+//   // // 8 - 3 - 1 internal nodes
+//   // bspline = splines2::BSpline(t_obs, 8);
+//   // // Get Basis matrix (20 x 8)
+//   // arma::mat bspline_mat{bspline.basis(true)};
+//   // // Make B_obs
+//   // arma::field<arma::mat> B_obs(20,1);
+//   //
+//   // for(int i = 0; i < 20; i++)
+//   // {
+//   //   B_obs(i,0) = bspline_mat;
+//   // }
+// int n_funct = 100;
 //
-//   for(int i = 0; i < 20; i++)
-//   {
-//     B_obs(i,0) = bspline_mat;
+// arma::field<arma::mat> t_obs1(n_funct,1);
+// arma::mat t_obs = arma::zeros(12,2);
+// t_obs.col(0) =  arma::regspace(0, 90, 990);
+// t_obs.col(1) =  arma::regspace(0, 90, 990);
+// t_obs1(0,0) = arma::zeros(144,2);
+// int counter = 0;
+// for(int i = 0; i < 12; i++){
+//   for(int j = 0; j < 12; j++){
+//     t_obs1(0,0)(counter, 0) = t_obs(i,0);
+//     t_obs1(0,0)(counter, 1) = t_obs(j,0);
+//     counter++;
 //   }
-  // int n_funct = 100;
-  //
-  // arma::field<arma::mat> t_obs1(n_funct,1);
-  // arma::mat t_obs = arma::zeros(12,2);
-  // t_obs.col(0) =  arma::regspace(0, 90, 990);
-  // t_obs.col(1) =  arma::regspace(0, 90, 990);
-  // t_obs1(0,0) = arma::zeros(144,2);
-  // int counter = 0;
-  // for(int i = 0; i < 12; i++){
-  //   for(int j = 0; j < 12; j++){
-  //     t_obs1(0,0)(counter, 0) = t_obs(i,0);
-  //     t_obs1(0,0)(counter, 1) = t_obs(j,0);
-  //     counter++;
-  //   }
-  // }
-  // for(int i = 1; i < n_funct; i++){
-  //   t_obs1(i,0) = t_obs1(0,0);
-  // }
-  //
-  // arma::field<arma::vec> internal_knots(2,1);
-  // internal_knots(0,0) = {250, 500, 750};
-  // internal_knots(1,0) = {250, 500, 750};
-  // arma::mat boundary_knots = {{0,990}, {0,990}};
-  //
-  // arma::vec basis_degree = {2,2};
-  //
-  // arma::field<arma::mat> B = BayesFPMM::TensorBSpline(t_obs1, n_funct, basis_degree,
-  //                                                     boundary_knots, internal_knots);
-  //
-  // // Make nu matrix
-  // arma::mat nu = arma::randn(2, 36) * 2;
-  //
-  // // Make Phi matrix
-  // arma::cube Phi(2,36,2);
-  // for(int i=0; i < 2; i++)
-  // {
-  //   Phi.slice(i) = (5-i) * 0.2 * arma::randu<arma::mat>(2,36);
-  // }
-  // double sigma_sq = 0.001;
-  //
-  // // Make chi matrix
-  // arma::mat chi(n_funct, 2, arma::fill::randn);
-  //
-  //
-  // // Make Z matrix
-  // arma::mat Z(n_funct, 2);
-  // arma::mat alpha(n_funct, 2, arma::fill::ones);
-  // alpha = alpha * 10;
-  // for(int i = 0; i < 20; i++){
-  //   alpha(i,0) = 10;
-  //   alpha(i,1) = 1;
-  // }
-  // for(int i = 20; i < 40; i++){
-  //   alpha(i,1) = 10;
-  //   alpha(i,0) = 1;
-  // }
-  // for(int i = 0; i < Z.n_rows; i++){
-  //   Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
-  // }
-  //
-  // arma::field<arma::vec> y_obs(n_funct, 1);
-  // arma::vec mean = arma::zeros(36);
-  // for(int j = 0; j < n_funct; j++){
-  //   mean = arma::zeros(36);
-  //   for(int l = 0; l < nu.n_rows; l++){
-  //     mean = mean + Z(j,l) * nu.row(l).t();
-  //     for(int m = 0; m < Phi.n_slices; m++){
-  //       mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
-  //     }
-  //   }
-  //   y_obs(j,0) = arma::mvnrnd(B(j, 0) * mean, sigma_sq *
-  //     arma::eye(B(j,0).n_rows, B(j,0).n_rows));
-  // }
-  //
-//   Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B", B_obs));
+// }
+// for(int i = 1; i < n_funct; i++){
+//   t_obs1(i,0) = t_obs1(0,0);
+// }
+//
+// arma::field<arma::vec> internal_knots(2,1);
+// internal_knots(0,0) = {250, 500, 750};
+// internal_knots(1,0) = {250, 500, 750};
+// arma::mat boundary_knots = {{0,990}, {0,990}};
+//
+// arma::vec basis_degree = {2,2};
+//
+// arma::field<arma::mat> B = BayesFPMM::TensorBSpline(t_obs1, n_funct, basis_degree,
+//                                                     boundary_knots, internal_knots);
+//
+// // Make nu matrix
+// arma::mat nu = arma::randn(2, 36) * 2;
+//
+// // Make Phi matrix
+// arma::cube Phi(2,36,2);
+// for(int i=0; i < 2; i++)
+// {
+//   Phi.slice(i) = (2-i) * 0.1 * arma::randu<arma::mat>(2,36);
+// }
+// double sigma_sq = 0.001;
+//
+// // Make chi matrix
+// arma::mat chi(n_funct, 2, arma::fill::randn);
+//
+//
+// // Make Z matrix
+// arma::mat Z(n_funct, 2);
+// arma::mat alpha(n_funct, 2, arma::fill::ones);
+// alpha = alpha * 10;
+// for(int i = 0; i < 20; i++){
+//   alpha(i,0) = 10;
+//   alpha(i,1) = 1;
+// }
+// for(int i = 20; i < 40; i++){
+//   alpha(i,1) = 10;
+//   alpha(i,0) = 1;
+// }
+// for(int i = 0; i < Z.n_rows; i++){
+//   Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+// }
+//
+// arma::field<arma::vec> y_obs(n_funct, 1);
+// arma::vec mean = arma::zeros(36);
+// for(int j = 0; j < n_funct; j++){
+//   mean = arma::zeros(36);
+//   for(int l = 0; l < nu.n_rows; l++){
+//     mean = mean + Z(j,l) * nu.row(l).t();
+//     for(int m = 0; m < Phi.n_slices; m++){
+//       mean = mean + Z(j,l) * chi(j,m) * Phi.slice(m).row(l).t();
+//     }
+//   }
+//   y_obs(j,0) = arma::mvnrnd(B(j, 0) * mean, sigma_sq *
+//     arma::eye(B(j,0).n_rows, B(j,0).n_rows));
+// }
+//
+//   Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B", B),
+//                                              Rcpp::Named("nu", nu),
+//                                              Rcpp::Named("chi", chi),
+//                                              Rcpp::Named("sigma_sq", sigma_sq),
+//                                              Rcpp::Named("Phi", Phi),
+//                                              Rcpp::Named("time", t_obs1),
+//                                              Rcpp::Named("Z", Z),
+//                                              Rcpp::Named("Y", y_obs));
 //   return(BestChain);
 // }
 //   //

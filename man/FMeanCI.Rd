@@ -14,7 +14,8 @@ FMeanCI(
   k,
   alpha = 0.05,
   rescale = TRUE,
-  simultaneous = FALSE
+  simultaneous = FALSE,
+  burnin_prop = 0.1
 )
 }
 \arguments{
@@ -36,7 +37,9 @@ FMeanCI(
 
 \item{rescale}{Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group}
 
-\item{simultaneous}{Boolean indicating whether or not the credible intervals should be simulatneous credible intevals or pointwise credible intervals}
+\item{simultaneous}{Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals}
+
+\item{burnin_prop}{Double containing proportion of MCMC samples to get rid}
 }
 \value{
 CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
@@ -63,6 +66,7 @@ The following must be true:
   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
   \item{\code{k}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
   \item{\code{alpha}}{must be between 0 and 1}
+  \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
 }
 }
 
@@ -76,7 +80,7 @@ basis_degree <- 3
 boundary_knots <- c(0, 1000)
 internal_knots <- c(200, 400, 600, 800)
 
-## Get Estimates of Z and nu
+## Get CI for mean function
 CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k)
 
 }

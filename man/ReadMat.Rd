@@ -41,7 +41,7 @@ pi <- ReadMat(file)
 ## initialize placeholder
 # pi <- mat(0, dim, n_files * n_samp)
 # for(i in 0:(n_files - 1)){
-#   pi_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
+#   pi_i <- ReadMat(paste(dir, as.character(i),".txt", sep = ""))
 #   pi[,((n_samp * i) + 1):(n_samp * (i+1))] <- pi_i
 #}
 #############################################################

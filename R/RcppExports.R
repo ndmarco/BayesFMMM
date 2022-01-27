@@ -25,7 +25,8 @@
 #' @param k Int containing the cluster group of which you want to get the credible interval for
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
-#' @param simultaneous Boolean indicating whether or not the credible intervals should be simulatneous credible intevals or pointwise credible intervals
+#' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
+#' @param burnin_prop Double containing proportion of MCMC samples to get rid
 #' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
 #'
 #' @section Warning:
@@ -36,6 +37,7 @@
 #'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
 #'   \item{\code{k}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
 #'   \item{\code{alpha}}{must be between 0 and 1}
+#'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
 #' }
 #'
 #' @examples
@@ -48,15 +50,124 @@
 #' boundary_knots <- c(0, 1000)
 #' internal_knots <- c(200, 400, 600, 800)
 #'
-#' ## Get Estimates of Z and nu
+#' ## Get CI for mean function
 #' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k)
 #'
 #' @export
-FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE) {
-    .Call('_BayesFPMM_FMeanCI', PACKAGE = 'BayesFPMM', dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous)
+FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1) {
+    .Call('_BayesFPMM_FMeanCI', PACKAGE = 'BayesFPMM', dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop)
+}
+
+#' Calculates the credible interval for the mean (High Dimensional Functional Data)
+#'
+#' This function calculates a credible interval with the user specified coverage.
+#' In order to run this function, the directory of the posterior samples needs
+#' to be specified. The function will return the credible intervals and the median
+#' posterior estimate of the mean function at the time points specified by the
+#' user (\code{time} variable). The user can specify if they would like the algorithm
+#' to automatically rescale the parameters for interpretability (suggested). If
+#' the user chooses to rescale, then all class memberships will be rescaled so
+#' that at least one observation is in only one class. The user can also specify
+#' if they want pointwise credible intervals or simultaneous credible intervals.
+#' The simultaneous intervals will likely be wider than the pointwise credible
+#' intervals.
+#'
+#' @name HDFMeanCI
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param time List of matrices that contain the observed time points (each column is a dimension)
+#' @param basis_degree Vector containing the desired basis degree for each dimension
+#' @param boundary_knots Matrix containing the boundary knots for each dimension (each row is a dimension)
+#' @param internal_knots List of vectors containing the internal knots for each dimension
+#' @param k Int containing the cluster group of which you want to get the credible interval for
+#' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
+#' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
+#' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
+#' @param burnin_prop Double containing proportion of MCMC samples to get rid
+#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
+#'
+#' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+#'   \item{\code{basis_degree}}{each element must be an integer larger than or equal to 1}
+#'   \item{\code{internal_knots}}{must lie in the range of corresponding \code{boundary_knots}}
+#'   \item{\code{k}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
+#'   \item{\code{alpha}}{must be between 0 and 1}
+#'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+#' }
+#'
+#' @examples
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' n_files <- 1
+#' time <- seq(0, 990, 10)
+#' k <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(200, 400, 600, 800)
+#'
+#' ## Get CI for mean function
+#' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k)
+#'
+#' @export
+HDFMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1) {
+    .Call('_BayesFPMM_HDFMeanCI', PACKAGE = 'BayesFPMM', dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop)
+}
+
+#' Calculates the credible interval for the mean (Multivariate Data)
+#'
+#' This function calculates a credible interval with the user specified coverage.
+#' In order to run this function, the directory of the posterior samples needs
+#' to be specified. The function will return the credible intervals and the median
+#' posterior estimate of the mean. The user can specify if they would like the
+#' algorithm to automatically rescale the parameters for interpretability
+#' (suggested). If the user chooses to rescale, then all class memberships will
+#' be rescaled so that at least one observation is in only one class.
+#'
+#' @name MVMeanCI
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
+#' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
+#' @param burnin_prop Double containing proportion of MCMC samples to get rid
+#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
+#'
+#' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+#'   \item{\code{alpha}}{must be between 0 and 1}
+#'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+#' }
+#'
+#' @examples
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' n_files <- 1
+#'
+#' ## Get CI for mean function
+#' CI <- MVMeanCI(dir, n_files)
+#'
+#' @export
+MVMeanCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
+    .Call('_BayesFPMM_MVMeanCI', PACKAGE = 'BayesFPMM', dir, n_files, alpha, rescale, burnin_prop)
 }
 
 #' Calculates the credible interval for the covariance (Functional Data)
+#'
+#' This function calculates a credible interval for the covariance function
+#' between the l-th and m-th clusters, with the user specified coverage.
+#' In order to run this function, the directory of the posterior samples needs
+#' to be specified. The function will return the credible intervals and the median
+#' posterior estimate of the covariance function at the time points specified by the
+#' user (\code{time} variable). The user can specify if they would like the algorithm
+#' to automatically rescale the parameters for interpretability (suggested). If
+#' the user chooses to rescale, then all class memberships will be rescaled so
+#' that at least one observation is in only one class. The user can also specify
+#' if they want pointwise credible intervals or simultaneous credible intervals.
+#' The simultaneous intervals will likely be wider than the pointwise credible
+#' intervals.
 #'
 #' @name FCovCI
 #' @param dir String containing the directory where the MCMC files are located
@@ -71,54 +182,186 @@ FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_k
 #' @param m Int containing the 2nd cluster group of which you want to get the credible interval for
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
-#' @param simultaneous Boolean indicating whether or not the credible intervals should be simulatneous credible intevals or pointwise credible intervals
-#' @return CI list containing the 97.5th , 50th, and 2.5th pointwise credible functions
+#' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
+#' @param burnin_prop Double containing proportion of MCMC samples to get rid
+#' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
+#'
+#' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+#'   \item{\code{n_MCMC}}{must be an integer larger than or equal to 1}
+#'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+#'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+#'   \item{\code{l}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
+#'   \item{\code{m}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
+#'   \item{\code{alpha}}{must be between 0 and 1}
+#'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+#' }
+#'
+#' @examples
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' n_files <- 1
+#' n_MCMC <- 200
+#' time1 <- seq(0, 990, 10)
+#' time2 <- seq(0, 990, 10)
+#' l <- 1
+#' m <- 1
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(200, 400, 600, 800)
+#'
+#' ## Get CI for Covaraince function
+#' CI <- FCovCI(dir, n_files, n_MCMC, time1, time2, basis_degree,
+#'              boundary_knots, internal_knots, l, m)
+#'
 #' @export
-FCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha = 0.05, rescale = TRUE, simultaneous = FALSE) {
-    .Call('_BayesFPMM_FCovCI', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous)
+FCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1) {
+    .Call('_BayesFPMM_FCovCI', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop)
 }
 
-#' Calculates the Simultaneous credible interval for the covariance function between two clusters
+#' Calculates the credible interval for the covariance (High Dimensional Functional Data)
 #'
-#' @name GetCovCI_S
+#' This function calculates a credible interval for the covariance function
+#' between the l-th and m-th clusters, with the user specified coverage.
+#' In order to run this function, the directory of the posterior samples needs
+#' to be specified. The function will return the credible intervals and the median
+#' posterior estimate of the covariance function at the time points specified by the
+#' user (\code{time} variable). The user can specify if they would like the algorithm
+#' to automatically rescale the parameters for interpretability (suggested). If
+#' the user chooses to rescale, then all class memberships will be rescaled so
+#' that at least one observation is in only one class. The user can also specify
+#' if they want pointwise credible intervals or simultaneous credible intervals.
+#' The simultaneous intervals will likely be wider than the pointwise credible
+#' intervals.
+#'
+#' @name HDFCovCI
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
 #' @param n_MCMC Int containing the number of saved MCMC iterations per file
 #' @param time1 Vector containing time points of interest for first cluster
 #' @param time2 Vector containing time points of interest for second cluster
+#' @param basis_degree Int containing the degree of B-splines used
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
 #' @param l Int containing the 1st cluster group of which you want to get the credible interval for
 #' @param m Int containing the 2nd cluster group of which you want to get the credible interval for
-#' @return CI list containing the 97.5th , 50th, and 2.5th simultaneous credible functions
+#' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
+#' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
+#' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
+#' @param burnin_prop Double containing proportion of MCMC samples to get rid
+#' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
+#'
+#' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+#'   \item{\code{n_MCMC}}{must be an integer larger than or equal to 1}
+#'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+#'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+#'   \item{\code{l}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
+#'   \item{\code{m}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
+#'   \item{\code{alpha}}{must be between 0 and 1}
+#'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+#' }
+#'
+#' @examples
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' n_files <- 1
+#' n_MCMC <- 200
+#' time1 <- seq(0, 990, 10)
+#' time2 <- seq(0, 990, 10)
+#' l <- 1
+#' m <- 1
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(200, 400, 600, 800)
+#'
+#' ## Get CI for Covaraince function
+#' CI <- FCovCI(dir, n_files, n_MCMC, time1, time2, basis_degree,
+#'              boundary_knots, internal_knots, l, m)
+#'
 #' @export
-GetCovCI_S <- function(dir, n_files, n_MCMC, time1, time2, l, m) {
-    .Call('_BayesFPMM_GetCovCI_S', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time1, time2, l, m)
+HDFCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1) {
+    .Call('_BayesFPMM_HDFCovCI', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop)
+}
+
+#' Calculates the credible interval for the covariance (Multivariate Data)
+#'
+#' This function calculates a credible interval for the covariance matrix
+#' between the l-th and m-th clusters, with the user specified coverage.
+#' In order to run this function, the directory of the posterior samples needs
+#' to be specified. The function will return the credible intervals and the median
+#' posterior estimate of the mean. The user can specify if they would like the
+#' algorithm to automatically rescale the parameters for interpretability
+#' (suggested). If the user chooses to rescale, then all class memberships will
+#' be rescaled so that at least one observation is in only one class.
+#'
+#' @name MVCovCI
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param l Int containing the 1st cluster group of which you want to get the credible interval for
+#' @param m Int containing the 2nd cluster group of which you want to get the credible interval for
+#' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
+#' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
+#' @param burnin_prop Double containing proportion of MCMC samples to get rid
+#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
+#'
+#' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+#'   \item{\code{n_MCMC}}{must be an integer larger than or equal to 1}
+#'   \item{\code{l}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
+#'   \item{\code{m}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
+#'   \item{\code{alpha}}{must be between 0 and 1}
+#'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+#' }
+#'
+#' @examples
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' n_files <- 1
+#' n_MCMC <- 200
+#' l <- 1
+#' m <- 1
+#' ## Get CI for mean function
+#' CI <- MVCovCI(dir, n_files, n_MCMC, l, m)
+#'
+#' @export
+MVCovCI <- function(dir, n_files, n_MCMC, l, m, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
+    .Call('_BayesFPMM_MVCovCI', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, l, m, alpha, rescale, burnin_prop)
 }
 
 #' Calculates the credible interval for sigma squared for all types of data
 #'
-#' @name GetSigmaCI
+#' @name SigmaCI
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Integer containing the number of MCMC files
-#' @param uci Double containing the desired percentile for the upper bound of the credible interval
-#' @param lci Double containing the desired percentile for the lower bound of the credible interval
-#' @returns a List containing:
+#' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
+#' @returns CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
+#'
+#' @section Warning:
+#' The following must be true:
 #' \describe{
-#'   \item{\code{nu}}{Nu samples from the MCMC chain}
-#'   \item{\code{chi}}{chi samples from the MCMC chain}
-#'   \item{\code{pi}}{pi samples from the MCMC chain}
-#'   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
-#'   \item{\code{A}}{A samples from MCMC chain}
-#'   \item{\code{delta}}{delta samples from the MCMC chain}
-#'   \item{\code{sigma}}{sigma samples from the MCMC chain}
-#'   \item{\code{tau}}{tau samples from the MCMC chain}
-#'   \item{\code{gamma}}{gamma samples from the MCMC chain}
-#'   \item{\code{Phi}}{Phi samples from the MCMC chain}
-#'   \item{\code{Z}}{Z samples from the MCMC chain}
-#'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+#'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+#'   \item{\code{alpha}}{must be between 0 and 1}
 #' }
+#'
+#' @examples
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' n_files <- 1
+#'
+#' ## Get CI for Z
+#' CI <- SigmaCI(dir, n_files)
+#'
 #' @export
-GetSigmaCI <- function(dir, n_files, uci = 0.975, lci = 0.025) {
-    .Call('_BayesFPMM_GetSigmaCI', PACKAGE = 'BayesFPMM', dir, n_files, uci, lci)
+SigmaCI <- function(dir, n_files, alpha = 0.05) {
+    .Call('_BayesFPMM_SigmaCI', PACKAGE = 'BayesFPMM', dir, n_files, alpha)
 }
 
 #' Calculates the credible interval for membership parameters Z
@@ -203,17 +446,17 @@ Model_BIC <- function(dir, n_files, n_MCMC, time, Y) {
 #' @param b Double containing hyperparameter for sampling from alpha_3
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A
-#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A (rate)
+#' @param beta2l Double containing hyperparameter for sampling from A (rate)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau (rate)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{B}}{The basis functions evaluated at the observed time points}
@@ -306,17 +549,17 @@ BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, 
 #' @param nu_1 double containing hyperparameter for sampling from gamma
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A
-#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A (rate)
+#' @param beta2l Double containing hyperparameter for sampling from A (rate)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau (rate)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{B}}{The basis functions evaluated at the observed time points}
@@ -437,17 +680,17 @@ BFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n
 #' @param nu_1 double containing hyperparameter for sampling from gamma
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A
-#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A (rate)
+#' @param beta2l Double containing hyperparameter for sampling from A (rate)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau (rate)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
 #'
 #' @returns a List containing:
 #' \describe{
@@ -611,7 +854,7 @@ ReadVec <- function(file) {
 #' ## initialize placeholder
 #' # pi <- mat(0, dim, n_files * n_samp)
 #' # for(i in 0:(n_files - 1)){
-#' #   pi_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
+#' #   pi_i <- ReadMat(paste(dir, as.character(i),".txt", sep = ""))
 #' #   pi[,((n_samp * i) + 1):(n_samp * (i+1))] <- pi_i
 #' #}
 #' #############################################################
@@ -651,13 +894,13 @@ ReadMat <- function(file) {
 #' # dim2 <- 8
 #' #
 #' ## Set directory
-#' # dir <- "~/nu"
+#' # dir <- "~/Nu"
 #' #
 #' ## initialize placeholder
 #' # nu <- array(0, dim = c(dim1, dim2, n_files * n_samp))
 #' # for(i in 0:(n_files - 1)){
-#' #   nu_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
-#' #   nu[,,((n_samp * i) + 1):(n_samp * (i+1))] <- pi_i
+#' #   nu_i <- ReadCube(paste(dir, as.character(i),".txt", sep = ""))
+#' #   nu[,,((n_samp * i) + 1):(n_samp * (i+1))] <- nu_i
 #' #}
 #' #############################################################
 #'
@@ -698,13 +941,13 @@ ReadCube <- function(file) {
 #' # dim3 <- 2
 #' #
 #' ## Set directory
-#' # dir <- "~/nu"
+#' # dir <- "~/Phi"
 #' #
 #' ## initialize placeholder
 #' # Phi <- array(0, dim = c(dim1, dim2, dim3, n_files * n_samp))
 #' # for(i in 0:(n_files - 1)){
-#' #   nu_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
-#' #   nu[,,((n_samp * i) + 1):(n_samp * (i+1))] <- pi_i
+#' #   Phi_i <- ReadFieldCube(paste(dir, as.character(i),".txt", sep = ""))
+#' #   Phi[,,((n_samp * i) + 1):(n_samp * (i+1))] <- Phi_i
 #' #}
 #' #############################################################
 #'
@@ -780,17 +1023,17 @@ ReadFieldVec <- function(file) {
 #' @param b Double containing hyperparameter for sampling from alpha_3
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A
-#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A (rate)
+#' @param beta2l Double containing hyperparameter for sampling from A (rate)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau (rate)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{B}}{The basis functions evaluated at the observed time points}
@@ -883,17 +1126,17 @@ BHDFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct
 #' @param nu_1 double containing hyperparameter for sampling from gamma
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A
-#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A (rate)
+#' @param beta2l Double containing hyperparameter for sampling from A (rate)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau (rate)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{B}}{The basis functions evaluated at the observed time points}
@@ -1014,17 +1257,17 @@ BHDFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree,
 #' @param nu_1 double containing hyperparameter for sampling from gamma
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A
-#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A (rate)
+#' @param beta2l Double containing hyperparameter for sampling from A (rate)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau (rate)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
 #'
 #' @returns a List containing:
 #' \describe{
@@ -1131,17 +1374,17 @@ BHDFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree
 #' @param b Double containing hyperparameter for sampling from alpha_3
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A
-#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A (rate)
+#' @param beta2l Double containing hyperparameter for sampling from A (rate)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau (rate)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{nu}}{Nu samples from the chain with the highest average log-likelihood}
@@ -1218,17 +1461,17 @@ BMVPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, c = N
 #' @param nu_1 double containing hyperparameter for sampling from gamma
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A
-#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A (rate)
+#' @param beta2l Double containing hyperparameter for sampling from A (rate)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau (rate)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{chi}}{chi samples from MCMC chain}
@@ -1331,17 +1574,17 @@ BMVPMM_Theta_est <- function(tot_mcmc_iters, k, Y, n_eigen, Z_samp, nu_samp, bur
 #' @param nu_1 double containing hyperparameter for sampling from gamma
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A
-#' @param beta2l Double containing hyperparameter for sampling from A
+#' @param beta1l Double containing hyperparameter for sampling from A (rate)
+#' @param beta2l Double containing hyperparameter for sampling from A (rate)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau
+#' @param beta Double containing hyperparameter for sampling from tau (rate)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
 #'
 #' @returns a List containing:
 #' \describe{

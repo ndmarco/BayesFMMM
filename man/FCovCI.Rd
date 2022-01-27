@@ -17,7 +17,8 @@ FCovCI(
   m,
   alpha = 0.05,
   rescale = TRUE,
-  simultaneous = FALSE
+  simultaneous = FALSE,
+  burnin_prop = 0.1
 )
 }
 \arguments{
@@ -45,11 +46,57 @@ FCovCI(
 
 \item{rescale}{Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group}
 
-\item{simultaneous}{Boolean indicating whether or not the credible intervals should be simulatneous credible intevals or pointwise credible intervals}
+\item{simultaneous}{Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals}
+
+\item{burnin_prop}{Double containing proportion of MCMC samples to get rid}
 }
 \value{
-CI list containing the 97.5th , 50th, and 2.5th pointwise credible functions
+CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
 }
 \description{
-Calculates the credible interval for the covariance (Functional Data)
+This function calculates a credible interval for the covariance function
+between the l-th and m-th clusters, with the user specified coverage.
+In order to run this function, the directory of the posterior samples needs
+to be specified. The function will return the credible intervals and the median
+posterior estimate of the covariance function at the time points specified by the
+user (\code{time} variable). The user can specify if they would like the algorithm
+to automatically rescale the parameters for interpretability (suggested). If
+the user chooses to rescale, then all class memberships will be rescaled so
+that at least one observation is in only one class. The user can also specify
+if they want pointwise credible intervals or simultaneous credible intervals.
+The simultaneous intervals will likely be wider than the pointwise credible
+intervals.
+}
+\section{Warning}{
+
+The following must be true:
+\describe{
+  \item{\code{n_files}}{must be an integer larger than or equal to 1}
+  \item{\code{n_MCMC}}{must be an integer larger than or equal to 1}
+  \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+  \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+  \item{\code{l}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
+  \item{\code{m}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
+  \item{\code{alpha}}{must be between 0 and 1}
+  \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+}
+}
+
+\examples{
+## Set Hyperparameters
+dir <- system.file("test-data","", package = "BayesFPMM")
+n_files <- 1
+n_MCMC <- 200
+time1 <- seq(0, 990, 10)
+time2 <- seq(0, 990, 10)
+l <- 1
+m <- 1
+basis_degree <- 3
+boundary_knots <- c(0, 1000)
+internal_knots <- c(200, 400, 600, 800)
+
+## Get CI for Covaraince function
+CI <- FCovCI(dir, n_files, n_MCMC, time1, time2, basis_degree,
+             boundary_knots, internal_knots, l, m)
+
 }

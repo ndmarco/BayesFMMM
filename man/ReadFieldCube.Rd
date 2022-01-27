@@ -39,13 +39,13 @@ Phi <- ReadFieldCube(file)
 # dim3 <- 2
 #
 ## Set directory
-# dir <- "~/nu"
+# dir <- "~/Phi"
 #
 ## initialize placeholder
 # Phi <- array(0, dim = c(dim1, dim2, dim3, n_files * n_samp))
 # for(i in 0:(n_files - 1)){
-#   nu_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
-#   nu[,,((n_samp * i) + 1):(n_samp * (i+1))] <- pi_i
+#   Phi_i <- ReadFieldCube(paste(dir, as.character(i),".txt", sep = ""))
+#   Phi[,,((n_samp * i) + 1):(n_samp * (i+1))] <- Phi_i
 #}
 #############################################################
 

@@ -37,13 +37,13 @@ nu <- ReadCube(file)
 # dim2 <- 8
 #
 ## Set directory
-# dir <- "~/nu"
+# dir <- "~/Nu"
 #
 ## initialize placeholder
 # nu <- array(0, dim = c(dim1, dim2, n_files * n_samp))
 # for(i in 0:(n_files - 1)){
-#   nu_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
-#   nu[,,((n_samp * i) + 1):(n_samp * (i+1))] <- pi_i
+#   nu_i <- ReadCube(paste(dir, as.character(i),".txt", sep = ""))
+#   nu[,,((n_samp * i) + 1):(n_samp * (i+1))] <- nu_i
 #}
 #############################################################
 
