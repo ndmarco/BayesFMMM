@@ -1415,7 +1415,7 @@ Rcpp::List MVCovCI(const std::string dir,
       int max_ind = 0;
       for(int i = 0; i < Z_samp.n_cols; i++){
         for(int k = 0; k < Z_samp.n_rows; k++){
-          ph(l) = Z_samp(k,i,j);
+          ph(k) = Z_samp(k,i,j);
         }
         max_ind = arma::index_max(ph);
         transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
@@ -1424,6 +1424,7 @@ Rcpp::List MVCovCI(const std::string dir,
         phi_samp(j,0).slice(i) = arma::pinv(transform_mat) * phi_samp(j,0).slice(i);
       }
     }
+
   }
 
   arma::cube cov_samp = arma::zeros(phi_i(0,0).n_cols, phi_i(0,0).n_cols, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
