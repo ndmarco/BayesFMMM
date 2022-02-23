@@ -446,17 +446,17 @@ Model_BIC <- function(dir, n_files, n_MCMC, time, Y) {
 #' @param b Double containing hyperparameter for sampling from alpha_3
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A (rate)
-#' @param beta2l Double containing hyperparameter for sampling from A (rate)
+#' @param beta1l Double containing hyperparameter for sampling from A (scale)
+#' @param beta2l Double containing hyperparameter for sampling from A (scale)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau (rate)
+#' @param beta Double containing hyperparameter for sampling from tau (scale)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{B}}{The basis functions evaluated at the observed time points}
@@ -549,17 +549,17 @@ BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, 
 #' @param nu_1 double containing hyperparameter for sampling from gamma
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A (rate)
-#' @param beta2l Double containing hyperparameter for sampling from A (rate)
+#' @param beta1l Double containing hyperparameter for sampling from A (scale)
+#' @param beta2l Double containing hyperparameter for sampling from A (scale)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau (rate)
+#' @param beta Double containing hyperparameter for sampling from tau (scale)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{B}}{The basis functions evaluated at the observed time points}
@@ -680,17 +680,17 @@ BFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n
 #' @param nu_1 double containing hyperparameter for sampling from gamma
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A (rate)
-#' @param beta2l Double containing hyperparameter for sampling from A (rate)
+#' @param beta1l Double containing hyperparameter for sampling from A (scale)
+#' @param beta2l Double containing hyperparameter for sampling from A (scale)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau (rate)
+#' @param beta Double containing hyperparameter for sampling from tau (scale)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
 #'
 #' @returns a List containing:
 #' \describe{
@@ -1023,17 +1023,17 @@ ReadFieldVec <- function(file) {
 #' @param b Double containing hyperparameter for sampling from alpha_3
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A (rate)
-#' @param beta2l Double containing hyperparameter for sampling from A (rate)
+#' @param beta1l Double containing hyperparameter for sampling from A (scale)
+#' @param beta2l Double containing hyperparameter for sampling from A (scale)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau (rate)
+#' @param beta Double containing hyperparameter for sampling from tau (scale)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{B}}{The basis functions evaluated at the observed time points}
@@ -1126,17 +1126,17 @@ BHDFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct
 #' @param nu_1 double containing hyperparameter for sampling from gamma
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A (rate)
-#' @param beta2l Double containing hyperparameter for sampling from A (rate)
+#' @param beta1l Double containing hyperparameter for sampling from A (scale)
+#' @param beta2l Double containing hyperparameter for sampling from A (scale)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau (rate)
+#' @param beta Double containing hyperparameter for sampling from tau (scale)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{B}}{The basis functions evaluated at the observed time points}
@@ -1257,17 +1257,17 @@ BHDFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree,
 #' @param nu_1 double containing hyperparameter for sampling from gamma
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A (rate)
-#' @param beta2l Double containing hyperparameter for sampling from A (rate)
+#' @param beta1l Double containing hyperparameter for sampling from A (scale)
+#' @param beta2l Double containing hyperparameter for sampling from A (scale)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau (rate)
+#' @param beta Double containing hyperparameter for sampling from tau (scale)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
 #'
 #' @returns a List containing:
 #' \describe{
@@ -1374,17 +1374,17 @@ BHDFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree
 #' @param b Double containing hyperparameter for sampling from alpha_3
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A (rate)
-#' @param beta2l Double containing hyperparameter for sampling from A (rate)
+#' @param beta1l Double containing hyperparameter for sampling from A (scale)
+#' @param beta2l Double containing hyperparameter for sampling from A (scale)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau (rate)
+#' @param beta Double containing hyperparameter for sampling from tau (scale)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{nu}}{Nu samples from the chain with the highest average log-likelihood}
@@ -1461,17 +1461,17 @@ BMVPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, c = N
 #' @param nu_1 double containing hyperparameter for sampling from gamma
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A (rate)
-#' @param beta2l Double containing hyperparameter for sampling from A (rate)
+#' @param beta1l Double containing hyperparameter for sampling from A (scale)
+#' @param beta2l Double containing hyperparameter for sampling from A (scale)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau (rate)
+#' @param beta Double containing hyperparameter for sampling from tau (scale)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{chi}}{chi samples from MCMC chain}
@@ -1574,17 +1574,17 @@ BMVPMM_Theta_est <- function(tot_mcmc_iters, k, Y, n_eigen, Z_samp, nu_samp, bur
 #' @param nu_1 double containing hyperparameter for sampling from gamma
 #' @param alpha1l Double containing hyperparameter for sampling from A
 #' @param alpha2l Double containing hyperparameter for sampling from A
-#' @param beta1l Double containing hyperparameter for sampling from A (rate)
-#' @param beta2l Double containing hyperparameter for sampling from A (rate)
+#' @param beta1l Double containing hyperparameter for sampling from A (scale)
+#' @param beta2l Double containing hyperparameter for sampling from A (scale)
 #' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
 #' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
 #' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 #' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
 #' @param alpha Double containing hyperparameter for sampling from tau
-#' @param beta Double containing hyperparameter for sampling from tau (rate)
+#' @param beta Double containing hyperparameter for sampling from tau (scale)
 #' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (rate)
+#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
 #'
 #' @returns a List containing:
 #' \describe{

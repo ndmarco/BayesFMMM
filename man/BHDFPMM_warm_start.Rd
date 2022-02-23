@@ -115,9 +115,9 @@ BHDFPMM_warm_start(
 
 \item{alpha2l}{Double containing hyperparameter for sampling from A}
 
-\item{beta1l}{Double containing hyperparameter for sampling from A (rate)}
+\item{beta1l}{Double containing hyperparameter for sampling from A (scale)}
 
-\item{beta2l}{Double containing hyperparameter for sampling from A (rate)}
+\item{beta2l}{Double containing hyperparameter for sampling from A (scale)}
 
 \item{a_Z_PM}{Double containing hyperparameter of the random walk MH for Z parameter}
 
@@ -131,11 +131,11 @@ BHDFPMM_warm_start(
 
 \item{alpha}{Double containing hyperparameter for sampling from tau}
 
-\item{beta}{Double containing hyperparameter for sampling from tau (rate)}
+\item{beta}{Double containing hyperparameter for sampling from tau (scale)}
 
 \item{alpha_0}{Double containing hyperparameter for sampling from sigma}
 
-\item{beta_0}{Double containing hyperparameter for sampling from sigma (rate)}
+\item{beta_0}{Double containing hyperparameter for sampling from sigma (scale)}
 }
 \value{
 a List containing:
