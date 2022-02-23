@@ -2958,3 +2958,10 @@
 //   //   mod.slice(0) = nu_est;
 //   //   return mod;
 // }
+
+// //' @export
+// // [[Rcpp::export]]
+// arma::vec Stuff1(arma::vec alpha){
+//   return BayesFPMM::rdirichlet(alpha);
+// }
+

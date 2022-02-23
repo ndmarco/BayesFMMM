@@ -167,6 +167,12 @@ inline void updateZ_PM(const arma::field<arma::vec>& y_obs,
     acceptance_prob = z_new_lpdf - z_lpdf + lpdf_propose_old - lpdf_propose_new;
     rand_unif_var = R::runif(0,1);
 
+    for(int j = 0; j < Z.n_cols; j++){
+      if(Z(i,j,iter) <= 0){
+        acceptance_prob = 1;
+      }
+    }
+
     if(log(rand_unif_var) < acceptance_prob){
       // Accept new state and update parameters
       Z.slice(iter).row(i) = Z_ph.t();
@@ -235,6 +241,12 @@ inline void updateZTempered_PM(const double& beta_i,
 
     acceptance_prob = z_new_lpdf - z_lpdf + lpdf_propose_old - lpdf_propose_new;
     rand_unif_var = R::runif(0,1);
+
+    for(int j = 0; j < Z.n_cols; j++){
+      if(Z(i,j,iter) <= 0){
+        acceptance_prob = 1;
+      }
+    }
 
     if(log(rand_unif_var) < acceptance_prob){
       // Accept new state and update parameters
@@ -381,6 +393,12 @@ inline void updateZ_PMMV(const arma::mat& y_obs,
     acceptance_prob = z_new_lpdf - z_lpdf + lpdf_propose_old - lpdf_propose_new;
     rand_unif_var = R::runif(0,1);
 
+    for(int j = 0; j < Z.n_cols; j++){
+      if(Z(i,j,iter) <= 0){
+        acceptance_prob = 1;
+      }
+    }
+
     if(log(rand_unif_var) < acceptance_prob){
       // Accept new state and update parameters
       Z.slice(iter).row(i) = Z_ph.t();
@@ -447,6 +465,12 @@ inline void updateZTempered_PMMV(const double& beta_i,
 
     acceptance_prob = z_new_lpdf - z_lpdf + lpdf_propose_old - lpdf_propose_new;
     rand_unif_var = R::runif(0,1);
+
+    for(int j = 0; j < Z.n_cols; j++){
+      if(Z(i,j,iter) <= 0){
+        acceptance_prob = 1;
+      }
+    }
 
     if(log(rand_unif_var) < acceptance_prob){
       // Accept new state and update parameters

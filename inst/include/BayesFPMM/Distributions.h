@@ -20,6 +20,11 @@ inline double logGamma(double x){
 // @param alpha Vector containing concentration parameters
 // @returns distribution Vector containing the random sample
 inline arma::vec rdirichlet(arma::vec alpha){
+  for(int i = 0; i < alpha.n_elem; i++){
+    if(alpha(i) <= 0){
+      alpha(i) = 10;
+    }
+  }
   arma::vec distribution(alpha.n_elem, arma::fill::zeros);
 
   double sum_term = 0;
