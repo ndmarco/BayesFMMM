@@ -545,10 +545,12 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
   }
   arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
   arma::mat nu_est_rescale = arma::pinv(transform_mat) * nu_est;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),0) = 0.999;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),1) = 0.001;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),0) = 0.001;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),1) = 0.999;
+  for(int i = 0; i < Z_est_rescale.n_rows; i++){
+    for(int j = 0; j < Z_est_rescale.n_cols; j++){
+      Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01;
+    }
+    Z_est.row(i) = Z_est.row(i) / (arma::accu(Z_est.row(i)));
+  }
 
   // start MCMC sampling
   Rcpp::List mod1 = BayesFPMM::BFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
@@ -962,10 +964,12 @@ Rcpp::List BFPMM_warm_start(const int tot_mcmc_iters,
   }
   arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
   arma::mat nu_est_rescale = arma::pinv(transform_mat) * nu_est;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),0) = 0.999;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),1) = 0.001;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),0) = 0.001;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),1) = 0.999;
+  for(int i = 0; i < Z_est_rescale.n_rows; i++){
+    for(int j = 0; j < Z_est_rescale.n_cols; j++){
+      Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01;
+    }
+    Z_est.row(i) = Z_est.row(i) / (arma::accu(Z_est.row(i)));
+  }
 
   pi_est = pi_est / arma::accu(pi_est);
 
@@ -1828,10 +1832,12 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
   }
   arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
   arma::mat nu_est_rescale = arma::pinv(transform_mat) * nu_est;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),0) = 0.999;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),1) = 0.001;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),0) = 0.001;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),1) = 0.999;
+  for(int i = 0; i < Z_est_rescale.n_rows; i++){
+    for(int j = 0; j < Z_est_rescale.n_cols; j++){
+      Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01;
+    }
+    Z_est.row(i) = Z_est.row(i) / (arma::accu(Z_est.row(i)));
+  }
 
   // start MCMC sampling
   Rcpp::List mod1 = BayesFPMM::BHDFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
@@ -2244,10 +2250,12 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
   }
   arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
   arma::mat nu_est_rescale = arma::pinv(transform_mat) * nu_est;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),0) = 0.999;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),1) = 0.001;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),0) = 0.001;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),1) = 0.999;
+  for(int i = 0; i < Z_est_rescale.n_rows; i++){
+    for(int j = 0; j < Z_est_rescale.n_cols; j++){
+      Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01;
+    }
+    Z_est.row(i) = Z_est.row(i) / (arma::accu(Z_est.row(i)));
+  }
 
   pi_est = pi_est / arma::accu(pi_est);
 
@@ -2776,10 +2784,12 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
   }
   arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
   arma::mat nu_est_rescale = arma::pinv(transform_mat) * nu_est;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),0) = 0.999;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),1) = 0.001;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),0) = 0.001;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),1) = 0.999;
+  for(int i = 0; i < Z_est_rescale.n_rows; i++){
+    for(int j = 0; j < Z_est_rescale.n_cols; j++){
+      Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01;
+    }
+    Z_est.row(i) = Z_est.row(i) / (arma::accu(Z_est.row(i)));
+  }
 
   // start MCMC sampling
   Rcpp::List mod1 = BayesFPMM::BFPMM_ThetaMV(Y, k, n_eigen, tot_mcmc_iters,
@@ -3138,10 +3148,12 @@ Rcpp::List BMVPMM_warm_start(const int tot_mcmc_iters,
   }
   arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
   arma::mat nu_est_rescale = arma::pinv(transform_mat) * nu_est;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),0) = 0.999;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(0)),1) = 0.001;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),0) = 0.001;
-  Z_est_rescale(arma::index_max(Z_est_rescale.col(1)),1) = 0.999;
+  for(int i = 0; i < Z_est_rescale.n_rows; i++){
+    for(int j = 0; j < Z_est_rescale.n_cols; j++){
+      Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01;
+    }
+    Z_est.row(i) = Z_est.row(i) / (arma::accu(Z_est.row(i)));
+  }
 
   pi_est = pi_est / arma::accu(pi_est);
 
