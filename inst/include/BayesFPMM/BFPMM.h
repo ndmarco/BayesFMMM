@@ -1470,7 +1470,7 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
   double logu = 0;
   int accept_num = 0;
 
-  Z.slice(0) = Z_est;;
+  Z.slice(0) = Z_est;
   pi.col(0) = pi_est;
 
   alpha_3(0) = alpha_3_est;
@@ -2561,7 +2561,7 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
   double logu = 0;
   int accept_num = 0;
 
-  Z.slice(0) = Z_est;;
+  Z.slice(0) = Z_est;
   pi.col(0) = pi_est;
 
   alpha_3(0) = alpha_3_est;
