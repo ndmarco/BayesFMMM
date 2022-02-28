@@ -519,7 +519,7 @@ Model_BIC <- function(dir, n_files, n_MCMC, time, Y) {
 #'                              internal_knots)
 #'
 #' @export
-BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 800, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 10, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFPMM_BFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
@@ -626,7 +626,7 @@ BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, 
 #'                         internal_knots, est1$Z, est1$nu)
 #'
 #' @export
-BFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 1, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+BFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFPMM_BFPMM_Theta_est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
@@ -775,7 +775,7 @@ BFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n
 #'                               est1$nu, est1$tau, est2$sigma, est2$chi)
 #'
 #' @export
-BFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 1, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+BFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFPMM_BFPMM_warm_start', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
@@ -1096,7 +1096,7 @@ ReadFieldVec <- function(file) {
 #'                                   internal_knots)
 #'
 #' @export
-BHDFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 800, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+BHDFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 10, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFPMM_BHDFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
@@ -1203,7 +1203,7 @@ BHDFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct
 #'                         internal_knots, est1$Z, est1$nu)
 #'
 #' @export
-BHDFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 1, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+BHDFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFPMM_BHDFPMM_Theta_est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
@@ -1352,7 +1352,7 @@ BHDFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree,
 #'                                 est1$nu, est1$tau, est2$sigma, est2$chi)
 #'
 #' @export
-BHDFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 1, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+BHDFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFPMM_BHDFPMM_warm_start', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
@@ -1436,7 +1436,7 @@ BHDFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree
 #' est1 <- BMVPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
 #'
 #' @export
-BMVPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, c = NULL, b = 800, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+BMVPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, c = NULL, b = 10, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFPMM_BMVPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, n_eigen, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
@@ -1525,7 +1525,7 @@ BMVPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, c = N
 #' est2 <- BMVPMM_Theta_est(tot_mcmc_iters, k, Y, n_eigen, est1$Z, est1$nu)
 #'
 #' @export
-BMVPMM_Theta_est <- function(tot_mcmc_iters, k, Y, n_eigen, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 1, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+BMVPMM_Theta_est <- function(tot_mcmc_iters, k, Y, n_eigen, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFPMM_BMVPMM_Theta_est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, n_eigen, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
@@ -1655,7 +1655,7 @@ BMVPMM_Theta_est <- function(tot_mcmc_iters, k, Y, n_eigen, Z_samp, nu_samp, bur
 #'                                est1$nu, est1$tau, est2$sigma, est2$chi)
 #'
 #' @export
-BMVPMM_warm_start <- function(tot_mcmc_iters, k, Y, n_eigen, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 1, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 1000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+BMVPMM_warm_start <- function(tot_mcmc_iters, k, Y, n_eigen, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFPMM_BMVPMM_warm_start', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, n_eigen, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 

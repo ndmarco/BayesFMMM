@@ -115,7 +115,7 @@ inline Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_funct; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, r_stored_iters, arma::fill::ones);
@@ -373,7 +373,7 @@ inline Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_funct; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, r_stored_iters, arma::fill::ones);
@@ -628,7 +628,7 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_funct; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, r_stored_iters, arma::fill::ones);
@@ -1039,7 +1039,7 @@ inline Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_funct; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
@@ -1208,7 +1208,7 @@ inline Rcpp::List BFPMM_Theta(const arma::field<arma::vec>& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_funct; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
@@ -1410,7 +1410,7 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_funct; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, r_stored_iters, arma::fill::ones);
@@ -1813,7 +1813,7 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_obs; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, r_stored_iters, arma::fill::ones);
@@ -2193,7 +2193,7 @@ inline Rcpp::List BFPMM_Nu_ZMV(const arma::mat& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_obs; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
@@ -2333,7 +2333,7 @@ inline Rcpp::List BFPMM_ThetaMV(const arma::mat& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_obs; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
@@ -2501,7 +2501,7 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_obs; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, r_stored_iters, arma::fill::ones);
@@ -2910,7 +2910,7 @@ inline Rcpp::List BHDFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_funct; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
@@ -3060,7 +3060,7 @@ inline Rcpp::List BHDFPMM_Theta(const arma::field<arma::vec>& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_funct; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
@@ -3242,7 +3242,7 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
                                          arma::distr_param(0,1));
 
   for(int i = 0; i < n_funct; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0)).t();
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
   arma::mat delta(M, r_stored_iters, arma::fill::ones);
