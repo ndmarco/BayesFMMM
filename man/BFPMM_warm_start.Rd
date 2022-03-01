@@ -34,9 +34,9 @@ BFPMM_warm_start(
   r_stored_iters = 0L,
   c = NULL,
   b = 10,
-  nu_1 = 3,
-  alpha1l = 2,
-  alpha2l = 3,
+  nu_1 = 2,
+  alpha1l = 1,
+  alpha2l = 2,
   beta1l = 1,
   beta2l = 1,
   a_Z_PM = 10000,
@@ -228,7 +228,7 @@ est1 <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
                                 internal_knots)
 
 ## Get estimates of other parameters
-est2 <- BFPMM_Theta_est(tot_mcmc_iters, k, Y, time, n_funct,
+est2 <- BFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
                         internal_knots, est1$Z, est1$nu)
 

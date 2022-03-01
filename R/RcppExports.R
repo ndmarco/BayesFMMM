@@ -520,7 +520,7 @@ Model_BIC <- function(dir, n_files, n_MCMC, time, Y) {
 #'                              internal_knots)
 #'
 #' @export
-BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 10, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 10, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFPMM_BFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
@@ -534,6 +534,7 @@ BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, 
 #'
 #' @name BFPMM_Theta_est
 #' @param tot_mcmc_iters Int containing the total number of MCMC iterations
+#' @param n_try Int containing how many different chains are tried
 #' @param k Int containing the number of clusters
 #' @param Y List of vectors containing the observed values
 #' @param time List of vectors containing the observed time points
@@ -577,6 +578,7 @@ BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, 
 #' The following must be true:
 #' \describe{
 #'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+#'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
 #'   \item{\code{burnin_prop}}{must be between 0 and 1}
 #'   \item{\code{k}}{must be an integer larger than or equal to 2}
 #'   \item{\code{n_funct}}{must be an integer larger than 1}
@@ -622,13 +624,13 @@ BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, 
 #'                                 internal_knots)
 #'
 #' ## Run function
-#' est2 <- BFPMM_Theta_est(tot_mcmc_iters, k, Y, time, n_funct,
+#' est2 <- BFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 #'                         basis_degree, n_eigen, boundary_knots,
 #'                         internal_knots, est1$Z, est1$nu)
 #'
 #' @export
-BFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 2, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFPMM_BFPMM_Theta_est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+BFPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 2, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFPMM_BFPMM_Theta_est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #' Performs MCMC for functional models given an informed set of starting points
@@ -765,7 +767,7 @@ BFPMM_Theta_est <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n
 #'                                 internal_knots)
 #'
 #' ## Get estimates of other parameters
-#' est2 <- BFPMM_Theta_est(tot_mcmc_iters, k, Y, time, n_funct,
+#' est2 <- BFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 #'                         basis_degree, n_eigen, boundary_knots,
 #'                         internal_knots, est1$Z, est1$nu)
 #'
@@ -1097,7 +1099,7 @@ ReadFieldVec <- function(file) {
 #'                                   internal_knots)
 #'
 #' @export
-BHDFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 10, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+BHDFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 10, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFPMM_BHDFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
