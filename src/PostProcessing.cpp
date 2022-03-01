@@ -163,7 +163,7 @@ Rcpp::List FMeanCI(const std::string dir,
           max_ind = arma::index_max(ph);
           transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
-        nu_samp.slice(j) = arma::pinv(transform_mat) * nu_samp.slice(j);
+        nu_samp.slice(j) = transform_mat * nu_samp.slice(j);
       }
 
       for(int i = 0; i < nu_samp.n_slices; i++){
@@ -213,7 +213,7 @@ Rcpp::List FMeanCI(const std::string dir,
           max_ind = arma::index_max(ph);
           transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
-        nu_samp.slice(j) = arma::pinv(transform_mat) * nu_samp.slice(j);
+        nu_samp.slice(j) = transform_mat * nu_samp.slice(j);
       }
       arma::mat f_samp = arma::zeros(nu_samp.n_slices, time.n_elem);
       for(int i = 0; i < nu_samp.n_slices; i++){
@@ -436,7 +436,7 @@ Rcpp::List HDFMeanCI(const std::string dir,
           max_ind = arma::index_max(ph);
           transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
-        nu_samp.slice(j) = arma::pinv(transform_mat) * nu_samp.slice(j);
+        nu_samp.slice(j) = transform_mat * nu_samp.slice(j);
       }
 
       for(int i = 0; i < nu_samp.n_slices; i++){
@@ -486,7 +486,7 @@ Rcpp::List HDFMeanCI(const std::string dir,
           max_ind = arma::index_max(ph);
           transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
-        nu_samp.slice(j) = arma::pinv(transform_mat) * nu_samp.slice(j);
+        nu_samp.slice(j) = transform_mat * nu_samp.slice(j);
       }
       arma::mat f_samp = arma::zeros(nu_samp.n_slices, time.n_rows);
       for(int i = 0; i < nu_samp.n_slices; i++){
@@ -655,7 +655,7 @@ Rcpp::List MVMeanCI(const std::string dir,
         max_ind = arma::index_max(ph);
         transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
       }
-      nu_samp.slice(j) = arma::pinv(transform_mat) * nu_samp.slice(j);
+      nu_samp.slice(j) = transform_mat * nu_samp.slice(j);
     }
   }
 
@@ -874,7 +874,7 @@ Rcpp::List FCovCI(const std::string dir,
           transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
         for(int b = 0; b < phi_samp.n_slices; b++){
-          phi_samp(j,0).slice(b) = arma::pinv(transform_mat) * phi_samp(j,0).slice(b);
+          phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
         }
       }
     }
@@ -929,7 +929,7 @@ Rcpp::List FCovCI(const std::string dir,
           transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
         for(int b = 0; b < phi_samp.n_slices; b++){
-          phi_samp(j,0).slice(b) = arma::pinv(transform_mat) * phi_samp(j,0).slice(b);
+          phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
         }
       }
     }
@@ -1175,7 +1175,7 @@ Rcpp::List HDFCovCI(const std::string dir,
           transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
         for(int b = 0; b < phi_samp.n_slices; b++){
-          phi_samp(j,0).slice(b) = arma::pinv(transform_mat) * phi_samp(j,0).slice(b);
+          phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
         }
       }
     }
@@ -1230,7 +1230,7 @@ Rcpp::List HDFCovCI(const std::string dir,
           transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
         for(int b = 0; b < phi_samp.n_slices; b++){
-          phi_samp(j,0).slice(b) = arma::pinv(transform_mat) * phi_samp(j,0).slice(b);
+          phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
         }
       }
     }
@@ -1421,7 +1421,7 @@ Rcpp::List MVCovCI(const std::string dir,
         transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
       }
       for(int i = 0; i < phi_samp.n_slices; i++){
-        phi_samp(j,0).slice(i) = arma::pinv(transform_mat) * phi_samp(j,0).slice(i);
+        phi_samp(j,0).slice(i) = transform_mat * phi_samp(j,0).slice(i);
       }
     }
 
@@ -1523,18 +1523,20 @@ Rcpp::List SigmaCI(const std::string dir,
 //' parameters. This function will handle high dimensional functional data,
 //' functional data, and multivariate data.
 //'
-//' @name GetZCI
+//' @name ZCI
 //' @param dir String containing the directory where the MCMC files are located
 //' @param n_files Integer containing the number of files per parameter
-//' @param uci Double containing the desired percentile for the upper bound of the credible interval
-//' @param lci Double containing the desired percentile for the lower bound of the credible interval
-//' @return CI List containing the 97.5th , 50th, and 2.5th credible values
+//' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
+//' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
+//' @param burnin_prop Double containing proportion of MCMC samples to get rid
+//' @return CI List containing the desired credible values
 //' @export
 // [[Rcpp::export]]
-Rcpp::List GetZCI(const std::string dir,
-                  const int n_files,
-                  const double uci = 0.975,
-                  const double lci = 0.025){
+Rcpp::List ZCI(const std::string dir,
+               const int n_files,
+               const double alpha = 0.05,
+               const bool rescale = true,
+               const double burnin_prop = 0.1){
   arma::cube Z_i;
   Z_i.load(dir + "Z0.txt");
   arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
@@ -1543,28 +1545,46 @@ Rcpp::List GetZCI(const std::string dir,
     Z_i.load(dir + "Z" + std::to_string(i) +".txt");
     Z_samp.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
   }
-
-  arma::vec p = {0.025, 0.5, 0.975};
-  arma::vec q = arma::zeros(3);
-
-  arma::mat CI_975 = arma::zeros(Z_i.n_rows, Z_i.n_cols);
-  arma::mat CI_50 = arma::zeros(Z_i.n_rows, Z_i.n_cols);
-  arma::mat CI_025 = arma::zeros(Z_i.n_rows, Z_i.n_cols);
-
-  arma::vec ph(Z_samp.n_slices, arma::fill::zeros);
-  for(int i = 0; i < Z_i.n_rows; i++){
-    for(int j = 0; j < Z_i.n_cols; j++){
-      ph = Z_samp(arma::span(i), arma::span(j), arma::span::all);
-      q = arma::quantile(ph, p);
-      CI_975(i,j) = q(0);
-      CI_50(i,j) = q(1);
-      CI_025(i,j) = q(2);
+  if(rescale == true){
+    arma::mat transform_mat;
+    arma::vec ph = arma::zeros(Z_samp.n_rows);
+    for(int j = 0; j < Z_samp.n_slices; j++){
+      transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+      int max_ind = 0;
+      for(int i = 0; i < Z_samp.n_cols; i++){
+        for(int k = 0; k < Z_samp.n_rows; k++){
+          ph(k) = Z_samp(k,i,j);
+        }
+        max_ind = arma::index_max(ph);
+        transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
+      }
+      Z_samp.slice(j) =  Z_samp.slice(j) * arma::pinv(transform_mat);
     }
   }
 
-  Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_975", CI_975),
+  arma::vec p = {alpha/2, 0.5, 1 - (alpha/2)};
+  arma::vec q = arma::zeros(3);
+
+  arma::mat CI_Upper = arma::zeros(Z_i.n_rows, Z_i.n_cols);
+  arma::mat CI_50 = arma::zeros(Z_i.n_rows, Z_i.n_cols);
+  arma::mat CI_Lower = arma::zeros(Z_i.n_rows, Z_i.n_cols);
+
+  arma::vec ph(std::round(Z_samp.n_slices * (1 - burnin_prop)), arma::fill::zeros);
+  for(int i = 0; i < Z_i.n_rows; i++){
+    for(int j = 0; j < Z_i.n_cols; j++){
+      for(int l = 0; l < std::round(Z_samp.n_slices * (1 - burnin_prop)); l++){
+        ph(l) = Z_samp(i,j, l + std::round(Z_samp.n_slices * burnin_prop));
+      }
+      q = arma::quantile(ph, p);
+      CI_Upper(i,j) = q(2);
+      CI_50(i,j) = q(1);
+      CI_Lower(i,j) = q(0);
+    }
+  }
+
+  Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
                                       Rcpp::Named("CI_50", CI_50),
-                                      Rcpp::Named("CI_025", CI_025));
+                                      Rcpp::Named("CI_Lower", CI_Lower));
 
   return(CI);
 }

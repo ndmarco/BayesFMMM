@@ -148,17 +148,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// GetZCI
-Rcpp::List GetZCI(const std::string dir, const int n_files, const double uci, const double lci);
-RcppExport SEXP _BayesFPMM_GetZCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP uciSEXP, SEXP lciSEXP) {
+// ZCI
+Rcpp::List ZCI(const std::string dir, const int n_files, const double alpha, const bool rescale, const double burnin_prop);
+RcppExport SEXP _BayesFPMM_ZCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP burnin_propSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
-    Rcpp::traits::input_parameter< const double >::type uci(uciSEXP);
-    Rcpp::traits::input_parameter< const double >::type lci(lciSEXP);
-    rcpp_result_gen = Rcpp::wrap(GetZCI(dir, n_files, uci, lci));
+    Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const bool >::type rescale(rescaleSEXP);
+    Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
+    rcpp_result_gen = Rcpp::wrap(ZCI(dir, n_files, alpha, rescale, burnin_prop));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -647,7 +648,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_HDFCovCI", (DL_FUNC) &_BayesFPMM_HDFCovCI, 14},
     {"_BayesFPMM_MVCovCI", (DL_FUNC) &_BayesFPMM_MVCovCI, 8},
     {"_BayesFPMM_SigmaCI", (DL_FUNC) &_BayesFPMM_SigmaCI, 3},
-    {"_BayesFPMM_GetZCI", (DL_FUNC) &_BayesFPMM_GetZCI, 4},
+    {"_BayesFPMM_ZCI", (DL_FUNC) &_BayesFPMM_ZCI, 5},
     {"_BayesFPMM_Model_DIC", (DL_FUNC) &_BayesFPMM_Model_DIC, 5},
     {"_BayesFPMM_Model_AIC", (DL_FUNC) &_BayesFPMM_Model_AIC, 5},
     {"_BayesFPMM_Model_BIC", (DL_FUNC) &_BayesFPMM_Model_BIC, 5},
