@@ -15,7 +15,7 @@ namespace BayesFPMM{
 // @param Z matrix containing current values of class inclusion
 // @param gamma Field of cubes contianing MCMC samples for gamma
 inline void updateGamma(const double& nu_gamma,
-                        const arma::vec& delta,
+                        const arma::mat& delta,
                         const arma::cube& phi,
                         const int& iter,
                         const int& tot_mcmc_iters,
@@ -25,7 +25,7 @@ inline void updateGamma(const double& nu_gamma,
     for(int l = 0; l < phi.n_cols; l++){
       placeholder = 1;
       for(int j = 0; j < phi.n_slices; j++){
-        placeholder = placeholder * delta(j);
+        placeholder = placeholder * delta(i, j);
         gamma(iter,0)(i,l,j) = R::rgamma((nu_gamma + 1)/2, 2/(nu_gamma + placeholder *
           (phi(i,l,j) * phi(i,l,j))));
       }

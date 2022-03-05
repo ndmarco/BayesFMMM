@@ -118,11 +118,11 @@ inline Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, r_stored_iters, arma::fill::ones);
+  arma::cube delta(K, M, r_stored_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(r_stored_iters,1);
   arma::field<arma::cube> Phi(r_stored_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(r_stored_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, r_stored_iters);
   arma::vec loglik = arma::zeros(r_stored_iters);
 
   // start numbering for output files
@@ -151,10 +151,11 @@ inline Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
 
     updateAlpha3(pi.col(i % r_stored_iters), b, Z.slice(i % r_stored_iters),
                  (i % r_stored_iters), r_stored_iters, var_alpha3, alpha_3);
-
-    tilde_tau(0) = delta(0, (i % r_stored_iters));
-    for(int j = 1; j < M; j++){
-      tilde_tau(j) = tilde_tau(j-1) * delta(j,(i % r_stored_iters));
+    for(int k = 0; k < K; k++){
+      tilde_tau(k, 0) = delta(k, 0, (i % r_stored_iters));
+      for(int j = 1; j < M; j++){
+        tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j,(i % r_stored_iters));
+      }
     }
 
     updatePhi(y_obs, B_obs, nu.slice((i % r_stored_iters)),
@@ -164,13 +165,13 @@ inline Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
               r_stored_iters, m_1, M_1, Phi);
 
     updateDelta(Phi((i % r_stored_iters),0), gamma((i % r_stored_iters),0),
-                A.row(i % r_stored_iters).t(), (i % r_stored_iters),
+                A.slice(i % r_stored_iters), (i % r_stored_iters),
                 r_stored_iters, delta);
 
-    updateA(alpha1l, beta1l, alpha2l, beta2l, delta.col((i % r_stored_iters)),
+    updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i % r_stored_iters)),
             var_epsilon1, var_epsilon2, (i % r_stored_iters), r_stored_iters, A);
 
-    updateGamma(nu_1, delta.col((i % r_stored_iters)), Phi((i % r_stored_iters),0),
+    updateGamma(nu_1, delta.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
                 (i % r_stored_iters), r_stored_iters, gamma);
 
     updateNu(y_obs, B_obs, tau.row((i % r_stored_iters)).t(),
@@ -206,10 +207,10 @@ inline Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
       arma::mat pi1(K, r_stored_iters/thinning_num, arma::fill::zeros);
       arma::vec alpha_31(r_stored_iters/thinning_num, arma::fill::zeros);
       arma::vec sigma1(r_stored_iters/thinning_num, arma::fill::ones);
-      arma::mat A1 = arma::ones(r_stored_iters/thinning_num, 2);
+      arma::cube A1 = arma::ones(K, 2, r_stored_iters/thinning_num);
       arma::cube Z1 = arma::randi<arma::cube>(n_funct, K, r_stored_iters/thinning_num,
                                               arma::distr_param(0,1));
-      arma::mat delta1(M, r_stored_iters/thinning_num, arma::fill::ones);
+      arma::cube delta1(K, M, r_stored_iters/thinning_num, arma::fill::ones);
       arma::field<arma::cube> gamma1(r_stored_iters/thinning_num,1);
       arma::field<arma::cube> Phi1(r_stored_iters/thinning_num, 1);
       arma::mat tau1(r_stored_iters/thinning_num, K, arma::fill::ones);
@@ -218,9 +219,9 @@ inline Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
       chi1.slice(0) = chi.slice(0);
       pi1.col(0) = pi.col(0);
       sigma1(0) = sigma(0);
-      A1.row(0) = A.row(0);
+      A1.slice(0) = A.slice(0);
       Z1.slice(0) = Z.slice(0);
-      delta1.col(0) = delta.col(0);
+      delta1.slice(0) = delta.slice(0);
       gamma1(0,0) = gamma(0,0);
       Phi1(0,0) = Phi(0,0);
       tau1.row(0) = tau.row(0);
@@ -231,9 +232,9 @@ inline Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
         pi1.col(p) = pi.col(thinning_num*p - 1);
         alpha_31(p) = alpha_3(thinning_num*p - 1);
         sigma1(p) = sigma(thinning_num*p - 1);
-        A1.row(p) = A.row(thinning_num*p - 1);
+        A1.slice(p) = A.slice(thinning_num*p - 1);
         Z1.slice(p) = Z.slice(thinning_num*p - 1);
-        delta1.col(p) = delta.col(thinning_num*p - 1);
+        delta1.slice(p) = delta.slice(thinning_num*p - 1);
         gamma1(p,0) = gamma(thinning_num*p - 1,0);
         Phi1(p,0) = Phi(thinning_num*p  - 1,0);
         tau1.row(p) = tau.row(thinning_num*p - 1);
@@ -256,8 +257,8 @@ inline Rcpp::List BFPMM(const arma::field<arma::vec>& y_obs,
       chi.slice(0) = chi.slice(i % r_stored_iters);
       pi.col(0) = pi.col(i % r_stored_iters);
       alpha_3(0) = alpha_3(i % r_stored_iters);
-      A.row(0) = A.row(i % r_stored_iters);
-      delta.col(0) = delta.col(i % r_stored_iters);
+      A.slice(0) = A.slice(i % r_stored_iters);
+      delta.slice(0) = delta.slice(i % r_stored_iters);
       sigma(0) = sigma(i % r_stored_iters);
       tau.row(0) = tau.row(i % r_stored_iters);
       gamma(0,0) = gamma(i % r_stored_iters, 0);
@@ -376,11 +377,11 @@ inline Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, r_stored_iters, arma::fill::ones);
+  arma::cube delta(K, M, r_stored_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(r_stored_iters,1);
   arma::field<arma::cube> Phi(r_stored_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(r_stored_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, r_stored_iters);
   arma::vec loglik = arma::zeros(r_stored_iters);
 
   for(int i = 0; i < r_stored_iters; i++){
@@ -412,10 +413,10 @@ inline Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs,
   arma::vec sigma_TT((2 * N_t) + 1, arma::fill::ones);
   arma::cube Z_TT = arma::randi<arma::cube>(n_funct, K, (2 * N_t) + 1,
                                             arma::distr_param(0,1));
-  arma::mat delta_TT(M, (2 * N_t) + 1, arma::fill::ones);
+  arma::cube delta_TT(K, M, (2 * N_t) + 1, arma::fill::ones);
   arma::field<arma::cube> gamma_TT((2 * N_t) + 1, 1);
   arma::field<arma::cube> Phi_TT((2 * N_t) + 1, 1);
-  arma::mat A_TT = arma::ones((2 * N_t) + 1, 2);
+  arma::cube A_TT = arma::ones(K, 2, (2 * N_t) + 1);
   arma::vec alpha_3_TT = arma::ones((2 * N_t) + 1);
 
   for(int i = 0; i < ((2 * N_t) + 1); i++){
@@ -436,10 +437,10 @@ inline Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs,
   pi_TT.col(0) = pi.col(0);
   sigma_TT(0) = sigma(0);
   Z_TT.slice(0) = Z.slice(0);
-  delta_TT.col(0) = delta.col(0);
+  delta_TT.slice(0) = delta.slice(0);
   gamma_TT(0,0) = gamma(0,0);
   Phi_TT(0,0) = Phi(0,0);
-  A_TT.row(0) = A.row(0);
+  A_TT.slice(0) = A.slice(0);
   tau_TT.row(0) = tau.row(0);
   alpha_3_TT(0) = alpha_3(0);
 
@@ -448,10 +449,10 @@ inline Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs,
   pi_TT.col(1) = pi.col(0);
   sigma_TT(1) = sigma(0);
   Z_TT.slice(1) = Z.slice(0);
-  delta_TT.col(1) = delta.col(0);
+  delta_TT.slice(1) = delta.slice(0);
   gamma_TT(1,0) = gamma(0,0);
   Phi_TT(1,0) = Phi(0,0);
-  A_TT.row(1) = A.row(0);
+  A_TT.slice(1) = A.slice(0);
   tau_TT.row(1) = tau.row(0);
   alpha_3_TT(1) = alpha_3_TT(0);
 
@@ -466,21 +467,23 @@ inline Rcpp::List BFPMM_Templadder(const arma::field<arma::vec>& y_obs,
     updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
     updateAlpha3(pi_TT.col(l), b, Z_TT.slice(l), l, (2 * N_t) + 1, var_alpha3, alpha_3_TT);
 
-    tilde_tau(0) = delta_TT(0, l);
-    for(int j = 1; j < M; j++){
-      tilde_tau(j) = tilde_tau(j-1) * delta_TT(j,l);
+    for(int k = 0; k < K; k++){
+      tilde_tau(k, 0) = delta_TT(k, 0, l);
+      for(int j = 1; j < M; j++){
+        tilde_tau(k, j) = tilde_tau(k, j-1) * delta_TT(k, j,l);
+      }
     }
 
     updatePhiTempered(beta_ladder(temp_ind), y_obs, B_obs,
                       nu_TT.slice(l), gamma_TT(l,0), tilde_tau, Z_TT.slice(l),
                       chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, m_1, M_1,
                       Phi_TT);
-    updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.row(l).t(), l, (2 * N_t) + 1,
+    updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.slice(l), l, (2 * N_t) + 1,
                 delta_TT);
 
-    updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.col(l), var_epsilon1,
+    updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.slice(l), var_epsilon1,
             var_epsilon2, l, (2 * N_t) + 1, A_TT);
-    updateGamma(nu_1, delta_TT.col(l), Phi_TT(l,0), l, (2 * N_t) + 1,
+    updateGamma(nu_1, delta_TT.slice(l), Phi_TT(l,0), l, (2 * N_t) + 1,
                 gamma_TT);
     updateNuTempered(beta_ladder(temp_ind), y_obs, B_obs,
                      tau_TT.row(l).t(), Phi_TT(l,0), Z_TT.slice(l),
@@ -631,11 +634,11 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, r_stored_iters, arma::fill::ones);
+  arma::cube delta(K, M, r_stored_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(r_stored_iters,1);
   arma::field<arma::cube> Phi(r_stored_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(r_stored_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, r_stored_iters);
   arma::vec loglik = arma::zeros(r_stored_iters);
 
   // start numbering for output files
@@ -670,10 +673,10 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
   arma::vec sigma_TT((2 * N_t) + 1, arma::fill::ones);
   arma::cube Z_TT = arma::randi<arma::cube>(n_funct, K, (2 * N_t) + 1,
                                             arma::distr_param(0,1));
-  arma::mat delta_TT(M, (2 * N_t) + 1, arma::fill::ones);
+  arma::cube delta_TT(K, M, (2 * N_t) + 1, arma::fill::ones);
   arma::field<arma::cube> gamma_TT((2 * N_t) + 1, 1);
   arma::field<arma::cube> Phi_TT((2 * N_t) + 1, 1);
-  arma::mat A_TT = arma::ones((2 * N_t) + 1, 2);
+  arma::cube A_TT = arma::ones(K, 2, (2 * N_t) + 1);
   arma::vec alpha_3_TT = arma::ones((2 * N_t) + 1);
 
   for(int i = 0; i < ((2 * N_t) + 1); i++){
@@ -702,9 +705,11 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
       updateAlpha3(pi.col(i % r_stored_iters), b, Z.slice(i % r_stored_iters),
                    (i % r_stored_iters), r_stored_iters, var_alpha3, alpha_3);
 
-      tilde_tau(0) = delta(0, (i % r_stored_iters));
-      for(int j = 1; j < M; j++){
-        tilde_tau(j) = tilde_tau(j-1) * delta(j,(i % r_stored_iters));
+      for(int k = 0; k < K; k++){
+        tilde_tau(k, 0) = delta(k, 0, (i % r_stored_iters));
+        for(int j = 1; j < M; j++){
+          tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j,(i % r_stored_iters));
+        }
       }
 
       updatePhi(y_obs, B_obs, nu.slice((i % r_stored_iters)),
@@ -714,13 +719,13 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
                 r_stored_iters, m_1, M_1, Phi);
 
       updateDelta(Phi((i % r_stored_iters),0), gamma((i % r_stored_iters),0),
-                  A.row(i % r_stored_iters).t(), (i % r_stored_iters),
+                  A.slice(i % r_stored_iters), (i % r_stored_iters),
                   r_stored_iters, delta);
 
-      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.col((i % r_stored_iters)),
+      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i % r_stored_iters)),
               var_epsilon1, var_epsilon2, (i % r_stored_iters), r_stored_iters, A);
 
-      updateGamma(nu_1, delta.col((i % r_stored_iters)), Phi((i % r_stored_iters),0),
+      updateGamma(nu_1, delta.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
                   (i % r_stored_iters), r_stored_iters, gamma);
 
       updateNu(y_obs, B_obs, tau.row((i % r_stored_iters)).t(),
@@ -748,10 +753,10 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
       pi_TT.col(0) = pi.col(i % r_stored_iters);
       sigma_TT(0) = sigma(i % r_stored_iters);
       Z_TT.slice(0) = Z.slice(i % r_stored_iters);
-      delta_TT.col(0) = delta.col(i % r_stored_iters);
+      delta_TT.slice(0) = delta.slice(i % r_stored_iters);
       gamma_TT(0,0) = gamma(i % r_stored_iters,0);
       Phi_TT(0,0) = Phi(i % r_stored_iters,0);
-      A_TT.row(0) = A.row(i % r_stored_iters);
+      A_TT.slice(0) = A.slice(i % r_stored_iters);
       tau_TT.row(0) = tau.row(i % r_stored_iters);
       alpha_3_TT(0) = alpha_3(i % r_stored_iters);
 
@@ -760,10 +765,10 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
       pi_TT.col(1) = pi.col(i % r_stored_iters);
       sigma_TT(1) = sigma(i % r_stored_iters);
       Z_TT.slice(1) = Z.slice(i % r_stored_iters);
-      delta_TT.col(1) = delta.col(i % r_stored_iters);
+      delta_TT.slice(1) = delta.slice(i % r_stored_iters);
       gamma_TT(1,0) = gamma(i % r_stored_iters,0);
       Phi_TT(1,0) = Phi(i % r_stored_iters,0);
-      A_TT.row(1) = A.row(i % r_stored_iters);
+      A_TT.slice(1) = A.slice(i % r_stored_iters);
       tau_TT.row(1) = tau.row(i % r_stored_iters);
       alpha_3_TT(1) = alpha_3(i % r_stored_iters);
 
@@ -778,21 +783,23 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
         updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
         updateAlpha3(pi_TT.col(l), b, Z_TT.slice(l), l, (2 * N_t) + 1, var_alpha3, alpha_3_TT);
 
-        tilde_tau(0) = delta_TT(0, l);
-        for(int j = 1; j < M; j++){
-          tilde_tau(j) = tilde_tau(j-1) * delta_TT(j,l);
+        for(int k = 0; k < K; k++){
+          tilde_tau(k, 0) = delta_TT(k, 0, l);
+          for(int j = 1; j < M; j++){
+            tilde_tau(k, j) = tilde_tau(k, j-1) * delta_TT(k, j, l);
+          }
         }
 
         updatePhiTempered(beta_ladder(temp_ind), y_obs, B_obs,
                           nu_TT.slice(l), gamma_TT(l,0), tilde_tau, Z_TT.slice(l),
                           chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, m_1, M_1,
                           Phi_TT);
-        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.row(l).t(), l, (2 * N_t) + 1,
+        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.slice(l), l, (2 * N_t) + 1,
                     delta_TT);
 
-        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.col(l), var_epsilon1,
+        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.slice(l), var_epsilon1,
                 var_epsilon2, l, (2 * N_t) + 1, A_TT);
-        updateGamma(nu_1, delta_TT.col(l), Phi_TT(l,0), l, (2 * N_t) + 1,
+        updateGamma(nu_1, delta_TT.slice(l), Phi_TT(l,0), l, (2 * N_t) + 1,
                     gamma_TT);
         updateNuTempered(beta_ladder(temp_ind), y_obs, B_obs,
                          tau_TT.row(l).t(), Phi_TT(l,0), Z_TT.slice(l),
@@ -829,10 +836,10 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
         pi.col(i % r_stored_iters) = pi_TT.col(2 * N_t);
         sigma(i % r_stored_iters) = sigma_TT(2 * N_t);
         Z.slice(i % r_stored_iters) = Z_TT.slice(2 * N_t);
-        delta.col(i % r_stored_iters) = delta_TT.col(2 * N_t);
+        delta.slice(i % r_stored_iters) = delta_TT.slice(2 * N_t);
         gamma(i % r_stored_iters,0) = gamma_TT(2 * N_t,0);
         Phi(i % r_stored_iters,0) = Phi_TT(2 * N_t,0);
-        A.row(i % r_stored_iters) = A_TT.row(2 * N_t);
+        A.slice(i % r_stored_iters) = A_TT.slice(2 * N_t);
         tau.row(i % r_stored_iters) = tau_TT.row(2 * N_t);
         alpha_3(i % r_stored_iters) = alpha_3_TT(2 * N_t);
 
@@ -847,8 +854,8 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
         pi.col((i+1) % r_stored_iters) = pi.col(i % r_stored_iters);
         sigma((i+1) % r_stored_iters) = sigma(i % r_stored_iters);
         Z.slice((i+1) % r_stored_iters) = Z.slice(i % r_stored_iters);
-        delta.col((i+1) % r_stored_iters) = delta.col(i % r_stored_iters);
-        A.row((i+1) % r_stored_iters) = A.row(i % r_stored_iters);
+        delta.slice((i+1) % r_stored_iters) = delta.slice(i % r_stored_iters);
+        A.slice((i+1) % r_stored_iters) = A.slice(i % r_stored_iters);
         tau.row((i+1) % r_stored_iters) = tau.row(i % r_stored_iters);
         Phi((i+1) % r_stored_iters,0) = Phi(i % r_stored_iters, 0);
         alpha_3((i+1) % r_stored_iters) =  alpha_3(i % r_stored_iters);
@@ -871,10 +878,10 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
       arma::mat pi1(K, r_stored_iters/thinning_num, arma::fill::zeros);
       arma::vec alpha_31(r_stored_iters/thinning_num, arma::fill::zeros);
       arma::vec sigma1(r_stored_iters/thinning_num, arma::fill::ones);
-      arma::mat A1 = arma::ones(r_stored_iters/thinning_num, 2);
+      arma::cube A1 = arma::ones(K, 2, r_stored_iters/thinning_num);
       arma::cube Z1 = arma::randi<arma::cube>(n_funct, K, r_stored_iters/thinning_num,
                                               arma::distr_param(0,1));
-      arma::mat delta1(M, r_stored_iters/thinning_num, arma::fill::ones);
+      arma::cube delta1(K, M, r_stored_iters/thinning_num, arma::fill::ones);
       arma::field<arma::cube> gamma1(r_stored_iters/thinning_num,1);
       arma::field<arma::cube> Phi1(r_stored_iters/thinning_num, 1);
       arma::mat tau1(r_stored_iters/thinning_num, K, arma::fill::ones);
@@ -883,9 +890,9 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
       chi1.slice(0) = chi.slice(0);
       pi1.col(0) = pi.col(0);
       sigma1(0) = sigma(0);
-      A1.row(0) = A.row(0);
+      A1.slice(0) = A.slice(0);
       Z1.slice(0) = Z.slice(0);
-      delta1.col(0) = delta.col(0);
+      delta1.slice(0) = delta.slice(0);
       gamma1(0,0) = gamma(0,0);
       Phi1(0,0) = Phi(0,0);
       tau1.row(0) = tau.row(0);
@@ -896,9 +903,9 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
         pi1.col(p) = pi.col(thinning_num*p - 1);
         alpha_31(p) = alpha_3(thinning_num*p - 1);
         sigma1(p) = sigma(thinning_num*p - 1);
-        A1.row(p) = A.row(thinning_num*p - 1);
+        A1.slice(p) = A.slice(thinning_num*p - 1);
         Z1.slice(p) = Z.slice(thinning_num*p - 1);
-        delta1.col(p) = delta.col(thinning_num*p - 1);
+        delta1.slice(p) = delta.slice(thinning_num*p - 1);
         gamma1(p,0) = gamma(thinning_num*p - 1,0);
         Phi1(p,0) = Phi(thinning_num*p  - 1,0);
         tau1.row(p) = tau.row(thinning_num*p - 1);
@@ -920,8 +927,8 @@ inline Rcpp::List BFPMM_MTT(const arma::field<arma::vec>& y_obs,
         chi.slice(0) = chi.slice(i % r_stored_iters);
         pi.col(0) = pi.col(i % r_stored_iters);
         alpha_3(0) = alpha_3(i % r_stored_iters);
-        A.row(0) = A.row(i % r_stored_iters);
-        delta.col(0) = delta.col(i % r_stored_iters);
+        A.slice(0) = A.slice(i % r_stored_iters);
+        delta.slice(0) = delta.slice(i % r_stored_iters);
         sigma(0) = sigma(i % r_stored_iters);
         tau.row(0) = tau.row(i % r_stored_iters);
         gamma(0,0) = gamma(i % r_stored_iters, 0);
@@ -1042,11 +1049,11 @@ inline Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
+  arma::cube delta(K, M, tot_mcmc_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(tot_mcmc_iters,1);
   arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(tot_mcmc_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, tot_mcmc_iters);
   arma::vec loglik = arma::zeros(tot_mcmc_iters);
 
   for(int i = 0; i < tot_mcmc_iters; i++){
@@ -1073,9 +1080,11 @@ inline Rcpp::List BFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
     updateAlpha3(pi.col(i), b, Z.slice(i),
                  (i), tot_mcmc_iters, var_alpha3, alpha_3);
 
-    tilde_tau(0) = delta(0, (i));
-    for(int j = 1; j < M; j++){
-      tilde_tau(j) = tilde_tau(j-1) * delta(j,(i));
+    for(int k = 0; k < K; k++){
+      tilde_tau(k, 0) = delta(k, 0, i);
+      for(int j = 1; j < M; j++){
+        tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j, i);
+      }
     }
 
     updateNu(y_obs, B_obs, tau.row((i)).t(),
@@ -1211,11 +1220,11 @@ inline Rcpp::List BFPMM_Theta(const arma::field<arma::vec>& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
+  arma::cube delta(K, M, tot_mcmc_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(tot_mcmc_iters,1);
   arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(tot_mcmc_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, tot_mcmc_iters);
   arma::vec loglik = arma::zeros(tot_mcmc_iters);
 
   for(int i = 0; i < tot_mcmc_iters; i++){
@@ -1240,9 +1249,11 @@ inline Rcpp::List BFPMM_Theta(const arma::field<arma::vec>& y_obs,
 
 
   for(int i = 0; i < tot_mcmc_iters; i++){
-    tilde_tau(0) = delta(0, (i));
-    for(int j = 1; j < M; j++){
-      tilde_tau(j) = tilde_tau(j-1) * delta(j,(i));
+    for(int k = 0; k < K; k++){
+      tilde_tau(k, 0) = delta(k, 0, i);
+      for(int j = 1; j < M; j++){
+        tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j, i);
+      }
     }
 
     updatePhi(y_obs, B_obs, nu.slice((i)),
@@ -1252,13 +1263,13 @@ inline Rcpp::List BFPMM_Theta(const arma::field<arma::vec>& y_obs,
               tot_mcmc_iters, m_1, M_1, Phi);
 
     updateDelta(Phi((i),0), gamma((i),0),
-                A.row(i).t(), (i),
+                A.slice(i), (i),
                 tot_mcmc_iters, delta);
 
-    updateA(alpha1l, beta1l, alpha2l, beta2l, delta.col((i)),
+    updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i)),
             var_epsilon1, var_epsilon2, (i), tot_mcmc_iters, A);
 
-    updateGamma(nu_1, delta.col((i)), Phi((i),0),
+    updateGamma(nu_1, delta.slice((i)), Phi((i),0),
                 (i), tot_mcmc_iters, gamma);
 
     updateTau(alpha, beta, nu.slice((i)), (i),
@@ -1364,10 +1375,10 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
                                        const arma::mat& Z_est,
                                        const arma::vec& pi_est,
                                        const double& alpha_3_est,
-                                       const arma::vec& delta_est,
+                                       const arma::mat& delta_est,
                                        const arma::cube& gamma_est,
                                        const arma::cube& Phi_est,
-                                       const arma::vec& A_est,
+                                       const arma::mat& A_est,
                                        const arma::mat& nu_est,
                                        const arma::vec& tau_est,
                                        const double& sigma_est,
@@ -1413,11 +1424,11 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, r_stored_iters, arma::fill::ones);
+  arma::cube delta(K, M, r_stored_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(r_stored_iters,1);
   arma::field<arma::cube> Phi(r_stored_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(r_stored_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, r_stored_iters);
   arma::vec loglik = arma::zeros(r_stored_iters);
 
   // start numbering for output files
@@ -1452,10 +1463,10 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
   arma::vec sigma_TT((2 * N_t) + 1, arma::fill::ones);
   arma::cube Z_TT = arma::randi<arma::cube>(n_funct, K, (2 * N_t) + 1,
                                             arma::distr_param(0,1));
-  arma::mat delta_TT(M, (2 * N_t) + 1, arma::fill::ones);
+  arma::cube delta_TT(K, M, (2 * N_t) + 1, arma::fill::ones);
   arma::field<arma::cube> gamma_TT((2 * N_t) + 1, 1);
   arma::field<arma::cube> Phi_TT((2 * N_t) + 1, 1);
-  arma::mat A_TT = arma::ones((2 * N_t) + 1, 2);
+  arma::cube A_TT = arma::ones(K, 2, (2 * N_t) + 1);
   arma::vec alpha_3_TT = arma::ones((2 * N_t) + 1);
 
   for(int i = 0; i < ((2 * N_t) + 1); i++){
@@ -1474,10 +1485,10 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
   pi.col(0) = pi_est;
 
   alpha_3(0) = alpha_3_est;
-  delta.col(0) = delta_est;
+  delta.slice(0) = delta_est;
   gamma(0,0) = gamma_est;
   Phi(0,0) = Phi_est;
-  A.row(0) = A_est.t();
+  A.slice(0) = A_est;
   nu.slice(0) = nu_est;
   tau.row(0) = tau_est.t();
   sigma(0) = sigma_est;
@@ -1498,9 +1509,11 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       updateAlpha3(pi.col(i % r_stored_iters), b, Z.slice(i % r_stored_iters),
                    (i % r_stored_iters), r_stored_iters, var_alpha3, alpha_3);
 
-      tilde_tau(0) = delta(0, (i % r_stored_iters));
-      for(int j = 1; j < M; j++){
-        tilde_tau(j) = tilde_tau(j-1) * delta(j,(i % r_stored_iters));
+      for(int k = 0; k < K; k++){
+        tilde_tau(k, 0) = delta(k, 0, (i % r_stored_iters));
+        for(int j = 1; j < M; j++){
+          tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j,(i % r_stored_iters));
+        }
       }
 
       updatePhi(y_obs, B_obs, nu.slice((i % r_stored_iters)),
@@ -1510,13 +1523,13 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
                 r_stored_iters, m_1, M_1, Phi);
 
       updateDelta(Phi((i % r_stored_iters),0), gamma((i % r_stored_iters),0),
-                  A.row(i % r_stored_iters).t(), (i % r_stored_iters),
+                  A.slice(i % r_stored_iters), (i % r_stored_iters),
                   r_stored_iters, delta);
 
-      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.col((i % r_stored_iters)),
+      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i % r_stored_iters)),
               var_epsilon1, var_epsilon2, (i % r_stored_iters), r_stored_iters, A);
 
-      updateGamma(nu_1, delta.col((i % r_stored_iters)), Phi((i % r_stored_iters),0),
+      updateGamma(nu_1, delta.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
                   (i % r_stored_iters), r_stored_iters, gamma);
 
       updateNu(y_obs, B_obs, tau.row((i % r_stored_iters)).t(),
@@ -1545,10 +1558,10 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       pi_TT.col(0) = pi.col(i % r_stored_iters);
       sigma_TT(0) = sigma(i % r_stored_iters);
       Z_TT.slice(0) = Z.slice(i % r_stored_iters);
-      delta_TT.col(0) = delta.col(i % r_stored_iters);
+      delta_TT.slice(0) = delta.slice(i % r_stored_iters);
       gamma_TT(0,0) = gamma(i % r_stored_iters,0);
       Phi_TT(0,0) = Phi(i % r_stored_iters,0);
-      A_TT.row(0) = A.row(i % r_stored_iters);
+      A_TT.slice(0) = A.slice(i % r_stored_iters);
       tau_TT.row(0) = tau.row(i % r_stored_iters);
       alpha_3_TT(0) = alpha_3(i % r_stored_iters);
 
@@ -1557,10 +1570,10 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       pi_TT.col(1) = pi.col(i % r_stored_iters);
       sigma_TT(1) = sigma(i % r_stored_iters);
       Z_TT.slice(1) = Z.slice(i % r_stored_iters);
-      delta_TT.col(1) = delta.col(i % r_stored_iters);
+      delta_TT.slice(1) = delta.slice(i % r_stored_iters);
       gamma_TT(1,0) = gamma(i % r_stored_iters,0);
       Phi_TT(1,0) = Phi(i % r_stored_iters,0);
-      A_TT.row(1) = A.row(i % r_stored_iters);
+      A_TT.slice(1) = A.slice(i % r_stored_iters);
       tau_TT.row(1) = tau.row(i % r_stored_iters);
       alpha_3_TT(1) = alpha_3(i % r_stored_iters);
 
@@ -1575,21 +1588,23 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
         updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
         updateAlpha3(pi_TT.col(l), b, Z_TT.slice(l), l, (2 * N_t) + 1, var_alpha3, alpha_3_TT);
 
-        tilde_tau(0) = delta_TT(0, l);
-        for(int j = 1; j < M; j++){
-          tilde_tau(j) = tilde_tau(j-1) * delta_TT(j,l);
+        for(int k = 0; k < K; k++){
+          tilde_tau(k, 0) = delta_TT(k, 0, l);
+          for(int j = 1; j < M; j++){
+            tilde_tau(k, j) = tilde_tau(k, j-1) * delta_TT(k, j, l);
+          }
         }
 
         updatePhiTempered(beta_ladder(temp_ind), y_obs, B_obs,
                           nu_TT.slice(l), gamma_TT(l,0), tilde_tau, Z_TT.slice(l),
                           chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, m_1, M_1,
                           Phi_TT);
-        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.row(l).t(), l, (2 * N_t) + 1,
+        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.slice(l), l, (2 * N_t) + 1,
                     delta_TT);
 
-        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.col(l), var_epsilon1,
+        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.slice(l), var_epsilon1,
                 var_epsilon2, l, (2 * N_t) + 1, A_TT);
-        updateGamma(nu_1, delta_TT.col(l), Phi_TT(l,0), l, (2 * N_t) + 1,
+        updateGamma(nu_1, delta_TT.slice(l), Phi_TT(l,0), l, (2 * N_t) + 1,
                     gamma_TT);
         updateNuTempered(beta_ladder(temp_ind), y_obs, B_obs,
                          tau_TT.row(l).t(), Phi_TT(l,0), Z_TT.slice(l),
@@ -1625,10 +1640,10 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
         pi.col(i % r_stored_iters) = pi_TT.col(2 * N_t);
         sigma(i % r_stored_iters) = sigma_TT(2 * N_t);
         Z.slice(i % r_stored_iters) = Z_TT.slice(2 * N_t);
-        delta.col(i % r_stored_iters) = delta_TT.col(2 * N_t);
+        delta.slice(i % r_stored_iters) = delta_TT.slice(2 * N_t);
         gamma(i % r_stored_iters,0) = gamma_TT(2 * N_t,0);
         Phi(i % r_stored_iters,0) = Phi_TT(2 * N_t,0);
-        A.row(i % r_stored_iters) = A_TT.row(2 * N_t);
+        A.slice(i % r_stored_iters) = A_TT.slice(2 * N_t);
         tau.row(i % r_stored_iters) = tau_TT.row(2 * N_t);
         alpha_3(i % r_stored_iters) = alpha_3_TT(2 * N_t);
 
@@ -1643,8 +1658,8 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
         pi.col((i+1) % r_stored_iters) = pi.col(i % r_stored_iters);
         sigma((i+1) % r_stored_iters) = sigma(i % r_stored_iters);
         Z.slice((i+1) % r_stored_iters) = Z.slice(i % r_stored_iters);
-        delta.col((i+1) % r_stored_iters) = delta.col(i % r_stored_iters);
-        A.row((i+1) % r_stored_iters) = A.row(i % r_stored_iters);
+        delta.slice((i+1) % r_stored_iters) = delta.slice(i % r_stored_iters);
+        A.slice((i+1) % r_stored_iters) = A.slice(i % r_stored_iters);
         tau.row((i+1) % r_stored_iters) = tau.row(i % r_stored_iters);
         Phi((i+1) % r_stored_iters,0) = Phi(i % r_stored_iters, 0);
         alpha_3((i+1) % r_stored_iters) =  alpha_3(i % r_stored_iters);
@@ -1667,10 +1682,10 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       arma::mat pi1(K, r_stored_iters/thinning_num, arma::fill::zeros);
       arma::vec alpha_31(r_stored_iters/thinning_num, arma::fill::zeros);
       arma::vec sigma1(r_stored_iters/thinning_num, arma::fill::ones);
-      arma::mat A1 = arma::ones(r_stored_iters/thinning_num, 2);
+      arma::cube A1 = arma::ones(K, 2, r_stored_iters/thinning_num);
       arma::cube Z1 = arma::randi<arma::cube>(n_funct, K, r_stored_iters/thinning_num,
                                               arma::distr_param(0,1));
-      arma::mat delta1(M, r_stored_iters/thinning_num, arma::fill::ones);
+      arma::cube delta1(K, M, r_stored_iters/thinning_num, arma::fill::ones);
       arma::field<arma::cube> gamma1(r_stored_iters/thinning_num,1);
       arma::field<arma::cube> Phi1(r_stored_iters/thinning_num, 1);
       arma::mat tau1(r_stored_iters/thinning_num, K, arma::fill::ones);
@@ -1679,9 +1694,9 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       chi1.slice(0) = chi.slice(0);
       pi1.col(0) = pi.col(0);
       sigma1(0) = sigma(0);
-      A1.row(0) = A.row(0);
+      A1.slice(0) = A.slice(0);
       Z1.slice(0) = Z.slice(0);
-      delta1.col(0) = delta.col(0);
+      delta1.slice(0) = delta.slice(0);
       gamma1(0,0) = gamma(0,0);
       Phi1(0,0) = Phi(0,0);
       tau1.row(0) = tau.row(0);
@@ -1692,9 +1707,9 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
         pi1.col(p) = pi.col(thinning_num*p - 1);
         alpha_31(p) = alpha_3(thinning_num*p - 1);
         sigma1(p) = sigma(thinning_num*p - 1);
-        A1.row(p) = A.row(thinning_num*p - 1);
+        A1.slice(p) = A.slice(thinning_num*p - 1);
         Z1.slice(p) = Z.slice(thinning_num*p - 1);
-        delta1.col(p) = delta.col(thinning_num*p - 1);
+        delta1.slice(p) = delta.slice(thinning_num*p - 1);
         gamma1(p,0) = gamma(thinning_num*p - 1,0);
         Phi1(p,0) = Phi(thinning_num*p  - 1,0);
         tau1.row(p) = tau.row(thinning_num*p - 1);
@@ -1717,8 +1732,8 @@ inline Rcpp::List BFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       chi.slice(0) = chi.slice(i % r_stored_iters);
       pi.col(0) = pi.col(i % r_stored_iters);
       alpha_3(0) = alpha_3(i % r_stored_iters);
-      A.row(0) = A.row(i % r_stored_iters);
-      delta.col(0) = delta.col(i % r_stored_iters);
+      A.slice(0) = A.slice(i % r_stored_iters);
+      delta.slice(0) = delta.slice(i % r_stored_iters);
       sigma(0) = sigma(i % r_stored_iters);
       tau.row(0) = tau.row(i % r_stored_iters);
       gamma(0,0) = gamma(i % r_stored_iters, 0);
@@ -1816,11 +1831,11 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, r_stored_iters, arma::fill::ones);
+  arma::cube delta(K, M, r_stored_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(r_stored_iters,1);
   arma::field<arma::cube> Phi(r_stored_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(r_stored_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, r_stored_iters);
   arma::vec loglik = arma::zeros(r_stored_iters);
 
   // start numbering for output files
@@ -1855,10 +1870,10 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
   arma::vec sigma_TT((2 * N_t) + 1, arma::fill::ones);
   arma::cube Z_TT = arma::randi<arma::cube>(n_obs, K, (2 * N_t) + 1,
                                             arma::distr_param(0,1));
-  arma::mat delta_TT(M, (2 * N_t) + 1, arma::fill::ones);
+  arma::cube delta_TT(K, M, (2 * N_t) + 1, arma::fill::ones);
   arma::field<arma::cube> gamma_TT((2 * N_t) + 1, 1);
   arma::field<arma::cube> Phi_TT((2 * N_t) + 1, 1);
-  arma::mat A_TT = arma::ones((2 * N_t) + 1, 2);
+  arma::cube A_TT = arma::ones(K, 2, (2 * N_t) + 1);
   arma::vec alpha_3_TT = arma::ones((2 * N_t) + 1);
 
   for(int i = 0; i < ((2 * N_t) + 1); i++){
@@ -1887,9 +1902,11 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
       updateAlpha3(pi.col(i % r_stored_iters), b, Z.slice(i % r_stored_iters),
                    (i % r_stored_iters), r_stored_iters, var_alpha3, alpha_3);
 
-      tilde_tau(0) = delta(0, (i % r_stored_iters));
-      for(int j = 1; j < M; j++){
-        tilde_tau(j) = tilde_tau(j-1) * delta(j,(i % r_stored_iters));
+      for(int k = 0; k < K; k++){
+        tilde_tau(k, 0) = delta(k, 0, (i % r_stored_iters));
+        for(int j = 1; j < M; j++){
+          tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j,(i % r_stored_iters));
+        }
       }
 
       updatePhiMV(y_obs, nu.slice((i % r_stored_iters)),
@@ -1899,13 +1916,13 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
                   r_stored_iters, m_1, M_1, Phi);
 
       updateDelta(Phi((i % r_stored_iters),0), gamma((i % r_stored_iters),0),
-                  A.row(i % r_stored_iters).t(), (i % r_stored_iters),
+                  A.slice(i % r_stored_iters), (i % r_stored_iters),
                   r_stored_iters, delta);
 
-      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.col((i % r_stored_iters)),
+      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i % r_stored_iters)),
               var_epsilon1, var_epsilon2, (i % r_stored_iters), r_stored_iters, A);
 
-      updateGamma(nu_1, delta.col((i % r_stored_iters)), Phi((i % r_stored_iters),0),
+      updateGamma(nu_1, delta.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
                   (i % r_stored_iters), r_stored_iters, gamma);
 
       updateNuMV(y_obs, tau.row((i % r_stored_iters)).t(),
@@ -1933,10 +1950,10 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
       pi_TT.col(0) = pi.col(i % r_stored_iters);
       sigma_TT(0) = sigma(i % r_stored_iters);
       Z_TT.slice(0) = Z.slice(i % r_stored_iters);
-      delta_TT.col(0) = delta.col(i % r_stored_iters);
+      delta_TT.slice(0) = delta.slice(i % r_stored_iters);
       gamma_TT(0,0) = gamma(i % r_stored_iters,0);
       Phi_TT(0,0) = Phi(i % r_stored_iters,0);
-      A_TT.row(0) = A.row(i % r_stored_iters);
+      A_TT.slice(0) = A.slice(i % r_stored_iters);
       tau_TT.row(0) = tau.row(i % r_stored_iters);
       alpha_3_TT(0) = alpha_3(i % r_stored_iters);
 
@@ -1945,10 +1962,10 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
       pi_TT.col(1) = pi.col(i % r_stored_iters);
       sigma_TT(1) = sigma(i % r_stored_iters);
       Z_TT.slice(1) = Z.slice(i % r_stored_iters);
-      delta_TT.col(1) = delta.col(i % r_stored_iters);
+      delta_TT.slice(1) = delta.slice(i % r_stored_iters);
       gamma_TT(1,0) = gamma(i % r_stored_iters,0);
       Phi_TT(1,0) = Phi(i % r_stored_iters,0);
-      A_TT.row(1) = A.row(i % r_stored_iters);
+      A_TT.slice(1) = A.slice(i % r_stored_iters);
       tau_TT.row(1) = tau.row(i % r_stored_iters);
       alpha_3_TT(1) = alpha_3(i % r_stored_iters);
 
@@ -1963,21 +1980,23 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
         updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
         updateAlpha3(pi_TT.col(l), b, Z_TT.slice(l), l, (2 * N_t) + 1, var_alpha3, alpha_3_TT);
 
-        tilde_tau(0) = delta_TT(0, l);
-        for(int j = 1; j < M; j++){
-          tilde_tau(j) = tilde_tau(j-1) * delta_TT(j,l);
+        for(int k = 0; k < K; k++){
+          tilde_tau(k, 0) = delta_TT(k, 0, l);
+          for(int j = 1; j < M; j++){
+            tilde_tau(k, j) = tilde_tau(k, j-1) * delta_TT(k, j, l);
+          }
         }
 
         updatePhiTemperedMV(beta_ladder(temp_ind), y_obs,
                             nu_TT.slice(l), gamma_TT(l,0), tilde_tau, Z_TT.slice(l),
                             chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, m_1, M_1,
                             Phi_TT);
-        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.row(l).t(), l, (2 * N_t) + 1,
+        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.slice(l), l, (2 * N_t) + 1,
                     delta_TT);
 
-        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.col(l), var_epsilon1,
+        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.slice(l), var_epsilon1,
                 var_epsilon2, l, (2 * N_t) + 1, A_TT);
-        updateGamma(nu_1, delta_TT.col(l), Phi_TT(l,0), l, (2 * N_t) + 1,
+        updateGamma(nu_1, delta_TT.slice(l), Phi_TT(l,0), l, (2 * N_t) + 1,
                     gamma_TT);
         updateNuTemperedMV(beta_ladder(temp_ind), y_obs,
                            tau_TT.row(l).t(), Phi_TT(l,0), Z_TT.slice(l),
@@ -2014,10 +2033,10 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
         pi.col(i % r_stored_iters) = pi_TT.col(2 * N_t);
         sigma(i % r_stored_iters) = sigma_TT(2 * N_t);
         Z.slice(i % r_stored_iters) = Z_TT.slice(2 * N_t);
-        delta.col(i % r_stored_iters) = delta_TT.col(2 * N_t);
+        delta.slice(i % r_stored_iters) = delta_TT.slice(2 * N_t);
         gamma(i % r_stored_iters,0) = gamma_TT(2 * N_t,0);
         Phi(i % r_stored_iters,0) = Phi_TT(2 * N_t,0);
-        A.row(i % r_stored_iters) = A_TT.row(2 * N_t);
+        A.slice(i % r_stored_iters) = A_TT.slice(2 * N_t);
         tau.row(i % r_stored_iters) = tau_TT.row(2 * N_t);
         alpha_3(i % r_stored_iters) = alpha_3_TT(2 * N_t);
 
@@ -2032,8 +2051,8 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
         pi.col((i+1) % r_stored_iters) = pi.col(i % r_stored_iters);
         sigma((i+1) % r_stored_iters) = sigma(i % r_stored_iters);
         Z.slice((i+1) % r_stored_iters) = Z.slice(i % r_stored_iters);
-        delta.col((i+1) % r_stored_iters) = delta.col(i % r_stored_iters);
-        A.row((i+1) % r_stored_iters) = A.row(i % r_stored_iters);
+        delta.slice((i+1) % r_stored_iters) = delta.slice(i % r_stored_iters);
+        A.slice((i+1) % r_stored_iters) = A.slice(i % r_stored_iters);
         tau.row((i+1) % r_stored_iters) = tau.row(i % r_stored_iters);
         Phi((i+1) % r_stored_iters,0) = Phi(i % r_stored_iters, 0);
         alpha_3((i+1) % r_stored_iters) =  alpha_3(i % r_stored_iters);
@@ -2056,10 +2075,10 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
       arma::mat pi1(K, r_stored_iters/thinning_num, arma::fill::zeros);
       arma::vec alpha_31(r_stored_iters/thinning_num, arma::fill::zeros);
       arma::vec sigma1(r_stored_iters/thinning_num, arma::fill::ones);
-      arma::mat A1 = arma::ones(r_stored_iters/thinning_num, 2);
+      arma::cube A1 = arma::ones(K, 2, r_stored_iters/thinning_num);
       arma::cube Z1 = arma::randi<arma::cube>(n_obs, K, r_stored_iters/thinning_num,
                                               arma::distr_param(0,1));
-      arma::mat delta1(M, r_stored_iters/thinning_num, arma::fill::ones);
+      arma::cube delta1(K, M, r_stored_iters/thinning_num, arma::fill::ones);
       arma::field<arma::cube> gamma1(r_stored_iters/thinning_num,1);
       arma::field<arma::cube> Phi1(r_stored_iters/thinning_num, 1);
       arma::mat tau1(r_stored_iters/thinning_num, K, arma::fill::ones);
@@ -2068,9 +2087,9 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
       chi1.slice(0) = chi.slice(0);
       pi1.col(0) = pi.col(0);
       sigma1(0) = sigma(0);
-      A1.row(0) = A.row(0);
+      A1.slice(0) = A.slice(0);
       Z1.slice(0) = Z.slice(0);
-      delta1.col(0) = delta.col(0);
+      delta1.slice(0) = delta.slice(0);
       gamma1(0,0) = gamma(0,0);
       Phi1(0,0) = Phi(0,0);
       tau1.row(0) = tau.row(0);
@@ -2081,9 +2100,9 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
         pi1.col(p) = pi.col(thinning_num*p - 1);
         alpha_31(p) = alpha_3(thinning_num*p - 1);
         sigma1(p) = sigma(thinning_num*p - 1);
-        A1.row(p) = A.row(thinning_num*p - 1);
+        A1.slice(p) = A.slice(thinning_num*p - 1);
         Z1.slice(p) = Z.slice(thinning_num*p - 1);
-        delta1.col(p) = delta.col(thinning_num*p - 1);
+        delta1.slice(p) = delta.slice(thinning_num*p - 1);
         gamma1(p,0) = gamma(thinning_num*p - 1,0);
         Phi1(p,0) = Phi(thinning_num*p  - 1,0);
         tau1.row(p) = tau.row(thinning_num*p - 1);
@@ -2105,8 +2124,8 @@ inline Rcpp::List BFPMM_MTTMV(const arma::mat& y_obs,
         chi.slice(0) = chi.slice(i % r_stored_iters);
         pi.col(0) = pi.col(i % r_stored_iters);
         alpha_3(0) = alpha_3(i % r_stored_iters);
-        A.row(0) = A.row(i % r_stored_iters);
-        delta.col(0) = delta.col(i % r_stored_iters);
+        A.slice(0) = A.slice(i % r_stored_iters);
+        delta.slice(0) = delta.slice(i % r_stored_iters);
         sigma(0) = sigma(i % r_stored_iters);
         tau.row(0) = tau.row(i % r_stored_iters);
         gamma(0,0) = gamma(i % r_stored_iters, 0);
@@ -2196,11 +2215,11 @@ inline Rcpp::List BFPMM_Nu_ZMV(const arma::mat& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
+  arma::cube delta(K, M, tot_mcmc_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(tot_mcmc_iters,1);
   arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(tot_mcmc_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, tot_mcmc_iters);
   arma::vec loglik = arma::zeros(tot_mcmc_iters);
 
   for(int i = 0; i < tot_mcmc_iters; i++){
@@ -2227,9 +2246,11 @@ inline Rcpp::List BFPMM_Nu_ZMV(const arma::mat& y_obs,
     updateAlpha3(pi.col(i), b, Z.slice(i),
                  (i), tot_mcmc_iters, var_alpha3, alpha_3);
 
-    tilde_tau(0) = delta(0, (i));
-    for(int j = 1; j < M; j++){
-      tilde_tau(j) = tilde_tau(j-1) * delta(j,(i));
+    for(int k = 0; k < K; k++){
+      tilde_tau(k, 0) = delta(k, 0, i);
+      for(int j = 1; j < M; j++){
+        tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j, i);
+      }
     }
 
     updateNuMV(y_obs, tau.row((i)).t(),
@@ -2336,11 +2357,11 @@ inline Rcpp::List BFPMM_ThetaMV(const arma::mat& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
+  arma::cube delta(K, M, tot_mcmc_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(tot_mcmc_iters,1);
   arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(tot_mcmc_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, tot_mcmc_iters);
   arma::vec loglik = arma::zeros(tot_mcmc_iters);
 
   for(int i = 0; i < tot_mcmc_iters; i++){
@@ -2365,9 +2386,11 @@ inline Rcpp::List BFPMM_ThetaMV(const arma::mat& y_obs,
 
 
   for(int i = 0; i < tot_mcmc_iters; i++){
-    tilde_tau(0) = delta(0, (i));
-    for(int j = 1; j < M; j++){
-      tilde_tau(j) = tilde_tau(j-1) * delta(j,(i));
+    for(int k = 0; k < K; k++){
+      tilde_tau(k, 0) = delta(k, 0, i);
+      for(int j = 1; j < M; j++){
+        tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j, i);
+      }
     }
 
     updatePhiMV(y_obs, nu.slice((i)),
@@ -2377,13 +2400,13 @@ inline Rcpp::List BFPMM_ThetaMV(const arma::mat& y_obs,
                 tot_mcmc_iters, m_1, M_1, Phi);
 
     updateDelta(Phi((i),0), gamma((i),0),
-                A.row(i).t(), (i),
+                A.slice(i), (i),
                 tot_mcmc_iters, delta);
 
-    updateA(alpha1l, beta1l, alpha2l, beta2l, delta.col((i)),
+    updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i)),
             var_epsilon1, var_epsilon2, (i), tot_mcmc_iters, A);
 
-    updateGamma(nu_1, delta.col((i)), Phi((i),0),
+    updateGamma(nu_1, delta.slice((i)), Phi((i),0),
                 (i), tot_mcmc_iters, gamma);
 
     updateTauMV(alpha, beta, nu.slice((i)), (i),
@@ -2478,10 +2501,10 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
                                          const arma::mat& Z_est,
                                          const arma::vec& pi_est,
                                          const double& alpha_3_est,
-                                         const arma::vec& delta_est,
+                                         const arma::mat& delta_est,
                                          const arma::cube& gamma_est,
                                          const arma::cube& Phi_est,
-                                         const arma::vec& A_est,
+                                         const arma::mat& A_est,
                                          const arma::mat& nu_est,
                                          const arma::vec& tau_est,
                                          const double& sigma_est,
@@ -2504,11 +2527,11 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, r_stored_iters, arma::fill::ones);
+  arma::cube delta(K, M, r_stored_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(r_stored_iters,1);
   arma::field<arma::cube> Phi(r_stored_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(r_stored_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, r_stored_iters);
   arma::vec loglik = arma::zeros(r_stored_iters);
 
   // start numbering for output files
@@ -2543,10 +2566,10 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
   arma::vec sigma_TT((2 * N_t) + 1, arma::fill::ones);
   arma::cube Z_TT = arma::randi<arma::cube>(n_obs, K, (2 * N_t) + 1,
                                             arma::distr_param(0,1));
-  arma::mat delta_TT(M, (2 * N_t) + 1, arma::fill::ones);
+  arma::cube delta_TT(K, M, (2 * N_t) + 1, arma::fill::ones);
   arma::field<arma::cube> gamma_TT((2 * N_t) + 1, 1);
   arma::field<arma::cube> Phi_TT((2 * N_t) + 1, 1);
-  arma::mat A_TT = arma::ones((2 * N_t) + 1, 2);
+  arma::cube A_TT = arma::ones(K, 2, (2 * N_t) + 1);
   arma::vec alpha_3_TT = arma::ones((2 * N_t) + 1);
 
   for(int i = 0; i < ((2 * N_t) + 1); i++){
@@ -2565,10 +2588,10 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
   pi.col(0) = pi_est;
 
   alpha_3(0) = alpha_3_est;
-  delta.col(0) = delta_est;
+  delta.slice(0) = delta_est;
   gamma(0,0) = gamma_est;
   Phi(0,0) = Phi_est;
-  A.row(0) = A_est.t();
+  A.slice(0) = A_est.t();
   nu.slice(0) = nu_est;
   tau.row(0) = tau_est.t();
   sigma(0) = sigma_est;
@@ -2589,9 +2612,11 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
       updateAlpha3(pi.col(i % r_stored_iters), b, Z.slice(i % r_stored_iters),
                    (i % r_stored_iters), r_stored_iters, var_alpha3, alpha_3);
 
-      tilde_tau(0) = delta(0, (i % r_stored_iters));
-      for(int j = 1; j < M; j++){
-        tilde_tau(j) = tilde_tau(j-1) * delta(j,(i % r_stored_iters));
+      for(int k = 0; k < K; k++){
+        tilde_tau(k, 0) = delta(k, 0, (i % r_stored_iters));
+        for(int j = 1; j < M; j++){
+          tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j,(i % r_stored_iters));
+        }
       }
 
       updatePhiMV(y_obs, nu.slice((i % r_stored_iters)),
@@ -2601,13 +2626,13 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
                   r_stored_iters, m_1, M_1, Phi);
 
       updateDelta(Phi((i % r_stored_iters),0), gamma((i % r_stored_iters),0),
-                  A.row(i % r_stored_iters).t(), (i % r_stored_iters),
+                  A.slice(i % r_stored_iters), (i % r_stored_iters),
                   r_stored_iters, delta);
 
-      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.col((i % r_stored_iters)),
+      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i % r_stored_iters)),
               var_epsilon1, var_epsilon2, (i % r_stored_iters), r_stored_iters, A);
 
-      updateGamma(nu_1, delta.col((i % r_stored_iters)), Phi((i % r_stored_iters),0),
+      updateGamma(nu_1, delta.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
                   (i % r_stored_iters), r_stored_iters, gamma);
 
       updateNuMV(y_obs, tau.row((i % r_stored_iters)).t(),
@@ -2636,10 +2661,10 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
       pi_TT.col(0) = pi.col(i % r_stored_iters);
       sigma_TT(0) = sigma(i % r_stored_iters);
       Z_TT.slice(0) = Z.slice(i % r_stored_iters);
-      delta_TT.col(0) = delta.col(i % r_stored_iters);
+      delta_TT.slice(0) = delta.slice(i % r_stored_iters);
       gamma_TT(0,0) = gamma(i % r_stored_iters,0);
       Phi_TT(0,0) = Phi(i % r_stored_iters,0);
-      A_TT.row(0) = A.row(i % r_stored_iters);
+      A_TT.slice(0) = A.slice(i % r_stored_iters);
       tau_TT.row(0) = tau.row(i % r_stored_iters);
       alpha_3_TT(0) = alpha_3(i % r_stored_iters);
 
@@ -2648,10 +2673,10 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
       pi_TT.col(1) = pi.col(i % r_stored_iters);
       sigma_TT(1) = sigma(i % r_stored_iters);
       Z_TT.slice(1) = Z.slice(i % r_stored_iters);
-      delta_TT.col(1) = delta.col(i % r_stored_iters);
+      delta_TT.slice(1) = delta.slice(i % r_stored_iters);
       gamma_TT(1,0) = gamma(i % r_stored_iters,0);
       Phi_TT(1,0) = Phi(i % r_stored_iters,0);
-      A_TT.row(1) = A.row(i % r_stored_iters);
+      A_TT.slice(1) = A.slice(i % r_stored_iters);
       tau_TT.row(1) = tau.row(i % r_stored_iters);
       alpha_3_TT(1) = alpha_3(i % r_stored_iters);
 
@@ -2666,21 +2691,23 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
         updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
         updateAlpha3(pi_TT.col(l), b, Z_TT.slice(l), l, (2 * N_t) + 1, var_alpha3, alpha_3_TT);
 
-        tilde_tau(0) = delta_TT(0, l);
-        for(int j = 1; j < M; j++){
-          tilde_tau(j) = tilde_tau(j-1) * delta_TT(j,l);
+        for(int k = 0; k < K; k++){
+          tilde_tau(k, 0) = delta_TT(k, 0, l);
+          for(int j = 1; j < M; j++){
+            tilde_tau(k, j) = tilde_tau(k, j-1) * delta_TT(k, j, l);
+          }
         }
 
         updatePhiTemperedMV(beta_ladder(temp_ind), y_obs,
                             nu_TT.slice(l), gamma_TT(l,0), tilde_tau, Z_TT.slice(l),
                             chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, m_1, M_1,
                             Phi_TT);
-        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.row(l).t(), l, (2 * N_t) + 1,
+        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.slice(l), l, (2 * N_t) + 1,
                     delta_TT);
 
-        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.col(l), var_epsilon1,
+        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.slice(l), var_epsilon1,
                 var_epsilon2, l, (2 * N_t) + 1, A_TT);
-        updateGamma(nu_1, delta_TT.col(l), Phi_TT(l,0), l, (2 * N_t) + 1,
+        updateGamma(nu_1, delta_TT.slice(l), Phi_TT(l,0), l, (2 * N_t) + 1,
                     gamma_TT);
         updateNuTemperedMV(beta_ladder(temp_ind), y_obs,
                            tau_TT.row(l).t(), Phi_TT(l,0), Z_TT.slice(l),
@@ -2716,10 +2743,10 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
         pi.col(i % r_stored_iters) = pi_TT.col(2 * N_t);
         sigma(i % r_stored_iters) = sigma_TT(2 * N_t);
         Z.slice(i % r_stored_iters) = Z_TT.slice(2 * N_t);
-        delta.col(i % r_stored_iters) = delta_TT.col(2 * N_t);
+        delta.slice(i % r_stored_iters) = delta_TT.slice(2 * N_t);
         gamma(i % r_stored_iters,0) = gamma_TT(2 * N_t,0);
         Phi(i % r_stored_iters,0) = Phi_TT(2 * N_t,0);
-        A.row(i % r_stored_iters) = A_TT.row(2 * N_t);
+        A.slice(i % r_stored_iters) = A_TT.slice(2 * N_t);
         tau.row(i % r_stored_iters) = tau_TT.row(2 * N_t);
         alpha_3(i % r_stored_iters) = alpha_3_TT(2 * N_t);
 
@@ -2734,8 +2761,8 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
         pi.col((i+1) % r_stored_iters) = pi.col(i % r_stored_iters);
         sigma((i+1) % r_stored_iters) = sigma(i % r_stored_iters);
         Z.slice((i+1) % r_stored_iters) = Z.slice(i % r_stored_iters);
-        delta.col((i+1) % r_stored_iters) = delta.col(i % r_stored_iters);
-        A.row((i+1) % r_stored_iters) = A.row(i % r_stored_iters);
+        delta.slice((i+1) % r_stored_iters) = delta.slice(i % r_stored_iters);
+        A.slice((i+1) % r_stored_iters) = A.slice(i % r_stored_iters);
         tau.row((i+1) % r_stored_iters) = tau.row(i % r_stored_iters);
         Phi((i+1) % r_stored_iters,0) = Phi(i % r_stored_iters, 0);
         alpha_3((i+1) % r_stored_iters) =  alpha_3(i % r_stored_iters);
@@ -2758,10 +2785,10 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
       arma::mat pi1(K, r_stored_iters/thinning_num, arma::fill::zeros);
       arma::vec alpha_31(r_stored_iters/thinning_num, arma::fill::zeros);
       arma::vec sigma1(r_stored_iters/thinning_num, arma::fill::ones);
-      arma::mat A1 = arma::ones(r_stored_iters/thinning_num, 2);
+      arma::cube A1 = arma::ones(K, 2, r_stored_iters/thinning_num);
       arma::cube Z1 = arma::randi<arma::cube>(n_obs, K, r_stored_iters/thinning_num,
                                               arma::distr_param(0,1));
-      arma::mat delta1(M, r_stored_iters/thinning_num, arma::fill::ones);
+      arma::cube delta1(K, M, r_stored_iters/thinning_num, arma::fill::ones);
       arma::field<arma::cube> gamma1(r_stored_iters/thinning_num,1);
       arma::field<arma::cube> Phi1(r_stored_iters/thinning_num, 1);
       arma::mat tau1(r_stored_iters/thinning_num, K, arma::fill::ones);
@@ -2770,9 +2797,9 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
       chi1.slice(0) = chi.slice(0);
       pi1.col(0) = pi.col(0);
       sigma1(0) = sigma(0);
-      A1.row(0) = A.row(0);
+      A1.slice(0) = A.slice(0);
       Z1.slice(0) = Z.slice(0);
-      delta1.col(0) = delta.col(0);
+      delta1.slice(0) = delta.slice(0);
       gamma1(0,0) = gamma(0,0);
       Phi1(0,0) = Phi(0,0);
       tau1.row(0) = tau.row(0);
@@ -2783,9 +2810,9 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
         pi1.col(p) = pi.col(thinning_num*p - 1);
         alpha_31(p) = alpha_3(thinning_num*p - 1);
         sigma1(p) = sigma(thinning_num*p - 1);
-        A1.row(p) = A.row(thinning_num*p - 1);
+        A1.slice(p) = A.slice(thinning_num*p - 1);
         Z1.slice(p) = Z.slice(thinning_num*p - 1);
-        delta1.col(p) = delta.col(thinning_num*p - 1);
+        delta1.slice(p) = delta.slice(thinning_num*p - 1);
         gamma1(p,0) = gamma(thinning_num*p - 1,0);
         Phi1(p,0) = Phi(thinning_num*p  - 1,0);
         tau1.row(p) = tau.row(thinning_num*p - 1);
@@ -2808,8 +2835,8 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
       chi.slice(0) = chi.slice(i % r_stored_iters);
       pi.col(0) = pi.col(i % r_stored_iters);
       alpha_3(0) = alpha_3(i % r_stored_iters);
-      A.row(0) = A.row(i % r_stored_iters);
-      delta.col(0) = delta.col(i % r_stored_iters);
+      A.slice(0) = A.slice(i % r_stored_iters);
+      delta.slice(0) = delta.slice(i % r_stored_iters);
       sigma(0) = sigma(i % r_stored_iters);
       tau.row(0) = tau.row(i % r_stored_iters);
       gamma(0,0) = gamma(i % r_stored_iters, 0);
@@ -2913,11 +2940,11 @@ inline Rcpp::List BHDFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
+  arma::cube delta(K, M, tot_mcmc_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(tot_mcmc_iters,1);
   arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(tot_mcmc_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, tot_mcmc_iters);
   arma::vec loglik = arma::zeros(tot_mcmc_iters);
 
   for(int i = 0; i < tot_mcmc_iters; i++){
@@ -2944,9 +2971,11 @@ inline Rcpp::List BHDFPMM_Nu_Z(const arma::field<arma::vec>& y_obs,
     updateAlpha3(pi.col(i), b, Z.slice(i),
                  (i), tot_mcmc_iters, var_alpha3, alpha_3);
 
-    tilde_tau(0) = delta(0, (i));
-    for(int j = 1; j < M; j++){
-      tilde_tau(j) = tilde_tau(j-1) * delta(j,(i));
+    for(int k = 0; k < K; k++){
+      tilde_tau(k, 0) = delta(k, 0, i);
+      for(int j = 1; j < M; j++){
+        tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j, i);
+      }
     }
 
     updateNu(y_obs, B_obs, tau.row((i)).t(),
@@ -3063,11 +3092,11 @@ inline Rcpp::List BHDFPMM_Theta(const arma::field<arma::vec>& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, tot_mcmc_iters, arma::fill::ones);
+  arma::cube delta(K, M, tot_mcmc_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(tot_mcmc_iters,1);
   arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(tot_mcmc_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, tot_mcmc_iters);
   arma::vec loglik = arma::zeros(tot_mcmc_iters);
 
   for(int i = 0; i < tot_mcmc_iters; i++){
@@ -3092,9 +3121,11 @@ inline Rcpp::List BHDFPMM_Theta(const arma::field<arma::vec>& y_obs,
 
 
   for(int i = 0; i < tot_mcmc_iters; i++){
-    tilde_tau(0) = delta(0, (i));
-    for(int j = 1; j < M; j++){
-      tilde_tau(j) = tilde_tau(j-1) * delta(j,(i));
+    for(int k = 0; k < K; k++){
+      tilde_tau(k, 0) = delta(k, 0, i);
+      for(int j = 1; j < M; j++){
+        tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j, i);
+      }
     }
 
     updatePhi(y_obs, B_obs, nu.slice((i)),
@@ -3104,13 +3135,13 @@ inline Rcpp::List BHDFPMM_Theta(const arma::field<arma::vec>& y_obs,
               tot_mcmc_iters, m_1, M_1, Phi);
 
     updateDelta(Phi((i),0), gamma((i),0),
-                A.row(i).t(), (i),
+                A.slice(i), (i),
                 tot_mcmc_iters, delta);
 
-    updateA(alpha1l, beta1l, alpha2l, beta2l, delta.col((i)),
+    updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i)),
             var_epsilon1, var_epsilon2, (i), tot_mcmc_iters, A);
 
-    updateGamma(nu_1, delta.col((i)), Phi((i),0),
+    updateGamma(nu_1, delta.slice((i)), Phi((i),0),
                 (i), tot_mcmc_iters, gamma);
 
     updateTau(alpha, beta, nu.slice((i)), (i),
@@ -3215,10 +3246,10 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
                                          const arma::mat& Z_est,
                                          const arma::vec& pi_est,
                                          const double& alpha_3_est,
-                                         const arma::vec& delta_est,
+                                         const arma::mat& delta_est,
                                          const arma::cube& gamma_est,
                                          const arma::cube& Phi_est,
-                                         const arma::vec& A_est,
+                                         const arma::mat& A_est,
                                          const arma::mat& nu_est,
                                          const arma::vec& tau_est,
                                          const double& sigma_est,
@@ -3245,11 +3276,11 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
     Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
   }
 
-  arma::mat delta(M, r_stored_iters, arma::fill::ones);
+  arma::cube delta(K, M, r_stored_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(r_stored_iters,1);
   arma::field<arma::cube> Phi(r_stored_iters, 1);
-  arma::vec tilde_tau(M, arma::fill::ones);
-  arma::mat A = arma::ones(r_stored_iters, 2);
+  arma::mat tilde_tau(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, r_stored_iters);
   arma::vec loglik = arma::zeros(r_stored_iters);
 
   // start numbering for output files
@@ -3284,10 +3315,10 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
   arma::vec sigma_TT((2 * N_t) + 1, arma::fill::ones);
   arma::cube Z_TT = arma::randi<arma::cube>(n_funct, K, (2 * N_t) + 1,
                                             arma::distr_param(0,1));
-  arma::mat delta_TT(M, (2 * N_t) + 1, arma::fill::ones);
+  arma::cube delta_TT(K, M, (2 * N_t) + 1, arma::fill::ones);
   arma::field<arma::cube> gamma_TT((2 * N_t) + 1, 1);
   arma::field<arma::cube> Phi_TT((2 * N_t) + 1, 1);
-  arma::mat A_TT = arma::ones((2 * N_t) + 1, 2);
+  arma::cube A_TT = arma::ones(K, 2, (2 * N_t) + 1);
   arma::vec alpha_3_TT = arma::ones((2 * N_t) + 1);
 
   for(int i = 0; i < ((2 * N_t) + 1); i++){
@@ -3306,10 +3337,10 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
   pi.col(0) = pi_est;
 
   alpha_3(0) = alpha_3_est;
-  delta.col(0) = delta_est;
+  delta.slice(0) = delta_est;
   gamma(0,0) = gamma_est;
   Phi(0,0) = Phi_est;
-  A.row(0) = A_est.t();
+  A.slice(0) = A_est.t();
   nu.slice(0) = nu_est;
   tau.row(0) = tau_est.t();
   sigma(0) = sigma_est;
@@ -3330,9 +3361,11 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       updateAlpha3(pi.col(i % r_stored_iters), b, Z.slice(i % r_stored_iters),
                    (i % r_stored_iters), r_stored_iters, var_alpha3, alpha_3);
 
-      tilde_tau(0) = delta(0, (i % r_stored_iters));
-      for(int j = 1; j < M; j++){
-        tilde_tau(j) = tilde_tau(j-1) * delta(j,(i % r_stored_iters));
+      for(int k = 0; k < K; k++){
+        tilde_tau(k, 0) = delta(k, 0, (i % r_stored_iters));
+        for(int j = 1; j < M; j++){
+          tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j,(i % r_stored_iters));
+        }
       }
 
       updatePhi(y_obs, B_obs, nu.slice((i % r_stored_iters)),
@@ -3342,13 +3375,13 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
                 r_stored_iters, m_1, M_1, Phi);
 
       updateDelta(Phi((i % r_stored_iters),0), gamma((i % r_stored_iters),0),
-                  A.row(i % r_stored_iters).t(), (i % r_stored_iters),
+                  A.slice(i % r_stored_iters), (i % r_stored_iters),
                   r_stored_iters, delta);
 
-      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.col((i % r_stored_iters)),
+      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i % r_stored_iters)),
               var_epsilon1, var_epsilon2, (i % r_stored_iters), r_stored_iters, A);
 
-      updateGamma(nu_1, delta.col((i % r_stored_iters)), Phi((i % r_stored_iters),0),
+      updateGamma(nu_1, delta.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
                   (i % r_stored_iters), r_stored_iters, gamma);
 
       updateNu(y_obs, B_obs, tau.row((i % r_stored_iters)).t(),
@@ -3377,10 +3410,10 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       pi_TT.col(0) = pi.col(i % r_stored_iters);
       sigma_TT(0) = sigma(i % r_stored_iters);
       Z_TT.slice(0) = Z.slice(i % r_stored_iters);
-      delta_TT.col(0) = delta.col(i % r_stored_iters);
+      delta_TT.slice(0) = delta.slice(i % r_stored_iters);
       gamma_TT(0,0) = gamma(i % r_stored_iters,0);
       Phi_TT(0,0) = Phi(i % r_stored_iters,0);
-      A_TT.row(0) = A.row(i % r_stored_iters);
+      A_TT.slice(0) = A.slice(i % r_stored_iters);
       tau_TT.row(0) = tau.row(i % r_stored_iters);
       alpha_3_TT(0) = alpha_3(i % r_stored_iters);
 
@@ -3389,10 +3422,10 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       pi_TT.col(1) = pi.col(i % r_stored_iters);
       sigma_TT(1) = sigma(i % r_stored_iters);
       Z_TT.slice(1) = Z.slice(i % r_stored_iters);
-      delta_TT.col(1) = delta.col(i % r_stored_iters);
+      delta_TT.slice(1) = delta.slice(i % r_stored_iters);
       gamma_TT(1,0) = gamma(i % r_stored_iters,0);
       Phi_TT(1,0) = Phi(i % r_stored_iters,0);
-      A_TT.row(1) = A.row(i % r_stored_iters);
+      A_TT.slice(1) = A.slice(i % r_stored_iters);
       tau_TT.row(1) = tau.row(i % r_stored_iters);
       alpha_3_TT(1) = alpha_3(i % r_stored_iters);
 
@@ -3407,21 +3440,23 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
         updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
         updateAlpha3(pi_TT.col(l), b, Z_TT.slice(l), l, (2 * N_t) + 1, var_alpha3, alpha_3_TT);
 
-        tilde_tau(0) = delta_TT(0, l);
-        for(int j = 1; j < M; j++){
-          tilde_tau(j) = tilde_tau(j-1) * delta_TT(j,l);
-        }
 
+        for(int k = 0; k < K; k++){
+          tilde_tau(k, 0) = delta_TT(k, 0, l);
+          for(int j = 1; j < M; j++){
+            tilde_tau(k, j) = tilde_tau(k, j-1) * delta_TT(k, j, l);
+          }
+        }
         updatePhiTempered(beta_ladder(temp_ind), y_obs, B_obs,
                           nu_TT.slice(l), gamma_TT(l,0), tilde_tau, Z_TT.slice(l),
                           chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, m_1, M_1,
                           Phi_TT);
-        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.row(l).t(), l, (2 * N_t) + 1,
+        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.slice(l), l, (2 * N_t) + 1,
                     delta_TT);
 
-        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.col(l), var_epsilon1,
+        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.slice(l), var_epsilon1,
                 var_epsilon2, l, (2 * N_t) + 1, A_TT);
-        updateGamma(nu_1, delta_TT.col(l), Phi_TT(l,0), l, (2 * N_t) + 1,
+        updateGamma(nu_1, delta_TT.slice(l), Phi_TT(l,0), l, (2 * N_t) + 1,
                     gamma_TT);
         updateNuTempered(beta_ladder(temp_ind), y_obs, B_obs,
                          tau_TT.row(l).t(), Phi_TT(l,0), Z_TT.slice(l),
@@ -3457,10 +3492,10 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
         pi.col(i % r_stored_iters) = pi_TT.col(2 * N_t);
         sigma(i % r_stored_iters) = sigma_TT(2 * N_t);
         Z.slice(i % r_stored_iters) = Z_TT.slice(2 * N_t);
-        delta.col(i % r_stored_iters) = delta_TT.col(2 * N_t);
+        delta.slice(i % r_stored_iters) = delta_TT.slice(2 * N_t);
         gamma(i % r_stored_iters,0) = gamma_TT(2 * N_t,0);
         Phi(i % r_stored_iters,0) = Phi_TT(2 * N_t,0);
-        A.row(i % r_stored_iters) = A_TT.row(2 * N_t);
+        A.slice(i % r_stored_iters) = A_TT.slice(2 * N_t);
         tau.row(i % r_stored_iters) = tau_TT.row(2 * N_t);
         alpha_3(i % r_stored_iters) = alpha_3_TT(2 * N_t);
 
@@ -3475,8 +3510,8 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
         pi.col((i+1) % r_stored_iters) = pi.col(i % r_stored_iters);
         sigma((i+1) % r_stored_iters) = sigma(i % r_stored_iters);
         Z.slice((i+1) % r_stored_iters) = Z.slice(i % r_stored_iters);
-        delta.col((i+1) % r_stored_iters) = delta.col(i % r_stored_iters);
-        A.row((i+1) % r_stored_iters) = A.row(i % r_stored_iters);
+        delta.slice((i+1) % r_stored_iters) = delta.slice(i % r_stored_iters);
+        A.slice((i+1) % r_stored_iters) = A.slice(i % r_stored_iters);
         tau.row((i+1) % r_stored_iters) = tau.row(i % r_stored_iters);
         Phi((i+1) % r_stored_iters,0) = Phi(i % r_stored_iters, 0);
         alpha_3((i+1) % r_stored_iters) =  alpha_3(i % r_stored_iters);
@@ -3499,10 +3534,10 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       arma::mat pi1(K, r_stored_iters/thinning_num, arma::fill::zeros);
       arma::vec alpha_31(r_stored_iters/thinning_num, arma::fill::zeros);
       arma::vec sigma1(r_stored_iters/thinning_num, arma::fill::ones);
-      arma::mat A1 = arma::ones(r_stored_iters/thinning_num, 2);
+      arma::cube A1 = arma::ones(K, 2, r_stored_iters/thinning_num);
       arma::cube Z1 = arma::randi<arma::cube>(n_funct, K, r_stored_iters/thinning_num,
                                               arma::distr_param(0,1));
-      arma::mat delta1(M, r_stored_iters/thinning_num, arma::fill::ones);
+      arma::cube delta1(K, M, r_stored_iters/thinning_num, arma::fill::ones);
       arma::field<arma::cube> gamma1(r_stored_iters/thinning_num,1);
       arma::field<arma::cube> Phi1(r_stored_iters/thinning_num, 1);
       arma::mat tau1(r_stored_iters/thinning_num, K, arma::fill::ones);
@@ -3511,9 +3546,9 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       chi1.slice(0) = chi.slice(0);
       pi1.col(0) = pi.col(0);
       sigma1(0) = sigma(0);
-      A1.row(0) = A.row(0);
+      A1.slice(0) = A.slice(0);
       Z1.slice(0) = Z.slice(0);
-      delta1.col(0) = delta.col(0);
+      delta1.slice(0) = delta.slice(0);
       gamma1(0,0) = gamma(0,0);
       Phi1(0,0) = Phi(0,0);
       tau1.row(0) = tau.row(0);
@@ -3524,9 +3559,9 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
         pi1.col(p) = pi.col(thinning_num*p - 1);
         alpha_31(p) = alpha_3(thinning_num*p - 1);
         sigma1(p) = sigma(thinning_num*p - 1);
-        A1.row(p) = A.row(thinning_num*p - 1);
+        A1.slice(p) = A.slice(thinning_num*p - 1);
         Z1.slice(p) = Z.slice(thinning_num*p - 1);
-        delta1.col(p) = delta.col(thinning_num*p - 1);
+        delta1.slice(p) = delta.slice(thinning_num*p - 1);
         gamma1(p,0) = gamma(thinning_num*p - 1,0);
         Phi1(p,0) = Phi(thinning_num*p  - 1,0);
         tau1.row(p) = tau.row(thinning_num*p - 1);
@@ -3549,8 +3584,8 @@ inline Rcpp::List BHDFPMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
       chi.slice(0) = chi.slice(i % r_stored_iters);
       pi.col(0) = pi.col(i % r_stored_iters);
       alpha_3(0) = alpha_3(i % r_stored_iters);
-      A.row(0) = A.row(i % r_stored_iters);
-      delta.col(0) = delta.col(i % r_stored_iters);
+      A.slice(0) = A.slice(i % r_stored_iters);
+      delta.slice(0) = delta.slice(i % r_stored_iters);
       sigma(0) = sigma(i % r_stored_iters);
       tau.row(0) = tau.row(i % r_stored_iters);
       gamma(0,0) = gamma(i % r_stored_iters, 0);

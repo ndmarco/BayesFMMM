@@ -814,7 +814,7 @@ Rcpp::List FCovCI(const std::string dir,
   for(int i = 1; i < n_files; i++){
     phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
     for(int j = 0; j < n_MCMC; j++){
-      phi_samp1((i * n_MCMC) + j, 0) = phi_i(i,0);
+      phi_samp1((i * n_MCMC) + j, 0) = phi_i(j,0);
     }
   }
 
@@ -825,7 +825,8 @@ Rcpp::List FCovCI(const std::string dir,
 
   // Make spline basis 1
   splines2::BSpline bspline1;
-  bspline1 = splines2::BSpline(time1, phi_samp(0,0).n_cols);
+  bspline1 = splines2::BSpline(time1, internal_knots, basis_degree,
+                               boundary_knots);
   // Get Basis matrix (time1 x Phi.n_cols)
   arma::mat bspline_mat1{bspline1.basis(true)};
   // Make B_obs
@@ -833,7 +834,8 @@ Rcpp::List FCovCI(const std::string dir,
 
   // Make spline basis 2
   splines2::BSpline bspline2;
-  bspline2 = splines2::BSpline(time2, phi_samp(0,0).n_cols);
+  bspline2 = splines2::BSpline(time2, internal_knots, basis_degree,
+                               boundary_knots);
   // Get Basis matrix (time2 x Phi.n_cols)
   arma::mat bspline_mat2{bspline2.basis(true)};
   // Make B_obs
@@ -873,14 +875,14 @@ Rcpp::List FCovCI(const std::string dir,
           max_ind = arma::index_max(ph);
           transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
-        for(int b = 0; b < phi_samp.n_slices; b++){
+        for(int b = 0; b < phi_samp(j,0).n_slices; b++){
           phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
         }
       }
     }
     arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
     for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
-      for(int j = 0; j < phi_samp.n_slices; j++){
+      for(int j = 0; j < phi_samp(i,0).n_slices; j++){
         cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
           (B2 * phi_samp(i,0).slice(j).row(m-1).t()).t());
       }
@@ -928,14 +930,14 @@ Rcpp::List FCovCI(const std::string dir,
           max_ind = arma::index_max(ph);
           transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
-        for(int b = 0; b < phi_samp.n_slices; b++){
+        for(int b = 0; b < phi_samp(j,0).n_slices; b++){
           phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
         }
       }
     }
     arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
     for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
-      for(int j = 0; j < phi_samp.n_slices; j++){
+      for(int j = 0; j < phi_samp(i,0).n_slices; j++){
         cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
           (B2 * (phi_samp(i,0).slice(j).row(m-1)).t()).t());
       }
@@ -953,7 +955,7 @@ Rcpp::List FCovCI(const std::string dir,
 
     arma::vec C = arma::zeros(cov_samp.n_slices);
     arma::mat ph1 = arma::zeros(time1.n_elem, time2.n_elem);
-    for(int i = 0; i < n_MCMC * n_files; i++){
+    for(int i = 0; i < cov_samp.n_slices; i++){
       for(int j = 0; j < time1.n_elem; j++){
         for(int k = 0; k < time2.n_elem; k++){
           ph1(j,k) = std::abs((cov_samp(j,k,i) - cov_mean(j,k)) / cov_sd(j,k));
@@ -1117,7 +1119,7 @@ Rcpp::List HDFCovCI(const std::string dir,
   for(int i = 1; i < n_files; i++){
     phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
     for(int j = 0; j < n_MCMC; j++){
-      phi_samp1((i * n_MCMC) + j, 0) = phi_i(i,0);
+      phi_samp1((i * n_MCMC) + j, 0) = phi_i(j,0);
     }
   }
 
@@ -1174,14 +1176,14 @@ Rcpp::List HDFCovCI(const std::string dir,
           max_ind = arma::index_max(ph);
           transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
-        for(int b = 0; b < phi_samp.n_slices; b++){
+        for(int b = 0; b < phi_samp(j,0).n_slices; b++){
           phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
         }
       }
     }
     arma::cube cov_samp = arma::zeros(time1.n_rows, time2.n_rows, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
     for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
-      for(int j = 0; j < phi_samp.n_slices; j++){
+      for(int j = 0; j < phi_samp(i,0).n_slices; j++){
         cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
           (B2 * phi_samp(i,0).slice(j).row(m-1).t()).t());
       }
@@ -1229,14 +1231,14 @@ Rcpp::List HDFCovCI(const std::string dir,
           max_ind = arma::index_max(ph);
           transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
-        for(int b = 0; b < phi_samp.n_slices; b++){
+        for(int b = 0; b < phi_samp(j,0).n_slices; b++){
           phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
         }
       }
     }
     arma::cube cov_samp = arma::zeros(time1.n_rows, time2.n_rows, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
     for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
-      for(int j = 0; j < phi_samp.n_slices; j++){
+      for(int j = 0; j < phi_samp(i,0).n_slices; j++){
         cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
           (B2 * (phi_samp(i,0).slice(j).row(m-1)).t()).t());
       }
@@ -1254,7 +1256,7 @@ Rcpp::List HDFCovCI(const std::string dir,
 
     arma::vec C = arma::zeros(cov_samp.n_slices);
     arma::mat ph1 = arma::zeros(time1.n_rows, time2.n_rows);
-    for(int i = 0; i < n_MCMC * n_files; i++){
+    for(int i = 0; i < cov_samp.n_slices; i++){
       for(int j = 0; j < time1.n_rows; j++){
         for(int k = 0; k < time2.n_rows; k++){
           ph1(j,k) = std::abs((cov_samp(j,k,i) - cov_mean(j,k)) / cov_sd(j,k));
@@ -1378,7 +1380,7 @@ Rcpp::List MVCovCI(const std::string dir,
   for(int i = 1; i < n_files; i++){
     phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
     for(int j = 0; j < n_MCMC; j++){
-      phi_samp1((i * n_MCMC) + j, 0) = phi_i(i,0);
+      phi_samp1((i * n_MCMC) + j, 0) = phi_i(j,0);
     }
   }
 
@@ -1420,7 +1422,7 @@ Rcpp::List MVCovCI(const std::string dir,
         max_ind = arma::index_max(ph);
         transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
       }
-      for(int i = 0; i < phi_samp.n_slices; i++){
+      for(int i = 0; i < phi_samp(j,0).n_slices; i++){
         phi_samp(j,0).slice(i) = transform_mat * phi_samp(j,0).slice(i);
       }
     }
@@ -1818,9 +1820,9 @@ double Model_AIC(const std::string dir,
   }
 
   // Calculate AIC
-  double AIC = (2 * ((Z_samp.n_rows + phi_samp.n_cols) * Z_samp.n_cols +
-                2 * phi_samp.n_cols * Z_samp.n_rows * Z_samp.n_cols +
-                4 + 2 * Z_samp.n_cols + 2 * phi_samp.n_cols)) - (2 * log_lik);
+  double AIC = (2 * ((Z_samp.n_rows + phi_samp(0,0).n_cols) * Z_samp.n_cols +
+                2 * phi_samp(0,0).n_cols * Z_samp.n_rows * Z_samp.n_cols +
+                4 + 2 * Z_samp.n_cols + 2 * phi_samp(0,0).n_cols)) - (2 * log_lik);
   return(AIC);
 }
 
@@ -1943,8 +1945,8 @@ double Model_BIC(const std::string dir,
 
   // Calculate AIC
   double BIC = (2 * log_lik) - (std::log(Z_samp.n_rows * Z_samp.n_cols) *
-                ((Z_samp.n_rows + phi_samp.n_cols) * Z_samp.n_cols +
-                2 * phi_samp.n_cols * Z_samp.n_rows * Z_samp.n_cols +
-                4 + 2 * Z_samp.n_cols + 2 * phi_samp.n_cols));
+                ((Z_samp.n_rows + phi_samp(0,0).n_cols) * Z_samp.n_cols +
+                2 * phi_samp(0,0).n_cols * Z_samp.n_rows * Z_samp.n_cols +
+                4 + 2 * Z_samp.n_cols + 2 * phi_samp(0,0).n_cols));
   return(BIC);
 }

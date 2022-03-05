@@ -54,17 +54,17 @@ inline double lpdf_a2(const double& alpha_2l,
 // @param var_epsilon1 Double containing hyperparameter epsilon1
 // @param var_epsilon2 Double containing hyperparameter epsilon2
 // @param iter Double containing MCMC iteration
-// @param a Mat containing values of a
+// @param a Cube containing values of a
 inline void updateA(const double& alpha_1l,
                     const double& beta_1l,
                     const double& alpha_2l,
                     const double& beta_2l,
-                    const arma::vec& delta,
+                    const arma::mat& delta,
                     const double& var_epsilon1,
                     const double& var_epsilon2,
                     const int& iter,
                     const int& tot_mcmc_iters,
-                    arma::mat& a){
+                    arma::cube& a){
   double a_lpdf = 0;
   double a_new_lpdf = 0;
   double acceptance_prob = 0;
@@ -72,50 +72,53 @@ inline void updateA(const double& alpha_1l,
   double new_a = 0;
 
   // calculate first lpdf
-  for(int i = 0; i < a.n_cols; i++){
-    if(i == 0){
-      a_lpdf = lpdf_a1(alpha_1l, beta_1l, a(iter, i), delta(i));
-      new_a = r_truncnorm(a(iter, i), var_epsilon1 / beta_1l, 0,
-                          std::numeric_limits<double>::infinity());
+  for(int j = 0; j < a.n_rows; j++){
+    for(int i = 0; i < a.n_cols; i++){
+      if(i == 0){
+        a_lpdf = lpdf_a1(alpha_1l, beta_1l, a(j, i, iter), delta(j,i));
+        new_a = r_truncnorm(a(j, i, iter), var_epsilon1 / beta_1l, 0,
+                            std::numeric_limits<double>::infinity());
 
-      a_new_lpdf = lpdf_a1(alpha_1l, beta_1l, new_a, delta(i));
+        a_new_lpdf = lpdf_a1(alpha_1l, beta_1l, new_a, delta(i));
 
-      acceptance_prob = (a_new_lpdf +
-        d_truncnorm(a(iter, i), new_a, var_epsilon1 / beta_1l, 0,
-                    std::numeric_limits<double>::infinity(), 1)) - a_lpdf -
-                      d_truncnorm(new_a, a(iter, i),
-                                  var_epsilon1 / beta_1l, 0,
-                                  std::numeric_limits<double>::infinity(), 1);
-      rand_unif_var = R::runif(0,1);
+        acceptance_prob = (a_new_lpdf +
+          d_truncnorm(a(j, i, iter), new_a, var_epsilon1 / beta_1l, 0,
+                      std::numeric_limits<double>::infinity(), 1)) - a_lpdf -
+                        d_truncnorm(new_a, a(j, i, iter),
+                                    var_epsilon1 / beta_1l, 0,
+                                    std::numeric_limits<double>::infinity(), 1);
+        rand_unif_var = R::runif(0,1);
 
-      if(log(rand_unif_var) < acceptance_prob){
-        // Accept new state and update parameters
-        a(iter, i) = new_a;
-      }
-    }else{
-      a_lpdf = lpdf_a2(alpha_2l, beta_2l, a(iter, i), delta);
-      new_a = r_truncnorm(a(iter, i), var_epsilon2 / beta_2l, 0,
-                          std::numeric_limits<double>::infinity());
+        if(log(rand_unif_var) < acceptance_prob){
+          // Accept new state and update parameters
+          a(j, i, iter) = new_a;
+        }
+      }else{
+        a_lpdf = lpdf_a2(alpha_2l, beta_2l, a(j, i, iter), delta.row(j).t());
+        new_a = r_truncnorm(a(j, i, iter), var_epsilon2 / beta_2l, 0,
+                            std::numeric_limits<double>::infinity());
 
-      a_new_lpdf = lpdf_a2(alpha_2l, beta_2l, new_a, delta);
+        a_new_lpdf = lpdf_a2(alpha_2l, beta_2l, new_a, delta.row(j).t());
 
-      acceptance_prob = (a_new_lpdf +
-        d_truncnorm(a(iter, i), new_a, var_epsilon2 / beta_2l, 0,
-                    std::numeric_limits<double>::infinity(), 1)) - a_lpdf -
-                      d_truncnorm(new_a, a(iter, i),
-                                  var_epsilon2 / beta_2l, 0,
-                                  std::numeric_limits<double>::infinity(), 1);
-      rand_unif_var = R::runif(0,1);
+        acceptance_prob = (a_new_lpdf +
+          d_truncnorm(a(j, i, iter), new_a, var_epsilon2 / beta_2l, 0,
+                      std::numeric_limits<double>::infinity(), 1)) - a_lpdf -
+                        d_truncnorm(new_a, a(j, i, iter),
+                                    var_epsilon2 / beta_2l, 0,
+                                    std::numeric_limits<double>::infinity(), 1);
+        rand_unif_var = R::runif(0,1);
 
-      if(log(rand_unif_var) < acceptance_prob){
-        // Accept new state and update parameters
-        a(iter, i) = new_a;
+        if(log(rand_unif_var) < acceptance_prob){
+          // Accept new state and update parameters
+          a(j, i, iter) = new_a;
+        }
       }
     }
   }
+
   // update next iteration
   if(iter < (tot_mcmc_iters - 1)){
-    a.row(iter + 1) = a.row(iter);
+    a.slice(iter + 1) = a.slice(iter);
   }
 }
 }

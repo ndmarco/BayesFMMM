@@ -24,7 +24,7 @@ inline void updatePhi(const arma::field<arma::vec>& y_obs,
                       const arma::field<arma::mat>& B_obs,
                       const arma::mat& nu,
                       const arma::cube& gamma,
-                      const arma::vec& tilde_tau,
+                      const arma::mat& tilde_tau,
                       const arma::mat& Z,
                       const arma::mat& chi,
                       const double& sigma_sq,
@@ -74,7 +74,7 @@ inline void updatePhi(const arma::field<arma::vec>& y_obs,
 
       //Add on diagonal component
       for(int k = 0; k < M_1.n_rows; k++){
-        M_1(k,k) = M_1(k,k) + tilde_tau(m) * gamma.slice(m)(j,k);
+        M_1(k,k) = M_1(k,k) + tilde_tau(j,m) * gamma.slice(m)(j,k);
       }
       arma::inv(M_1, M_1);
 
@@ -109,7 +109,7 @@ inline void updatePhiTempered(const double& beta_i,
                               const arma::field<arma::mat>& B_obs,
                               const arma::mat& nu,
                               const arma::cube& gamma,
-                              const arma::vec& tilde_tau,
+                              const arma::mat& tilde_tau,
                               const arma::mat& Z,
                               const arma::mat& chi,
                               const double& sigma_sq,
@@ -159,7 +159,7 @@ inline void updatePhiTempered(const double& beta_i,
 
       //Add on diagonal component
       for(int k = 0; k < M_1.n_rows; k++){
-        M_1(k,k) = M_1(k,k) + tilde_tau(m) * gamma.slice(m)(j,k);
+        M_1(k,k) = M_1(k,k) + tilde_tau(j,m) * gamma.slice(m)(j,k);
       }
       arma::inv(M_1, M_1);
 
@@ -190,7 +190,7 @@ inline void updatePhiTempered(const double& beta_i,
 inline void updatePhiMV(const arma::mat& y_obs,
                         const arma::mat& nu,
                         const arma::cube& gamma,
-                        const arma::vec& tilde_tau,
+                        const arma::mat& tilde_tau,
                         const arma::mat& Z,
                         const arma::mat& chi,
                         const double& sigma_sq,
@@ -234,7 +234,7 @@ inline void updatePhiMV(const arma::mat& y_obs,
 
       //Add on diagonal component
       for(int k = 0; k < M_1.n_rows; k++){
-        M_1(k,k) = M_1(k,k) + tilde_tau(m) * gamma.slice(m)(j,k);
+        M_1(k,k) = M_1(k,k) + tilde_tau(j,m) * gamma.slice(m)(j,k);
       }
       arma::inv(M_1, M_1);
 
@@ -267,7 +267,7 @@ inline void updatePhiTemperedMV(const double& beta_i,
                                 const arma::mat& y_obs,
                                 const arma::mat& nu,
                                 const arma::cube& gamma,
-                                const arma::vec& tilde_tau,
+                                const arma::mat& tilde_tau,
                                 const arma::mat& Z,
                                 const arma::mat& chi,
                                 const double& sigma_sq,
@@ -311,7 +311,7 @@ inline void updatePhiTemperedMV(const double& beta_i,
 
       //Add on diagonal component
       for(int k = 0; k < M_1.n_rows; k++){
-        M_1(k,k) = M_1(k,k) + tilde_tau(m) * gamma.slice(m)(j,k);
+        M_1(k,k) = M_1(k,k) + tilde_tau(j,m) * gamma.slice(m)(j,k);
       }
       arma::inv(M_1, M_1);
 

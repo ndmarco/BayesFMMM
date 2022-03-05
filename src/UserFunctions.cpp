@@ -200,7 +200,7 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k);
+  arma::vec c1 = arma::ones(k) * 10;
   if(c.isNotNull()) {
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
@@ -390,11 +390,11 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
                            const double burnin_prop = 0.8,
                            Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
                            const double b = 10,
-                           const double nu_1 = 2,
-                           const double alpha1l = 1,
-                           const double alpha2l = 2,
-                           const double beta1l = 1,
-                           const double beta2l = 1,
+                           const double nu_1 = 3,
+                           const double alpha1l = 2,
+                           const double alpha2l = 3,
+                           const double beta1l = 2,
+                           const double beta2l = 2,
                            const double a_Z_PM = 10000,
                            const double a_pi_PM = 1000,
                            const double var_alpha3 = 0.05,
@@ -487,7 +487,7 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k);
+  arma::vec c1 = arma::ones(k) * 10;
   if(c.isNotNull()) {
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
@@ -543,21 +543,22 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
     }
   }
 
-  // rescale Z and nu
-  arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
-  int max_ind = 0;
-  for(int i = 0; i < Z_est.n_cols; i++){
-    max_ind = arma::index_max(Z_est.col(i));
-    transform_mat.row(i) = Z_est.row(max_ind);
-  }
-  arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
-  arma::mat nu_est_rescale = transform_mat * nu_est;
-  for(int i = 0; i < Z_est_rescale.n_rows; i++){
-    for(int j = 0; j < Z_est_rescale.n_cols; j++){
-      Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01 - Z_est_rescale.min();
-    }
-    Z_est_rescale.row(i) = Z_est_rescale.row(i) / (arma::accu(Z_est_rescale.row(i)));
-  }
+  // // rescale Z and nu
+  // arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+  // int max_ind = 0;
+  // for(int i = 0; i < Z_est.n_cols; i++){
+  //   max_ind = arma::index_max(Z_est.col(i));
+  //   transform_mat.row(i) = Z_est.row(max_ind);
+  // }
+  // arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
+  // arma::mat nu_est_rescale = transform_mat * nu_est;
+  // transform_mat(0,0) = 0.95;
+  // transform_mat(0,1) = 0.05;
+  // transform_mat(1,0) = 0.95;
+  // transform_mat(1,0) = 0.05;
+  //
+  // Z_est_rescale = Z_est_rescale * transform_mat;
+  // nu_est_rescale = arma::pinv(transform_mat) * nu_est_rescale;
 
   // start MCMC sampling
   Rcpp::List mod1 = BayesFPMM::BFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
@@ -757,10 +758,10 @@ Rcpp::List BFPMM_warm_start(const int tot_mcmc_iters,
                             const arma::cube Z_samp,
                             const arma::mat pi_samp,
                             const arma::vec alpha_3_samp,
-                            const arma::mat delta_samp,
+                            const arma::cube delta_samp,
                             const arma::field<arma::cube> gamma_samp,
                             const arma::field<arma::cube> Phi_samp,
-                            const arma::mat A_samp,
+                            const arma::cube A_samp,
                             const arma::cube nu_samp,
                             const arma::mat tau_samp,
                             const arma::vec sigma_samp,
@@ -774,11 +775,11 @@ Rcpp::List BFPMM_warm_start(const int tot_mcmc_iters,
                             int r_stored_iters = 0,
                             Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
                             const double b = 10,
-                            const double nu_1 = 2,
-                            const double alpha1l = 1,
-                            const double alpha2l = 2,
-                            const double beta1l = 1,
-                            const double beta2l = 1,
+                            const double nu_1 = 3,
+                            const double alpha1l = 2,
+                            const double alpha2l = 3,
+                            const double beta1l = 2,
+                            const double beta2l = 2,
                             const double a_Z_PM = 10000,
                             const double a_pi_PM = 1000,
                             const double var_alpha3 = 0.05,
@@ -887,7 +888,7 @@ Rcpp::List BFPMM_warm_start(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k);
+  arma::vec c1 = arma::ones(k) * 10;
   if(c.isNotNull()){
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
@@ -981,35 +982,39 @@ Rcpp::List BFPMM_warm_start(const int tot_mcmc_iters,
     Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
   }
 
-  // rescale Z and nu
-  arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
-  int max_ind = 0;
-  for(int i = 0; i < Z_est.n_cols; i++){
-    max_ind = arma::index_max(Z_est.col(i));
-    transform_mat.row(i) = Z_est.row(max_ind);
-  }
-  arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
-  arma::mat nu_est_rescale = transform_mat * nu_est;
-  for(int i = 0; i < Z_est_rescale.n_rows; i++){
-    for(int j = 0; j < Z_est_rescale.n_cols; j++){
-      Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01 - Z_est_rescale.min();
-    }
-    Z_est_rescale.row(i) = Z_est_rescale.row(i) / (arma::accu(Z_est_rescale.row(i)));
-  }
+  // // rescale Z and nu
+  // arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+  // int max_ind = 0;
+  // for(int i = 0; i < Z_est.n_cols; i++){
+  //   max_ind = arma::index_max(Z_est.col(i));
+  //   transform_mat.row(i) = Z_est.row(max_ind);
+  // }
+  // arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
+  // arma::mat nu_est_rescale = transform_mat * nu_est;
+  // transform_mat(0,0) = 0.95;
+  // transform_mat(0,1) = 0.05;
+  // transform_mat(1,0) = 0.95;
+  // transform_mat(1,0) = 0.05;
+  //
+  // Z_est_rescale = Z_est_rescale * transform_mat;
+  // nu_est_rescale = arma::pinv(transform_mat) * nu_est_rescale;
 
   pi_est = pi_est / arma::accu(pi_est);
 
   int n_Phi = sigma_samp.n_elem;
 
   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
-  arma::vec delta_est = arma::zeros(delta_samp.n_rows);
+  arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int i = 0; i < delta_samp.n_rows; i++){
-    for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-      ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,l);
+  for(int k = 0; k < delta_samp.n_cols; k++){
+    for(int i = 0; i < delta_samp.n_rows; i++){
+      for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,k,l);
+      }
+      delta_est(i, k) = arma::median(ph_delta);
     }
-    delta_est(i) = arma::median(ph_delta);
   }
+
   arma::cube gamma_est = arma::zeros(gamma_samp(0,0).n_rows, gamma_samp(0,0).n_cols, gamma_samp(0,0).n_slices);
   arma::cube Phi_est = arma::zeros(Phi_samp(0,0).n_rows, Phi_samp(0,0).n_cols, Phi_samp(0,0).n_slices);
   arma::vec ph_phi = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
@@ -1028,14 +1033,17 @@ Rcpp::List BFPMM_warm_start(const int tot_mcmc_iters,
     }
   }
 
-  arma::vec A_est = arma::zeros(A_samp.n_cols);
+  arma::mat A_est = arma::zeros(A_samp.n_rows, A_samp.n_cols);
   arma::vec ph_A = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int i = 0; i < A_est.n_elem; i++){
-    for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-      ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(l,i);
+  for(int k = 0; k < A_samp.n_rows; k++){
+    for(int i = 0; i < A_samp.n_cols; i++){
+      for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(k, i, l);
+      }
+      A_est(k, i) = arma::median(ph_A);
     }
-    A_est(i) = arma::median(ph_A);
   }
+
   arma::vec tau_est = arma::zeros(tau_samp.n_cols);
   arma::vec ph_tau = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
   for(int i = 0; i < tau_est.n_elem; i++){
@@ -1532,7 +1540,7 @@ Rcpp::List BHDFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k);
+  arma::vec c1 = arma::ones(k) * 10;
   if(c.isNotNull()) {
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
@@ -1708,7 +1716,7 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
                              const double burnin_prop = 0.8,
                              Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
                              const double b = 10,
-                             const double nu_1 = 2,
+                             const double nu_1 = 3,
                              const double alpha1l = 1,
                              const double alpha2l = 2,
                              const double beta1l = 1,
@@ -1811,7 +1819,7 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k);
+  arma::vec c1 = arma::ones(k) * 10;
   if(c.isNotNull()) {
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
@@ -1850,21 +1858,21 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
     }
   }
 
-  // rescale Z and nu
-  arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
-  int max_ind = 0;
-  for(int i = 0; i < Z_est.n_cols; i++){
-    max_ind = arma::index_max(Z_est.col(i));
-    transform_mat.row(i) = Z_est.row(max_ind);
-  }
-  arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
-  arma::mat nu_est_rescale = transform_mat * nu_est;
-  for(int i = 0; i < Z_est_rescale.n_rows; i++){
-    for(int j = 0; j < Z_est_rescale.n_cols; j++){
-      Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01 - Z_est_rescale.min();
-    }
-    Z_est_rescale.row(i) = Z_est_rescale.row(i) / (arma::accu(Z_est_rescale.row(i)));
-  }
+  // // rescale Z and nu
+  // arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+  // int max_ind = 0;
+  // for(int i = 0; i < Z_est.n_cols; i++){
+  //   max_ind = arma::index_max(Z_est.col(i));
+  //   transform_mat.row(i) = Z_est.row(max_ind);
+  // }
+  // arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
+  // arma::mat nu_est_rescale = transform_mat * nu_est;
+  // for(int i = 0; i < Z_est_rescale.n_rows; i++){
+  //   for(int j = 0; j < Z_est_rescale.n_cols; j++){
+  //     Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01 - Z_est_rescale.min();
+  //   }
+  //   Z_est_rescale.row(i) = Z_est_rescale.row(i) / (arma::accu(Z_est_rescale.row(i)));
+  // }
 
   // start MCMC sampling
   Rcpp::List mod1 = BayesFPMM::BHDFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
@@ -2047,10 +2055,10 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
                               const arma::cube Z_samp,
                               const arma::mat pi_samp,
                               const arma::vec alpha_3_samp,
-                              const arma::mat delta_samp,
+                              const arma::cube delta_samp,
                               const arma::field<arma::cube> gamma_samp,
                               const arma::field<arma::cube> Phi_samp,
-                              const arma::mat A_samp,
+                              const arma::cube A_samp,
                               const arma::cube nu_samp,
                               const arma::mat tau_samp,
                               const arma::vec sigma_samp,
@@ -2064,7 +2072,7 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
                               int r_stored_iters = 0,
                               Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
                               const double b = 10,
-                              const double nu_1 = 2,
+                              const double nu_1 = 3,
                               const double alpha1l = 1,
                               const double alpha2l = 2,
                               const double beta1l = 1,
@@ -2184,7 +2192,7 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k);
+  arma::vec c1 = arma::ones(k) * 10;
   if(c.isNotNull()){
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
@@ -2268,35 +2276,38 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
     Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
   }
 
-  // rescale Z and nu
-  arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
-  int max_ind = 0;
-  for(int i = 0; i < Z_est.n_cols; i++){
-    max_ind = arma::index_max(Z_est.col(i));
-    transform_mat.row(i) = Z_est.row(max_ind);
-  }
-  arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
-  arma::mat nu_est_rescale = transform_mat * nu_est;
-  for(int i = 0; i < Z_est_rescale.n_rows; i++){
-    for(int j = 0; j < Z_est_rescale.n_cols; j++){
-      Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01 - Z_est_rescale.min();
-    }
-    Z_est_rescale.row(i) = Z_est_rescale.row(i) / (arma::accu(Z_est_rescale.row(i)));
-  }
+  // // rescale Z and nu
+  // arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+  // int max_ind = 0;
+  // for(int i = 0; i < Z_est.n_cols; i++){
+  //   max_ind = arma::index_max(Z_est.col(i));
+  //   transform_mat.row(i) = Z_est.row(max_ind);
+  // }
+  // arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
+  // arma::mat nu_est_rescale = transform_mat * nu_est;
+  // for(int i = 0; i < Z_est_rescale.n_rows; i++){
+  //   for(int j = 0; j < Z_est_rescale.n_cols; j++){
+  //     Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01 - Z_est_rescale.min();
+  //   }
+  //   Z_est_rescale.row(i) = Z_est_rescale.row(i) / (arma::accu(Z_est_rescale.row(i)));
+  // }
 
   pi_est = pi_est / arma::accu(pi_est);
 
   int n_Phi = sigma_samp.n_elem;
 
   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
-  arma::vec delta_est = arma::zeros(delta_samp.n_rows);
+  arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int i = 0; i < delta_samp.n_rows; i++){
-    for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-      ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,l);
+  for(int k = 0; k < delta_samp.n_cols; k++){
+    for(int i = 0; i < delta_samp.n_rows; i++){
+      for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,k,l);
+      }
+      delta_est(i, k) = arma::median(ph_delta);
     }
-    delta_est(i) = arma::median(ph_delta);
   }
+
   arma::cube gamma_est = arma::zeros(gamma_samp(0,0).n_rows, gamma_samp(0,0).n_cols, gamma_samp(0,0).n_slices);
   arma::cube Phi_est = arma::zeros(Phi_samp(0,0).n_rows, Phi_samp(0,0).n_cols, Phi_samp(0,0).n_slices);
   arma::vec ph_phi = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
@@ -2315,14 +2326,17 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
     }
   }
 
-  arma::vec A_est = arma::zeros(A_samp.n_cols);
+  arma::mat A_est = arma::zeros(A_samp.n_rows, A_samp.n_cols);
   arma::vec ph_A = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int i = 0; i < A_est.n_elem; i++){
-    for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-      ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(l,i);
+  for(int k = 0; k < A_samp.n_rows; k++){
+    for(int i = 0; i < A_samp.n_cols; i++){
+      for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(k, i, l);
+      }
+      A_est(k, i) = arma::median(ph_A);
     }
-    A_est(i) = arma::median(ph_A);
   }
+
   arma::vec tau_est = arma::zeros(tau_samp.n_cols);
   arma::vec ph_tau = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
   for(int i = 0; i < tau_est.n_elem; i++){
@@ -2535,7 +2549,7 @@ Rcpp::List BMVPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k);
+  arma::vec c1 = arma::ones(k) * 10;
   if(c.isNotNull()) {
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
@@ -2683,7 +2697,7 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
                             const double burnin_prop = 0.8,
                             Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
                             const double b = 10,
-                            const double nu_1 = 2,
+                            const double nu_1 = 3,
                             const double alpha1l = 1,
                             const double alpha2l = 2,
                             const double beta1l = 1,
@@ -2760,7 +2774,7 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k);
+  arma::vec c1 = arma::ones(k) * 10;
   if(c.isNotNull()) {
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
@@ -2803,21 +2817,21 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
     }
   }
 
-  // rescale Z and nu
-  arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
-  int max_ind = 0;
-  for(int i = 0; i < Z_est.n_cols; i++){
-    max_ind = arma::index_max(Z_est.col(i));
-    transform_mat.row(i) = Z_est.row(max_ind);
-  }
-  arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
-  arma::mat nu_est_rescale = transform_mat * nu_est;
-  for(int i = 0; i < Z_est_rescale.n_rows; i++){
-    for(int j = 0; j < Z_est_rescale.n_cols; j++){
-      Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01 - Z_est_rescale.min();
-    }
-    Z_est_rescale.row(i) = Z_est_rescale.row(i) / (arma::accu(Z_est_rescale.row(i)));
-  }
+  // // rescale Z and nu
+  // arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+  // int max_ind = 0;
+  // for(int i = 0; i < Z_est.n_cols; i++){
+  //   max_ind = arma::index_max(Z_est.col(i));
+  //   transform_mat.row(i) = Z_est.row(max_ind);
+  // }
+  // arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
+  // arma::mat nu_est_rescale = transform_mat * nu_est;
+  // for(int i = 0; i < Z_est_rescale.n_rows; i++){
+  //   for(int j = 0; j < Z_est_rescale.n_cols; j++){
+  //     Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01 - Z_est_rescale.min();
+  //   }
+  //   Z_est_rescale.row(i) = Z_est_rescale.row(i) / (arma::accu(Z_est_rescale.row(i)));
+  // }
 
   // start MCMC sampling
   Rcpp::List mod1 = BayesFPMM::BFPMM_ThetaMV(Y, k, n_eigen, tot_mcmc_iters,
@@ -2972,10 +2986,10 @@ Rcpp::List BMVPMM_warm_start(const int tot_mcmc_iters,
                              const arma::cube Z_samp,
                              const arma::mat pi_samp,
                              const arma::vec alpha_3_samp,
-                             const arma::mat delta_samp,
+                             const arma::cube delta_samp,
                              const arma::field<arma::cube> gamma_samp,
                              const arma::field<arma::cube> Phi_samp,
-                             const arma::mat A_samp,
+                             const arma::cube A_samp,
                              const arma::cube nu_samp,
                              const arma::mat tau_samp,
                              const arma::vec sigma_samp,
@@ -2989,7 +3003,7 @@ Rcpp::List BMVPMM_warm_start(const int tot_mcmc_iters,
                              int r_stored_iters = 0,
                              Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
                              const double b = 10,
-                             const double nu_1 = 2,
+                             const double nu_1 = 3,
                              const double alpha1l = 1,
                              const double alpha2l = 2,
                              const double beta1l = 1,
@@ -3085,7 +3099,7 @@ Rcpp::List BMVPMM_warm_start(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k);
+  arma::vec c1 = arma::ones(k) * 10;
   if(c.isNotNull()){
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
@@ -3167,35 +3181,38 @@ Rcpp::List BMVPMM_warm_start(const int tot_mcmc_iters,
     Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
   }
 
-  // rescale Z and nu
-  arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
-  int max_ind = 0;
-  for(int i = 0; i < Z_est.n_cols; i++){
-    max_ind = arma::index_max(Z_est.col(i));
-    transform_mat.row(i) = Z_est.row(max_ind);
-  }
-  arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
-  arma::mat nu_est_rescale = transform_mat * nu_est;
-  for(int i = 0; i < Z_est_rescale.n_rows; i++){
-    for(int j = 0; j < Z_est_rescale.n_cols; j++){
-      Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01 - Z_est_rescale.min();
-    }
-    Z_est_rescale.row(i) = Z_est_rescale.row(i) / (arma::accu(Z_est_rescale.row(i)));
-  }
+  // // rescale Z and nu
+  // arma::mat transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+  // int max_ind = 0;
+  // for(int i = 0; i < Z_est.n_cols; i++){
+  //   max_ind = arma::index_max(Z_est.col(i));
+  //   transform_mat.row(i) = Z_est.row(max_ind);
+  // }
+  // arma::mat Z_est_rescale = Z_est * arma::pinv(transform_mat);
+  // arma::mat nu_est_rescale = transform_mat * nu_est;
+  // for(int i = 0; i < Z_est_rescale.n_rows; i++){
+  //   for(int j = 0; j < Z_est_rescale.n_cols; j++){
+  //     Z_est_rescale(i,j) = Z_est_rescale(i,j) + 0.01 - Z_est_rescale.min();
+  //   }
+  //   Z_est_rescale.row(i) = Z_est_rescale.row(i) / (arma::accu(Z_est_rescale.row(i)));
+  // }
 
   pi_est = pi_est / arma::accu(pi_est);
 
   int n_Phi = sigma_samp.n_elem;
 
   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
-  arma::vec delta_est = arma::zeros(delta_samp.n_rows);
+  arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int i = 0; i < delta_samp.n_rows; i++){
-    for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-      ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,l);
+  for(int k = 0; k < delta_samp.n_cols; k++){
+    for(int i = 0; i < delta_samp.n_rows; i++){
+      for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,k,l);
+      }
+      delta_est(i, k) = arma::median(ph_delta);
     }
-    delta_est(i) = arma::median(ph_delta);
   }
+
   arma::cube gamma_est = arma::zeros(gamma_samp(0,0).n_rows, gamma_samp(0,0).n_cols, gamma_samp(0,0).n_slices);
   arma::cube Phi_est = arma::zeros(Phi_samp(0,0).n_rows, Phi_samp(0,0).n_cols, Phi_samp(0,0).n_slices);
   arma::vec ph_phi = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
@@ -3214,14 +3231,17 @@ Rcpp::List BMVPMM_warm_start(const int tot_mcmc_iters,
     }
   }
 
-  arma::vec A_est = arma::zeros(A_samp.n_cols);
+  arma::mat A_est = arma::zeros(A_samp.n_rows, A_samp.n_cols);
   arma::vec ph_A = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int i = 0; i < A_est.n_elem; i++){
-    for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-      ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(l,i);
+  for(int k = 0; k < A_samp.n_rows; k++){
+    for(int i = 0; i < A_samp.n_cols; i++){
+      for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(k, i, l);
+      }
+      A_est(k, i) = arma::median(ph_A);
     }
-    A_est(i) = arma::median(ph_A);
   }
+
   arma::vec tau_est = arma::zeros(tau_samp.n_cols);
   arma::vec ph_tau = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
   for(int i = 0; i < tau_est.n_elem; i++){
