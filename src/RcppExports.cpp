@@ -164,47 +164,59 @@ BEGIN_RCPP
 END_RCPP
 }
 // Model_DIC
-double Model_DIC(const std::string dir, const int n_files, const int n_MCMC, const arma::field<arma::vec> time, const arma::field<arma::vec> Y);
-RcppExport SEXP _BayesFPMM_Model_DIC(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP timeSEXP, SEXP YSEXP) {
+double Model_DIC(const std::string dir, const int n_files, const int n_MCMC, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::field<arma::vec> time, const arma::field<arma::vec> Y, const double burnin_prop);
+RcppExport SEXP _BayesFPMM_Model_DIC(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP timeSEXP, SEXP YSEXP, SEXP burnin_propSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
     Rcpp::traits::input_parameter< const int >::type n_MCMC(n_MCMCSEXP);
+    Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type boundary_knots(boundary_knotsSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type time(timeSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type Y(YSEXP);
-    rcpp_result_gen = Rcpp::wrap(Model_DIC(dir, n_files, n_MCMC, time, Y));
+    Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
+    rcpp_result_gen = Rcpp::wrap(Model_DIC(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop));
     return rcpp_result_gen;
 END_RCPP
 }
 // Model_AIC
-double Model_AIC(const std::string dir, const int n_files, const int n_MCMC, const arma::field<arma::vec> time, const arma::field<arma::vec> Y);
-RcppExport SEXP _BayesFPMM_Model_AIC(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP timeSEXP, SEXP YSEXP) {
+double Model_AIC(const std::string dir, const int n_files, const int n_MCMC, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::field<arma::vec> time, const arma::field<arma::vec> Y, const double burnin_prop);
+RcppExport SEXP _BayesFPMM_Model_AIC(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP timeSEXP, SEXP YSEXP, SEXP burnin_propSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
     Rcpp::traits::input_parameter< const int >::type n_MCMC(n_MCMCSEXP);
+    Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type boundary_knots(boundary_knotsSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type time(timeSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type Y(YSEXP);
-    rcpp_result_gen = Rcpp::wrap(Model_AIC(dir, n_files, n_MCMC, time, Y));
+    Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
+    rcpp_result_gen = Rcpp::wrap(Model_AIC(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop));
     return rcpp_result_gen;
 END_RCPP
 }
 // Model_BIC
-double Model_BIC(const std::string dir, const int n_files, const int n_MCMC, const arma::field<arma::vec> time, const arma::field<arma::vec> Y);
-RcppExport SEXP _BayesFPMM_Model_BIC(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP timeSEXP, SEXP YSEXP) {
+double Model_BIC(const std::string dir, const int n_files, const int n_MCMC, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::field<arma::vec> time, const arma::field<arma::vec> Y, const double burnin_prop);
+RcppExport SEXP _BayesFPMM_Model_BIC(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP timeSEXP, SEXP YSEXP, SEXP burnin_propSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
     Rcpp::traits::input_parameter< const int >::type n_MCMC(n_MCMCSEXP);
+    Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type boundary_knots(boundary_knotsSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type time(timeSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type Y(YSEXP);
-    rcpp_result_gen = Rcpp::wrap(Model_BIC(dir, n_files, n_MCMC, time, Y));
+    Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
+    rcpp_result_gen = Rcpp::wrap(Model_BIC(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -650,9 +662,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_MVCovCI", (DL_FUNC) &_BayesFPMM_MVCovCI, 8},
     {"_BayesFPMM_SigmaCI", (DL_FUNC) &_BayesFPMM_SigmaCI, 3},
     {"_BayesFPMM_ZCI", (DL_FUNC) &_BayesFPMM_ZCI, 5},
-    {"_BayesFPMM_Model_DIC", (DL_FUNC) &_BayesFPMM_Model_DIC, 5},
-    {"_BayesFPMM_Model_AIC", (DL_FUNC) &_BayesFPMM_Model_AIC, 5},
-    {"_BayesFPMM_Model_BIC", (DL_FUNC) &_BayesFPMM_Model_BIC, 5},
+    {"_BayesFPMM_Model_DIC", (DL_FUNC) &_BayesFPMM_Model_DIC, 9},
+    {"_BayesFPMM_Model_AIC", (DL_FUNC) &_BayesFPMM_Model_AIC, 9},
+    {"_BayesFPMM_Model_BIC", (DL_FUNC) &_BayesFPMM_Model_BIC, 9},
     {"_BayesFPMM_BFPMM_Nu_Z_multiple_try", (DL_FUNC) &_BayesFPMM_BFPMM_Nu_Z_multiple_try, 25},
     {"_BayesFPMM_BFPMM_Theta_est", (DL_FUNC) &_BayesFPMM_BFPMM_Theta_est, 29},
     {"_BayesFPMM_BFPMM_warm_start", (DL_FUNC) &_BayesFPMM_BFPMM_warm_start, 43},

@@ -392,8 +392,8 @@ ZCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
 #' @param Y Field of vectors containing observed values of the function
 #' @returns DIC Double containing DIC value
 #' @export
-Model_DIC <- function(dir, n_files, n_MCMC, time, Y) {
-    .Call('_BayesFPMM_Model_DIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time, Y)
+Model_DIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
+    .Call('_BayesFPMM_Model_DIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
 }
 
 #' Calculates the AIC of a model
@@ -406,8 +406,8 @@ Model_DIC <- function(dir, n_files, n_MCMC, time, Y) {
 #' @param Y Field of vectors containing observed values of the function
 #' @returns DIC Double containing DIC value
 #' @export
-Model_AIC <- function(dir, n_files, n_MCMC, time, Y) {
-    .Call('_BayesFPMM_Model_AIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time, Y)
+Model_AIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
+    .Call('_BayesFPMM_Model_AIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
 }
 
 #' Calculates the BIC of a model
@@ -420,8 +420,8 @@ Model_AIC <- function(dir, n_files, n_MCMC, time, Y) {
 #' @param Y Field of vectors containing observed values of the function
 #' @returns DIC Double containing DIC value
 #' @export
-Model_BIC <- function(dir, n_files, n_MCMC, time, Y) {
-    .Call('_BayesFPMM_Model_BIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time, Y)
+Model_BIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
+    .Call('_BayesFPMM_Model_BIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
 }
 
 #' Find initial starting position for nu and Z parameters for functional data

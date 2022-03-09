@@ -55,7 +55,7 @@ inline double calcLikelihood(const arma::field<arma::vec>& y_obs,
 // @param i Int containing function number of interest
 // @param j Int containing the time point of the ith function of interest
 // @param sigma Double containing current sigma parameter
-// @return lik Double contianing likelihood
+// @return lik Double containing likelihood
 inline double calcDIC2(const arma::vec& y_obs,
                        const arma::mat& B_obs,
                        const arma::mat& nu,
