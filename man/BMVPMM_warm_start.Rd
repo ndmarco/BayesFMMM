@@ -29,7 +29,7 @@ BMVPMM_warm_start(
   r_stored_iters = 0L,
   c = NULL,
   b = 10,
-  nu_1 = 2,
+  nu_1 = 3,
   alpha1l = 1,
   alpha2l = 2,
   beta1l = 1,

@@ -4,7 +4,17 @@
 \alias{Model_BIC}
 \title{Calculates the BIC of a model}
 \usage{
-Model_BIC(dir, n_files, n_MCMC, time, Y)
+Model_BIC(
+  dir,
+  n_files,
+  n_MCMC,
+  basis_degree,
+  boundary_knots,
+  internal_knots,
+  time,
+  Y,
+  burnin_prop = 0.2
+)
 }
 \arguments{
 \item{dir}{String containing the directory where the MCMC files are located}

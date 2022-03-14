@@ -19,7 +19,7 @@ BHDFPMM_Theta_est(
   burnin_prop = 0.8,
   c = NULL,
   b = 10,
-  nu_1 = 2,
+  nu_1 = 3,
   alpha1l = 1,
   alpha2l = 2,
   beta1l = 1,

@@ -220,6 +220,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Model_LLik
+arma::vec Model_LLik(const std::string dir, const int n_files, const int n_MCMC, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::field<arma::vec> time, const arma::field<arma::vec> Y);
+RcppExport SEXP _BayesFPMM_Model_LLik(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP timeSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_MCMC(n_MCMCSEXP);
+    Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type boundary_knots(boundary_knotsSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(Model_LLik(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // BFPMM_Nu_Z_multiple_try
 Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const int n_try, const int k, const arma::field<arma::vec> Y, const arma::field<arma::vec> time, const int n_funct, const int basis_degree, const int n_eigen, const arma::vec boundary_knots, const arma::vec internal_knots, Rcpp::Nullable<Rcpp::NumericVector> c, const double b, const double alpha1l, const double alpha2l, const double beta1l, const double beta2l, const double a_Z_PM, const double a_pi_PM, const double var_alpha3, const double var_epsilon1, const double var_epsilon2, const double alpha, const double beta, const double alpha_0, const double beta_0);
 RcppExport SEXP _BayesFPMM_BFPMM_Nu_Z_multiple_try(SEXP tot_mcmc_itersSEXP, SEXP n_trySEXP, SEXP kSEXP, SEXP YSEXP, SEXP timeSEXP, SEXP n_functSEXP, SEXP basis_degreeSEXP, SEXP n_eigenSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP cSEXP, SEXP bSEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP) {
@@ -665,6 +683,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFPMM_Model_DIC", (DL_FUNC) &_BayesFPMM_Model_DIC, 9},
     {"_BayesFPMM_Model_AIC", (DL_FUNC) &_BayesFPMM_Model_AIC, 9},
     {"_BayesFPMM_Model_BIC", (DL_FUNC) &_BayesFPMM_Model_BIC, 9},
+    {"_BayesFPMM_Model_LLik", (DL_FUNC) &_BayesFPMM_Model_LLik, 8},
     {"_BayesFPMM_BFPMM_Nu_Z_multiple_try", (DL_FUNC) &_BayesFPMM_BFPMM_Nu_Z_multiple_try, 25},
     {"_BayesFPMM_BFPMM_Theta_est", (DL_FUNC) &_BayesFPMM_BFPMM_Theta_est, 29},
     {"_BayesFPMM_BFPMM_warm_start", (DL_FUNC) &_BayesFPMM_BFPMM_warm_start, 43},

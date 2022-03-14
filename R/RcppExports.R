@@ -424,6 +424,20 @@ Model_BIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, intern
     .Call('_BayesFPMM_Model_BIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
 }
 
+#' Calculates the log-likelihood of the parameters for each iteration
+#'
+#' @name Model_LLik
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param time Field of vectors containing time points at which the function was observed
+#' @param Y Field of vectors containing observed values of the function
+#' @returns LLik Vector containing the log-likelihood evaluated at each iteration
+#' @export
+Model_LLik <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y) {
+    .Call('_BayesFPMM_Model_LLik', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y)
+}
+
 #' Find initial starting position for nu and Z parameters for functional data
 #'
 #' Function for finding a good initial starting point for nu parameters and Z
