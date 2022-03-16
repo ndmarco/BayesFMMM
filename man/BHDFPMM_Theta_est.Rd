@@ -6,6 +6,7 @@
 \usage{
 BHDFPMM_Theta_est(
   tot_mcmc_iters,
+  n_try,
   k,
   Y,
   time,
@@ -37,6 +38,8 @@ BHDFPMM_Theta_est(
 }
 \arguments{
 \item{tot_mcmc_iters}{Int containing the total number of MCMC iterations}
+
+\item{n_try}{Int containing how many different chains are tried}
 
 \item{k}{Int containing the number of clusters}
 
@@ -118,6 +121,7 @@ can be used in \code{BHDFPMM_warm_start}.
 The following must be true:
 \describe{
   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+  \item{\code{n_try}}{must be an integer larger than or equal to 1}
   \item{\code{burnin_prop}}{must be between 0 and 1}
   \item{\code{k}}{must be an integer larger than or equal to 2}
   \item{\code{n_funct}}{must be an integer larger than 1}
@@ -164,7 +168,7 @@ est1 <- BHDFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
                                   internal_knots)
 
 ## Run function
-est2 <- BHDFPMM_Theta_est(tot_mcmc_iters, k, Y, time, n_funct,
+est2 <- BHDFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
                         internal_knots, est1$Z, est1$nu)
 

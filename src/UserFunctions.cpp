@@ -1608,6 +1608,7 @@ Rcpp::List BHDFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'
 //' @name BHDFPMM_Theta_est
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
+//' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
 //' @param Y List of vectors containing the observed values (flattened)
 //' @param time List of matrices that contain the observed time points (each column is a dimension)
@@ -1651,6 +1652,7 @@ Rcpp::List BHDFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' The following must be true:
 //' \describe{
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+//'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
 //'   \item{\code{burnin_prop}}{must be between 0 and 1}
 //'   \item{\code{k}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_funct}}{must be an integer larger than 1}
@@ -1696,13 +1698,14 @@ Rcpp::List BHDFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'                                   internal_knots)
 //'
 //' ## Run function
-//' est2 <- BHDFPMM_Theta_est(tot_mcmc_iters, k, Y, time, n_funct,
+//' est2 <- BHDFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1$Z, est1$nu)
 //'
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
+                             const int n_try,
                              const int k,
                              const arma::field<arma::vec> Y,
                              const arma::field<arma::mat> time,
@@ -1734,6 +1737,9 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
   // generate warnings
   if(tot_mcmc_iters <  100){
     Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
+  }
+  if(n_try <  1){
+    Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
   }
   if(burnin_prop < 0){
     Rcpp::stop("'burnin_prop' must be between 0 and 1");
@@ -1881,6 +1887,24 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
                                              beta2l, a_Z_PM, a_pi_PM, var_alpha3,
                                              var_epsilon1, var_epsilon2, alpha, beta,
                                              alpha_0, beta_0, Z_est, nu_est);
+  arma::vec ph = mod1["loglik"];
+  double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+
+  for(int i = 0; i < n_try; i++){
+    Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
+    Rcpp::List modi = BayesFPMM::BHDFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+                                               boundary_knots, internal_knots, tot_mcmc_iters,
+                                               c1, b, nu_1, alpha1l, alpha2l, beta1l,
+                                               beta2l, a_Z_PM, a_pi_PM, var_alpha3,
+                                               var_epsilon1, var_epsilon2, alpha, beta,
+                                               alpha_0, beta_0, Z_est, nu_est);
+    arma::vec ph1 = modi["loglik"];
+    if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
+      mod1 = modi;
+      min_likelihood = arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+    }
+
+  }
 
   Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("B", B_obs),
                                              Rcpp::Named("chi", mod1["chi"]),
@@ -2031,7 +2055,7 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
 //'                                   internal_knots)
 //'
 //' ## Run function
-//' est2 <- BHDFPMM_Theta_est(tot_mcmc_iters, k, Y, time, n_funct,
+//' est2 <- BHDFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1$Z, est1$nu)
 //'
@@ -2612,6 +2636,7 @@ Rcpp::List BMVPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'
 //' @name BMVPMM_Theta_est
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
+//' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
 //' @param Y Matrix of observed vectors (each row is n observation)
 //' @param n_eigen Int containing the number of eigenfunctions
@@ -2649,6 +2674,7 @@ Rcpp::List BMVPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' The following must be true:
 //' \describe{
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+//'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
 //'   \item{\code{k}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
 //'   \item{\code{burnin_prop}}{must be between 0 and 1}
@@ -2684,11 +2710,12 @@ Rcpp::List BMVPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' est1 <- BMVPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
 //'
 //' ## Run function
-//' est2 <- BMVPMM_Theta_est(tot_mcmc_iters, k, Y, n_eigen, est1$Z, est1$nu)
+//' est2 <- BMVPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
 //'
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
+                            const int n_try,
                             const int k,
                             const arma::mat Y,
                             const int n_eigen,
@@ -2714,6 +2741,9 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
   // generate warnings
   if(tot_mcmc_iters <  100){
     Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
+  }
+  if(n_try <  1){
+    Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
   }
   if(burnin_prop < 0){
     Rcpp::stop("'burnin_prop' must be between 0 and 1");
@@ -2839,6 +2869,24 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
                                              beta2l, a_Z_PM, a_pi_PM, var_alpha3,
                                              var_epsilon1, var_epsilon2, alpha, beta,
                                              alpha_0, beta_0, Z_est, nu_est);
+
+  arma::vec ph = mod1["loglik"];
+  double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+
+  for(int i = 0; i < n_try; i++){
+    Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
+    Rcpp::List modi = BayesFPMM::BFPMM_ThetaMV(Y, k, n_eigen, tot_mcmc_iters,
+                                               c1, b, nu_1, alpha1l, alpha2l, beta1l,
+                                               beta2l, a_Z_PM, a_pi_PM, var_alpha3,
+                                               var_epsilon1, var_epsilon2, alpha, beta,
+                                               alpha_0, beta_0, Z_est, nu_est);
+    arma::vec ph1 = modi["loglik"];
+    if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
+      mod1 = modi;
+      min_likelihood = arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+    }
+
+  }
 
   Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("chi", mod1["chi"]),
                                              Rcpp::Named("A", mod1["A"]),
@@ -2970,7 +3018,7 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
 //' est1 <- BMVPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
 //'
 //' ## Run function
-//' est2 <- BMVPMM_Theta_est(tot_mcmc_iters, k, Y, n_eigen, est1$Z, est1$nu)
+//' est2 <- BMVPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
 //'
 //' MCMC.chain <-BMVPMM_warm_start(tot_mcmc_iters, k, Y, n_eigen,
 //'                                est1$Z, est1$pi, est1$alpha_3,

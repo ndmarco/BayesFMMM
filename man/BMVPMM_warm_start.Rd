@@ -202,7 +202,7 @@ n_eigen <- 2
 est1 <- BMVPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
 
 ## Run function
-est2 <- BMVPMM_Theta_est(tot_mcmc_iters, k, Y, n_eigen, est1$Z, est1$nu)
+est2 <- BMVPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
 
 MCMC.chain <-BMVPMM_warm_start(tot_mcmc_iters, k, Y, n_eigen,
                                est1$Z, est1$pi, est1$alpha_3,

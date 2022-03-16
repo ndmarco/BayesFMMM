@@ -228,7 +228,7 @@ est1 <- BHDFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
                                   internal_knots)
 
 ## Run function
-est2 <- BHDFPMM_Theta_est(tot_mcmc_iters, k, Y, time, n_funct,
+est2 <- BHDFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
                         internal_knots, est1$Z, est1$nu)
 
