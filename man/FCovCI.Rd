@@ -48,7 +48,7 @@ FCovCI(
 
 \item{simultaneous}{Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals}
 
-\item{burnin_prop}{Double containing proportion of MCMC samples to get rid}
+\item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 }
 \value{
 CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function

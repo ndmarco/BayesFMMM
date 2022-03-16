@@ -30,7 +30,7 @@ MVCovCI(
 
 \item{rescale}{Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group}
 
-\item{burnin_prop}{Double containing proportion of MCMC samples to get rid}
+\item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 }
 \value{
 CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function

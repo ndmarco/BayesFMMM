@@ -23,9 +23,17 @@ Model_BIC(
 
 \item{n_MCMC}{Int containing the number of saved MCMC iterations per file}
 
+\item{basis_degree}{Int containing the degree of B-splines used}
+
+\item{boundary_knots}{Vector containing the boundary points of our index domain of interest}
+
+\item{internal_knots}{Vector location of internal knots for B-splines}
+
 \item{time}{Field of vectors containing time points at which the function was observed}
 
 \item{Y}{Field of vectors containing observed values of the function}
+
+\item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 }
 \value{
 DIC Double containing DIC value

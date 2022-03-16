@@ -26,7 +26,7 @@
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
-#' @param burnin_prop Double containing proportion of MCMC samples to get rid
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
 #'
 #' @section Warning:
@@ -83,7 +83,7 @@ FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_k
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
-#' @param burnin_prop Double containing proportion of MCMC samples to get rid
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
 #'
 #' @section Warning:
@@ -130,7 +130,7 @@ HDFMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal
 #' @param n_files Int containing the number of files per parameter
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
-#' @param burnin_prop Double containing proportion of MCMC samples to get rid
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
 #'
 #' @section Warning:
@@ -183,7 +183,7 @@ MVMeanCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
-#' @param burnin_prop Double containing proportion of MCMC samples to get rid
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
 #'
 #' @section Warning:
@@ -250,7 +250,7 @@ FCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_kn
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
-#' @param burnin_prop Double containing proportion of MCMC samples to get rid
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
 #'
 #' @section Warning:
@@ -307,7 +307,7 @@ HDFCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_
 #' @param m Int containing the 2nd cluster group of which you want to get the credible interval for
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
-#' @param burnin_prop Double containing proportion of MCMC samples to get rid
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
 #'
 #' @section Warning:
@@ -375,7 +375,7 @@ SigmaCI <- function(dir, n_files, alpha = 0.05) {
 #' @param n_files Integer containing the number of files per parameter
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
-#' @param burnin_prop Double containing proportion of MCMC samples to get rid
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @return CI List containing the desired credible values
 #' @export
 ZCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
@@ -388,8 +388,12 @@ ZCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
 #' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param basis_degree Int containing the degree of B-splines used
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
 #' @param time Field of vectors containing time points at which the function was observed
 #' @param Y Field of vectors containing observed values of the function
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @returns DIC Double containing DIC value
 #' @export
 Model_DIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
@@ -402,8 +406,12 @@ Model_DIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, intern
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
 #' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param basis_degree Int containing the degree of B-splines used
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
 #' @param time Field of vectors containing time points at which the function was observed
 #' @param Y Field of vectors containing observed values of the function
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @returns DIC Double containing DIC value
 #' @export
 Model_AIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
@@ -416,8 +424,12 @@ Model_AIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, intern
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
 #' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param basis_degree Int containing the degree of B-splines used
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
 #' @param time Field of vectors containing time points at which the function was observed
 #' @param Y Field of vectors containing observed values of the function
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @returns DIC Double containing DIC value
 #' @export
 Model_BIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
@@ -430,6 +442,9 @@ Model_BIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, intern
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
 #' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param basis_degree Int containing the degree of B-splines used
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
 #' @param time Field of vectors containing time points at which the function was observed
 #' @param Y Field of vectors containing observed values of the function
 #' @returns LLik Vector containing the log-likelihood evaluated at each iteration

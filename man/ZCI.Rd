@@ -15,7 +15,7 @@ ZCI(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1)
 
 \item{rescale}{Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group}
 
-\item{burnin_prop}{Double containing proportion of MCMC samples to get rid}
+\item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 }
 \value{
 CI List containing the desired credible values
