@@ -2591,10 +2591,11 @@ inline Rcpp::List BFPMM_MTT_warm_startMV(const arma::mat& y_obs,
   delta.slice(0) = delta_est;
   gamma(0,0) = gamma_est;
   Phi(0,0) = Phi_est;
-  A.slice(0) = A_est.t();
+  A.slice(0) = A_est;
   nu.slice(0) = nu_est;
   tau.row(0) = tau_est.t();
   sigma(0) = sigma_est;
+  Rcpp::Rcout << "made it";
 
   chi.slice(0) = chi_est;
 
