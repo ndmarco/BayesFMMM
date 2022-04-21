@@ -65,7 +65,7 @@ Rcpp::List FMeanCI(const std::string dir,
                    const arma::vec internal_knots,
                    const int k,
                    const double alpha = 0.05,
-                   const bool rescale = true,
+                   bool rescale = true,
                    const bool simultaneous = false,
                    const double burnin_prop = 0.1){
 
@@ -117,6 +117,13 @@ Rcpp::List FMeanCI(const std::string dir,
                                    std::round((nu_i.n_slices * n_files)* (1 - burnin_prop)));
   nu_samp = nu_samp1.subcube(0, 0, std::round(nu_i.n_slices * n_files * burnin_prop),
                              nu_samp1.n_rows-1, nu_samp1.n_cols-1, nu_samp1.n_slices-1);
+
+  if(rescale == true){
+    if(nu_i.n_rows > 2){
+      rescale = false;
+      Rcpp::Rcout << "Rescale property cannot be used for K > 2";
+    }
+  }
 
   splines2::BSpline bspline;
 
@@ -338,7 +345,7 @@ Rcpp::List HDFMeanCI(const std::string dir,
                      const arma::field<arma::vec> internal_knots,
                      const int k,
                      const double alpha = 0.05,
-                     const bool rescale = true,
+                     bool rescale = true,
                      const bool simultaneous = false,
                      const double burnin_prop = 0.1){
 
@@ -401,6 +408,14 @@ Rcpp::List HDFMeanCI(const std::string dir,
   arma::mat B = B_obs(0,0);
 
   arma::mat f_samp = arma::zeros(nu_samp.n_slices, time.n_rows);
+
+  if(rescale == true){
+    if(nu_i.n_rows > 2){
+      rescale = false;
+      Rcpp::Rcout << "Rescale property cannot be used for K > 2";
+    }
+  }
+
 
   // Initialize placeholders
   arma::vec CI_Upper = arma::zeros(time.n_rows);
@@ -587,7 +602,7 @@ Rcpp::List HDFMeanCI(const std::string dir,
 Rcpp::List MVMeanCI(const std::string dir,
                     const int n_files,
                     const double alpha = 0.05,
-                    const bool rescale = true,
+                    bool rescale = true,
                     const double burnin_prop = 0.1){
 
   if(n_files <= 0){
@@ -621,6 +636,13 @@ Rcpp::List MVMeanCI(const std::string dir,
                                    std::round((nu_i.n_slices * n_files)* (1 - burnin_prop)));
   nu_samp = nu_samp1.subcube(0, 0, std::round(nu_i.n_slices * n_files * burnin_prop),
                              nu_samp1.n_rows-1, nu_samp1.n_cols-1, nu_samp1.n_slices-1);
+
+  if(rescale == true){
+    if(nu_i.n_rows > 2){
+      rescale = false;
+      Rcpp::Rcout << "Rescale property cannot be used for K > 2";
+    }
+  }
 
   // Initialize placeholders
   arma::mat CI_Upper = arma::zeros(nu_i.n_rows, nu_i.n_cols);
@@ -756,7 +778,7 @@ Rcpp::List FCovCI(const std::string dir,
                   const int l,
                   const int m,
                   const double alpha = 0.05,
-                  const bool rescale = true,
+                  bool rescale = true,
                   const bool simultaneous = false,
                   const double burnin_prop = 0.1){
   if(n_files <= 0){
@@ -796,16 +818,22 @@ Rcpp::List FCovCI(const std::string dir,
   if(l <= 0){
     Rcpp::stop("'l' must be positive");
   }
-  if(l > phi_i.n_rows){
+  if(l > phi_i(0,0).n_rows){
     Rcpp::stop("'l' must be less than or equal to the number of clusters in the model");
   }
   if(m <= 0){
     Rcpp::stop("'m' must be positive");
   }
-  if(m > phi_i.n_rows){
+  if(m > phi_i(0,0).n_rows){
     Rcpp::stop("'m' must be less than or equal to the number of clusters in the model");
   }
 
+  if(rescale == true){
+    if(phi_i(0,0).n_rows > 2){
+      rescale = false;
+      Rcpp::Rcout << "Rescale property cannot be used for K > 2";
+    }
+  }
   arma::field<arma::cube> phi_samp1(n_MCMC * n_files, 1);
   for(int i = 0; i < n_MCMC; i++){
     phi_samp1(i,0) = phi_i(i,0);
@@ -1057,7 +1085,7 @@ Rcpp::List HDFCovCI(const std::string dir,
                     const int l,
                     const int m,
                     const double alpha = 0.05,
-                    const bool rescale = true,
+                    bool rescale = true,
                     const bool simultaneous = false,
                     const double burnin_prop = 0.1){
   if(n_files <= 0){
@@ -1101,15 +1129,24 @@ Rcpp::List HDFCovCI(const std::string dir,
   if(l <= 0){
     Rcpp::stop("'l' must be positive");
   }
-  if(l > phi_i.n_rows){
+  if(l > phi_i(0,0).n_rows){
     Rcpp::stop("'l' must be less than or equal to the number of clusters in the model");
   }
   if(m <= 0){
     Rcpp::stop("'m' must be positive");
   }
-  if(m > phi_i.n_rows){
+  if(m > phi_i(0,0).n_rows){
     Rcpp::stop("'m' must be less than or equal to the number of clusters in the model");
   }
+
+  if(rescale == true){
+    if(phi_i(0,0).n_rows > 2){
+      rescale = false;
+      Rcpp::Rcout << "Rescale property cannot be used for K > 2";
+    }
+  }
+
+
 
   arma::field<arma::cube> phi_samp1(n_MCMC * n_files, 1);
   for(int i = 0; i < n_MCMC; i++){
@@ -1334,7 +1371,7 @@ Rcpp::List MVCovCI(const std::string dir,
                    const int l,
                    const int m,
                    const double alpha = 0.05,
-                   const bool rescale = true,
+                   bool rescale = true,
                    const double burnin_prop = 0.1){
 
   if(n_files <= 0){
@@ -1363,14 +1400,20 @@ Rcpp::List MVCovCI(const std::string dir,
   if(l <= 0){
     Rcpp::stop("'l' must be positive");
   }
-  if(l > phi_i.n_rows){
+  if(l > phi_i(0,0).n_rows){
     Rcpp::stop("'l' must be less than or equal to the number of clusters in the model");
   }
   if(m <= 0){
     Rcpp::stop("'m' must be positive");
   }
-  if(m > phi_i.n_rows){
+  if(m > phi_i(0,0).n_rows){
     Rcpp::stop("'m' must be less than or equal to the number of clusters in the model");
+  }
+  if(rescale == true){
+    if(phi_i(0,0).n_rows > 2){
+      rescale = false;
+      Rcpp::Rcout << "Rescale property cannot be used for K > 2";
+    }
   }
   arma::field<arma::cube> phi_samp1(n_MCMC * n_files, 1);
   for(int i = 0; i < n_MCMC; i++){
@@ -1537,12 +1580,20 @@ Rcpp::List SigmaCI(const std::string dir,
 Rcpp::List ZCI(const std::string dir,
                const int n_files,
                const double alpha = 0.05,
-               const bool rescale = true,
+               bool rescale = true,
                const double burnin_prop = 0.1){
   arma::cube Z_i;
   Z_i.load(dir + "Z0.txt");
   arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
   Z_samp.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+
+  if(rescale == true){
+    if(Z_samp.n_cols > 2){
+      rescale = false;
+      Rcpp::Rcout << "Rescale property cannot be used for K > 2";
+    }
+  }
+
   for(int i = 1; i < n_files; i++){
     Z_i.load(dir + "Z" + std::to_string(i) +".txt");
     Z_samp.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
@@ -1560,7 +1611,8 @@ Rcpp::List ZCI(const std::string dir,
         max_ind = arma::index_max(ph);
         transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
       }
-      Z_samp.slice(j) =  Z_samp.slice(j) * arma::pinv(transform_mat);
+      //Z_samp.slice(j) =  Z_samp.slice(j) * arma::inv(transform_mat);
+      Z_samp.slice(j) =  arma::solve(transform_mat.t(), Z_samp.slice(j).t(), arma::solve_opts::no_approx).t();
     }
   }
 

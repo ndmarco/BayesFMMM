@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // FMeanCI
-Rcpp::List FMeanCI(const std::string dir, const int n_files, const arma::vec time, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const int k, const double alpha, const bool rescale, const bool simultaneous, const double burnin_prop);
+Rcpp::List FMeanCI(const std::string dir, const int n_files, const arma::vec time, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const int k, const double alpha, bool rescale, const bool simultaneous, const double burnin_prop);
 RcppExport SEXP _BayesFPMM_FMeanCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP timeSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP kSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP simultaneousSEXP, SEXP burnin_propSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -26,7 +26,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
     Rcpp::traits::input_parameter< const int >::type k(kSEXP);
     Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< const bool >::type rescale(rescaleSEXP);
+    Rcpp::traits::input_parameter< bool >::type rescale(rescaleSEXP);
     Rcpp::traits::input_parameter< const bool >::type simultaneous(simultaneousSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
     rcpp_result_gen = Rcpp::wrap(FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop));
@@ -34,7 +34,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // HDFMeanCI
-Rcpp::List HDFMeanCI(const std::string dir, const int n_files, const arma::mat time, const arma::vec basis_degree, const arma::mat boundary_knots, const arma::field<arma::vec> internal_knots, const int k, const double alpha, const bool rescale, const bool simultaneous, const double burnin_prop);
+Rcpp::List HDFMeanCI(const std::string dir, const int n_files, const arma::mat time, const arma::vec basis_degree, const arma::mat boundary_knots, const arma::field<arma::vec> internal_knots, const int k, const double alpha, bool rescale, const bool simultaneous, const double burnin_prop);
 RcppExport SEXP _BayesFPMM_HDFMeanCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP timeSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP kSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP simultaneousSEXP, SEXP burnin_propSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -47,7 +47,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type internal_knots(internal_knotsSEXP);
     Rcpp::traits::input_parameter< const int >::type k(kSEXP);
     Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< const bool >::type rescale(rescaleSEXP);
+    Rcpp::traits::input_parameter< bool >::type rescale(rescaleSEXP);
     Rcpp::traits::input_parameter< const bool >::type simultaneous(simultaneousSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
     rcpp_result_gen = Rcpp::wrap(HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop));
@@ -55,7 +55,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // MVMeanCI
-Rcpp::List MVMeanCI(const std::string dir, const int n_files, const double alpha, const bool rescale, const double burnin_prop);
+Rcpp::List MVMeanCI(const std::string dir, const int n_files, const double alpha, bool rescale, const double burnin_prop);
 RcppExport SEXP _BayesFPMM_MVMeanCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP burnin_propSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -63,14 +63,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
     Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< const bool >::type rescale(rescaleSEXP);
+    Rcpp::traits::input_parameter< bool >::type rescale(rescaleSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
     rcpp_result_gen = Rcpp::wrap(MVMeanCI(dir, n_files, alpha, rescale, burnin_prop));
     return rcpp_result_gen;
 END_RCPP
 }
 // FCovCI
-Rcpp::List FCovCI(const std::string dir, const int n_files, const int n_MCMC, const arma::vec time1, const arma::vec time2, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const int l, const int m, const double alpha, const bool rescale, const bool simultaneous, const double burnin_prop);
+Rcpp::List FCovCI(const std::string dir, const int n_files, const int n_MCMC, const arma::vec time1, const arma::vec time2, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const int l, const int m, const double alpha, bool rescale, const bool simultaneous, const double burnin_prop);
 RcppExport SEXP _BayesFPMM_FCovCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP time1SEXP, SEXP time2SEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP lSEXP, SEXP mSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP simultaneousSEXP, SEXP burnin_propSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -86,7 +86,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int >::type l(lSEXP);
     Rcpp::traits::input_parameter< const int >::type m(mSEXP);
     Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< const bool >::type rescale(rescaleSEXP);
+    Rcpp::traits::input_parameter< bool >::type rescale(rescaleSEXP);
     Rcpp::traits::input_parameter< const bool >::type simultaneous(simultaneousSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
     rcpp_result_gen = Rcpp::wrap(FCovCI(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop));
@@ -94,7 +94,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // HDFCovCI
-Rcpp::List HDFCovCI(const std::string dir, const int n_files, const int n_MCMC, const arma::mat time1, const arma::mat time2, const arma::vec basis_degree, const arma::mat boundary_knots, const arma::field<arma::vec> internal_knots, const int l, const int m, const double alpha, const bool rescale, const bool simultaneous, const double burnin_prop);
+Rcpp::List HDFCovCI(const std::string dir, const int n_files, const int n_MCMC, const arma::mat time1, const arma::mat time2, const arma::vec basis_degree, const arma::mat boundary_knots, const arma::field<arma::vec> internal_knots, const int l, const int m, const double alpha, bool rescale, const bool simultaneous, const double burnin_prop);
 RcppExport SEXP _BayesFPMM_HDFCovCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP time1SEXP, SEXP time2SEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP lSEXP, SEXP mSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP simultaneousSEXP, SEXP burnin_propSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -110,7 +110,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int >::type l(lSEXP);
     Rcpp::traits::input_parameter< const int >::type m(mSEXP);
     Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< const bool >::type rescale(rescaleSEXP);
+    Rcpp::traits::input_parameter< bool >::type rescale(rescaleSEXP);
     Rcpp::traits::input_parameter< const bool >::type simultaneous(simultaneousSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
     rcpp_result_gen = Rcpp::wrap(HDFCovCI(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop));
@@ -118,7 +118,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // MVCovCI
-Rcpp::List MVCovCI(const std::string dir, const int n_files, const int n_MCMC, const int l, const int m, const double alpha, const bool rescale, const double burnin_prop);
+Rcpp::List MVCovCI(const std::string dir, const int n_files, const int n_MCMC, const int l, const int m, const double alpha, bool rescale, const double burnin_prop);
 RcppExport SEXP _BayesFPMM_MVCovCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP lSEXP, SEXP mSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP burnin_propSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -129,7 +129,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int >::type l(lSEXP);
     Rcpp::traits::input_parameter< const int >::type m(mSEXP);
     Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< const bool >::type rescale(rescaleSEXP);
+    Rcpp::traits::input_parameter< bool >::type rescale(rescaleSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
     rcpp_result_gen = Rcpp::wrap(MVCovCI(dir, n_files, n_MCMC, l, m, alpha, rescale, burnin_prop));
     return rcpp_result_gen;
@@ -149,7 +149,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // ZCI
-Rcpp::List ZCI(const std::string dir, const int n_files, const double alpha, const bool rescale, const double burnin_prop);
+Rcpp::List ZCI(const std::string dir, const int n_files, const double alpha, bool rescale, const double burnin_prop);
 RcppExport SEXP _BayesFPMM_ZCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP burnin_propSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -157,7 +157,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
     Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< const bool >::type rescale(rescaleSEXP);
+    Rcpp::traits::input_parameter< bool >::type rescale(rescaleSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
     rcpp_result_gen = Rcpp::wrap(ZCI(dir, n_files, alpha, rescale, burnin_prop));
     return rcpp_result_gen;
