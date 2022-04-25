@@ -112,5 +112,40 @@ inline double calcLikelihoodMV(const arma::mat& y_obs,
   }
   return log_lik;
 }
+
+// Calculates the second term of the DIC expression for multivariate model
+//
+// @name calcDIC2MV
+// @param y_obs Field of vectors containing observed time points
+// @param nu Matrix containing current nu parameters
+// @param Phi Cube containing current Phi parameters
+// @param Z Matrix containing current Z parameters
+// @param chi Matrix containing current chi parameters
+// @param i Int containing vector number of interest
+// @param sigma Double containing current sigma parameter
+// @return lik Double containing likelihood
+inline double calcDIC2MV(const arma::rowvec& y_obs,
+                         const arma::mat& nu,
+                         const arma::cube& Phi,
+                         const arma::mat& Z,
+                         const arma::mat& chi,
+                         const int i,
+                         const double& sigma){
+  arma::vec mean = arma::zeros(y_obs.n_elem);
+  for(int k = 0; k < Z.n_cols; k++){
+    if(Z(i,k) != 0){
+      mean = mean + Z(i,k) * nu.row(k).t();
+      for(int n = 0; n < Phi.n_slices; n++){
+        mean = mean + Z(i,k) * chi(i,n) * Phi.slice(n).row(k).t();
+      }
+    }
+  }
+  double lik = 1;
+  for(int j = 0; j < y_obs.n_elem; j++){
+    lik = lik * R::dnorm(y_obs(j), mean(j), std::sqrt(sigma), false);
+  }
+
+  return lik;
+}
 }
 #endif

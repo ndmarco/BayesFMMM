@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{Model_BIC}
 \alias{Model_BIC}
-\title{Calculates the BIC of a model}
+\title{Calculates the BIC of a functional model}
 \usage{
 Model_BIC(
   dir,
@@ -36,8 +36,8 @@ Model_BIC(
 \item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 }
 \value{
-DIC Double containing DIC value
+BIC Double containing BIC value
 }
 \description{
-Calculates the BIC of a model
+Calculates the BIC of a functional model
 }

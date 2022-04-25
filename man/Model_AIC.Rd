@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{Model_AIC}
 \alias{Model_AIC}
-\title{Calculates the AIC of a model}
+\title{Calculates the AIC of a functional model}
 \usage{
 Model_AIC(
   dir,
@@ -36,8 +36,8 @@ Model_AIC(
 \item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 }
 \value{
-DIC Double containing DIC value
+AIC Double containing AIC value
 }
 \description{
-Calculates the AIC of a model
+Calculates the AIC of a functional model
 }

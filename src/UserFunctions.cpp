@@ -2423,7 +2423,7 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
 //' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 //' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
-//' @param Y Matrix of observed vectors (each row is n observation)
+//' @param Y Matrix of observed vectors (each row is an observation)
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param c Vector containing hyperparmeters for sampling from pi (If left NULL, the one vector will be used)
 //' @param b Double containing hyperparameter for sampling from alpha_3
@@ -2638,7 +2638,7 @@ Rcpp::List BMVPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
-//' @param Y Matrix of observed vectors (each row is n observation)
+//' @param Y Matrix of observed vectors (each row is an observation)
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param Z_samp Cube containing initial chain of Z parameters from \code{BFPMM_Nu_Z_multiple_try}
 //' @param nu_samp Cube containing initial chain of nu parameters from \code{BFPMM_Nu_Z_multiple_try}
@@ -2920,7 +2920,7 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
 //' @name BMVPMM_warm_start
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param k Int containing the number of clusters
-//' @param Y Matrix of observed vectors (each row is n observation)
+//' @param Y Matrix of observed vectors (each row is an observation)
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFPMM_NU_Z_multiple_try})
 //' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFPMM_NU_Z_multiple_try})

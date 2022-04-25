@@ -1643,7 +1643,7 @@ Rcpp::List ZCI(const std::string dir,
   return(CI);
 }
 
-//' Calculates the DIC of a model
+//' Calculates the DIC of a functional model
 //'
 //' @name Model_DIC
 //' @param dir String containing the directory where the MCMC files are located
@@ -1780,7 +1780,7 @@ double Model_DIC(const std::string dir,
   return(DIC);
 }
 
-//' Calculates the AIC of a model
+//' Calculates the AIC of a functional model
 //'
 //' @name Model_AIC
 //' @param dir String containing the directory where the MCMC files are located
@@ -1792,7 +1792,7 @@ double Model_DIC(const std::string dir,
 //' @param time Field of vectors containing time points at which the function was observed
 //' @param Y Field of vectors containing observed values of the function
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
-//' @returns DIC Double containing DIC value
+//' @returns AIC Double containing AIC value
 //' @export
 // [[Rcpp::export]]
 double Model_AIC(const std::string dir,
@@ -1932,7 +1932,7 @@ double Model_AIC(const std::string dir,
   return(AIC);
 }
 
-//' Calculates the BIC of a model
+//' Calculates the BIC of a functional model
 //'
 //' @name Model_BIC
 //' @param dir String containing the directory where the MCMC files are located
@@ -1944,7 +1944,7 @@ double Model_AIC(const std::string dir,
 //' @param time Field of vectors containing time points at which the function was observed
 //' @param Y Field of vectors containing observed values of the function
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
-//' @returns DIC Double containing DIC value
+//' @returns BIC Double containing BIC value
 //' @export
 // [[Rcpp::export]]
 double Model_BIC(const std::string dir,
@@ -2200,4 +2200,437 @@ arma::vec Model_LLik(const std::string dir,
   }
 
  return(LLik);
+}
+
+//' Calculates the AIC of a multivariate model
+//'
+//' @name MV_Model_AIC
+//' @param dir String containing the directory where the MCMC files are located
+//' @param n_files Int containing the number of files per parameter
+//' @param n_MCMC Int containing the number of saved MCMC iterations per file
+//' @param Y Matrix of observed vectors (each row is an observation)
+//' @param burnin_prop Double containing proportion of MCMC samples to discard
+//' @returns AIC Double containing AIC value
+//' @export
+// [[Rcpp::export]]
+double MV_Model_AIC(const std::string dir,
+                    const int n_files,
+                    const int n_MCMC,
+                    const arma::mat Y,
+                    const double burnin_prop = 0.2){
+
+  if(burnin_prop < 0){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(burnin_prop >= 1){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+
+  // Get Nu parameters
+  arma::cube nu_i;
+  nu_i.load(dir + "Nu0.txt");
+  arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
+  nu_samp.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
+  for(int i = 1; i < n_files; i++){
+    nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
+    nu_samp.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
+                    (nu_i.n_slices)*(i+1) - 1) = nu_i;
+  }
+
+  // Get Phi parameters
+  arma::field<arma::cube> phi_i;
+  phi_i.load(dir + "Phi0.txt");
+  arma::field<arma::cube> phi_samp(n_MCMC * n_files, 1);
+  for(int i = 0; i < n_MCMC; i++){
+    phi_samp(i,0) = phi_i(i,0);
+  }
+
+  for(int i = 1; i < n_files; i++){
+    phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
+    for(int j = 0; j < n_MCMC; j++){
+      phi_samp((i * n_MCMC) + j, 0) = phi_i(j,0);
+    }
+  }
+
+  // Get Z parameters
+  arma::cube Z_i;
+  Z_i.load(dir + "Z0.txt");
+  arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+  Z_samp.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+  for(int i = 1; i < n_files; i++){
+    Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+    Z_samp.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+  }
+
+  // Get sigma parameters
+  arma::vec sigma_i;
+  sigma_i.load(dir + "Sigma0.txt");
+  arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
+  sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
+  for(int i = 1; i < n_files; i++){
+    sigma_i.load(dir + "Sigma" + std::to_string(i) +".txt");
+    sigma_samp.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
+  }
+
+  // Get chi parameters
+  arma::cube chi_i;
+  chi_i.load(dir + "Chi0.txt");
+  arma::cube chi_samp = arma::zeros(chi_i.n_rows, chi_i.n_cols, chi_i.n_slices * n_files);
+  chi_samp.subcube(0, 0, 0, chi_i.n_rows-1, chi_i.n_cols-1, chi_i.n_slices-1) = chi_i;
+  for(int i = 1; i < n_files; i++){
+    chi_i.load(dir + "Chi" + std::to_string(i) +".txt");
+    chi_samp.subcube(0, 0,  chi_i.n_slices*i, chi_i.n_rows-1, chi_i.n_cols-1,
+                     (chi_i.n_slices)*(i+1) - 1) = chi_i;
+  }
+
+
+  // Get posterior mean of sigma^2
+  double mean_sigma = arma::mean(sigma_samp);
+
+  // Get individual mean vector
+  arma::field<arma::mat> fit(Z_i.n_rows, 1);
+  arma::rowvec Z_ph(Z_i.n_cols, arma::fill::zeros);
+  for(int i = 0; i < Z_i.n_rows; i++){
+    fit(i,0) = arma::zeros(std::round((1 - burnin_prop) * sigma_i.n_elem * n_files), Y.n_cols);
+    for(int j = std::round(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
+      Z_ph = Z_samp(arma::span(i), arma::span::all, arma::span(j));
+      fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) = Z_ph * nu_samp.slice(j);
+      for(int k = 0; k < chi_samp.n_cols; k++){
+        fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) = fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) + (chi_samp(i, k, j) *
+          Z_ph * phi_samp(j,0).slice(k));
+      }
+    }
+  }
+
+  // Get mean curve fit
+  arma::mat mean_fit = arma::zeros(Y.n_rows, Y.n_cols);
+  for(int i = 0; i < Z_i.n_rows; i++){
+    mean_fit.row(i) = arma::mean(fit(i,0), 0);
+  }
+
+  // Calculate Log likelihood
+  double log_lik = 0;
+  for(int i = 0; i < Z_samp.n_rows; i++){
+    for(int j = 0; j < Y.n_cols; j++){
+      log_lik = log_lik + R::dnorm(Y(i,j), mean_fit(i,j),
+                                   std::sqrt(mean_sigma), true);
+    }
+  }
+
+
+  // Calculate AIC
+  double AIC =  2*((Z_samp.n_rows + phi_samp(0,0).n_cols) * Z_samp.n_cols +
+                   2 * phi_samp(0,0).n_cols * phi_samp(0,0).n_slices * phi_samp(0,0).n_rows +
+                   2 + 4 * Z_samp.n_cols + chi_samp.n_rows * chi_samp.n_cols + (phi_samp(0,0).n_slices*Z_samp.n_cols)) - (2 * log_lik);
+  return(AIC);
+}
+
+//' Calculates the BIC of a multivariate model
+//'
+//' @name MV_Model_BIC
+//' @param dir String containing the directory where the MCMC files are located
+//' @param n_files Int containing the number of files per parameter
+//' @param n_MCMC Int containing the number of saved MCMC iterations per file
+//' @param Y Matrix of observed vectors (each row is an observation)
+//' @param burnin_prop Double containing proportion of MCMC samples to discard
+//' @returns BIC Double containing BIC value
+//' @export
+// [[Rcpp::export]]
+double MV_Model_BIC(const std::string dir,
+                    const int n_files,
+                    const int n_MCMC,
+                    const arma::mat Y,
+                    const double burnin_prop = 0.2){
+
+
+  if(burnin_prop < 0){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(burnin_prop >= 1){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+
+  // Get Nu parameters
+  arma::cube nu_i;
+  nu_i.load(dir + "Nu0.txt");
+  arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
+  nu_samp.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
+  for(int i = 1; i < n_files; i++){
+    nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
+    nu_samp.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
+                    (nu_i.n_slices)*(i+1) - 1) = nu_i;
+  }
+
+  // Get Phi parameters
+  arma::field<arma::cube> phi_i;
+  phi_i.load(dir + "Phi0.txt");
+  arma::field<arma::cube> phi_samp(n_MCMC * n_files, 1);
+  for(int i = 0; i < n_MCMC; i++){
+    phi_samp(i,0) = phi_i(i,0);
+  }
+
+  for(int i = 1; i < n_files; i++){
+    phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
+    for(int j = 0; j < n_MCMC; j++){
+      phi_samp((i * n_MCMC) + j, 0) = phi_i(j,0);
+    }
+  }
+
+  // Get Z parameters
+  arma::cube Z_i;
+  Z_i.load(dir + "Z0.txt");
+  arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+  Z_samp.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+  for(int i = 1; i < n_files; i++){
+    Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+    Z_samp.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+  }
+
+  // Get sigma parameters
+  arma::vec sigma_i;
+  sigma_i.load(dir + "Sigma0.txt");
+  arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
+  sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
+  for(int i = 1; i < n_files; i++){
+    sigma_i.load(dir + "Sigma" + std::to_string(i) +".txt");
+    sigma_samp.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
+  }
+
+  // Get chi parameters
+  arma::cube chi_i;
+  chi_i.load(dir + "Chi0.txt");
+  arma::cube chi_samp = arma::zeros(chi_i.n_rows, chi_i.n_cols, chi_i.n_slices * n_files);
+  chi_samp.subcube(0, 0, 0, chi_i.n_rows-1, chi_i.n_cols-1, chi_i.n_slices-1) = chi_i;
+  for(int i = 1; i < n_files; i++){
+    chi_i.load(dir + "Chi" + std::to_string(i) +".txt");
+    chi_samp.subcube(0, 0,  chi_i.n_slices*i, chi_i.n_rows-1, chi_i.n_cols-1,
+                     (chi_i.n_slices)*(i+1) - 1) = chi_i;
+  }
+
+  // Get posterior mean of sigma^2
+  double mean_sigma = arma::mean(sigma_samp);
+
+  // Get individual mean vector
+  arma::field<arma::mat> fit(Z_i.n_rows, 1);
+  arma::rowvec Z_ph(Z_i.n_cols, arma::fill::zeros);
+  for(int i = 0; i < Z_i.n_rows; i++){
+    fit(i,0) = arma::zeros(std::round((1 - burnin_prop) * sigma_i.n_elem * n_files), Y.n_cols);
+    for(int j = std::round(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
+      Z_ph = Z_samp(arma::span(i), arma::span::all, arma::span(j));
+      fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) = Z_ph * nu_samp.slice(j);
+      for(int k = 0; k < chi_samp.n_cols; k++){
+        fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) = fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) + (chi_samp(i, k, j) *
+          Z_ph * phi_samp(j,0).slice(k));
+      }
+    }
+  }
+
+  // Get mean curve fit
+  arma::mat mean_fit = arma::zeros(Y.n_rows, Y.n_cols);
+  for(int i = 0; i < Z_i.n_rows; i++){
+    mean_fit.row(i) = arma::mean(fit(i,0), 0);
+  }
+
+  // Calculate Log likelihood
+  double log_lik = 0;
+  for(int i = 0; i < Z_samp.n_rows; i++){
+    for(int j = 0; j < Y.n_cols; j++){
+      log_lik = log_lik + R::dnorm(Y(i,j), mean_fit(i,j),
+                                   std::sqrt(mean_sigma), true);
+    }
+  }
+
+  // Calculate BIC
+  double BIC = (2 * log_lik) - (std::log(Y.n_rows) *
+                ((Z_samp.n_rows + phi_samp(0,0).n_cols) * Z_samp.n_cols +
+                2 * phi_samp(0,0).n_cols * phi_samp(0,0).n_slices * phi_samp(0,0).n_rows +
+                2 + 4 * Z_samp.n_cols + chi_samp.n_rows * chi_samp.n_cols + (phi_samp(0,0).n_slices*Z_samp.n_cols)));
+  return(BIC);
+}
+
+//' Calculates the DIC of a functional model
+//'
+//' @name Model_DIC
+//' @param dir String containing the directory where the MCMC files are located
+//' @param n_files Int containing the number of files per parameter
+//' @param n_MCMC Int containing the number of saved MCMC iterations per file
+//' @param Y Matrix of observed vectors (each row is an observation)
+//' @param burnin_prop Double containing proportion of MCMC samples to discard
+//' @returns DIC Double containing DIC value
+//' @export
+// [[Rcpp::export]]
+double MV_Model_DIC(const std::string dir,
+                    const int n_files,
+                    const int n_MCMC,
+                    const arma::mat Y,
+                    const double burnin_prop = 0.2){
+  if(burnin_prop < 0){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(burnin_prop >= 1){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+
+  // Get Nu parameters
+  arma::cube nu_i;
+  nu_i.load(dir + "Nu0.txt");
+  arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
+  nu_samp.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
+  for(int i = 1; i < n_files; i++){
+    nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
+    nu_samp.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
+                    (nu_i.n_slices)*(i+1) - 1) = nu_i;
+  }
+
+  // Get Phi parameters
+  arma::field<arma::cube> phi_i;
+  phi_i.load(dir + "Phi0.txt");
+  arma::field<arma::cube> phi_samp(n_MCMC * n_files, 1);
+  for(int i = 0; i < n_MCMC; i++){
+    phi_samp(i,0) = phi_i(i,0);
+  }
+
+  for(int i = 1; i < n_files; i++){
+    phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
+    for(int j = 0; j < n_MCMC; j++){
+      phi_samp((i * n_MCMC) + j, 0) = phi_i(j,0);
+    }
+  }
+
+  // Get Z parameters
+  arma::cube Z_i;
+  Z_i.load(dir + "Z0.txt");
+  arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+  Z_samp.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+  for(int i = 1; i < n_files; i++){
+    Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+    Z_samp.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+  }
+
+  // Get sigma parameters
+  arma::vec sigma_i;
+  sigma_i.load(dir + "Sigma0.txt");
+  arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
+  sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
+  for(int i = 1; i < n_files; i++){
+    sigma_i.load(dir + "Sigma" + std::to_string(i) +".txt");
+    sigma_samp.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
+  }
+
+  // Get chi parameters
+  arma::cube chi_i;
+  chi_i.load(dir + "Chi0.txt");
+  arma::cube chi_samp = arma::zeros(chi_i.n_rows, chi_i.n_cols, chi_i.n_slices * n_files);
+  chi_samp.subcube(0, 0, 0, chi_i.n_rows-1, chi_i.n_cols-1, chi_i.n_slices-1) = chi_i;
+  for(int i = 1; i < n_files; i++){
+    chi_i.load(dir + "Chi" + std::to_string(i) +".txt");
+    chi_samp.subcube(0, 0,  chi_i.n_slices*i, chi_i.n_rows-1, chi_i.n_cols-1,
+                     (chi_i.n_slices)*(i+1) - 1) = chi_i;
+  }
+
+
+  double expected_log_f = 0;
+  for(int i = std::round(burnin_prop *nu_samp.n_slices) ; i < nu_samp.n_slices; i++){
+    expected_log_f = expected_log_f + BayesFPMM::calcLikelihoodMV(Y, nu_samp.slice(i),
+                                                                  phi_samp(i,0), Z_samp.slice(i),
+                                                                  chi_samp.slice(i), sigma_samp(i));
+  }
+  expected_log_f = expected_log_f / std::round((1-burnin_prop) *nu_samp.n_slices);
+
+  double f_hat = 0;
+  double f_hat_i = 0;
+  for(int i = 0; i < Z_samp.n_rows; i++){
+    f_hat_i = 0;
+    for(int n = std::round(burnin_prop *nu_samp.n_slices); n < nu_samp.n_slices; n++){
+      f_hat_i = f_hat_i + BayesFPMM::calcDIC2MV(Y.row(i), nu_samp.slice(n), phi_samp(n,0),
+                                                Z_samp.slice(n), chi_samp.slice(n), i,
+                                                sigma_samp(n));
+    }
+    f_hat = f_hat + std::log(f_hat_i / std::round((1-burnin_prop) *nu_samp.n_slices));
+  }
+
+  double DIC = (2 * f_hat) - (4 * expected_log_f);
+  return(DIC);
+}
+
+//' Calculates the log-likelihood of the parameters for each iteration of a multivariate model
+//'
+//' @name MV_Model_LLik
+//' @param dir String containing the directory where the MCMC files are located
+//' @param n_files Int containing the number of files per parameter
+//' @param n_MCMC Int containing the number of saved MCMC iterations per file
+//' @param Y Matrix of observed vectors (each row is an observation)
+//' @returns LLik Vector containing the log-likelihood evaluated at each iteration
+//' @export
+// [[Rcpp::export]]
+arma::vec MV_Model_LLik(const std::string dir,
+                        const int n_files,
+                        const int n_MCMC,
+                        const arma::mat Y){
+
+  // Get Nu parameters
+  arma::cube nu_i;
+  nu_i.load(dir + "Nu0.txt");
+  arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
+  nu_samp.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
+  for(int i = 1; i < n_files; i++){
+    nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
+    nu_samp.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
+                    (nu_i.n_slices)*(i+1) - 1) = nu_i;
+  }
+
+  // Get Phi parameters
+  arma::field<arma::cube> phi_i;
+  phi_i.load(dir + "Phi0.txt");
+  arma::field<arma::cube> phi_samp(n_MCMC * n_files, 1);
+  for(int i = 0; i < n_MCMC; i++){
+    phi_samp(i,0) = phi_i(i,0);
+  }
+
+  for(int i = 1; i < n_files; i++){
+    phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
+    for(int j = 0; j < n_MCMC; j++){
+      phi_samp((i * n_MCMC) + j, 0) = phi_i(j,0);
+    }
+  }
+
+  // Get Z parameters
+  arma::cube Z_i;
+  Z_i.load(dir + "Z0.txt");
+  arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+  Z_samp.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+  for(int i = 1; i < n_files; i++){
+    Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+    Z_samp.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+  }
+
+  // Get sigma parameters
+  arma::vec sigma_i;
+  sigma_i.load(dir + "Sigma0.txt");
+  arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
+  sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
+  for(int i = 1; i < n_files; i++){
+    sigma_i.load(dir + "Sigma" + std::to_string(i) +".txt");
+    sigma_samp.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
+  }
+
+  // Get chi parameters
+  arma::cube chi_i;
+  chi_i.load(dir + "Chi0.txt");
+  arma::cube chi_samp = arma::zeros(chi_i.n_rows, chi_i.n_cols, chi_i.n_slices * n_files);
+  chi_samp.subcube(0, 0, 0, chi_i.n_rows-1, chi_i.n_cols-1, chi_i.n_slices-1) = chi_i;
+  for(int i = 1; i < n_files; i++){
+    chi_i.load(dir + "Chi" + std::to_string(i) +".txt");
+    chi_samp.subcube(0, 0,  chi_i.n_slices*i, chi_i.n_rows-1, chi_i.n_cols-1,
+                     (chi_i.n_slices)*(i+1) - 1) = chi_i;
+  }
+
+  arma::vec LLik = arma::zeros(nu_samp.n_slices);
+  for(int i = 0; i < nu_samp.n_slices; i++){
+    LLik(i) =  BayesFPMM::calcLikelihoodMV(Y, nu_samp.slice(i),
+         phi_samp(i,0), Z_samp.slice(i),
+         chi_samp.slice(i), sigma_samp(i));
+  }
+
+  return(LLik);
 }

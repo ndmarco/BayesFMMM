@@ -50,7 +50,7 @@ BMVPMM_warm_start(
 
 \item{k}{Int containing the number of clusters}
 
-\item{Y}{Matrix of observed vectors (each row is n observation)}
+\item{Y}{Matrix of observed vectors (each row is an observation)}
 
 \item{n_eigen}{Int containing the number of eigenfunctions}
 

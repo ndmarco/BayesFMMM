@@ -2,7 +2,8 @@
 % Please edit documentation in R/RcppExports.R
 \name{Model_DIC}
 \alias{Model_DIC}
-\title{Calculates the DIC of a model}
+\alias{MV_Model_DIC}
+\title{Calculates the DIC of a functional model}
 \usage{
 Model_DIC(
   dir,
@@ -15,6 +16,8 @@ Model_DIC(
   Y,
   burnin_prop = 0.2
 )
+
+MV_Model_DIC(dir, n_files, n_MCMC, Y, burnin_prop = 0.2)
 }
 \arguments{
 \item{dir}{String containing the directory where the MCMC files are located}
@@ -31,13 +34,17 @@ Model_DIC(
 
 \item{time}{Field of vectors containing time points at which the function was observed}
 
-\item{Y}{Field of vectors containing observed values of the function}
+\item{Y}{Matrix of observed vectors (each row is an observation)}
 
 \item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 }
 \value{
 DIC Double containing DIC value
+
+DIC Double containing DIC value
 }
 \description{
-Calculates the DIC of a model
+Calculates the DIC of a functional model
+
+Calculates the DIC of a functional model
 }

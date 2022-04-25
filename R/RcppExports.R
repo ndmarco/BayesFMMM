@@ -382,7 +382,7 @@ ZCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
     .Call('_BayesFPMM_ZCI', PACKAGE = 'BayesFPMM', dir, n_files, alpha, rescale, burnin_prop)
 }
 
-#' Calculates the DIC of a model
+#' Calculates the DIC of a functional model
 #'
 #' @name Model_DIC
 #' @param dir String containing the directory where the MCMC files are located
@@ -400,7 +400,7 @@ Model_DIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, intern
     .Call('_BayesFPMM_Model_DIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
 }
 
-#' Calculates the AIC of a model
+#' Calculates the AIC of a functional model
 #'
 #' @name Model_AIC
 #' @param dir String containing the directory where the MCMC files are located
@@ -412,13 +412,13 @@ Model_DIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, intern
 #' @param time Field of vectors containing time points at which the function was observed
 #' @param Y Field of vectors containing observed values of the function
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
-#' @returns DIC Double containing DIC value
+#' @returns AIC Double containing AIC value
 #' @export
 Model_AIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
     .Call('_BayesFPMM_Model_AIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
 }
 
-#' Calculates the BIC of a model
+#' Calculates the BIC of a functional model
 #'
 #' @name Model_BIC
 #' @param dir String containing the directory where the MCMC files are located
@@ -430,7 +430,7 @@ Model_AIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, intern
 #' @param time Field of vectors containing time points at which the function was observed
 #' @param Y Field of vectors containing observed values of the function
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
-#' @returns DIC Double containing DIC value
+#' @returns BIC Double containing BIC value
 #' @export
 Model_BIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
     .Call('_BayesFPMM_Model_BIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
@@ -451,6 +451,61 @@ Model_BIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, intern
 #' @export
 Model_LLik <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y) {
     .Call('_BayesFPMM_Model_LLik', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y)
+}
+
+#' Calculates the AIC of a multivariate model
+#'
+#' @name MV_Model_AIC
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param Y Matrix of observed vectors (each row is an observation)
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
+#' @returns AIC Double containing AIC value
+#' @export
+MV_Model_AIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
+    .Call('_BayesFPMM_MV_Model_AIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, Y, burnin_prop)
+}
+
+#' Calculates the BIC of a multivariate model
+#'
+#' @name MV_Model_BIC
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param Y Matrix of observed vectors (each row is an observation)
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
+#' @returns BIC Double containing BIC value
+#' @export
+MV_Model_BIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
+    .Call('_BayesFPMM_MV_Model_BIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, Y, burnin_prop)
+}
+
+#' Calculates the DIC of a functional model
+#'
+#' @name Model_DIC
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param Y Matrix of observed vectors (each row is an observation)
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
+#' @returns DIC Double containing DIC value
+#' @export
+MV_Model_DIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
+    .Call('_BayesFPMM_MV_Model_DIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, Y, burnin_prop)
+}
+
+#' Calculates the log-likelihood of the parameters for each iteration of a multivariate model
+#'
+#' @name MV_Model_LLik
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param n_MCMC Int containing the number of saved MCMC iterations per file
+#' @param Y Matrix of observed vectors (each row is an observation)
+#' @returns LLik Vector containing the log-likelihood evaluated at each iteration
+#' @export
+MV_Model_LLik <- function(dir, n_files, n_MCMC, Y) {
+    .Call('_BayesFPMM_MV_Model_LLik', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, Y)
 }
 
 #' Find initial starting position for nu and Z parameters for functional data
@@ -1402,7 +1457,7 @@ BHDFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree
 #' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 #' @param n_try Int containing how many different chains are tried
 #' @param k Int containing the number of clusters
-#' @param Y Matrix of observed vectors (each row is n observation)
+#' @param Y Matrix of observed vectors (each row is an observation)
 #' @param n_eigen Int containing the number of eigenfunctions
 #' @param c Vector containing hyperparmeters for sampling from pi (If left NULL, the one vector will be used)
 #' @param b Double containing hyperparameter for sampling from alpha_3
@@ -1486,7 +1541,7 @@ BMVPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, c = N
 #' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 #' @param n_try Int containing how many different chains are tried
 #' @param k Int containing the number of clusters
-#' @param Y Matrix of observed vectors (each row is n observation)
+#' @param Y Matrix of observed vectors (each row is an observation)
 #' @param n_eigen Int containing the number of eigenfunctions
 #' @param Z_samp Cube containing initial chain of Z parameters from \code{BFPMM_Nu_Z_multiple_try}
 #' @param nu_samp Cube containing initial chain of nu parameters from \code{BFPMM_Nu_Z_multiple_try}
@@ -1585,7 +1640,7 @@ BMVPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, Z_samp, nu_sa
 #' @name BMVPMM_warm_start
 #' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 #' @param k Int containing the number of clusters
-#' @param Y Matrix of observed vectors (each row is n observation)
+#' @param Y Matrix of observed vectors (each row is an observation)
 #' @param n_eigen Int containing the number of eigenfunctions
 #' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFPMM_NU_Z_multiple_try})
 #' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFPMM_NU_Z_multiple_try})
