@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include <testthat.h>
-#include <BayesFPMM.h>
+#include <BayesFMMM.h>
 
 // Tests updating chi
 //
@@ -47,7 +47,7 @@ arma::field<arma::mat> TestUpdateChi(){
   // setting alpha_3 = 10
   arma:: vec alpha = c * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
   }
 
   arma::field<arma::vec> y_obs(40, 1);
@@ -66,7 +66,7 @@ arma::field<arma::mat> TestUpdateChi(){
       y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
         arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
     }
-    BayesFPMM::updateChi(y_obs, B_obs, Phi, nu, Z, sigma_sq, i, 500,
+    BayesFMMM::updateChi(y_obs, B_obs, Phi, nu, Z, sigma_sq, i, 500,
               chi_samp);
   }
 
@@ -132,7 +132,7 @@ arma::field<arma::mat> TestUpdateChiTempered(){
   // setting alpha_3 = 10
   arma:: vec alpha = c * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
   }
 
   arma::field<arma::vec> y_obs(40, 1);
@@ -151,7 +151,7 @@ arma::field<arma::mat> TestUpdateChiTempered(){
       y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
         arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
     }
-    BayesFPMM::updateChiTempered(0.5, y_obs, B_obs, Phi, nu, Z, sigma_sq, i, 500,
+    BayesFMMM::updateChiTempered(0.5, y_obs, B_obs, Phi, nu, Z, sigma_sq, i, 500,
                          chi_samp);
   }
 
@@ -200,7 +200,7 @@ arma::field<arma::mat> TestUpdateChiMV(){
   arma::mat alpha(40,3, arma::fill::ones);
   alpha = alpha * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
   }
 
   arma::mat y_obs = arma::zeros(40, 8);
@@ -219,7 +219,7 @@ arma::field<arma::mat> TestUpdateChiMV(){
       y_obs.row(j) = arma::mvnrnd(mean, sigma_sq *
         arma::eye(mean.n_elem, mean.n_elem)).t();
     }
-    BayesFPMM::updateChiMV(y_obs, Phi, nu, Z, sigma_sq, i, 500,
+    BayesFMMM::updateChiMV(y_obs, Phi, nu, Z, sigma_sq, i, 500,
                          chi_samp);
   }
 
@@ -268,7 +268,7 @@ arma::field<arma::mat> TestUpdateChiTemperedMV(){
   arma::mat alpha(40,3, arma::fill::ones);
   alpha = alpha * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
   }
 
   arma::mat y_obs = arma::zeros(40, 8);
@@ -287,7 +287,7 @@ arma::field<arma::mat> TestUpdateChiTemperedMV(){
       y_obs.row(j) = arma::mvnrnd(mean, sigma_sq *
         arma::eye(mean.n_elem, mean.n_elem)).t();
     }
-    BayesFPMM::updateChiTemperedMV(0.5, y_obs, Phi, nu, Z, sigma_sq, i, 500,
+    BayesFMMM::updateChiTemperedMV(0.5, y_obs, Phi, nu, Z, sigma_sq, i, 500,
                            chi_samp);
   }
 

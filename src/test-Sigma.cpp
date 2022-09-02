@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include <testthat.h>
-#include <BayesFPMM.h>
+#include <BayesFMMM.h>
 
 // Tests updating Sigma
 //
@@ -50,7 +50,7 @@ arma::vec TestUpdateSigma(){
   // setting alpha_3 = 10
   arma:: vec alpha = c * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
   }
 
   arma::field<arma::vec> y_obs(100, 1);
@@ -71,7 +71,7 @@ arma::vec TestUpdateSigma(){
   double beta_0 = 1;
   arma::vec sigma_samp(1000, arma::fill::zeros);
   for(int i = 0; i < 1000; i++){
-    BayesFPMM::updateSigma(y_obs, B_obs, alpha_0, beta_0, nu, Phi, Z, chi,
+    BayesFMMM::updateSigma(y_obs, B_obs, alpha_0, beta_0, nu, Phi, Z, chi,
                            i, 1000, sigma_samp);
   }
   arma::vec mod = arma::zeros(2);
@@ -128,7 +128,7 @@ arma::vec TestUpdateSigmaTempered(){
   // setting alpha_3 = 10
   arma:: vec alpha = c * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
   }
 
   arma::field<arma::vec> y_obs(100, 1);
@@ -149,7 +149,7 @@ arma::vec TestUpdateSigmaTempered(){
   double beta_0 = 1;
   arma::vec sigma_samp(1000, arma::fill::zeros);
   for(int i = 0; i < 1000; i++){
-    BayesFPMM::updateSigmaTempered(0.5, y_obs, B_obs, alpha_0, beta_0, nu, Phi, Z, chi,
+    BayesFMMM::updateSigmaTempered(0.5, y_obs, B_obs, alpha_0, beta_0, nu, Phi, Z, chi,
                            i, 1000, sigma_samp);
   }
   arma::vec mod = arma::zeros(2);
@@ -187,7 +187,7 @@ arma::vec TestUpdateSigmaMV(){
   // setting alpha_3 = 10
   arma:: vec alpha = c * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
   }
 
   arma::mat y_obs = arma::zeros(100, 8);
@@ -209,7 +209,7 @@ arma::vec TestUpdateSigmaMV(){
   double beta_0 = 1;
   arma::vec sigma_samp(1000, arma::fill::zeros);
   for(int i = 0; i < 1000; i++){
-    BayesFPMM::updateSigmaMV(y_obs, alpha_0, beta_0, nu, Phi, Z, chi,
+    BayesFMMM::updateSigmaMV(y_obs, alpha_0, beta_0, nu, Phi, Z, chi,
                              i, 1000, sigma_samp);
   }
   arma::vec mod = arma::zeros(2);
@@ -247,7 +247,7 @@ arma::vec TestUpdateSigmaTemperedMV(){
   // setting alpha_3 = 10
   arma:: vec alpha = c * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
   }
 
   arma::mat y_obs = arma::zeros(100, 8);
@@ -269,7 +269,7 @@ arma::vec TestUpdateSigmaTemperedMV(){
   double beta_0 = 1;
   arma::vec sigma_samp(1000, arma::fill::zeros);
   for(int i = 0; i < 1000; i++){
-    BayesFPMM::updateSigmaTemperedMV(0.5, y_obs, alpha_0, beta_0, nu, Phi, Z, chi,
+    BayesFMMM::updateSigmaTemperedMV(0.5, y_obs, alpha_0, beta_0, nu, Phi, Z, chi,
                                      i, 1000, sigma_samp);
   }
   arma::vec mod = arma::zeros(2);

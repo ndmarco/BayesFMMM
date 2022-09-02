@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include <splines2Armadillo.h>
-#include <BayesFPMM.h>
+#include <BayesFMMM.h>
 
 //' Find initial starting position for nu and Z parameters for functional data
 //'
@@ -11,7 +11,7 @@
 //' starting position. This function will return the chain that has the highest
 //' log-likelihood average in the last 100 MCMC iterations.
 //'
-//' @name BFPMM_Nu_Z_multiple_try
+//' @name BFMMM_Nu_Z_multiple_try
 //' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 //' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
@@ -80,8 +80,8 @@
 //'
 //' @examples
 //' ## Load sample data
-//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFPMM"))
-//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFPMM"))
+//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
@@ -94,13 +94,13 @@
 //' internal_knots <- c(250, 500, 750)
 //'
 //' ## Run function
-//' x <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' x <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 //'                              basis_degree, n_eigen, boundary_knots,
 //'                              internal_knots)
 //'
 //' @export
 // [[Rcpp::export]]
-Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
+Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                    const int n_try,
                                    const int k,
                                    const arma::field<arma::vec> Y,
@@ -230,7 +230,7 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFPMM::BFPMM_Nu_Z(Y, time, n_funct, k, basis_degree,
+  Rcpp::List mod1 = BayesFMMM::BFMMM_Nu_Z(Y, time, n_funct, k, basis_degree,
                                           n_eigen, boundary_knots, internal_knots,
                                           tot_mcmc_iters, c1, b, alpha1l,
                                           alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
@@ -241,7 +241,7 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
   for(int i = 0; i < n_try; i++){
     Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-    Rcpp::List modi = BayesFPMM::BFPMM_Nu_Z(Y, time, n_funct, k, basis_degree,
+    Rcpp::List modi = BayesFMMM::BFMMM_Nu_Z(Y, time, n_funct, k, basis_degree,
                                             n_eigen, boundary_knots, internal_knots,
                                             tot_mcmc_iters, c1, b, alpha1l,
                                             alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
@@ -271,13 +271,13 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
 //' Find initial starting points for parameters given nu and Z parameters for functional data
 //'
-//' This function is meant to be used after using \code{BFPMM_NU_Z_multiple_try}.
+//' This function is meant to be used after using \code{BFMMM_NU_Z_multiple_try}.
 //' This function samples from the rest of the model parameters given a fixed value of
 //' nu and Z. The fixed value of nu and Z are found by using the best markov chain
-//' found in \code{BFPMM_NU_Z_multiple_try}. Once this function is ran, the results
-//' can be used in \code{BFPMM_warm_start}.
+//' found in \code{BFMMM_NU_Z_multiple_try}. Once this function is ran, the results
+//' can be used in \code{BFMMM_warm_start}.
 //'
-//' @name BFPMM_Theta_est
+//' @name BFMMM_Theta_est
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
@@ -288,8 +288,8 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param boundary_knots Vector containing the boundary points of our index domain of interest
 //' @param internal_knots Vector location of internal knots for B-splines
-//' @param Z_samp Cube containing initial chain of Z parameters from \code{BFPMM_Nu_Z_multiple_try}
-//' @param nu_samp Cube containing initial chain of nu parameters from \code{BFPMM_Nu_Z_multiple_try}
+//' @param Z_samp Cube containing initial chain of Z parameters from \code{BFMMM_Nu_Z_multiple_try}
+//' @param nu_samp Cube containing initial chain of nu parameters from \code{BFMMM_Nu_Z_multiple_try}
 //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 //' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
 //' @param b double containing hyperparamete for sampling from alpha_3
@@ -350,8 +350,8 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'
 //' @examples
 //' ## Load sample data
-//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFPMM"))
-//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFPMM"))
+//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
@@ -364,18 +364,18 @@ Rcpp::List BFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' internal_knots <- c(250, 500, 750)
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 //'                                 basis_degree, n_eigen, boundary_knots,
 //'                                 internal_knots)
 //'
 //' ## Run function
-//' est2 <- BFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1$Z, est1$nu)
 //'
 //' @export
 // [[Rcpp::export]]
-Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
+Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
                            const int n_try,
                            const int k,
                            const arma::field<arma::vec> Y,
@@ -561,7 +561,7 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
   // nu_est_rescale = arma::pinv(transform_mat) * nu_est_rescale;
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFPMM::BFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+  Rcpp::List mod1 = BayesFMMM::BFMMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
                                            boundary_knots, internal_knots, tot_mcmc_iters,
                                            c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                            beta2l, a_Z_PM, a_pi_PM, var_alpha3,
@@ -573,7 +573,7 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
 
   for(int i = 0; i < n_try; i++){
     Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-    Rcpp::List modi = BayesFPMM::BFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+    Rcpp::List modi = BayesFMMM::BFMMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
                                              boundary_knots, internal_knots, tot_mcmc_iters,
                                              c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                              beta2l, a_Z_PM, a_pi_PM, var_alpha3,
@@ -602,8 +602,8 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
 
 //' Performs MCMC for functional models given an informed set of starting points
 //'
-//' This function is meant to be used after using \code{BFPMM_Nu_Z_multiple_try}
-//' and \code{BFPMM_Theta_est}. This function will use the outputs of these two
+//' This function is meant to be used after using \code{BFMMM_Nu_Z_multiple_try}
+//' and \code{BFMMM_Theta_est}. This function will use the outputs of these two
 //' functions to start the MCMC chain in a good location. Since the posterior distribution
 //' can often be multimodal, it is important to have a good starting position.
 //' To help move across modes, this function allows users to use tempered transitions
@@ -617,7 +617,7 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
 //' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
 //' \code{ReadVec}.
 //'
-//' @name BFPMM_warm_start
+//' @name BFMMM_warm_start
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param k Int containing the number of clusters
 //' @param Y List of vectors containing the observed values
@@ -627,17 +627,17 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param boundary_knots Vector containing the boundary points of our index domain of interest
 //' @param internal_knots Vector location of internal knots for B-splines
-//' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFPMM_Theta_est})
-//' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFPMM_Theta_est})
-//' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFPMM_Theta_est})
-//' @param A_samp Matrix containing initial chain of A parameters (from \code{BFPMM_Theta_est})
-//' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFPMM_Theta_est})
-//' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFPMM_Theta_est})
+//' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})
+//' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})
+//' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})
+//' @param A_samp Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})
+//' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})
+//' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})
 //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 //' @param dir String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)
 //' @param thinning_num Int containing how often we should save MCMC iterations
@@ -715,8 +715,8 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
 //'
 //'@examples
 //' ## Load sample data
-//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFPMM"))
-//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFPMM"))
+//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
@@ -729,16 +729,16 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
 //' internal_knots <- c(250, 500, 750)
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 //'                                 basis_degree, n_eigen, boundary_knots,
 //'                                 internal_knots)
 //'
 //' ## Get estimates of other parameters
-//' est2 <- BFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1$Z, est1$nu)
 //'
-//' MCMC.chain <-BFPMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
+//' MCMC.chain <-BFMMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
 //'                               basis_degree, n_eigen, boundary_knots,
 //'                               internal_knots, est1$Z, est1$pi, est1$alpha_3,
 //'                               est2$delta, est2$gamma, est2$Phi, est2$A,
@@ -746,7 +746,7 @@ Rcpp::List BFPMM_Theta_est(const int tot_mcmc_iters,
 //'
 //' @export
 // [[Rcpp::export]]
-Rcpp::List BFPMM_warm_start(const int tot_mcmc_iters,
+Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
                             const int k,
                             const arma::field<arma::vec> Y,
                             const arma::field<arma::vec> time,
@@ -1064,7 +1064,7 @@ Rcpp::List BFPMM_warm_start(const int tot_mcmc_iters,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFPMM::BFPMM_MTT_warm_start(Y, time, n_funct, thinning_num, k,
+  Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_start(Y, time, n_funct, thinning_num, k,
                                                     basis_degree, n_eigen, boundary_knots,
                                                     internal_knots, tot_mcmc_iters,
                                                     r_stored_iters, n_temp_trans,
@@ -1106,7 +1106,7 @@ Rcpp::List BFPMM_warm_start(const int tot_mcmc_iters,
 //'
 //' @examples
 //' ## set file path
-//' file <- system.file("test-data", "sigma.txt", package = "BayesFPMM")
+//' file <- system.file("test-data", "sigma.txt", package = "BayesFMMM")
 //'
 //' ## Read in file
 //' sigma <- ReadVec(file)
@@ -1150,7 +1150,7 @@ arma::vec ReadVec(std::string file){
 //'
 //' @examples
 //' ## set file path
-//' file <- system.file("test-data", "pi.txt", package = "BayesFPMM")
+//' file <- system.file("test-data", "pi.txt", package = "BayesFMMM")
 //'
 //' ## Read in file
 //' pi <- ReadMat(file)
@@ -1197,7 +1197,7 @@ arma::mat ReadMat(std::string file){
 //'
 //' @examples
 //' ## set file path
-//' file <- system.file("test-data", "nu.txt", package = "BayesFPMM")
+//' file <- system.file("test-data", "nu.txt", package = "BayesFMMM")
 //'
 //' ## Read in file
 //' nu <- ReadCube(file)
@@ -1246,7 +1246,7 @@ arma::cube ReadCube(std::string file){
 //'
 //' @examples
 //' ## set file path
-//' file <- system.file("test-data", "Phi.txt", package = "BayesFPMM")
+//' file <- system.file("test-data", "Phi.txt", package = "BayesFMMM")
 //'
 //' ## Read in file
 //' Phi <- ReadFieldCube(file)
@@ -1295,7 +1295,7 @@ arma::field<arma::cube> ReadFieldCube(std::string file){
 //'
 //' @examples
 //' ## set file path
-//' file <- system.file("test-data", "fieldmat.txt", package = "BayesFPMM")
+//' file <- system.file("test-data", "fieldmat.txt", package = "BayesFMMM")
 //'
 //' ## Read in file
 //' samp_data <- ReadFieldMat(file)
@@ -1319,7 +1319,7 @@ arma::field<arma::mat> ReadFieldMat(std::string file){
 //'
 //' @examples
 //' ## set file path
-//' file <- system.file("test-data", "fieldvec.txt", package = "BayesFPMM")
+//' file <- system.file("test-data", "fieldvec.txt", package = "BayesFMMM")
 //'
 //' ## Read in file
 //' samp_data <- ReadFieldVec(file)
@@ -1342,7 +1342,7 @@ arma::field<arma::vec> ReadFieldVec(std::string file){
 //' starting position. This function will return the chain that has the highest
 //' log-likelihood average in the last 100 MCMC iterations.
 //'
-//' @name BHDFPMM_Nu_Z_multiple_try
+//' @name BHDFMMM_Nu_Z_multiple_try
 //' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 //' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
@@ -1411,8 +1411,8 @@ arma::field<arma::vec> ReadFieldVec(std::string file){
 //'
 //' @examples
 //' ## Load sample data
-//' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFPMM"))
-//' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFPMM"))
+//' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
@@ -1425,13 +1425,13 @@ arma::field<arma::vec> ReadFieldVec(std::string file){
 //' internal_knots <- rep(list(c(250, 500, 750)), 2)
 //'
 //' ## Run function
-//' est1 <- BHDFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 //'                                   basis_degree, n_eigen, boundary_knots,
 //'                                   internal_knots)
 //'
 //' @export
 // [[Rcpp::export]]
-Rcpp::List BHDFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
+Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                      const int n_try,
                                      const int k,
                                      const arma::field<arma::vec> Y,
@@ -1555,11 +1555,11 @@ Rcpp::List BHDFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
       Rcpp::stop("all elements of 'c' must be positive");
     }
   }
-  arma::field<arma::mat> B_obs = BayesFPMM::TensorBSpline(time, n_funct, basis_degree,
+  arma::field<arma::mat> B_obs = BayesFMMM::TensorBSpline(time, n_funct, basis_degree,
                                                           boundary_knots, internal_knots);
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFPMM::BHDFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
+  Rcpp::List mod1 = BayesFMMM::BHDFMMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
                                             boundary_knots, internal_knots,
                                             tot_mcmc_iters, c1, b, alpha1l,
                                             alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
@@ -1570,7 +1570,7 @@ Rcpp::List BHDFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
   for(int i = 0; i < n_try; i++){
     Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-    Rcpp::List modi = BayesFPMM::BHDFPMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
+    Rcpp::List modi = BayesFMMM::BHDFMMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
                                               boundary_knots, internal_knots,
                                               tot_mcmc_iters, c1, b, alpha1l,
                                               alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
@@ -1600,13 +1600,13 @@ Rcpp::List BHDFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
 //' Find initial starting points for parameters given nu and Z parameters for high dimensional functional data (Domain dimension > 1)
 //'
-//' This function is meant to be used after using \code{BHDFPMM_NU_Z_multiple_try}.
+//' This function is meant to be used after using \code{BHDFMMM_NU_Z_multiple_try}.
 //' This function samples from the rest of the model parameters given a fixed value of
 //' nu and Z. The fixed value of nu and Z are found by using the best markov chain
-//' found in \code{BHDFPMM_NU_Z_multiple_try}. Once this function is ran, the results
-//' can be used in \code{BHDFPMM_warm_start}.
+//' found in \code{BHDFMMM_NU_Z_multiple_try}. Once this function is ran, the results
+//' can be used in \code{BHDFMMM_warm_start}.
 //'
-//' @name BHDFPMM_Theta_est
+//' @name BHDFMMM_Theta_est
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
@@ -1617,8 +1617,8 @@ Rcpp::List BHDFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param boundary_knots Matrix containing the boundary knots for each dimension (each row is a dimension)
 //' @param internal_knots List of vectors containing the internal knots for each dimension
-//' @param Z_samp Cube containing initial chain of Z parameters from \code{BHDFPMM_Nu_Z_multiple_try}
-//' @param nu_samp Cube containing initial chain of nu parameters from \code{BHDFPMM_Nu_Z_multiple_try}
+//' @param Z_samp Cube containing initial chain of Z parameters from \code{BHDFMMM_Nu_Z_multiple_try}
+//' @param nu_samp Cube containing initial chain of nu parameters from \code{BHDFMMM_Nu_Z_multiple_try}
 //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 //' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
 //' @param b double containing hyperparamete for sampling from alpha_3
@@ -1679,8 +1679,8 @@ Rcpp::List BHDFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'
 //' @examples
 //' ## Load sample data
-//' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFPMM"))
-//' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFPMM"))
+//' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
@@ -1693,18 +1693,18 @@ Rcpp::List BHDFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' internal_knots <- rep(list(c(250, 500, 750)), 2)
 //'
 //' ## Run function
-//' est1 <- BHDFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 //'                                   basis_degree, n_eigen, boundary_knots,
 //'                                   internal_knots)
 //'
 //' ## Run function
-//' est2 <- BHDFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1$Z, est1$nu)
 //'
 //' @export
 // [[Rcpp::export]]
-Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
+Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
                              const int n_try,
                              const int k,
                              const arma::field<arma::vec> Y,
@@ -1841,7 +1841,7 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
     }
   }
 
-  arma::field<arma::mat> B_obs = BayesFPMM::TensorBSpline(time, n_funct, basis_degree,
+  arma::field<arma::mat> B_obs = BayesFMMM::TensorBSpline(time, n_funct, basis_degree,
                                                           boundary_knots, internal_knots);
 
   int n_nu = nu_samp.n_slices;
@@ -1881,7 +1881,7 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
   // }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFPMM::BHDFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+  Rcpp::List mod1 = BayesFMMM::BHDFMMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
                                              boundary_knots, internal_knots, tot_mcmc_iters,
                                              c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                              beta2l, a_Z_PM, a_pi_PM, var_alpha3,
@@ -1892,7 +1892,7 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
 
   for(int i = 0; i < n_try; i++){
     Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-    Rcpp::List modi = BayesFPMM::BHDFPMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+    Rcpp::List modi = BayesFMMM::BHDFMMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
                                                boundary_knots, internal_knots, tot_mcmc_iters,
                                                c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                                beta2l, a_Z_PM, a_pi_PM, var_alpha3,
@@ -1923,8 +1923,8 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
 
 //' Performs MCMC for high dimensional functional model given an informed set of starting points
 //'
-//' This function is meant to be used after using \code{BHDFPMM_Nu_Z_multiple_try}
-//' and \code{BHDFPMM_Theta_est}. This function will use the outputs of these two
+//' This function is meant to be used after using \code{BHDFMMM_Nu_Z_multiple_try}
+//' and \code{BHDFMMM_Theta_est}. This function will use the outputs of these two
 //' functions to start the MCMC chain in a good location. Since the posterior distribution
 //' can often be multimodal, it is important to have a good starting position.
 //' To help move across modes, this function allows users to use tempered transitions
@@ -1938,7 +1938,7 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
 //' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
 //' \code{ReadVec}.
 //'
-//' @name BHDFPMM_warm_start
+//' @name BHDFMMM_warm_start
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param k Int containing the number of clusters
 //' @param Y List of vectors containing the observed values
@@ -1948,17 +1948,17 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param boundary_knots Matrix containing the boundary knots for each dimension (each row is a dimension)
 //' @param internal_knots List of vectors containing the internal knots for each dimension
-//' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFPMM_Theta_est})
-//' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFPMM_Theta_est})
-//' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFPMM_Theta_est})
-//' @param A_samp Matrix containing initial chain of A parameters (from \code{BFPMM_Theta_est})
-//' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFPMM_Theta_est})
-//' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFPMM_Theta_est})
+//' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})
+//' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})
+//' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})
+//' @param A_samp Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})
+//' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})
+//' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})
 //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 //' @param dir String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)
 //' @param thinning_num Int containing how often we should save MCMC iterations
@@ -2036,8 +2036,8 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
 //'
 //'@examples
 //' ## Load sample data
-//' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFPMM"))
-//' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFPMM"))
+//' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
@@ -2050,16 +2050,16 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
 //' internal_knots <- rep(list(c(250, 500, 750)), 2)
 //'
 //' ## Run function
-//' est1 <- BHDFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 //'                                   basis_degree, n_eigen, boundary_knots,
 //'                                   internal_knots)
 //'
 //' ## Run function
-//' est2 <- BHDFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1$Z, est1$nu)
 //'
-//' MCMC.chain <-BHDFPMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
+//' MCMC.chain <-BHDFMMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
 //'                                 basis_degree, n_eigen, boundary_knots,
 //'                                 internal_knots, est1$Z, est1$pi, est1$alpha_3,
 //'                                 est2$delta, est2$gamma, est2$Phi, est2$A,
@@ -2067,7 +2067,7 @@ Rcpp::List BHDFPMM_Theta_est(const int tot_mcmc_iters,
 //'
 //' @export
 // [[Rcpp::export]]
-Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
+Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
                               const int k,
                               const arma::field<arma::vec> Y,
                               const arma::field<arma::mat> time,
@@ -2268,7 +2268,7 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
   }
 
   // Start of Algorithm
-  arma::field<arma::mat> B_obs = BayesFPMM::TensorBSpline(time, n_funct, basis_degree,
+  arma::field<arma::mat> B_obs = BayesFMMM::TensorBSpline(time, n_funct, basis_degree,
                                                           boundary_knots, internal_knots);
 
   int n_nu = alpha_3_samp.n_elem;
@@ -2381,7 +2381,7 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFPMM::BHDFPMM_MTT_warm_start(Y, time, n_funct, thinning_num, k,
+  Rcpp::List mod1 = BayesFMMM::BHDFMMM_MTT_warm_start(Y, time, n_funct, thinning_num, k,
                                                       basis_degree, n_eigen, boundary_knots,
                                                       internal_knots, tot_mcmc_iters,
                                                       r_stored_iters, n_temp_trans,
@@ -2419,7 +2419,7 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
 //' starting position. This function will return the chain that has the highest
 //' log-likelihood average in the last 100 MCMC iterations.
 //'
-//' @name BMVPMM_Nu_Z_multiple_try
+//' @name BMVMMM_Nu_Z_multiple_try
 //' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 //' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
@@ -2479,7 +2479,7 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
 //'
 //' @examples
 //' ## Load sample data
-//' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFPMM"))
+//' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
@@ -2488,11 +2488,11 @@ Rcpp::List BHDFPMM_warm_start(const int tot_mcmc_iters,
 //' n_eigen <- 2
 //'
 //' ## Run function
-//' est1 <- BMVPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
 //'
 //' @export
 // [[Rcpp::export]]
-Rcpp::List BMVPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
+Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                     const int n_try,
                                     const int k,
                                     const arma::mat Y,
@@ -2590,7 +2590,7 @@ Rcpp::List BMVPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFPMM::BFPMM_Nu_ZMV(Y, k, n_eigen,
+  Rcpp::List mod1 = BayesFMMM::BFMMM_Nu_ZMV(Y, k, n_eigen,
                                             tot_mcmc_iters, c1, b, alpha1l,
                                             alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
                                             var_alpha3, var_epsilon1, var_epsilon2,
@@ -2600,7 +2600,7 @@ Rcpp::List BMVPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
   for(int i = 0; i < n_try; i++){
     Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-    Rcpp::List modi = BayesFPMM::BFPMM_Nu_ZMV(Y, k, n_eigen,
+    Rcpp::List modi = BayesFMMM::BFMMM_Nu_ZMV(Y, k, n_eigen,
                                               tot_mcmc_iters, c1, b, alpha1l,
                                               alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
                                               var_alpha3, var_epsilon1, var_epsilon2,
@@ -2628,20 +2628,20 @@ Rcpp::List BMVPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
 //' Find initial starting points for parameters given nu and Z parameters for multivariate data
 //'
-//' This function is meant to be used after using \code{BMVPMM_NU_Z_multiple_try}.
+//' This function is meant to be used after using \code{BMVMMM_NU_Z_multiple_try}.
 //' This function samples from the rest of the model parameters given a fixed value of
 //' nu and Z. The fixed value of nu and Z are found by using the best markov chain
-//' found in \code{BMVPMM_NU_Z_multiple_try}. Once this function is ran, the results
-//' can be used in \code{BMVPMM_warm_start}.
+//' found in \code{BMVMMM_NU_Z_multiple_try}. Once this function is ran, the results
+//' can be used in \code{BMVMMM_warm_start}.
 //'
-//' @name BMVPMM_Theta_est
+//' @name BMVMMM_Theta_est
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param n_try Int containing how many different chains are tried
 //' @param k Int containing the number of clusters
 //' @param Y Matrix of observed vectors (each row is an observation)
 //' @param n_eigen Int containing the number of eigenfunctions
-//' @param Z_samp Cube containing initial chain of Z parameters from \code{BFPMM_Nu_Z_multiple_try}
-//' @param nu_samp Cube containing initial chain of nu parameters from \code{BFPMM_Nu_Z_multiple_try}
+//' @param Z_samp Cube containing initial chain of Z parameters from \code{BFMMM_Nu_Z_multiple_try}
+//' @param nu_samp Cube containing initial chain of nu parameters from \code{BFMMM_Nu_Z_multiple_try}
 //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 //' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
 //' @param b double containing hyperparamete for sampling from alpha_3
@@ -2698,7 +2698,7 @@ Rcpp::List BMVPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'
 //' @examples
 //' ## Load sample data
-//' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFPMM"))
+//' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
@@ -2707,14 +2707,14 @@ Rcpp::List BMVPMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' n_eigen <- 2
 //'
 //' ## Run function
-//' est1 <- BMVPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
 //'
 //' ## Run function
-//' est2 <- BMVPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
+//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
 //'
 //' @export
 // [[Rcpp::export]]
-Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
+Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
                             const int n_try,
                             const int k,
                             const arma::mat Y,
@@ -2864,7 +2864,7 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
   // }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFPMM::BFPMM_ThetaMV(Y, k, n_eigen, tot_mcmc_iters,
+  Rcpp::List mod1 = BayesFMMM::BFMMM_ThetaMV(Y, k, n_eigen, tot_mcmc_iters,
                                              c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                              beta2l, a_Z_PM, a_pi_PM, var_alpha3,
                                              var_epsilon1, var_epsilon2, alpha, beta,
@@ -2875,7 +2875,7 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
 
   for(int i = 0; i < n_try; i++){
     Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-    Rcpp::List modi = BayesFPMM::BFPMM_ThetaMV(Y, k, n_eigen, tot_mcmc_iters,
+    Rcpp::List modi = BayesFMMM::BFMMM_ThetaMV(Y, k, n_eigen, tot_mcmc_iters,
                                                c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                                beta2l, a_Z_PM, a_pi_PM, var_alpha3,
                                                var_epsilon1, var_epsilon2, alpha, beta,
@@ -2902,8 +2902,8 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
 
 //' Performs MCMC for multivariate models given an informed set of starting points
 //'
-//' This function is meant to be used after using \code{BMVPMM_Nu_Z_multiple_try}
-//' and \code{BMVPMM_Theta_est}. This function will use the outputs of these two
+//' This function is meant to be used after using \code{BMVMMM_Nu_Z_multiple_try}
+//' and \code{BMVMMM_Theta_est}. This function will use the outputs of these two
 //' functions to start the MCMC chain in a good location. Since the posterior distribution
 //' can often be multimodal, it is important to have a good starting position.
 //' To help move across modes, this function allows users to use tempered transitions
@@ -2917,22 +2917,22 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
 //' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
 //' \code{ReadVec}.
 //'
-//' @name BMVPMM_warm_start
+//' @name BMVMMM_warm_start
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param k Int containing the number of clusters
 //' @param Y Matrix of observed vectors (each row is an observation)
 //' @param n_eigen Int containing the number of eigenfunctions
-//' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFPMM_Theta_est})
-//' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFPMM_Theta_est})
-//' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFPMM_Theta_est})
-//' @param A_samp Matrix containing initial chain of A parameters (from \code{BFPMM_Theta_est})
-//' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFPMM_NU_Z_multiple_try})
-//' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFPMM_Theta_est})
-//' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFPMM_Theta_est})
+//' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})
+//' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})
+//' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})
+//' @param A_samp Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})
+//' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})
+//' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})
+//' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})
 //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 //' @param dir String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)
 //' @param thinning_num Int containing how often we should save MCMC iterations
@@ -3006,7 +3006,7 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
 //'
 //'@examples
 //' ## Load sample data
-//' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFPMM"))
+//' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
@@ -3015,19 +3015,19 @@ Rcpp::List BMVPMM_Theta_est(const int tot_mcmc_iters,
 //' n_eigen <- 2
 //'
 //' ## Run function
-//' est1 <- BMVPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
 //'
 //' ## Run function
-//' est2 <- BMVPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
+//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
 //'
-//' MCMC.chain <-BMVPMM_warm_start(tot_mcmc_iters, k, Y, n_eigen,
+//' MCMC.chain <-BMVMMM_warm_start(tot_mcmc_iters, k, Y, n_eigen,
 //'                                est1$Z, est1$pi, est1$alpha_3,
 //'                                est2$delta, est2$gamma, est2$Phi, est2$A,
 //'                                est1$nu, est1$tau, est2$sigma, est2$chi)
 //'
 //' @export
 // [[Rcpp::export]]
-Rcpp::List BMVPMM_warm_start(const int tot_mcmc_iters,
+Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
                              const int k,
                              const arma::mat Y,
                              const int n_eigen,
@@ -3310,7 +3310,7 @@ Rcpp::List BMVPMM_warm_start(const int tot_mcmc_iters,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFPMM::BFPMM_MTT_warm_startMV(Y, thinning_num, k,
+  Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_startMV(Y, thinning_num, k,
                                                       n_eigen, tot_mcmc_iters,
                                                       r_stored_iters, n_temp_trans,
                                                       c1, b, nu_1, alpha1l, alpha2l,

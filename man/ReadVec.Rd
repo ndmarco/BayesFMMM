@@ -18,7 +18,7 @@ parameters can be read in using this function: sigma and alpha_3.
 }
 \examples{
 ## set file path
-file <- system.file("test-data", "sigma.txt", package = "BayesFPMM")
+file <- system.file("test-data", "sigma.txt", package = "BayesFMMM")
 
 ## Read in file
 sigma <- ReadVec(file)

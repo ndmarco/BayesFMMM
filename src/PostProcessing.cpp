@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <splines2Armadillo.h>
 #include <cmath>
-#include <BayesFPMM.h>
+#include <BayesFMMM.h>
 
 //' Calculates the credible interval for the mean (Functional Data)
 //'
@@ -29,7 +29,7 @@
 //' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 //' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
-//' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
+//' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior samples fo the mean function are also returned.
 //'
 //' @section Warning:
 //' The following must be true:
@@ -44,7 +44,7 @@
 //'
 //' @examples
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data","", package = "BayesFPMM")
+//' dir <- system.file("test-data","", package = "BayesFMMM")
 //' n_files <- 1
 //' time <- seq(0, 990, 10)
 //' k <- 2
@@ -222,7 +222,7 @@ Rcpp::List FMeanCI(const std::string dir,
         }
         nu_samp.slice(j) = transform_mat * nu_samp.slice(j);
       }
-      arma::mat f_samp = arma::zeros(nu_samp.n_slices, time.n_elem);
+
       for(int i = 0; i < nu_samp.n_slices; i++){
         f_samp.row(i) = (B * nu_samp.slice(i).row(k-1).t()).t();
       }
@@ -278,7 +278,8 @@ Rcpp::List FMeanCI(const std::string dir,
 
   Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
                                       Rcpp::Named("CI_50", CI_50),
-                                      Rcpp::Named("CI_Lower", CI_Lower));
+                                      Rcpp::Named("CI_Lower", CI_Lower),
+                                      Rcpp::Named("mean_trace", f_samp));
   return(CI);
 }
 
@@ -309,7 +310,7 @@ Rcpp::List FMeanCI(const std::string dir,
 //' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 //' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
-//' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
+//' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Also returns posterior samples of the mean function.
 //'
 //' @section Warning:
 //' The following must be true:
@@ -324,7 +325,7 @@ Rcpp::List FMeanCI(const std::string dir,
 //'
 //' @examples
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data","", package = "BayesFPMM")
+//' dir <- system.file("test-data","", package = "BayesFMMM")
 //' n_files <- 1
 //' time <- seq(0, 990, 10)
 //' k <- 2
@@ -403,7 +404,7 @@ Rcpp::List HDFMeanCI(const std::string dir,
                              nu_samp1.n_rows-1, nu_samp1.n_cols-1, nu_samp1.n_slices-1);
   arma::field<arma::mat> time1(1,1);
   time1(0,0) = time;
-  arma::field<arma::mat> B_obs = BayesFPMM::TensorBSpline(time1, 1, basis_degree,
+  arma::field<arma::mat> B_obs = BayesFMMM::TensorBSpline(time1, 1, basis_degree,
                                                           boundary_knots, internal_knots);
   arma::mat B = B_obs(0,0);
 
@@ -559,7 +560,8 @@ Rcpp::List HDFMeanCI(const std::string dir,
 
   Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
                                       Rcpp::Named("CI_50", CI_50),
-                                      Rcpp::Named("CI_Lower", CI_Lower));
+                                      Rcpp::Named("CI_Lower", CI_Lower),
+                                      Rcpp::Named("mean_trace", f_samp));
   return(CI);
 }
 
@@ -579,7 +581,7 @@ Rcpp::List HDFMeanCI(const std::string dir,
 //' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 //' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
-//' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
+//' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior draws of the mean structure are also returned.
 //'
 //' @section Warning:
 //' The following must be true:
@@ -591,7 +593,7 @@ Rcpp::List HDFMeanCI(const std::string dir,
 //'
 //' @examples
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data","", package = "BayesFPMM")
+//' dir <- system.file("test-data","", package = "BayesFMMM")
 //' n_files <- 1
 //'
 //' ## Get CI for mean function
@@ -699,7 +701,8 @@ Rcpp::List MVMeanCI(const std::string dir,
 
   Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
                                       Rcpp::Named("CI_50", CI_50),
-                                      Rcpp::Named("CI_Lower", CI_Lower));
+                                      Rcpp::Named("CI_Lower", CI_Lower),
+                                      Rcpp::Named("mean_trace", nu_samp));
   return(CI);
 }
 
@@ -733,7 +736,7 @@ Rcpp::List MVMeanCI(const std::string dir,
 //' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 //' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
-//' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
+//' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function. Posterior estimates of the covariance function are also returned.
 //'
 //' @section Warning:
 //' The following must be true:
@@ -750,7 +753,7 @@ Rcpp::List MVMeanCI(const std::string dir,
 //'
 //' @examples
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data","", package = "BayesFPMM")
+//' dir <- system.file("test-data","", package = "BayesFMMM")
 //' n_files <- 1
 //' n_MCMC <- 200
 //' time1 <- seq(0, 990, 10)
@@ -873,6 +876,7 @@ Rcpp::List FCovCI(const std::string dir,
   arma::mat CI_Upper = arma::zeros(time1.n_elem, time2.n_elem);
   arma::mat CI_50 = arma::zeros(time1.n_elem, time2.n_elem);
   arma::mat CI_Lower = arma::zeros(time2.n_elem, time2.n_elem);
+  arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
 
   if(simultaneous == false){
     if(rescale == true){
@@ -908,7 +912,6 @@ Rcpp::List FCovCI(const std::string dir,
         }
       }
     }
-    arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
     for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
       for(int j = 0; j < phi_samp(i,0).n_slices; j++){
         cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
@@ -963,7 +966,6 @@ Rcpp::List FCovCI(const std::string dir,
         }
       }
     }
-    arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
     for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
       for(int j = 0; j < phi_samp(i,0).n_slices; j++){
         cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
@@ -1006,7 +1008,8 @@ Rcpp::List FCovCI(const std::string dir,
   }
   Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
                                       Rcpp::Named("CI_50", CI_50),
-                                      Rcpp::Named("CI_Lower", CI_Lower));
+                                      Rcpp::Named("CI_Lower", CI_Lower),
+                                      Rcpp::Named("cov_trace", cov_samp));
   return(CI);
 }
 
@@ -1040,7 +1043,7 @@ Rcpp::List FCovCI(const std::string dir,
 //' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 //' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
-//' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
+//' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function. Posterior estimates of the covariance function are also returned.
 //'
 //' @section Warning:
 //' The following must be true:
@@ -1057,7 +1060,7 @@ Rcpp::List FCovCI(const std::string dir,
 //'
 //' @examples
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data","", package = "BayesFPMM")
+//' dir <- system.file("test-data","", package = "BayesFMMM")
 //' n_files <- 1
 //' n_MCMC <- 200
 //' time1 <- seq(0, 990, 10)
@@ -1168,14 +1171,14 @@ Rcpp::List HDFCovCI(const std::string dir,
   // Make spline basis 1
   arma::field<arma::mat> time1field(1,1);
   time1field(0,0) = time1;
-  arma::field<arma::mat> B_obs = BayesFPMM::TensorBSpline(time1field, 1, basis_degree,
+  arma::field<arma::mat> B_obs = BayesFMMM::TensorBSpline(time1field, 1, basis_degree,
                                                           boundary_knots, internal_knots);
   arma::mat B1 = B_obs(0,0);
 
   // Make spline basis 2
   arma::field<arma::mat> time2field(1,1);
   time2field(0,0) = time2;
-  arma::field<arma::mat> B_obs2 = BayesFPMM::TensorBSpline(time1field, 1, basis_degree,
+  arma::field<arma::mat> B_obs2 = BayesFMMM::TensorBSpline(time1field, 1, basis_degree,
                                                           boundary_knots, internal_knots);
   arma::mat B2 = B_obs2(0,0);
 
@@ -1183,6 +1186,7 @@ Rcpp::List HDFCovCI(const std::string dir,
   arma::mat CI_Upper = arma::zeros(time1.n_rows, time2.n_rows);
   arma::mat CI_50 = arma::zeros(time1.n_rows, time2.n_rows);
   arma::mat CI_Lower = arma::zeros(time2.n_rows, time2.n_rows);
+  arma::cube cov_samp = arma::zeros(time1.n_rows, time2.n_rows, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
 
   if(simultaneous == false){
     if(rescale == true){
@@ -1218,7 +1222,6 @@ Rcpp::List HDFCovCI(const std::string dir,
         }
       }
     }
-    arma::cube cov_samp = arma::zeros(time1.n_rows, time2.n_rows, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
     for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
       for(int j = 0; j < phi_samp(i,0).n_slices; j++){
         cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
@@ -1273,7 +1276,6 @@ Rcpp::List HDFCovCI(const std::string dir,
         }
       }
     }
-    arma::cube cov_samp = arma::zeros(time1.n_rows, time2.n_rows, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
     for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
       for(int j = 0; j < phi_samp(i,0).n_slices; j++){
         cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
@@ -1316,7 +1318,8 @@ Rcpp::List HDFCovCI(const std::string dir,
   }
   Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
                                       Rcpp::Named("CI_50", CI_50),
-                                      Rcpp::Named("CI_Lower", CI_Lower));
+                                      Rcpp::Named("CI_Lower", CI_Lower),
+                                      Rcpp::Named("cov_trace", cov_samp));
   return(CI);
 }
 
@@ -1340,7 +1343,7 @@ Rcpp::List HDFCovCI(const std::string dir,
 //' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 //' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
-//' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
+//' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior estimates of the covariance function are also returned.
 //'
 //' @section Warning:
 //' The following must be true:
@@ -1355,7 +1358,7 @@ Rcpp::List HDFCovCI(const std::string dir,
 //'
 //' @examples
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data","", package = "BayesFPMM")
+//' dir <- system.file("test-data","", package = "BayesFMMM")
 //' n_files <- 1
 //' n_MCMC <- 200
 //' l <- 1
@@ -1436,6 +1439,7 @@ Rcpp::List MVCovCI(const std::string dir,
   arma::mat CI_Upper = arma::zeros(phi_i(0,0).n_cols, phi_i(0,0).n_cols);
   arma::mat CI_50 = arma::zeros(phi_i(0,0).n_cols, phi_i(0,0).n_cols);
   arma::mat CI_Lower = arma::zeros(phi_i(0,0).n_cols, phi_i(0,0).n_cols);
+  arma::cube cov_samp = arma::zeros(phi_i(0,0).n_cols, phi_i(0,0).n_cols, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
 
   if(rescale == true){
     // Get Z matrix
@@ -1472,7 +1476,6 @@ Rcpp::List MVCovCI(const std::string dir,
 
   }
 
-  arma::cube cov_samp = arma::zeros(phi_i(0,0).n_cols, phi_i(0,0).n_cols, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
   for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
     for(int j = 0; j < phi_samp(0,0).n_slices; j++){
       cov_samp.slice(i) = cov_samp.slice(i) + ((phi_samp(i,0).slice(j).row(l-1)).t() *
@@ -1496,7 +1499,8 @@ Rcpp::List MVCovCI(const std::string dir,
 
   Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
                                       Rcpp::Named("CI_50", CI_50),
-                                      Rcpp::Named("CI_Lower", CI_Lower));
+                                      Rcpp::Named("CI_Lower", CI_Lower),
+                                      Rcpp::Named("cov_trace", cov_samp));
   return(CI);
 }
 
@@ -1517,7 +1521,7 @@ Rcpp::List MVCovCI(const std::string dir,
 //'
 //' @examples
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data","", package = "BayesFPMM")
+//' dir <- system.file("test-data","", package = "BayesFMMM")
 //' n_files <- 1
 //'
 //' ## Get CI for Z
@@ -1756,7 +1760,7 @@ double Model_DIC(const std::string dir,
 
   double expected_log_f = 0;
   for(int i = std::round(burnin_prop *nu_samp.n_slices) ; i < nu_samp.n_slices; i++){
-    expected_log_f = expected_log_f + BayesFPMM::calcLikelihood(Y, B_obs, nu_samp.slice(i),
+    expected_log_f = expected_log_f + BayesFMMM::calcLikelihood(Y, B_obs, nu_samp.slice(i),
                                                                 phi_samp(i,0), Z_samp.slice(i),
                                                                 chi_samp.slice(i), sigma_samp(i));
   }
@@ -1768,7 +1772,7 @@ double Model_DIC(const std::string dir,
     for(int j = 0; j < time(i,0).n_elem; j++){
       f_hat_ij = 0;
       for(int n = std::round(burnin_prop *nu_samp.n_slices); n < nu_samp.n_slices; n++){
-        f_hat_ij = f_hat_ij + BayesFPMM::calcDIC2(Y(i,0), B_obs(i,0), nu_samp.slice(n), phi_samp(n,0),
+        f_hat_ij = f_hat_ij + BayesFMMM::calcDIC2(Y(i,0), B_obs(i,0), nu_samp.slice(n), phi_samp(n,0),
                                                   Z_samp.slice(n), chi_samp.slice(n), i, j,
                                                   sigma_samp(n));
       }
@@ -2194,7 +2198,7 @@ arma::vec Model_LLik(const std::string dir,
   }
   arma::vec LLik = arma::zeros(nu_samp.n_slices);
   for(int i = 0; i < nu_samp.n_slices; i++){
-    LLik(i) =  BayesFPMM::calcLikelihood(Y, B_obs, nu_samp.slice(i),
+    LLik(i) =  BayesFMMM::calcLikelihood(Y, B_obs, nu_samp.slice(i),
                                          phi_samp(i,0), Z_samp.slice(i),
                                          chi_samp.slice(i), sigma_samp(i));
   }
@@ -2531,7 +2535,7 @@ double MV_Model_DIC(const std::string dir,
 
   double expected_log_f = 0;
   for(int i = std::round(burnin_prop *nu_samp.n_slices) ; i < nu_samp.n_slices; i++){
-    expected_log_f = expected_log_f + BayesFPMM::calcLikelihoodMV(Y, nu_samp.slice(i),
+    expected_log_f = expected_log_f + BayesFMMM::calcLikelihoodMV(Y, nu_samp.slice(i),
                                                                   phi_samp(i,0), Z_samp.slice(i),
                                                                   chi_samp.slice(i), sigma_samp(i));
   }
@@ -2542,7 +2546,7 @@ double MV_Model_DIC(const std::string dir,
   for(int i = 0; i < Z_samp.n_rows; i++){
     f_hat_i = 0;
     for(int n = std::round(burnin_prop *nu_samp.n_slices); n < nu_samp.n_slices; n++){
-      f_hat_i = f_hat_i + BayesFPMM::calcDIC2MV(Y.row(i), nu_samp.slice(n), phi_samp(n,0),
+      f_hat_i = f_hat_i + BayesFMMM::calcDIC2MV(Y.row(i), nu_samp.slice(n), phi_samp(n,0),
                                                 Z_samp.slice(n), chi_samp.slice(n), i,
                                                 sigma_samp(n));
     }
@@ -2627,7 +2631,7 @@ arma::vec MV_Model_LLik(const std::string dir,
 
   arma::vec LLik = arma::zeros(nu_samp.n_slices);
   for(int i = 0; i < nu_samp.n_slices; i++){
-    LLik(i) =  BayesFPMM::calcLikelihoodMV(Y, nu_samp.slice(i),
+    LLik(i) =  BayesFMMM::calcLikelihoodMV(Y, nu_samp.slice(i),
          phi_samp(i,0), Z_samp.slice(i),
          chi_samp.slice(i), sigma_samp(i));
   }

@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include <testthat.h>
-#include <BayesFPMM.h>
+#include <BayesFMMM.h>
 
 // Tests updating Nu
 //
@@ -45,12 +45,12 @@ arma::cube TestUpdateNu(){
   //Make Z
   arma::mat Z(20, 3);
   arma::vec c(3, arma::fill::ones);
-  arma::vec pi = BayesFPMM::rdirichlet(c);
+  arma::vec pi = BayesFMMM::rdirichlet(c);
 
   // setting alpha_3 = 10
   arma:: vec alpha = pi * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
   }
 
   arma::field<arma::vec> y_obs(20, 1);
@@ -85,7 +85,7 @@ arma::cube TestUpdateNu(){
   arma::vec tau(nu.n_rows, arma::fill::ones);
   tau = tau / 10;
   for(int i = 0; i < 500; i++){
-    BayesFPMM::updateNu(y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
+    BayesFMMM::updateNu(y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
              P, b_1, B_1, Nu_samp);
   }
 
@@ -147,12 +147,12 @@ arma::cube TestUpdateNuTempered(){
   //Make Z
   arma::mat Z(20, 3);
   arma::vec c(3, arma::fill::ones);
-  arma::vec pi = BayesFPMM::rdirichlet(c);
+  arma::vec pi = BayesFMMM::rdirichlet(c);
 
   // setting alpha_3 = 10
   arma:: vec alpha = pi * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
   }
 
   arma::field<arma::vec> y_obs(20, 1);
@@ -187,7 +187,7 @@ arma::cube TestUpdateNuTempered(){
   arma::vec tau(nu.n_rows, arma::fill::ones);
   tau = tau / 10;
   for(int i = 0; i < 500; i++){
-    BayesFPMM::updateNuTempered(0.6, y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
+    BayesFMMM::updateNuTempered(0.6, y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
                         P, b_1, B_1, Nu_samp);
   }
 
@@ -235,7 +235,7 @@ arma::cube TestUpdateNuMV(){
   arma::mat alpha(20,3, arma::fill::ones);
   alpha = alpha * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
   }
 
   arma::mat y_obs = arma::zeros(20, 8);
@@ -259,7 +259,7 @@ arma::cube TestUpdateNuMV(){
   arma::vec tau(nu.n_rows, arma::fill::ones);
   tau = tau * 10;
   for(int i = 0; i < 500; i++){
-    BayesFPMM::updateNuMV(y_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
+    BayesFMMM::updateNuMV(y_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
                           b_1, B_1, Nu_samp);
   }
 
@@ -307,7 +307,7 @@ arma::cube TestUpdateNuMVTempered(){
   arma::mat alpha(20,3, arma::fill::ones);
   alpha = alpha * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
   }
 
   arma::mat y_obs = arma::zeros(20, 8);
@@ -331,7 +331,7 @@ arma::cube TestUpdateNuMVTempered(){
   arma::vec tau(nu.n_rows, arma::fill::ones);
   tau = tau * 10;
   for(int i = 0; i < 500; i++){
-    BayesFPMM::updateNuTemperedMV(0.6, y_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
+    BayesFMMM::updateNuTemperedMV(0.6, y_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
                           b_1, B_1, Nu_samp);
   }
 
@@ -374,7 +374,7 @@ arma::mat TestUpdateTau(){
     for(int j = 0; j < 6; j++){
       nu.row(j) = arma::mvnrnd(zeros_nu, arma::pinv(P * tau(j))).t();
     }
-    BayesFPMM::updateTau(1, 1, nu, i, 200, P, tau_samp);
+    BayesFMMM::updateTau(1, 1, nu, i, 200, P, tau_samp);
   }
   arma::vec tau_est(6, arma::fill::zeros);
   for(int i = 0; i < 6; i++){
@@ -403,7 +403,7 @@ arma::mat TestUpdateTauMV(){
     for(int j = 0; j < 6; j++){
       nu.row(j) = arma::mvnrnd(zeros_nu, P * tau(j)).t();
     }
-    BayesFPMM::updateTauMV(1, 1, nu, i, 200, tau_samp);
+    BayesFMMM::updateTauMV(1, 1, nu, i, 200, tau_samp);
   }
   arma::vec tau_est(6, arma::fill::zeros);
   for(int i = 0; i < 6; i++){

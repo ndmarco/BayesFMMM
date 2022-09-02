@@ -19,7 +19,7 @@ Phi.
 }
 \examples{
 ## set file path
-file <- system.file("test-data", "Phi.txt", package = "BayesFPMM")
+file <- system.file("test-data", "Phi.txt", package = "BayesFMMM")
 
 ## Read in file
 Phi <- ReadFieldCube(file)

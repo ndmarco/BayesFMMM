@@ -1,9 +1,9 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include <testthat.h>
-#include <BayesFPMM.h>
+#include <BayesFMMM.h>
 
-// Tests updating Z using partial membership model
+// Tests updating Z using mixed membership model
 //
 // @name TestUpdateZ_PM
 arma::cube TestUpdateZ_PM(){
@@ -46,7 +46,7 @@ arma::cube TestUpdateZ_PM(){
   arma::mat alpha(20,3, arma::fill::ones);
   alpha = alpha * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
   }
 
   arma::field<arma::vec> y_obs(20, 1);
@@ -74,10 +74,10 @@ arma::cube TestUpdateZ_PM(){
   //Initialize Z_samp
   arma::cube Z_samp = arma::ones(20, 3, 500);
   for(int i = 0; i < 20; i++){
-    Z_samp.slice(0).row(i) = BayesFPMM::rdirichlet(pi).t();
+    Z_samp.slice(0).row(i) = BayesFMMM::rdirichlet(pi).t();
   }
   for(int i = 0; i < 500; i++){
-    BayesFPMM::updateZ_PM(y_obs, B_obs, Phi, nu, chi, pi,
+    BayesFMMM::updateZ_PM(y_obs, B_obs, Phi, nu, chi, pi,
                           sigma_sq, i, 500, 1.0, 2000, Z_ph, Z_samp);
   }
   arma::mat Z_est = arma::zeros(20, 3);
@@ -102,7 +102,7 @@ arma::cube TestUpdateZ_PM(){
   return mod;
 }
 
-// Tests updating Z using partial membership model
+// Tests updating Z using mixed membership model
 //
 // @name TestUpdateTemperedZ_PM
 arma::cube TestUpdateTemperedZ_PM(){
@@ -145,7 +145,7 @@ arma::cube TestUpdateTemperedZ_PM(){
   arma::mat alpha(20,3, arma::fill::ones);
   alpha = alpha * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
   }
 
   arma::field<arma::vec> y_obs(20, 1);
@@ -173,12 +173,12 @@ arma::cube TestUpdateTemperedZ_PM(){
   //Initialize Z_samp
   arma::cube Z_samp = arma::ones(20, 3, 500);
   for(int i = 0; i < 20; i++){
-    Z_samp.slice(0).row(i) = BayesFPMM::rdirichlet(pi).t();
+    Z_samp.slice(0).row(i) = BayesFMMM::rdirichlet(pi).t();
   }
   double beta = 0.05;
 
   for(int i = 0; i < 500; i++){
-    BayesFPMM::updateZTempered_PM(beta, y_obs, B_obs, Phi, nu, chi, pi,
+    BayesFMMM::updateZTempered_PM(beta, y_obs, B_obs, Phi, nu, chi, pi,
                sigma_sq, i, 500, 1.0, 2000, Z_ph, Z_samp);
   }
 
@@ -231,7 +231,7 @@ arma::cube TestUpdateZ_MV(){
   arma::mat alpha(20,3, arma::fill::ones);
   alpha = alpha * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
   }
 
   arma::mat y_obs = arma::zeros(20, 8);
@@ -258,11 +258,11 @@ arma::cube TestUpdateZ_MV(){
   //Initialize Z_samp
   arma::cube Z_samp = arma::ones(20, 3, 500);
   for(int i = 0; i < 20; i++){
-    Z_samp.slice(0).row(i) = BayesFPMM::rdirichlet(pi).t();
+    Z_samp.slice(0).row(i) = BayesFMMM::rdirichlet(pi).t();
   }
   for(int i = 0; i < 500; i++)
   {
-    BayesFPMM::updateZ_PMMV(y_obs, Phi, nu, chi, pi,
+    BayesFMMM::updateZ_MMMV(y_obs, Phi, nu, chi, pi,
                             sigma_sq, i, 500, 1.0, 2000, Z_ph, Z_samp);
   }
   arma::mat Z_est = arma::zeros(20, 3);
@@ -316,7 +316,7 @@ arma::cube TestUpdateTemperedZ_MV(){
   arma::mat alpha(20,3, arma::fill::ones);
   alpha = alpha * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
   }
 
   arma::mat y_obs = arma::zeros(20, 8);
@@ -343,13 +343,13 @@ arma::cube TestUpdateTemperedZ_MV(){
   //Initialize Z_samp
   arma::cube Z_samp = arma::ones(20, 3, 500);
   for(int i = 0; i < 20; i++){
-    Z_samp.slice(0).row(i) = BayesFPMM::rdirichlet(pi).t();
+    Z_samp.slice(0).row(i) = BayesFMMM::rdirichlet(pi).t();
   }
   double beta = 0.05;
 
   for(int i = 0; i < 500; i++)
   {
-    BayesFPMM::updateZTempered_PMMV(beta, y_obs, Phi, nu, chi, pi,
+    BayesFMMM::updateZTempered_MMMV(beta, y_obs, Phi, nu, chi, pi,
                                     sigma_sq, i, 500, 1.0, 2000, Z_ph, Z_samp);
   }
   arma::mat Z_est = arma::zeros(20, 3);
@@ -373,19 +373,19 @@ arma::cube TestUpdateTemperedZ_MV(){
   return mod;
 }
 
-// Tests updating pi using partial membership model
+// Tests updating pi using mixed membership model
 //
 // @name TestUpdateZ_PM
 arma::mat TestUpdatepi(){
   // Make Z matrix
   arma::mat Z(100, 3);
   arma::vec c(3, arma::fill::ones);
-  arma::vec pi = BayesFPMM::rdirichlet(c);
+  arma::vec pi = BayesFMMM::rdirichlet(c);
 
   // setting alpha_3 = 100
   arma:: vec alpha = pi * 100;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
   }
 
   // Initialize placeholder
@@ -395,11 +395,11 @@ arma::mat TestUpdatepi(){
   //Initialize Z_samp
   arma::mat pi_samp = arma::ones(3, 500);
 
-  pi_samp.col(0) = BayesFPMM::rdirichlet(c);
+  pi_samp.col(0) = BayesFMMM::rdirichlet(c);
 
   for(int i = 0; i < 500; i++)
   {
-    BayesFPMM::updatePi_PM(100, Z, c, i, 500, 1000, pi_ph, pi_samp);
+    BayesFMMM::updatePi_PM(100, Z, c, i, 500, 1000, pi_ph, pi_samp);
   }
 
   arma::vec pi_est = arma::zeros(3);
@@ -421,7 +421,7 @@ arma::mat TestUpdatepi(){
   return mod;
 }
 
-// Tests updating pi using partial membership model
+// Tests updating pi using mixed membership model
 //
 // @name TestUpdateZ_PM
 double TestUpdatealpha3(){
@@ -429,19 +429,19 @@ double TestUpdatealpha3(){
   // Make Z matrix
   arma::mat Z(100, 3);
   arma::vec c(3, arma::fill::ones);
-  arma::vec pi = BayesFPMM::rdirichlet(c);
+  arma::vec pi = BayesFMMM::rdirichlet(c);
 
   // setting alpha_3 = 10
   arma:: vec alpha = pi * 10;
   for(int i = 0; i < Z.n_rows; i++){
-    Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+    Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
   }
 
   arma::vec alpha_3(10000, arma::fill::ones);
 
   for(int i = 0; i < 10000; i++)
   {
-    BayesFPMM::updateAlpha3(pi, 0.1, Z, i, 10000, 0.05, alpha_3);
+    BayesFMMM::updateAlpha3(pi, 0.1, Z, i, 10000, 0.05, alpha_3);
   }
   double mod = arma::median(alpha_3.subvec(2000,9999));
 

@@ -18,7 +18,7 @@ in R.
 }
 \examples{
 ## set file path
-file <- system.file("test-data", "fieldmat.txt", package = "BayesFPMM")
+file <- system.file("test-data", "fieldmat.txt", package = "BayesFMMM")
 
 ## Read in file
 samp_data <- ReadFieldMat(file)

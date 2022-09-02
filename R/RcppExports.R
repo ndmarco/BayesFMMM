@@ -27,7 +27,7 @@
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
-#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
+#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior samples fo the mean function are also returned.
 #'
 #' @section Warning:
 #' The following must be true:
@@ -42,7 +42,7 @@
 #'
 #' @examples
 #' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' dir <- system.file("test-data","", package = "BayesFMMM")
 #' n_files <- 1
 #' time <- seq(0, 990, 10)
 #' k <- 2
@@ -55,7 +55,7 @@
 #'
 #' @export
 FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1) {
-    .Call('_BayesFPMM_FMeanCI', PACKAGE = 'BayesFPMM', dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop)
+    .Call('_BayesFMMM_FMeanCI', PACKAGE = 'BayesFMMM', dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop)
 }
 
 #' Calculates the credible interval for the mean (High Dimensional Functional Data)
@@ -84,7 +84,7 @@ FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_k
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
-#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
+#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Also returns posterior samples of the mean function.
 #'
 #' @section Warning:
 #' The following must be true:
@@ -99,7 +99,7 @@ FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_k
 #'
 #' @examples
 #' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' dir <- system.file("test-data","", package = "BayesFMMM")
 #' n_files <- 1
 #' time <- seq(0, 990, 10)
 #' k <- 2
@@ -112,7 +112,7 @@ FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_k
 #'
 #' @export
 HDFMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1) {
-    .Call('_BayesFPMM_HDFMeanCI', PACKAGE = 'BayesFPMM', dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop)
+    .Call('_BayesFMMM_HDFMeanCI', PACKAGE = 'BayesFMMM', dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop)
 }
 
 #' Calculates the credible interval for the mean (Multivariate Data)
@@ -131,7 +131,7 @@ HDFMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
-#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
+#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior draws of the mean structure are also returned.
 #'
 #' @section Warning:
 #' The following must be true:
@@ -143,7 +143,7 @@ HDFMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal
 #'
 #' @examples
 #' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' dir <- system.file("test-data","", package = "BayesFMMM")
 #' n_files <- 1
 #'
 #' ## Get CI for mean function
@@ -151,7 +151,7 @@ HDFMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal
 #'
 #' @export
 MVMeanCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
-    .Call('_BayesFPMM_MVMeanCI', PACKAGE = 'BayesFPMM', dir, n_files, alpha, rescale, burnin_prop)
+    .Call('_BayesFMMM_MVMeanCI', PACKAGE = 'BayesFMMM', dir, n_files, alpha, rescale, burnin_prop)
 }
 
 #' Calculates the credible interval for the covariance (Functional Data)
@@ -184,7 +184,7 @@ MVMeanCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
-#' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
+#' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function. Posterior estimates of the covariance function are also returned.
 #'
 #' @section Warning:
 #' The following must be true:
@@ -201,7 +201,7 @@ MVMeanCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0
 #'
 #' @examples
 #' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' dir <- system.file("test-data","", package = "BayesFMMM")
 #' n_files <- 1
 #' n_MCMC <- 200
 #' time1 <- seq(0, 990, 10)
@@ -218,7 +218,7 @@ MVMeanCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0
 #'
 #' @export
 FCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1) {
-    .Call('_BayesFPMM_FCovCI', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop)
+    .Call('_BayesFMMM_FCovCI', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop)
 }
 
 #' Calculates the credible interval for the covariance (High Dimensional Functional Data)
@@ -251,7 +251,7 @@ FCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_kn
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
-#' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
+#' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function. Posterior estimates of the covariance function are also returned.
 #'
 #' @section Warning:
 #' The following must be true:
@@ -268,7 +268,7 @@ FCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_kn
 #'
 #' @examples
 #' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' dir <- system.file("test-data","", package = "BayesFMMM")
 #' n_files <- 1
 #' n_MCMC <- 200
 #' time1 <- seq(0, 990, 10)
@@ -285,7 +285,7 @@ FCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_kn
 #'
 #' @export
 HDFCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1) {
-    .Call('_BayesFPMM_HDFCovCI', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop)
+    .Call('_BayesFMMM_HDFCovCI', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop)
 }
 
 #' Calculates the credible interval for the covariance (Multivariate Data)
@@ -308,7 +308,7 @@ HDFCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
-#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
+#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior estimates of the covariance function are also returned.
 #'
 #' @section Warning:
 #' The following must be true:
@@ -323,7 +323,7 @@ HDFCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_
 #'
 #' @examples
 #' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' dir <- system.file("test-data","", package = "BayesFMMM")
 #' n_files <- 1
 #' n_MCMC <- 200
 #' l <- 1
@@ -333,7 +333,7 @@ HDFCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_
 #'
 #' @export
 MVCovCI <- function(dir, n_files, n_MCMC, l, m, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
-    .Call('_BayesFPMM_MVCovCI', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, l, m, alpha, rescale, burnin_prop)
+    .Call('_BayesFMMM_MVCovCI', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, l, m, alpha, rescale, burnin_prop)
 }
 
 #' Calculates the credible interval for sigma squared for all types of data
@@ -353,7 +353,7 @@ MVCovCI <- function(dir, n_files, n_MCMC, l, m, alpha = 0.05, rescale = TRUE, bu
 #'
 #' @examples
 #' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFPMM")
+#' dir <- system.file("test-data","", package = "BayesFMMM")
 #' n_files <- 1
 #'
 #' ## Get CI for Z
@@ -361,7 +361,7 @@ MVCovCI <- function(dir, n_files, n_MCMC, l, m, alpha = 0.05, rescale = TRUE, bu
 #'
 #' @export
 SigmaCI <- function(dir, n_files, alpha = 0.05) {
-    .Call('_BayesFPMM_SigmaCI', PACKAGE = 'BayesFPMM', dir, n_files, alpha)
+    .Call('_BayesFMMM_SigmaCI', PACKAGE = 'BayesFMMM', dir, n_files, alpha)
 }
 
 #' Calculates the credible interval for membership parameters Z
@@ -379,7 +379,7 @@ SigmaCI <- function(dir, n_files, alpha = 0.05) {
 #' @return CI List containing the desired credible values
 #' @export
 ZCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
-    .Call('_BayesFPMM_ZCI', PACKAGE = 'BayesFPMM', dir, n_files, alpha, rescale, burnin_prop)
+    .Call('_BayesFMMM_ZCI', PACKAGE = 'BayesFMMM', dir, n_files, alpha, rescale, burnin_prop)
 }
 
 #' Calculates the DIC of a functional model
@@ -397,7 +397,7 @@ ZCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
 #' @returns DIC Double containing DIC value
 #' @export
 Model_DIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
-    .Call('_BayesFPMM_Model_DIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
+    .Call('_BayesFMMM_Model_DIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
 }
 
 #' Calculates the AIC of a functional model
@@ -415,7 +415,7 @@ Model_DIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, intern
 #' @returns AIC Double containing AIC value
 #' @export
 Model_AIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
-    .Call('_BayesFPMM_Model_AIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
+    .Call('_BayesFMMM_Model_AIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
 }
 
 #' Calculates the BIC of a functional model
@@ -433,7 +433,7 @@ Model_AIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, intern
 #' @returns BIC Double containing BIC value
 #' @export
 Model_BIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
-    .Call('_BayesFPMM_Model_BIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
+    .Call('_BayesFMMM_Model_BIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
 }
 
 #' Calculates the log-likelihood of the parameters for each iteration
@@ -450,7 +450,7 @@ Model_BIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, intern
 #' @returns LLik Vector containing the log-likelihood evaluated at each iteration
 #' @export
 Model_LLik <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y) {
-    .Call('_BayesFPMM_Model_LLik', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y)
+    .Call('_BayesFMMM_Model_LLik', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y)
 }
 
 #' Calculates the AIC of a multivariate model
@@ -464,7 +464,7 @@ Model_LLik <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, inter
 #' @returns AIC Double containing AIC value
 #' @export
 MV_Model_AIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
-    .Call('_BayesFPMM_MV_Model_AIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, Y, burnin_prop)
+    .Call('_BayesFMMM_MV_Model_AIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, Y, burnin_prop)
 }
 
 #' Calculates the BIC of a multivariate model
@@ -478,7 +478,7 @@ MV_Model_AIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
 #' @returns BIC Double containing BIC value
 #' @export
 MV_Model_BIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
-    .Call('_BayesFPMM_MV_Model_BIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, Y, burnin_prop)
+    .Call('_BayesFMMM_MV_Model_BIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, Y, burnin_prop)
 }
 
 #' Calculates the DIC of a functional model
@@ -492,7 +492,7 @@ MV_Model_BIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
 #' @returns DIC Double containing DIC value
 #' @export
 MV_Model_DIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
-    .Call('_BayesFPMM_MV_Model_DIC', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, Y, burnin_prop)
+    .Call('_BayesFMMM_MV_Model_DIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, Y, burnin_prop)
 }
 
 #' Calculates the log-likelihood of the parameters for each iteration of a multivariate model
@@ -505,7 +505,7 @@ MV_Model_DIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
 #' @returns LLik Vector containing the log-likelihood evaluated at each iteration
 #' @export
 MV_Model_LLik <- function(dir, n_files, n_MCMC, Y) {
-    .Call('_BayesFPMM_MV_Model_LLik', PACKAGE = 'BayesFPMM', dir, n_files, n_MCMC, Y)
+    .Call('_BayesFMMM_MV_Model_LLik', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, Y)
 }
 
 #' Find initial starting position for nu and Z parameters for functional data
@@ -516,7 +516,7 @@ MV_Model_LLik <- function(dir, n_files, n_MCMC, Y) {
 #' starting position. This function will return the chain that has the highest
 #' log-likelihood average in the last 100 MCMC iterations.
 #'
-#' @name BFPMM_Nu_Z_multiple_try
+#' @name BFMMM_Nu_Z_multiple_try
 #' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 #' @param n_try Int containing how many different chains are tried
 #' @param k Int containing the number of clusters
@@ -585,8 +585,8 @@ MV_Model_LLik <- function(dir, n_files, n_MCMC, Y) {
 #'
 #' @examples
 #' ## Load sample data
-#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFPMM"))
-#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFPMM"))
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 #'
 #' ## Set Hyperparameters
 #' tot_mcmc_iters <- 150
@@ -599,24 +599,24 @@ MV_Model_LLik <- function(dir, n_files, n_MCMC, Y) {
 #' internal_knots <- c(250, 500, 750)
 #'
 #' ## Run function
-#' x <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+#' x <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 #'                              basis_degree, n_eigen, boundary_knots,
 #'                              internal_knots)
 #'
 #' @export
-BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 10, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFPMM_BFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+BFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 10, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFMMM_BFMMM_Nu_Z_multiple_try', PACKAGE = 'BayesFMMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #' Find initial starting points for parameters given nu and Z parameters for functional data
 #'
-#' This function is meant to be used after using \code{BFPMM_NU_Z_multiple_try}.
+#' This function is meant to be used after using \code{BFMMM_NU_Z_multiple_try}.
 #' This function samples from the rest of the model parameters given a fixed value of
 #' nu and Z. The fixed value of nu and Z are found by using the best markov chain
-#' found in \code{BFPMM_NU_Z_multiple_try}. Once this function is ran, the results
-#' can be used in \code{BFPMM_warm_start}.
+#' found in \code{BFMMM_NU_Z_multiple_try}. Once this function is ran, the results
+#' can be used in \code{BFMMM_warm_start}.
 #'
-#' @name BFPMM_Theta_est
+#' @name BFMMM_Theta_est
 #' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 #' @param n_try Int containing how many different chains are tried
 #' @param k Int containing the number of clusters
@@ -627,8 +627,8 @@ BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, 
 #' @param n_eigen Int containing the number of eigenfunctions
 #' @param boundary_knots Vector containing the boundary points of our index domain of interest
 #' @param internal_knots Vector location of internal knots for B-splines
-#' @param Z_samp Cube containing initial chain of Z parameters from \code{BFPMM_Nu_Z_multiple_try}
-#' @param nu_samp Cube containing initial chain of nu parameters from \code{BFPMM_Nu_Z_multiple_try}
+#' @param Z_samp Cube containing initial chain of Z parameters from \code{BFMMM_Nu_Z_multiple_try}
+#' @param nu_samp Cube containing initial chain of nu parameters from \code{BFMMM_Nu_Z_multiple_try}
 #' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 #' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
 #' @param b double containing hyperparamete for sampling from alpha_3
@@ -689,8 +689,8 @@ BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, 
 #'
 #' @examples
 #' ## Load sample data
-#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFPMM"))
-#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFPMM"))
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 #'
 #' ## Set Hyperparameters
 #' tot_mcmc_iters <- 150
@@ -703,24 +703,24 @@ BFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, 
 #' internal_knots <- c(250, 500, 750)
 #'
 #' ## Get Estimates of Z and nu
-#' est1 <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+#' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 #'                                 basis_degree, n_eigen, boundary_knots,
 #'                                 internal_knots)
 #'
 #' ## Run function
-#' est2 <- BFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+#' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 #'                         basis_degree, n_eigen, boundary_knots,
 #'                         internal_knots, est1$Z, est1$nu)
 #'
 #' @export
-BFPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 2, beta2l = 2, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFPMM_BFPMM_Theta_est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+BFMMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 2, beta2l = 2, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFMMM_BFMMM_Theta_est', PACKAGE = 'BayesFMMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #' Performs MCMC for functional models given an informed set of starting points
 #'
-#' This function is meant to be used after using \code{BFPMM_Nu_Z_multiple_try}
-#' and \code{BFPMM_Theta_est}. This function will use the outputs of these two
+#' This function is meant to be used after using \code{BFMMM_Nu_Z_multiple_try}
+#' and \code{BFMMM_Theta_est}. This function will use the outputs of these two
 #' functions to start the MCMC chain in a good location. Since the posterior distribution
 #' can often be multimodal, it is important to have a good starting position.
 #' To help move across modes, this function allows users to use tempered transitions
@@ -734,7 +734,7 @@ BFPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_de
 #' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
 #' \code{ReadVec}.
 #'
-#' @name BFPMM_warm_start
+#' @name BFMMM_warm_start
 #' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 #' @param k Int containing the number of clusters
 #' @param Y List of vectors containing the observed values
@@ -744,17 +744,17 @@ BFPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_de
 #' @param n_eigen Int containing the number of eigenfunctions
 #' @param boundary_knots Vector containing the boundary points of our index domain of interest
 #' @param internal_knots Vector location of internal knots for B-splines
-#' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFPMM_Theta_est})
-#' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFPMM_Theta_est})
-#' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFPMM_Theta_est})
-#' @param A_samp Matrix containing initial chain of A parameters (from \code{BFPMM_Theta_est})
-#' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFPMM_Theta_est})
-#' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFPMM_Theta_est})
+#' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})
+#' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})
+#' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})
+#' @param A_samp Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})
+#' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})
+#' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})
 #' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 #' @param dir String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)
 #' @param thinning_num Int containing how often we should save MCMC iterations
@@ -832,8 +832,8 @@ BFPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_de
 #'
 #'@examples
 #' ## Load sample data
-#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFPMM"))
-#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFPMM"))
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 #'
 #' ## Set Hyperparameters
 #' tot_mcmc_iters <- 150
@@ -846,24 +846,24 @@ BFPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_de
 #' internal_knots <- c(250, 500, 750)
 #'
 #' ## Get Estimates of Z and nu
-#' est1 <- BFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+#' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 #'                                 basis_degree, n_eigen, boundary_knots,
 #'                                 internal_knots)
 #'
 #' ## Get estimates of other parameters
-#' est2 <- BFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+#' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 #'                         basis_degree, n_eigen, boundary_knots,
 #'                         internal_knots, est1$Z, est1$nu)
 #'
-#' MCMC.chain <-BFPMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
+#' MCMC.chain <-BFMMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
 #'                               basis_degree, n_eigen, boundary_knots,
 #'                               internal_knots, est1$Z, est1$pi, est1$alpha_3,
 #'                               est2$delta, est2$gamma, est2$Phi, est2$A,
 #'                               est1$nu, est1$tau, est2$sigma, est2$chi)
 #'
 #' @export
-BFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 2, beta2l = 2, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFPMM_BFPMM_warm_start', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+BFMMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 2, beta2l = 2, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFMMM_BFMMM_warm_start', PACKAGE = 'BayesFMMM', tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #' Reads saved parameter data (sigma, alpha_3)
@@ -877,7 +877,7 @@ BFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, 
 #'
 #' @examples
 #' ## set file path
-#' file <- system.file("test-data", "sigma.txt", package = "BayesFPMM")
+#' file <- system.file("test-data", "sigma.txt", package = "BayesFMMM")
 #'
 #' ## Read in file
 #' sigma <- ReadVec(file)
@@ -904,7 +904,7 @@ BFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, 
 #'
 #' @export
 ReadVec <- function(file) {
-    .Call('_BayesFPMM_ReadVec', PACKAGE = 'BayesFPMM', file)
+    .Call('_BayesFMMM_ReadVec', PACKAGE = 'BayesFMMM', file)
 }
 
 #' Reads saved parameter data (pi, A, delta, tau)
@@ -918,7 +918,7 @@ ReadVec <- function(file) {
 #'
 #' @examples
 #' ## set file path
-#' file <- system.file("test-data", "pi.txt", package = "BayesFPMM")
+#' file <- system.file("test-data", "pi.txt", package = "BayesFMMM")
 #'
 #' ## Read in file
 #' pi <- ReadMat(file)
@@ -948,7 +948,7 @@ ReadVec <- function(file) {
 #'
 #' @export
 ReadMat <- function(file) {
-    .Call('_BayesFPMM_ReadMat', PACKAGE = 'BayesFPMM', file)
+    .Call('_BayesFMMM_ReadMat', PACKAGE = 'BayesFMMM', file)
 }
 
 #' Reads saved parameter data (nu, chi, Z)
@@ -962,7 +962,7 @@ ReadMat <- function(file) {
 #'
 #' @examples
 #' ## set file path
-#' file <- system.file("test-data", "nu.txt", package = "BayesFPMM")
+#' file <- system.file("test-data", "nu.txt", package = "BayesFMMM")
 #'
 #' ## Read in file
 #' nu <- ReadCube(file)
@@ -993,7 +993,7 @@ ReadMat <- function(file) {
 #'
 #' @export
 ReadCube <- function(file) {
-    .Call('_BayesFPMM_ReadCube', PACKAGE = 'BayesFPMM', file)
+    .Call('_BayesFMMM_ReadCube', PACKAGE = 'BayesFMMM', file)
 }
 
 #' Reads saved parameter data (gamma, Phi)
@@ -1008,7 +1008,7 @@ ReadCube <- function(file) {
 #'
 #' @examples
 #' ## set file path
-#' file <- system.file("test-data", "Phi.txt", package = "BayesFPMM")
+#' file <- system.file("test-data", "Phi.txt", package = "BayesFMMM")
 #'
 #' ## Read in file
 #' Phi <- ReadFieldCube(file)
@@ -1040,7 +1040,7 @@ ReadCube <- function(file) {
 #'
 #' @export
 ReadFieldCube <- function(file) {
-    .Call('_BayesFPMM_ReadFieldCube', PACKAGE = 'BayesFPMM', file)
+    .Call('_BayesFMMM_ReadFieldCube', PACKAGE = 'BayesFMMM', file)
 }
 
 #' Reads saved armadillo data
@@ -1054,14 +1054,14 @@ ReadFieldCube <- function(file) {
 #'
 #' @examples
 #' ## set file path
-#' file <- system.file("test-data", "fieldmat.txt", package = "BayesFPMM")
+#' file <- system.file("test-data", "fieldmat.txt", package = "BayesFMMM")
 #'
 #' ## Read in file
 #' samp_data <- ReadFieldMat(file)
 #'
 #' @export
 ReadFieldMat <- function(file) {
-    .Call('_BayesFPMM_ReadFieldMat', PACKAGE = 'BayesFPMM', file)
+    .Call('_BayesFMMM_ReadFieldMat', PACKAGE = 'BayesFMMM', file)
 }
 
 #' Reads saved armadillo data
@@ -1075,14 +1075,14 @@ ReadFieldMat <- function(file) {
 #'
 #' @examples
 #' ## set file path
-#' file <- system.file("test-data", "fieldvec.txt", package = "BayesFPMM")
+#' file <- system.file("test-data", "fieldvec.txt", package = "BayesFMMM")
 #'
 #' ## Read in file
 #' samp_data <- ReadFieldVec(file)
 #'
 #' @export
 ReadFieldVec <- function(file) {
-    .Call('_BayesFPMM_ReadFieldVec', PACKAGE = 'BayesFPMM', file)
+    .Call('_BayesFMMM_ReadFieldVec', PACKAGE = 'BayesFMMM', file)
 }
 
 #' Find initial starting position for nu and Z parameters for high dimensional functional data (Domain dimension > 1)
@@ -1095,7 +1095,7 @@ ReadFieldVec <- function(file) {
 #' starting position. This function will return the chain that has the highest
 #' log-likelihood average in the last 100 MCMC iterations.
 #'
-#' @name BHDFPMM_Nu_Z_multiple_try
+#' @name BHDFMMM_Nu_Z_multiple_try
 #' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 #' @param n_try Int containing how many different chains are tried
 #' @param k Int containing the number of clusters
@@ -1164,8 +1164,8 @@ ReadFieldVec <- function(file) {
 #'
 #' @examples
 #' ## Load sample data
-#' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFPMM"))
-#' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFPMM"))
+#' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 #'
 #' ## Set Hyperparameters
 #' tot_mcmc_iters <- 150
@@ -1178,24 +1178,24 @@ ReadFieldVec <- function(file) {
 #' internal_knots <- rep(list(c(250, 500, 750)), 2)
 #'
 #' ## Run function
-#' est1 <- BHDFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+#' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 #'                                   basis_degree, n_eigen, boundary_knots,
 #'                                   internal_knots)
 #'
 #' @export
-BHDFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 10, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFPMM_BHDFPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+BHDFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c = NULL, b = 10, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFMMM_BHDFMMM_Nu_Z_multiple_try', PACKAGE = 'BayesFMMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #' Find initial starting points for parameters given nu and Z parameters for high dimensional functional data (Domain dimension > 1)
 #'
-#' This function is meant to be used after using \code{BHDFPMM_NU_Z_multiple_try}.
+#' This function is meant to be used after using \code{BHDFMMM_NU_Z_multiple_try}.
 #' This function samples from the rest of the model parameters given a fixed value of
 #' nu and Z. The fixed value of nu and Z are found by using the best markov chain
-#' found in \code{BHDFPMM_NU_Z_multiple_try}. Once this function is ran, the results
-#' can be used in \code{BHDFPMM_warm_start}.
+#' found in \code{BHDFMMM_NU_Z_multiple_try}. Once this function is ran, the results
+#' can be used in \code{BHDFMMM_warm_start}.
 #'
-#' @name BHDFPMM_Theta_est
+#' @name BHDFMMM_Theta_est
 #' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 #' @param n_try Int containing how many different chains are tried
 #' @param k Int containing the number of clusters
@@ -1206,8 +1206,8 @@ BHDFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct
 #' @param n_eigen Int containing the number of eigenfunctions
 #' @param boundary_knots Matrix containing the boundary knots for each dimension (each row is a dimension)
 #' @param internal_knots List of vectors containing the internal knots for each dimension
-#' @param Z_samp Cube containing initial chain of Z parameters from \code{BHDFPMM_Nu_Z_multiple_try}
-#' @param nu_samp Cube containing initial chain of nu parameters from \code{BHDFPMM_Nu_Z_multiple_try}
+#' @param Z_samp Cube containing initial chain of Z parameters from \code{BHDFMMM_Nu_Z_multiple_try}
+#' @param nu_samp Cube containing initial chain of nu parameters from \code{BHDFMMM_Nu_Z_multiple_try}
 #' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 #' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
 #' @param b double containing hyperparamete for sampling from alpha_3
@@ -1268,8 +1268,8 @@ BHDFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct
 #'
 #' @examples
 #' ## Load sample data
-#' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFPMM"))
-#' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFPMM"))
+#' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 #'
 #' ## Set Hyperparameters
 #' tot_mcmc_iters <- 150
@@ -1282,24 +1282,24 @@ BHDFPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct
 #' internal_knots <- rep(list(c(250, 500, 750)), 2)
 #'
 #' ## Run function
-#' est1 <- BHDFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+#' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 #'                                   basis_degree, n_eigen, boundary_knots,
 #'                                   internal_knots)
 #'
 #' ## Run function
-#' est2 <- BHDFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+#' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 #'                         basis_degree, n_eigen, boundary_knots,
 #'                         internal_knots, est1$Z, est1$nu)
 #'
 #' @export
-BHDFPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 3, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFPMM_BHDFPMM_Theta_est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+BHDFMMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 3, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFMMM_BHDFMMM_Theta_est', PACKAGE = 'BayesFMMM', tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #' Performs MCMC for high dimensional functional model given an informed set of starting points
 #'
-#' This function is meant to be used after using \code{BHDFPMM_Nu_Z_multiple_try}
-#' and \code{BHDFPMM_Theta_est}. This function will use the outputs of these two
+#' This function is meant to be used after using \code{BHDFMMM_Nu_Z_multiple_try}
+#' and \code{BHDFMMM_Theta_est}. This function will use the outputs of these two
 #' functions to start the MCMC chain in a good location. Since the posterior distribution
 #' can often be multimodal, it is important to have a good starting position.
 #' To help move across modes, this function allows users to use tempered transitions
@@ -1313,7 +1313,7 @@ BHDFPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_
 #' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
 #' \code{ReadVec}.
 #'
-#' @name BHDFPMM_warm_start
+#' @name BHDFMMM_warm_start
 #' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 #' @param k Int containing the number of clusters
 #' @param Y List of vectors containing the observed values
@@ -1323,17 +1323,17 @@ BHDFPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_
 #' @param n_eigen Int containing the number of eigenfunctions
 #' @param boundary_knots Matrix containing the boundary knots for each dimension (each row is a dimension)
 #' @param internal_knots List of vectors containing the internal knots for each dimension
-#' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFPMM_Theta_est})
-#' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFPMM_Theta_est})
-#' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFPMM_Theta_est})
-#' @param A_samp Matrix containing initial chain of A parameters (from \code{BFPMM_Theta_est})
-#' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFPMM_Theta_est})
-#' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFPMM_Theta_est})
+#' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})
+#' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})
+#' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})
+#' @param A_samp Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})
+#' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})
+#' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})
 #' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 #' @param dir String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)
 #' @param thinning_num Int containing how often we should save MCMC iterations
@@ -1411,8 +1411,8 @@ BHDFPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_
 #'
 #'@examples
 #' ## Load sample data
-#' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFPMM"))
-#' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFPMM"))
+#' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 #'
 #' ## Set Hyperparameters
 #' tot_mcmc_iters <- 150
@@ -1425,24 +1425,24 @@ BHDFPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, time, n_funct, basis_
 #' internal_knots <- rep(list(c(250, 500, 750)), 2)
 #'
 #' ## Run function
-#' est1 <- BHDFPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+#' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 #'                                   basis_degree, n_eigen, boundary_knots,
 #'                                   internal_knots)
 #'
 #' ## Run function
-#' est2 <- BHDFPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+#' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
 #'                         basis_degree, n_eigen, boundary_knots,
 #'                         internal_knots, est1$Z, est1$nu)
 #'
-#' MCMC.chain <-BHDFPMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
+#' MCMC.chain <-BHDFMMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
 #'                                 basis_degree, n_eigen, boundary_knots,
 #'                                 internal_knots, est1$Z, est1$pi, est1$alpha_3,
 #'                                 est2$delta, est2$gamma, est2$Phi, est2$A,
 #'                                 est1$nu, est1$tau, est2$sigma, est2$chi)
 #'
 #' @export
-BHDFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFPMM_BHDFPMM_warm_start', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+BHDFMMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFMMM_BHDFMMM_warm_start', PACKAGE = 'BayesFMMM', tot_mcmc_iters, k, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #' Find initial starting position for nu and Z parameters for multivariate data
@@ -1453,7 +1453,7 @@ BHDFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree
 #' starting position. This function will return the chain that has the highest
 #' log-likelihood average in the last 100 MCMC iterations.
 #'
-#' @name BMVPMM_Nu_Z_multiple_try
+#' @name BMVMMM_Nu_Z_multiple_try
 #' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 #' @param n_try Int containing how many different chains are tried
 #' @param k Int containing the number of clusters
@@ -1513,7 +1513,7 @@ BHDFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree
 #'
 #' @examples
 #' ## Load sample data
-#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFPMM"))
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 #'
 #' ## Set Hyperparameters
 #' tot_mcmc_iters <- 150
@@ -1522,29 +1522,29 @@ BHDFPMM_warm_start <- function(tot_mcmc_iters, k, Y, time, n_funct, basis_degree
 #' n_eigen <- 2
 #'
 #' ## Run function
-#' est1 <- BMVPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+#' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
 #'
 #' @export
-BMVPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, c = NULL, b = 10, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFPMM_BMVPMM_Nu_Z_multiple_try', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, n_eigen, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+BMVMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, c = NULL, b = 10, alpha1l = 2, alpha2l = 3, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFMMM_BMVMMM_Nu_Z_multiple_try', PACKAGE = 'BayesFMMM', tot_mcmc_iters, n_try, k, Y, n_eigen, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #' Find initial starting points for parameters given nu and Z parameters for multivariate data
 #'
-#' This function is meant to be used after using \code{BMVPMM_NU_Z_multiple_try}.
+#' This function is meant to be used after using \code{BMVMMM_NU_Z_multiple_try}.
 #' This function samples from the rest of the model parameters given a fixed value of
 #' nu and Z. The fixed value of nu and Z are found by using the best markov chain
-#' found in \code{BMVPMM_NU_Z_multiple_try}. Once this function is ran, the results
-#' can be used in \code{BMVPMM_warm_start}.
+#' found in \code{BMVMMM_NU_Z_multiple_try}. Once this function is ran, the results
+#' can be used in \code{BMVMMM_warm_start}.
 #'
-#' @name BMVPMM_Theta_est
+#' @name BMVMMM_Theta_est
 #' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 #' @param n_try Int containing how many different chains are tried
 #' @param k Int containing the number of clusters
 #' @param Y Matrix of observed vectors (each row is an observation)
 #' @param n_eigen Int containing the number of eigenfunctions
-#' @param Z_samp Cube containing initial chain of Z parameters from \code{BFPMM_Nu_Z_multiple_try}
-#' @param nu_samp Cube containing initial chain of nu parameters from \code{BFPMM_Nu_Z_multiple_try}
+#' @param Z_samp Cube containing initial chain of Z parameters from \code{BFMMM_Nu_Z_multiple_try}
+#' @param nu_samp Cube containing initial chain of nu parameters from \code{BFMMM_Nu_Z_multiple_try}
 #' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 #' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
 #' @param b double containing hyperparamete for sampling from alpha_3
@@ -1601,7 +1601,7 @@ BMVPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, c = N
 #'
 #' @examples
 #' ## Load sample data
-#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFPMM"))
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 #'
 #' ## Set Hyperparameters
 #' tot_mcmc_iters <- 150
@@ -1610,20 +1610,20 @@ BMVPMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, c = N
 #' n_eigen <- 2
 #'
 #' ## Run function
-#' est1 <- BMVPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+#' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
 #'
 #' ## Run function
-#' est2 <- BMVPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
+#' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
 #'
 #' @export
-BMVPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 3, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFPMM_BMVPMM_Theta_est', PACKAGE = 'BayesFPMM', tot_mcmc_iters, n_try, k, Y, n_eigen, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+BMVMMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, Z_samp, nu_samp, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 3, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFMMM_BMVMMM_Theta_est', PACKAGE = 'BayesFMMM', tot_mcmc_iters, n_try, k, Y, n_eigen, Z_samp, nu_samp, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 
 #' Performs MCMC for multivariate models given an informed set of starting points
 #'
-#' This function is meant to be used after using \code{BMVPMM_Nu_Z_multiple_try}
-#' and \code{BMVPMM_Theta_est}. This function will use the outputs of these two
+#' This function is meant to be used after using \code{BMVMMM_Nu_Z_multiple_try}
+#' and \code{BMVMMM_Theta_est}. This function will use the outputs of these two
 #' functions to start the MCMC chain in a good location. Since the posterior distribution
 #' can often be multimodal, it is important to have a good starting position.
 #' To help move across modes, this function allows users to use tempered transitions
@@ -1637,22 +1637,22 @@ BMVPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, Z_samp, nu_sa
 #' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
 #' \code{ReadVec}.
 #'
-#' @name BMVPMM_warm_start
+#' @name BMVMMM_warm_start
 #' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 #' @param k Int containing the number of clusters
 #' @param Y Matrix of observed vectors (each row is an observation)
 #' @param n_eigen Int containing the number of eigenfunctions
-#' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFPMM_Theta_est})
-#' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFPMM_Theta_est})
-#' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFPMM_Theta_est})
-#' @param A_samp Matrix containing initial chain of A parameters (from \code{BFPMM_Theta_est})
-#' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFPMM_NU_Z_multiple_try})
-#' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFPMM_Theta_est})
-#' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFPMM_Theta_est})
+#' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})
+#' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})
+#' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})
+#' @param A_samp Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})
+#' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})
+#' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})
+#' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})
 #' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 #' @param dir String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)
 #' @param thinning_num Int containing how often we should save MCMC iterations
@@ -1726,7 +1726,7 @@ BMVPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, Z_samp, nu_sa
 #'
 #'@examples
 #' ## Load sample data
-#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFPMM"))
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 #'
 #' ## Set Hyperparameters
 #' tot_mcmc_iters <- 150
@@ -1735,18 +1735,18 @@ BMVPMM_Theta_est <- function(tot_mcmc_iters, n_try, k, Y, n_eigen, Z_samp, nu_sa
 #' n_eigen <- 2
 #'
 #' ## Run function
-#' est1 <- BMVPMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+#' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
 #'
 #' ## Run function
-#' est2 <- BMVPMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
+#' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
 #'
-#' MCMC.chain <-BMVPMM_warm_start(tot_mcmc_iters, k, Y, n_eigen,
+#' MCMC.chain <-BMVMMM_warm_start(tot_mcmc_iters, k, Y, n_eigen,
 #'                                est1$Z, est1$pi, est1$alpha_3,
 #'                                est2$delta, est2$gamma, est2$Phi, est2$A,
 #'                                est1$nu, est1$tau, est2$sigma, est2$chi)
 #'
 #' @export
-BMVPMM_warm_start <- function(tot_mcmc_iters, k, Y, n_eigen, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFPMM_BMVPMM_warm_start', PACKAGE = 'BayesFPMM', tot_mcmc_iters, k, Y, n_eigen, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
+BMVMMM_warm_start <- function(tot_mcmc_iters, k, Y, n_eigen, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha = 1, beta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFMMM_BMVMMM_warm_start', PACKAGE = 'BayesFMMM', tot_mcmc_iters, k, Y, n_eigen, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha, beta, alpha_0, beta_0)
 }
 

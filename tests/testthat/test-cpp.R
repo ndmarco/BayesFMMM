@@ -1,1 +1,1 @@
-run_cpp_tests("BayesFPMM")
+run_cpp_tests("BayesFMMM")

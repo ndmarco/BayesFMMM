@@ -1,11 +1,11 @@
-Package: BayesFPMM
+Package: BayesFMMM
 Type: Package
-Title: Bayesian Functional Partial Membership Model
+Title: Bayesian Functional Mixed Membership Model
 Version: 0.1.0.0
 Date: 2020-10-30
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: This package fits a Bayesian partial membership model for multivariate and functional data.
+Author: Nicholas Marco and Donatello Telesca
+Maintainer: Nicholas Marco <mdmarco96@g.ucla.edu>
+Description: This package fits a Bayesian mixed membership model for multivariate and functional data.
 License: GPL (>= 3) + file LICENSE
 Imports: Rcpp (>= 1.0.5)
 LinkingTo: Rcpp,

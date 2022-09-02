@@ -18,7 +18,7 @@ in R.
 }
 \examples{
 ## set file path
-file <- system.file("test-data", "fieldvec.txt", package = "BayesFPMM")
+file <- system.file("test-data", "fieldvec.txt", package = "BayesFMMM")
 
 ## Read in file
 samp_data <- ReadFieldVec(file)

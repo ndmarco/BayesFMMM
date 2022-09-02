@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include <testthat.h>
-#include <BayesFPMM.h>
+#include <BayesFMMM.h>
 
 //' Tests creation of tensor product B-splines for multivariate functional data
 //'
@@ -21,7 +21,7 @@ arma::mat TestBSplineTensor(){
 
   arma::vec basis_degree = {3,3};
 
-  arma::field<arma::mat> B = BayesFPMM::TensorBSpline(t_obs1, 2, basis_degree,
+  arma::field<arma::mat> B = BayesFMMM::TensorBSpline(t_obs1, 2, basis_degree,
                                                       boundary_knots, internal_knots);
 
   return B(0,0);
@@ -46,7 +46,7 @@ arma::mat TestPMat(){
 
   arma::vec basis_degree = {3,3};
 
-  arma::mat P = BayesFPMM::GetP(basis_degree,internal_knots);
+  arma::mat P = BayesFMMM::GetP(basis_degree,internal_knots);
 
   return P;
 }
@@ -59,7 +59,7 @@ context("Tensor B-Spline unit tests") {
     Rcpp::Environment base("package:base");
     Rcpp::Function sys_file = base["system.file"];
     Rcpp::StringVector path = sys_file("inst", "test-data", "Tensor_BSpline.txt",
-                                       Rcpp::_["package"] = "BayesFPMM");
+                                       Rcpp::_["package"] = "BayesFMMM");
     std::string string_path = Rcpp::as<std::string>(path[0]);
     arma::mat B_true;
     B_true.load(string_path);
@@ -74,7 +74,7 @@ context("Tensor P matrix for Nu unit test") {
     Rcpp::Environment base("package:base");
     Rcpp::Function sys_file = base["system.file"];
     Rcpp::StringVector path = sys_file("inst", "test-data", "P_mat.txt",
-                                       Rcpp::_["package"] = "BayesFPMM");
+                                       Rcpp::_["package"] = "BayesFMMM");
     std::string string_path = Rcpp::as<std::string>(path[0]);
     arma::mat P_true;
     P_true.load(string_path);

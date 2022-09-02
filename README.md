@@ -1,5 +1,5 @@
 
-[![R-CMD-check](https://github.com/ndmarco/BayesFPMM/workflows/R-CMD-check/badge.svg)](https://github.com/ndmarco/BayesFPMM/actions)
+[![R-CMD-check](https://github.com/ndmarco/BayesFMMM/workflows/R-CMD-check/badge.svg)](https://github.com/ndmarco/BayesFMMM/actions)
 
-# BayesFPMM
-Bayesian Functional Partial Membership Model
+# BayesFMMM
+Bayesian Functional Mixed Membership Model

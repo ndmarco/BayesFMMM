@@ -18,7 +18,7 @@ parameters can be read in using this function: nu, chi, and Z.
 }
 \examples{
 ## set file path
-file <- system.file("test-data", "nu.txt", package = "BayesFPMM")
+file <- system.file("test-data", "nu.txt", package = "BayesFMMM")
 
 ## Read in file
 nu <- ReadCube(file)

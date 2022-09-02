@@ -18,7 +18,7 @@ parameters can be read in using this function: pi, A, delta, and tau.
 }
 \examples{
 ## set file path
-file <- system.file("test-data", "pi.txt", package = "BayesFPMM")
+file <- system.file("test-data", "pi.txt", package = "BayesFMMM")
 
 ## Read in file
 pi <- ReadMat(file)

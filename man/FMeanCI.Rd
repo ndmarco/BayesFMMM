@@ -42,7 +42,7 @@ FMeanCI(
 \item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 }
 \value{
-CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function
+CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior samples fo the mean function are also returned.
 }
 \description{
 This function calculates a credible interval with the user specified coverage.
@@ -72,7 +72,7 @@ The following must be true:
 
 \examples{
 ## Set Hyperparameters
-dir <- system.file("test-data","", package = "BayesFPMM")
+dir <- system.file("test-data","", package = "BayesFMMM")
 n_files <- 1
 time <- seq(0, 990, 10)
 k <- 2

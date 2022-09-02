@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include <splines2Armadillo.h>
-#include <BayesFPMM.h>
+#include <BayesFMMM.h>
 
 
 //
@@ -151,7 +151,7 @@
 //         }
 //       }
 //     }
-//     BayesFPMM::updateDelta(Phi, Gamma, a_12, m, 10000, delta);
+//     BayesFMMM::updateDelta(Phi, Gamma, a_12, m, 10000, delta);
 //   }
 //   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("delta", Delta),
 //                                       Rcpp::Named("gamma", Gamma),
@@ -182,7 +182,7 @@
 //         delta(j) = R::rgamma(a_2, 1);
 //       }
 //     }
-//     BayesFPMM::updateA(alpha1, beta1, alpha2, beta2, delta, sqrt(1), sqrt(1), i, 1000, A);
+//     BayesFMMM::updateA(alpha1, beta1, alpha2, beta2, delta, sqrt(1), sqrt(1), i, 1000, A);
 //   }
 //
 //
@@ -228,7 +228,7 @@
 //         }
 //       }
 //     }
-//     BayesFPMM::updateGamma(0.001, Delta, Phi, m, 250, gamma);
+//     BayesFMMM::updateGamma(0.001, Delta, Phi, m, 250, gamma);
 //   }
 //   arma::vec gamma_ph = arma::zeros(1000);
 //   arma::cube gamma_est = arma::zeros(3,8,2);
@@ -370,7 +370,7 @@
 //     for(int j = 0; j < 6; j++){
 //       nu.row(j) = arma::mvnrnd(zeros_nu, arma::pinv(P * tau(j))).t();
 //     }
-//     BayesFPMM::updateTau(1, 1, nu, i, 1000, P, tau_samp);
+//     BayesFMMM::updateTau(1, 1, nu, i, 1000, P, tau_samp);
 //   }
 //   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("tau_samp", tau_samp),
 //                                       Rcpp::Named("tau", tau));
@@ -428,7 +428,7 @@
 //   // setting alpha_3 = 10
 //   arma:: vec alpha = c * 10;
 //   for(int i = 0; i < Z.n_rows; i++){
-//     Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+//     Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
 //   }
 //
 //   arma::field<arma::vec> y_obs(100, 1);
@@ -449,10 +449,10 @@
 //   double beta_0 = 1;
 //   arma::vec sigma_samp(1000, arma::fill::zeros);
 //   for(int i = 0; i < 1000; i++){
-//     BayesFPMM::updateSigma(y_obs, B_obs, alpha_0, beta_0, nu, Phi, Z, chi,
+//     BayesFMMM::updateSigma(y_obs, B_obs, alpha_0, beta_0, nu, Phi, Z, chi,
 //                 i, 1000, sigma_samp);
 //   }
-//   sigma_samp.save("/Users/nicholasmarco/Projects/BayesFPMM/inst/test-data/sigma.txt", arma::arma_ascii);
+//   sigma_samp.save("/Users/nicholasmarco/Projects/BayesFMMM/inst/test-data/sigma.txt", arma::arma_ascii);
 //   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("sigma_samp", sigma_samp),
 //                                       Rcpp::Named("sigma", sigma_sq));
 //   return mod;
@@ -1093,13 +1093,13 @@
 //   }
 //
 //   //save parameters
-//   nu.save("/Users/nicholasmarco/Projects/BayesFPMM/data/nu.txt", arma::arma_ascii);
-//   chi.save("/Users/nicholasmarco/Projects/BayesFPMM/data/chi.txt", arma::arma_ascii);
-//   Phi.save("/Users/nicholasmarco/Projects/BayesFPMM/data/Phi.txt", arma::arma_ascii);
-//   Z.save("/Users/nicholasmarco/Projects/BayesFPMM/data/Z.txt", arma::arma_ascii);
+//   nu.save("/Users/nicholasmarco/Projects/BayesFMMM/data/nu.txt", arma::arma_ascii);
+//   chi.save("/Users/nicholasmarco/Projects/BayesFMMM/data/chi.txt", arma::arma_ascii);
+//   Phi.save("/Users/nicholasmarco/Projects/BayesFMMM/data/Phi.txt", arma::arma_ascii);
+//   Z.save("/Users/nicholasmarco/Projects/BayesFMMM/data/Z.txt", arma::arma_ascii);
 // }
 //
-// //' Tests updating Z using partial membership model
+// //' Tests updating Z using mixed membership model
 // //'
 // //' @name TestUpdateZ_PM
 // //' @export
@@ -1187,7 +1187,7 @@
 //
 // }
 //
-// //' Tests updating pi using partial membership model
+// //' Tests updating pi using mixed membership model
 // //'
 // //' @name TestUpdateZ_PM
 // //' @export
@@ -1196,12 +1196,12 @@
 //   // Make Z matrix
 //   arma::mat Z(100, 3);
 //   arma::vec c(3, arma::fill::ones);
-//   arma::vec pi = BayesFPMM::rdirichlet(c);
+//   arma::vec pi = BayesFMMM::rdirichlet(c);
 //
 //   // setting alpha_3 = 100
 //   arma:: vec alpha = pi * 100;
 //   for(int i = 0; i < Z.n_rows; i++){
-//     Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+//     Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
 //   }
 //
 //   // Initialize placeholder
@@ -1211,13 +1211,13 @@
 //   //Initialize Z_samp
 //   arma::mat pi_samp = arma::ones(3, 500);
 //
-//   pi_samp.col(0) = BayesFPMM::rdirichlet(c);
+//   pi_samp.col(0) = BayesFMMM::rdirichlet(c);
 //
 //   for(int i = 0; i < 500; i++)
 //   {
-//     BayesFPMM::updatePi_PM(100, Z, c, i, 500, 1000, pi_ph, pi_samp);
+//     BayesFMMM::updatePi_PM(100, Z, c, i, 500, 1000, pi_ph, pi_samp);
 //   }
-//   pi_samp.save("/Users/nicholasmarco/Projects/BayesFPMM/inst/test-data/pi.txt", arma::arma_ascii);
+//   pi_samp.save("/Users/nicholasmarco/Projects/BayesFMMM/inst/test-data/pi.txt", arma::arma_ascii);
 //   arma::vec pi_est = arma::zeros(3);
 //   arma::vec ph_pi = arma::zeros(300);
 //   for(int j = 0; j < 3; j++){
@@ -1237,7 +1237,7 @@
 //   return mod;
 // }
 
-// //' Tests updating pi using partial membership model
+// //' Tests updating pi using mixed membership model
 // //'
 // //' @name TestUpdateZ_PM
 // //' @export
@@ -1247,12 +1247,12 @@
 //   // Make Z matrix
 //   arma::mat Z(100, 3);
 //   arma::vec c(3, arma::fill::ones);
-//   arma::vec pi = BayesFPMM::rdirichlet(c);
+//   arma::vec pi = BayesFMMM::rdirichlet(c);
 //
 //   // setting alpha_3 = 10
 //   arma:: vec alpha = pi * 10;
 //   for(int i = 0; i < Z.n_rows; i++){
-//     Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+//     Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
 //   }
 //
 //   arma::vec alpha_3(10000, arma::fill::ones);
@@ -1260,7 +1260,7 @@
 //
 //   for(int i = 0; i < 10000; i++)
 //   {
-//     BayesFPMM::updateAlpha3(pi, 0.1, Z, i, 10000, 0.05, alpha_3);
+//     BayesFMMM::updateAlpha3(pi, 0.1, Z, i, 10000, 0.05, alpha_3);
 //   }
 //
 //   Rcpp::List mod = Rcpp::List::create(Rcpp::Named("alpha3_samp", alpha_3),
@@ -1269,12 +1269,12 @@
 // }
 //
 //
-// //' Tests the full Bayesian Functional Partial Membership Model
+// //' Tests the full Bayesian Functional mixed Membership Model
 // //'
-// //' @name TestBFPMM
+// //' @name TestBFMMM
 // //' @export
 // // [[Rcpp::export]]
-// Rcpp::List TestBFPMM(const int tot_mcmc_iters, const int r_stored_iters,
+// Rcpp::List TestBFMMM(const int tot_mcmc_iters, const int r_stored_iters,
 //                      const std::string directory, const double sigma_sq){
 //   arma::field<arma::vec> t_obs1(100,1);
 //   int n_funct = 100;
@@ -1299,22 +1299,22 @@
 //
 //   // Make nu matrix
 //   arma::mat nu;
-//   nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+//   nu.load("c:\\Projects\\BayesFMMM\\data\\nu.txt");
 //
 //
 //   // Make Phi matrix
 //   arma::cube Phi;
-//   Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+//   Phi.load("c:\\Projects\\BayesFMMM\\data\\Phi.txt");
 //   // double sigma_sq = 0.005;
 //
 //   // Make chi matrix
 //   arma::mat chi;
-//   chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+//   chi.load("c:\\Projects\\BayesFMMM\\data\\chi.txt");
 //
 //
 //   // Make Z matrix
 //   arma::mat Z;
-//   Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
+//   Z.load("c:\\Projects\\BayesFMMM\\data\\Z.txt");
 //
 //   arma::field<arma::vec> y_obs(100, 1);
 //   arma::vec mean = arma::zeros(8);
@@ -1333,7 +1333,7 @@
 //    arma::vec c = arma::ones(2);
 //
 //   // start MCMC sampling
-//   Rcpp::List mod1 = BFPMM(y_obs, t_obs1, n_funct, 50, 2, 8, 3, tot_mcmc_iters,
+//   Rcpp::List mod1 = BFMMM(y_obs, t_obs1, n_funct, 50, 2, 8, 3, tot_mcmc_iters,
 //                           r_stored_iters, c, 1, 3, 2, 3, 1, 1,
 //                           1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1,
 //                           directory);
@@ -1358,7 +1358,7 @@
 //   return mod2;
 // }
 //
-// //' Tests updating Z using partial membership model
+// //' Tests updating Z using mixed membership model
 // //'
 // //' @name TestUpdateZ_PM
 // //' @export
@@ -1449,10 +1449,10 @@
 //
 // //' Tests BFOC function
 // //'
-// //' @name TestEstimateBFPMMTempladder
+// //' @name TestEstimateBFMMMTempladder
 // //' @export
 // // [[Rcpp::export]]
-// Rcpp::List TestEstimateBFPMMTempladder(const double beta_N_t, const int N_t){
+// Rcpp::List TestEstimateBFMMMTempladder(const double beta_N_t, const int N_t){
 //   arma::field<arma::vec> t_obs1(100,1);
 //   int n_funct = 100;
 //   for(int i = 0; i < n_funct; i++){
@@ -1479,22 +1479,22 @@
 //
 //   // Make nu matrix
 //   arma::mat nu;
-//   nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+//   nu.load("c:\\Projects\\BayesFMMM\\data\\nu.txt");
 //
 //
 //   // Make Phi matrix
 //   arma::cube Phi;
-//   Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+//   Phi.load("c:\\Projects\\BayesFMMM\\data\\Phi.txt");
 //   // double sigma_sq = 0.005;
 //
 //   // Make chi matrix
 //   arma::mat chi;
-//   chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+//   chi.load("c:\\Projects\\BayesFMMM\\data\\chi.txt");
 //
 //
 //   // Make Z matrix
 //   arma::mat Z;
-//   Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
+//   Z.load("c:\\Projects\\BayesFMMM\\data\\Z.txt");
 //
 //   arma::field<arma::vec> y_obs(100, 1);
 //   arma::vec mean = arma::zeros(8);
@@ -1518,7 +1518,7 @@
 //   int r_stored_iters = 10;
 //
 //   // start MCMC sampling
-//   Rcpp::List mod1 = BFPMM_Templadder(y_obs, t_obs1, n_funct, 2, 8, 3, tot_mcmc_iters,
+//   Rcpp::List mod1 = BFMMM_Templadder(y_obs, t_obs1, n_funct, 2, 8, 3, tot_mcmc_iters,
 //                                      r_stored_iters, c, 1, 3, 2, 3, 1, 1,
 //                                      1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 1, 1, 1, beta_N_t,
 //                                      N_t);
@@ -1542,12 +1542,12 @@
 //   return mod2;
 // }
 //
-// //' Tests the full Bayesian Functional Partial Membership Model
+// //' Tests the full Bayesian Functional mixed Membership Model
 // //'
-// //' @name TestBFPMM_Nu_Z
+// //' @name TestBFMMM_Nu_Z
 // //' @export
 // // [[Rcpp::export]]
-// Rcpp::List TestBFPMM_Nu_Z(const int tot_mcmc_iters, const double sigma_sq,
+// Rcpp::List TestBFMMM_Nu_Z(const int tot_mcmc_iters, const double sigma_sq,
 //                           const double beta_N_t, const int N_t, const int n_temp_trans){
 //   arma::field<arma::vec> t_obs1(100,1);
 //   int n_funct = 100;
@@ -1575,22 +1575,22 @@
 //
 //   // Make nu matrix
 //   arma::mat nu;
-//   nu.load("c:\\Projects\\BayesFPMM\\data\\nu.txt");
+//   nu.load("c:\\Projects\\BayesFMMM\\data\\nu.txt");
 //
 //
 //   // Make Phi matrix
 //   arma::cube Phi;
-//   Phi.load("c:\\Projects\\BayesFPMM\\data\\Phi.txt");
+//   Phi.load("c:\\Projects\\BayesFMMM\\data\\Phi.txt");
 //   // double sigma_sq = 0.005;
 //
 //   // Make chi matrix
 //   arma::mat chi;
-//   chi.load("c:\\Projects\\BayesFPMM\\data\\chi.txt");
+//   chi.load("c:\\Projects\\BayesFMMM\\data\\chi.txt");
 //
 //
 //   // Make Z matrix
 //   arma::mat Z;
-//   Z.load("c:\\Projects\\BayesFPMM\\data\\Z.txt");
+//   Z.load("c:\\Projects\\BayesFMMM\\data\\Z.txt");
 //
 //   arma::field<arma::vec> y_obs(100, 1);
 //   arma::vec mean = arma::zeros(8);
@@ -1609,7 +1609,7 @@
 //   arma::vec c = arma::ones(2);
 //
 //   // start MCMC sampling
-//   Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 3, 3,
+//   Rcpp::List mod1 = BFMMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 3, 3,
 //                                boundary_knots, internal_knots, tot_mcmc_iters,
 //                                c, 1, 3, 2, 3, 1, 1, 1000, 1000,
 //                                0.05, sqrt(1), sqrt(1), 1, 1, 1, 1);
@@ -1631,12 +1631,12 @@
 // }
 //
 //
-// //' Tests the full Bayesian Functional Partial Membership Model
+// //' Tests the full Bayesian Functional mixed Membership Model
 // //'
-// //' @name TestBFPMM_Theta
+// //' @name TestBFMMM_Theta
 // //' @export
 // // [[Rcpp::export]]
-// Rcpp::List TestBFPMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
+// Rcpp::List TestBFMMM_Theta(const int tot_mcmc_iters, const double sigma_sq,
 //                            const arma::cube Z_samp, const arma::cube nu_samp,
 //                            double burnin_prop, const int k,const std::string dir){
 //   // Make Z matrix
@@ -1753,7 +1753,7 @@
 //   // }
 //
 //   // start MCMC sampling
-//   Rcpp::List mod1 = BFPMM_Theta(y_obs, t_obs1, n_funct, k, 3, 3, boundary_knots,
+//   Rcpp::List mod1 = BFMMM_Theta(y_obs, t_obs1, n_funct, k, 3, 3, boundary_knots,
 //                                 internal_knots, tot_mcmc_iters,
 //                                 c, 1, 3, 2, 3, 1, 1, 1000, 1000, 0.05,
 //                                 sqrt(1), sqrt(1), 1, 5, 1, 1, Z_est_rescale, nu_est_rescale);
@@ -1774,12 +1774,12 @@
 // }
 //
 //
-// //' Tests the full Bayesian Functional Partial Membership Model
+// //' Tests the full Bayesian Functional mixed Membership Model
 // //'
-// //' @name TestBFPMM_Nu_Z
+// //' @name TestBFMMM_Nu_Z
 // //' @export
 // // [[Rcpp::export]]
-// Rcpp::List TestBFPMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double sigma_sq,
+// Rcpp::List TestBFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const double sigma_sq,
 //                                        const double beta_N_t, const int N_t, const int n_temp_trans,
 //                                        const int n_trys, const int k, const std::string dir){
 //   // Make Z matrix
@@ -1842,7 +1842,7 @@
 //   arma::vec c = arma::ones(k);
 //
 //   // start MCMC sampling
-//   Rcpp::List mod1 = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 3, 3,
+//   Rcpp::List mod1 = BFMMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 3, 3,
 //                                boundary_knots, internal_knots, tot_mcmc_iters,
 //                                c, 1, 3, 2, 3, 1, 1, 1000, 1000,
 //                                0.05, sqrt(1), sqrt(1), 1, 1, 1, 1);
@@ -1850,7 +1850,7 @@
 //   double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
 //
 //   for(int i = 0; i < n_trys; i++){
-//     Rcpp::List modi = BFPMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 3, 3,
+//     Rcpp::List modi = BFMMM_Nu_Z(y_obs, t_obs1, n_funct, 2, 3, 3,
 //                                  boundary_knots, internal_knots, tot_mcmc_iters,
 //                                  c, 1, 3, 2, 3, 1, 1, 1000, 1000,
 //                                  0.05, sqrt(1), sqrt(1), 1, 1, 1, 1);
@@ -1878,12 +1878,12 @@
 //   return mod2;
 // }
 //
-// //' Tests mixed sampling from the Bayesian Functional Partial Membership Model
+// //' Tests mixed sampling from the Bayesian Functional mixed Membership Model
 // //'
-// //' @name TestBFPMM_MTT
+// //' @name TestBFMMM_MTT
 // //' @export
 // // [[Rcpp::export]]
-// Rcpp::List TestBFPMM_MTT_warm_start(const double beta_N_t,
+// Rcpp::List TestBFMMM_MTT_warm_start(const double beta_N_t,
 //                                     const int N_t,
 //                                     const int n_temp_trans,
 //                                     const int tot_mcmc_iters,
@@ -2049,7 +2049,7 @@
 //   }
 //
 //   // start MCMC sampling
-//   Rcpp::List mod1 = BFPMM_MTT_warm_start(y_obs, t_obs1, n_funct, 50, k, 3, 3,
+//   Rcpp::List mod1 = BFMMM_MTT_warm_start(y_obs, t_obs1, n_funct, 50, k, 3, 3,
 //                                          boundary_knots, internal_knots, tot_mcmc_iters,
 //                                          r_stored_iters, n_temp_trans, c, 1, 3, 2,
 //                                          3, 1, 1, 1000, 1000, 0.05, sqrt(1), sqrt(1), 1, 10, 1, 1,
@@ -2139,7 +2139,7 @@
 //   }
 //   for(int i = 0; i < 1000; i++)
 //   {
-//     updateZ_PMMV(y_obs, Phi, nu, chi, pi,
+//     updateZ_MMMV(y_obs, Phi, nu, chi, pi,
 //                sigma_sq, i, 1000, 1.0, 1000, Z_ph, Z_samp);
 //   }
 //
@@ -2152,7 +2152,7 @@
 //
 
 
-// //' Tests updating Z using partial membership model
+// //' Tests updating Z using mixed membership model
 // //'
 // //' @name TestUpdateZ_PM
 // //' @export
@@ -2196,7 +2196,7 @@
 //   arma::mat Z(20, 3);
 //   arma::mat alpha(20,3, arma::fill::ones);
 //   for(int i = 0; i < Z.n_rows; i++){
-//     Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+//     Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
 //   }
 //
 //   arma::field<arma::vec> y_obs(20, 1);
@@ -2224,10 +2224,10 @@
 //   //Initialize Z_samp
 //   arma::cube Z_samp = arma::ones(20, 3, 5000);
 //   for(int i = 0; i < 20; i++){
-//     Z_samp.slice(0).row(i) = BayesFPMM::rdirichlet(pi).t();
+//     Z_samp.slice(0).row(i) = BayesFMMM::rdirichlet(pi).t();
 //   }
 //   for(int i = 0; i < 5000; i++){
-//     BayesFPMM::updateZ_PM(y_obs, B_obs, Phi, nu, chi, pi,
+//     BayesFMMM::updateZ_PM(y_obs, B_obs, Phi, nu, chi, pi,
 //                           sigma_sq, i, 5000, 1.0, 2000, Z_ph, Z_samp);
 //   }
 //   arma::mat Z_est = arma::zeros(20, 3);
@@ -2247,7 +2247,7 @@
 //   return mod;
 // }
 
-// //' Tests updating Z using partial membership model
+// //' Tests updating Z using mixed membership model
 // //'
 // //' @name TestUpdateZ_PM
 // //' @export
@@ -2292,7 +2292,7 @@
 //   arma::mat alpha(20,3, arma::fill::ones);
 //   alpha = alpha * 10;
 //   for(int i = 0; i < Z.n_rows; i++){
-//     Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+//     Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
 //   }
 //
 //   arma::field<arma::vec> y_obs(20, 1);
@@ -2320,11 +2320,11 @@
 //   //Initialize Z_samp
 //   arma::cube Z_samp = arma::ones(20, 3, 1000);
 //   for(int i = 0; i < 20; i++){
-//     Z_samp.slice(0).row(i) = BayesFPMM::rdirichlet(pi).t();
+//     Z_samp.slice(0).row(i) = BayesFMMM::rdirichlet(pi).t();
 //   }
 //
 //   for(int i = 0; i < 1000; i++){
-//     BayesFPMM::updateZTempered_PM(beta, y_obs, B_obs, Phi, nu, chi, pi,
+//     BayesFMMM::updateZTempered_PM(beta, y_obs, B_obs, Phi, nu, chi, pi,
 //                                   sigma_sq, i, 1000, 1.0, 2000, Z_ph, Z_samp);
 //   }
 //
@@ -2360,7 +2360,7 @@
 //   arma::mat alpha(20,3, arma::fill::ones);
 //   alpha = alpha * 10;
 //   for(int i = 0; i < Z.n_rows; i++){
-//     Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+//     Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
 //   }
 //
 //   arma::mat y_obs = arma::zeros(20, 8);
@@ -2387,13 +2387,13 @@
 //   //Initialize Z_samp
 //   arma::cube Z_samp = arma::ones(20, 3, 500);
 //   for(int i = 0; i < 20; i++){
-//     Z_samp.slice(0).row(i) = BayesFPMM::rdirichlet(pi).t();
+//     Z_samp.slice(0).row(i) = BayesFMMM::rdirichlet(pi).t();
 //   }
 //   double beta = 0.05;
 //
 //   for(int i = 0; i < 500; i++)
 //   {
-//     BayesFPMM::updateZTempered_PMMV(beta, y_obs, Phi, nu, chi, pi,
+//     BayesFMMM::updateZTempered_MMMV(beta, y_obs, Phi, nu, chi, pi,
 //                                     sigma_sq, i, 500, 1.0, 2000, Z_ph, Z_samp);
 //   }
 //   arma::mat Z_est = arma::zeros(20, 3);
@@ -2460,12 +2460,12 @@
 //   //Make Z
 //   arma::mat Z(20, 3);
 //   arma::vec c(3, arma::fill::ones);
-//   arma::vec pi = BayesFPMM::rdirichlet(c);
+//   arma::vec pi = BayesFMMM::rdirichlet(c);
 //
 //   // setting alpha_3 = 10
 //   arma:: vec alpha = pi * 10;
 //   for(int i = 0; i < Z.n_rows; i++){
-//     Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+//     Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
 //   }
 //
 //   arma::field<arma::vec> y_obs(20, 1);
@@ -2500,7 +2500,7 @@
 //   arma::vec tau(nu.n_rows, arma::fill::ones);
 //   tau = tau / 10;
 //   for(int i = 0; i < 500; i++){
-//     BayesFPMM::updateNuTempered(0.4, y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
+//     BayesFMMM::updateNuTempered(0.4, y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
 //              P, b_1, B_1, Nu_samp);
 //   }
 //
@@ -2566,7 +2566,7 @@
 //   arma::mat alpha(40,3, arma::fill::ones);
 //   alpha = alpha * 10;
 //   for(int i = 0; i < Z.n_rows; i++){
-//     Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+//     Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
 //   }
 //
 //   arma::field<arma::vec> y_obs(40, 1);
@@ -2597,10 +2597,10 @@
 //   gamma = gamma * 10;
 //   arma::vec tilde_tau = {1, 2};
 //   for(int i = 0; i < 250; i++){
-//     BayesFPMM::updatePhi(y_obs, B_obs, nu, gamma, tilde_tau, Z, chi,
+//     BayesFMMM::updatePhi(y_obs, B_obs, nu, gamma, tilde_tau, Z, chi,
 //               sigma_sq, i, 250, m_1, M_1, Phi_samp);
 //   }
-//   Phi_samp.save("/Users/nicholasmarco/Projects/BayesFPMM/inst/test-data/Phi.txt");
+//   Phi_samp.save("/Users/nicholasmarco/Projects/BayesFMMM/inst/test-data/Phi.txt");
 //   arma::vec phi_ph = arma::zeros(150);
 //   arma::cube phi_est = arma::zeros(3,8,2);
 //   for(int i = 0; i < 3; i++){
@@ -2663,12 +2663,12 @@
 //   //Make Z
 //   arma::mat Z(20, 3);
 //   arma::vec c(3, arma::fill::ones);
-//   arma::vec pi = BayesFPMM::rdirichlet(c);
+//   arma::vec pi = BayesFMMM::rdirichlet(c);
 //
 //   // setting alpha_3 = 10
 //   arma:: vec alpha = pi * 10;
 //   for(int i = 0; i < Z.n_rows; i++){
-//     Z.row(i) = BayesFPMM::rdirichlet(alpha).t();
+//     Z.row(i) = BayesFMMM::rdirichlet(alpha).t();
 //   }
 //
 //   arma::field<arma::vec> y_obs(20, 1);
@@ -2703,10 +2703,10 @@
 //   arma::vec tau(nu.n_rows, arma::fill::ones);
 //   tau = tau / 10;
 //   for(int i = 0; i < 500; i++){
-//     BayesFPMM::updateNu(y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
+//     BayesFMMM::updateNu(y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
 //                         P, b_1, B_1, Nu_samp);
 //   }
-//   Nu_samp.save("/Users/nicholasmarco/Projects/BayesFPMM/inst/test-data/nu.txt", arma::arma_ascii);
+//   Nu_samp.save("/Users/nicholasmarco/Projects/BayesFMMM/inst/test-data/nu.txt", arma::arma_ascii);
 //   arma::cube mod = arma::zeros(3,8,2);
 //   arma::vec nu_ph = arma::zeros(200);
 //   arma::mat nu_est = arma::zeros(3,8);
@@ -2756,7 +2756,7 @@
 //     alpha(i,0) = 1;
 //   }
 //   for(int i = 0; i < Z.n_rows; i++){
-//     Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+//     Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
 //   }
 //
 //   arma::mat y_obs = arma::zeros(100, 8);
@@ -2799,10 +2799,10 @@
 //   //   arma::vec tau(nu.n_rows, arma::fill::ones);
 //   //   tau = tau / 10;
 //   //   for(int i = 0; i < 500; i++){
-//   //     BayesFPMM::updateNu(y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
+//   //     BayesFMMM::updateNu(y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
 //   //                         P, b_1, B_1, Nu_samp);
 //   //   }
-//   //   Nu_samp.save("/Users/nicholasmarco/Projects/BayesFPMM/inst/test-data/nu.txt", arma::arma_ascii);
+//   //   Nu_samp.save("/Users/nicholasmarco/Projects/BayesFMMM/inst/test-data/nu.txt", arma::arma_ascii);
 //   //   arma::cube mod = arma::zeros(3,8,2);
 //   //   arma::vec nu_ph = arma::zeros(200);
 //   //   arma::mat nu_est = arma::zeros(3,8);
@@ -2863,7 +2863,7 @@
 //
 // arma::vec basis_degree = {2,2};
 //
-// arma::field<arma::mat> B = BayesFPMM::TensorBSpline(t_obs1, n_funct, basis_degree,
+// arma::field<arma::mat> B = BayesFMMM::TensorBSpline(t_obs1, n_funct, basis_degree,
 //                                                     boundary_knots, internal_knots);
 //
 // // Make nu matrix
@@ -2894,7 +2894,7 @@
 //   alpha(i,0) = 1;
 // }
 // for(int i = 0; i < Z.n_rows; i++){
-//   Z.row(i) = BayesFPMM::rdirichlet(alpha.row(i).t()).t();
+//   Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
 // }
 //
 // arma::field<arma::vec> y_obs(n_funct, 1);
@@ -2939,10 +2939,10 @@
 //   //   arma::vec tau(nu.n_rows, arma::fill::ones);
 //   //   tau = tau / 10;
 //   //   for(int i = 0; i < 500; i++){
-//   //     BayesFPMM::updateNu(y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
+//   //     BayesFMMM::updateNu(y_obs, B_obs, tau, Phi, Z, chi, sigma_sq, i, 500,
 //   //                         P, b_1, B_1, Nu_samp);
 //   //   }
-//   //   Nu_samp.save("/Users/nicholasmarco/Projects/BayesFPMM/inst/test-data/nu.txt", arma::arma_ascii);
+//   //   Nu_samp.save("/Users/nicholasmarco/Projects/BayesFMMM/inst/test-data/nu.txt", arma::arma_ascii);
 //   //   arma::cube mod = arma::zeros(3,8,2);
 //   //   arma::vec nu_ph = arma::zeros(200);
 //   //   arma::mat nu_est = arma::zeros(3,8);
@@ -2962,6 +2962,6 @@
 // //' @export
 // // [[Rcpp::export]]
 // arma::vec Stuff1(arma::vec alpha){
-//   return BayesFPMM::rdirichlet(alpha);
+//   return BayesFMMM::rdirichlet(alpha);
 // }
 

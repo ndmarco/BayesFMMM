@@ -30,7 +30,7 @@ The following must be true:
 
 \examples{
 ## Set Hyperparameters
-dir <- system.file("test-data","", package = "BayesFPMM")
+dir <- system.file("test-data","", package = "BayesFMMM")
 n_files <- 1
 
 ## Get CI for Z

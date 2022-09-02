@@ -51,7 +51,7 @@ HDFCovCI(
 \item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 }
 \value{
-CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
+CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function. Posterior estimates of the covariance function are also returned.
 }
 \description{
 This function calculates a credible interval for the covariance function
@@ -84,7 +84,7 @@ The following must be true:
 
 \examples{
 ## Set Hyperparameters
-dir <- system.file("test-data","", package = "BayesFPMM")
+dir <- system.file("test-data","", package = "BayesFMMM")
 n_files <- 1
 n_MCMC <- 200
 time1 <- seq(0, 990, 10)
