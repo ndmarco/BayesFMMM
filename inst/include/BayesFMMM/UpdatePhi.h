@@ -432,7 +432,7 @@ inline void updatePhiCovariateAdj(const arma::field<arma::vec>& y_obs,
 // @param B_obs Field of Matrices containing basis functions evaluated at observed time points
 // @param nu Matrix containing current nu parameters
 // @param eta Cube containing current eta parameters
-// @param gamma Cube containing current gamma parameters
+// @param gamma_phi Cube containing current gamma_phi parameters
 // @param tilde_tau_phi vector containing current tilde_tau_phi parameters
 // @param xi Field of Cubes containing
 // @param Z Matrix containing current Z parameters
@@ -448,7 +448,7 @@ inline void updatePhiTemperedCovariateAdj(const double& beta_i,
                                           const arma::field<arma::mat>& B_obs,
                                           const arma::mat& nu,
                                           const arma::cube& eta,
-                                          const arma::cube& gamma,
+                                          const arma::cube& gamma_phi,
                                           const arma::mat& tilde_tau_phi,
                                           const arma::field<arma::cube>& xi,
                                           const arma::mat& Z,
@@ -506,7 +506,7 @@ inline void updatePhiTemperedCovariateAdj(const double& beta_i,
 
       //Add on diagonal component
       for(int k = 0; k < M_1.n_rows; k++){
-        M_1(k,k) = M_1(k,k) + tilde_tau_phi(j,m) * gamma.slice(m)(j,k);
+        M_1(k,k) = M_1(k,k) + tilde_tau_phi(j,m) * gamma_phi.slice(m)(j,k);
       }
       arma::inv(M_1, M_1);
 
@@ -526,7 +526,7 @@ inline void updatePhiTemperedCovariateAdj(const double& beta_i,
 // @param y_obs Matrix containing observed vectors
 // @param nu Matrix containing current nu parameters
 // @param eta Cube containing current eta parameters
-// @param gamma Cube containing current gamma parameters
+// @param gamma_phi Cube containing current gamma_phi parameters
 // @param tilde_tau_phi vector containing current tilde_tau_phi parameters
 // @param xi Field of cubes containing all of the xi parameters
 // @param Z Matrix containing current Z parameters
@@ -540,7 +540,7 @@ inline void updatePhiTemperedCovariateAdj(const double& beta_i,
 inline void updatePhiMVCovariateAdj(const arma::mat& y_obs,
                                     const arma::mat& nu,
                                     const arma::cube& eta,
-                                    const arma::cube& gamma,
+                                    const arma::cube& gamma_phi,
                                     const arma::mat& tilde_tau_phi,
                                     const arma::field<arma::cube>& xi,
                                     const arma::mat& Z,
@@ -590,7 +590,7 @@ inline void updatePhiMVCovariateAdj(const arma::mat& y_obs,
 
       //Add on diagonal component
       for(int k = 0; k < M_1.n_rows; k++){
-        M_1(k,k) = M_1(k,k) + tilde_tau_phi(j,m) * gamma.slice(m)(j,k);
+        M_1(k,k) = M_1(k,k) + tilde_tau_phi(j,m) * gamma_phi.slice(m)(j,k);
       }
       arma::inv(M_1, M_1);
 
@@ -611,7 +611,7 @@ inline void updatePhiMVCovariateAdj(const arma::mat& y_obs,
 // @param y_obs Matrix containing observed vectors
 // @param nu Matrix containing current nu parameters
 // @param eta Cube containing current eta parameters
-// @param gamma Cube containing current gamma parameters
+// @param gamma_phi Cube containing current gamma_phi parameters
 // @param tilde_tau_phi vector containing current tilde_tau_phi parameters
 // @param xi Field of cubes containing all of the xi parameters
 // @param Z Matrix containing current Z parameters
@@ -626,7 +626,7 @@ inline void updatePhiTemperedMVCovariateAdj(const double& beta_i,
                                             const arma::mat& y_obs,
                                             const arma::mat& nu,
                                             const arma::cube& eta,
-                                            const arma::cube& gamma,
+                                            const arma::cube& gamma_phi,
                                             const arma::mat& tilde_tau_phi,
                                             const arma::field<arma::cube>& xi,
                                             const arma::mat& Z,
@@ -676,7 +676,7 @@ inline void updatePhiTemperedMVCovariateAdj(const double& beta_i,
 
       //Add on diagonal component
       for(int k = 0; k < M_1.n_rows; k++){
-        M_1(k,k) = M_1(k,k) + tilde_tau_phi(j,m) * gamma.slice(m)(j,k);
+        M_1(k,k) = M_1(k,k) + tilde_tau_phi(j,m) * gamma_phi.slice(m)(j,k);
       }
       arma::inv(M_1, M_1);
 
