@@ -483,6 +483,113 @@ inline void updateZTempered_MMMV(const double& beta_i,
     Z.slice(iter + 1) = Z.slice(iter);
   }
 }
+
+
+/////////////////////////////
+// Covariate Adjusted Code //
+/////////////////////////////
+
+// Gets log-pdf of z_i given zeta_{-z_i} for the covariate adjusted model
+//
+// @name lpdf_zCovariateAdj
+// @param y_obs Vector containing y at observed time points
+// @param B_obs Matrix containing basis functions evaluated at observed time points
+// @param Phi Cube containing Phi parameters
+// @param xi Field of cubes containing phi parameters
+// @param nu Matrix containing nu parameters
+// @param eta Cube containing eta parameters
+// @param pi vector containing the elements of pi
+// @param Z Vector containing the ith row of Z
+// @param sigma_sq double containing the sigma_sq variable
+// @return lpdf_z double containing the log-pdf
+inline double lpdf_zCovariateAdj(const arma::vec& y_obs,
+                                 const arma::mat& B_obs,
+                                 const arma::cube& Phi,
+                                 const arma::field<arma::cube>& xi,
+                                 const arma::mat& nu,
+                                 const arma::cube& eta,
+                                 const arma::rowvec& chi,
+                                 const arma::vec& pi,
+                                 const arma::rowvec& Z,
+                                 const arma::rowvec& X,
+                                 const double& alpha_3,
+                                 const int& iter,
+                                 const double& sigma_sq){
+  double lpdf = 0;
+  double mean = 0;
+
+  for(int l = 0; l < pi.n_elem; l++){
+    lpdf = lpdf + ((alpha_3* pi(l) - 1) * std::log(Z(l)));
+  }
+
+  for(int l = 0; l < B_obs.n_rows; l++){
+    mean = 0;
+    for(int k = 0; k < pi.n_elem; k++){
+      mean = mean + Z(k) * (arma::dot(nu.row(k) , B_obs.row(l).t()) +
+        arma::dot(eta.slice(k) * X.t(), B_obs.row(l)));
+      for(int n = 0; n < Phi.n_slices; n++){
+        mean = mean + Z(k) * chi(n) * (arma::dot(Phi.slice(n).row(k),
+                        B_obs.row(l).t()) +  arma::dot(xi(iter,k).slice(n) * X.t(),
+                        B_obs.row(l)));
+      }
+    }
+    lpdf = lpdf - (std::pow(y_obs(l) - mean, 2.0) / (2 * sigma_sq));
+  }
+
+  return lpdf;
+}
+
+// Gets log-pdf of z_i given zeta_{-z_i} using tempered trasitions
+//
+// @name lpdf_zTempered
+// @param beta_i Double containing current temperature
+// @param y_obs Vector containing y at observed time points
+// @param B_obs Matrix containing basis functions evaluated at observed time points
+// @param Phi Cube containing Phi parameters
+// @param nu Matrix containing nu parameters
+// @param pi vector containing the elements of pi
+// @param Z Vector containing the ith row of Z
+// @param sigma_sq double containing the sigma_sq variable
+// @return lpdf_z double contianing the log-pdf
+inline double lpdf_zCovariateAdjTempered(const double& beta_i,
+                                         const arma::vec& y_obs,
+                                         const arma::mat& B_obs,
+                                         const arma::cube& Phi,
+                                         const arma::field<arma::cube>& xi,
+                                         const arma::mat& nu,
+                                         const arma::cube& eta,
+                                         const arma::rowvec& chi,
+                                         const arma::vec& pi,
+                                         const arma::rowvec& Z,
+                                         const arma::rowvec& X,
+                                         const double& alpha_3,
+                                         const int& iter,
+                                         const double& sigma_sq){
+  double lpdf = 0;
+  double mean = 0;
+
+  for(int l = 0; l < pi.n_elem; l++){
+    lpdf = lpdf + ((alpha_3* pi(l) - 1) * std::log(Z(l)));
+  }
+
+  for(int l = 0; l < B_obs.n_rows; l++){
+    mean = 0;
+    for(int k = 0; k < pi.n_elem; k++){
+      mean = mean + Z(k) * (arma::dot(nu.row(k) , B_obs.row(l).t()) +
+        arma::dot(eta.slice(k) * X.t(), B_obs.row(l)));
+      for(int n = 0; n < Phi.n_slices; n++){
+        mean = mean + Z(k) * chi(n) * (arma::dot(Phi.slice(n).row(k),
+                                 B_obs.row(l).t()) +  arma::dot(xi(iter,k).slice(n) * X.t(),
+                                 B_obs.row(l)));
+      }
+    }
+    lpdf = lpdf - (beta_i * (std::pow(y_obs(l) - mean, 2.0) / (2 * sigma_sq)));
+  }
+
+  return lpdf;
+}
+
+
 }
 
 #endif
