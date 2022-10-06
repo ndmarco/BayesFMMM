@@ -589,6 +589,163 @@ inline double lpdf_zCovariateAdjTempered(const double& beta_i,
   return lpdf;
 }
 
+// Updates the Z Matrix for the covariate adjusted model
+//
+// @name UpdateZ_PM_CovariateAdj
+// @param y_obs Field of Vectors containing y at observed time points
+// @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+// @param Phi Cube containing Phi parameters
+// @param nu Matrix containing nu parameters
+// @param pi Vector containing the elements of pi
+// @param sigma_sq Double containing the sigma_sq variable
+// @param rho Double containing hyperparameter for proposal of new z_i state
+// @param iter Int containing current mcmc iteration
+// @param tot_mcmc_iters Int containing total number of mcmc iterations
+// @param alpha_3 double containing current value of alpha_3
+// @param a_Z_PM double containing hyperparameter for sampling Z
+// @param Z_ph Matrix that acts as a placeholder for Z
+// @param Z Cube that contains all past, current, and future MCMC draws
+inline void updateZ_PMCovariateAdj(const arma::field<arma::vec>& y_obs,
+                                   const arma::field<arma::mat>& B_obs,
+                                   const arma::cube& Phi,
+                                   const arma::field<arma::cube>& xi,
+                                   const arma::mat& nu,
+                                   const arma::cube& eta,
+                                   const arma::mat& chi,
+                                   const arma::vec& pi,
+                                   const double& sigma_sq,
+                                   const int& iter,
+                                   const int& tot_mcmc_iters,
+                                   const double& alpha_3,
+                                   const double& a_Z_PM,
+                                   const arma::mat& X,
+                                   arma::vec& Z_ph,
+                                   arma::cube& Z){
+  double z_lpdf = 0;
+  double z_new_lpdf = 0;
+  double lpdf_propose_new = 0;
+  double lpdf_propose_old = 0;
+  double acceptance_prob = 0;
+  double rand_unif_var = 0;
+
+  for(int i = 0; i < Z.n_rows; i++){
+    // Propose new state
+    Z_ph = rdirichlet(a_Z_PM * Z.slice(iter).row(i).t());
+
+    // Get old state log pdf
+    z_lpdf = lpdf_zCovariateAdj(y_obs(i,0), B_obs(i,0), Phi, xi, nu, eta,
+                                chi.row(i), pi, Z.slice(iter).row(i), X.row(i),
+                                alpha_3, iter, sigma_sq);
+
+    // Get new state log pdf
+    z_new_lpdf = lpdf_zCovariateAdj(y_obs(i,0), B_obs(i,0), Phi, xi, nu, eta,
+                                    chi.row(i), pi, Z_ph.t(), X.row(i), alpha_3,
+                                    iter, sigma_sq);
+
+    // Get proposal densities
+    lpdf_propose_new = Z_proposal_density(Z_ph, a_Z_PM * Z.slice(iter).row(i).t());
+    lpdf_propose_old = Z_proposal_density(Z.slice(iter).row(i).t(), a_Z_PM * Z_ph);
+
+    acceptance_prob = z_new_lpdf - z_lpdf + lpdf_propose_old - lpdf_propose_new;
+    rand_unif_var = R::runif(0,1);
+
+    for(int j = 0; j < Z.n_cols; j++){
+      if(Z(i,j,iter) <= 0){
+        acceptance_prob = 1;
+      }
+    }
+
+    if(log(rand_unif_var) < acceptance_prob){
+      // Accept new state and update parameters
+      Z.slice(iter).row(i) = Z_ph.t();
+    }
+  }
+  // Update next iteration
+  if(iter < (tot_mcmc_iters - 1)){
+    Z.slice(iter + 1) = Z.slice(iter);
+  }
+}
+
+// Updates the Z Matrix using Tempered Transitions for a covariate adjusted model
+//
+// @name UpdateZTempered_PMCovariateAdj
+// @param beta_i Double containing current temperature
+// @param y_obs Field of Vectors containing y at observed time points
+// @param B_obs Field of Matrices containing basis functions evaluated at observed time points
+// @param Phi Cube containing Phi parameters
+// @param nu Matrix containing nu parameters
+// @param pi Vector containing the elements of pi
+// @param sigma_sq Double containing the sigma_sq variable
+// @param rho Double containing hyperparameter for proposal of new z_i state
+// @param iter Int containing current mcmc iteration
+// @param tot_mcmc_iters Int containing total number of mcmc iterations
+// @param alpha_3 double containing current value of alpha_3
+// @param a_Z_PM double containing hyperparameter for sampling Z
+// @param Z_ph Matrix that acts as a placeholder for Z
+// @param Z Cube that contains all past, current, and future MCMC draws
+inline void updateZTempered_PMCovariateAdj(const double& beta_i,
+                                           const arma::field<arma::vec>& y_obs,
+                                           const arma::field<arma::mat>& B_obs,
+                                           const arma::cube& Phi,
+                                           const arma::field<arma::cube>& xi,
+                                           const arma::mat& nu,
+                                           const arma::cube& eta,
+                                           const arma::mat& chi,
+                                           const arma::vec& pi,
+                                           const double& sigma_sq,
+                                           const int& iter,
+                                           const int& tot_mcmc_iters,
+                                           const double& alpha_3,
+                                           const double& a_Z_PM,
+                                           const arma::mat& X,
+                                           arma::vec& Z_ph,
+                                           arma::cube& Z){
+  double z_lpdf = 0;
+  double z_new_lpdf = 0;
+  double lpdf_propose_new = 0;
+  double lpdf_propose_old = 0;
+  double acceptance_prob = 0;
+  double rand_unif_var = 0;
+
+  for(int i = 0; i < Z.n_rows; i++){
+    Z_ph = rdirichlet(a_Z_PM * Z.slice(iter).row(i).t());
+
+    // Get old state log pdf
+    z_lpdf = lpdf_zCovariateAdjTempered(beta_i, y_obs(i,0), B_obs(i,0),
+                            Phi, xi, nu, eta, chi.row(i), pi, Z.slice(iter).row(i),
+                            X.row(i), alpha_3, iter, sigma_sq);
+
+    // Get new state log pdf
+    z_new_lpdf = lpdf_zCovariateAdjTempered(beta_i, y_obs(i,0), B_obs(i,0),
+                                Phi, xi, nu, eta, chi.row(i), pi,
+                                Z_ph.t(), X.row(i), alpha_3, i, sigma_sq);
+
+    // Get proposal densities
+    lpdf_propose_new = Z_proposal_density(Z_ph, a_Z_PM * Z.slice(iter).row(i).t());
+    lpdf_propose_old = Z_proposal_density(Z.slice(iter).row(i).t(), a_Z_PM * Z_ph);
+
+    acceptance_prob = z_new_lpdf - z_lpdf + lpdf_propose_old - lpdf_propose_new;
+    rand_unif_var = R::runif(0,1);
+
+    for(int j = 0; j < Z.n_cols; j++){
+      if(Z(i,j,iter) <= 0){
+        acceptance_prob = 1;
+      }
+    }
+
+    if(log(rand_unif_var) < acceptance_prob){
+      // Accept new state and update parameters
+      Z.slice(iter).row(i) = Z_ph.t();
+    }
+  }
+
+  // Update next iteration
+  if(iter < (tot_mcmc_iters - 1)){
+    Z.slice(iter + 1) = Z.slice(iter);
+  }
+}
+
+
 
 }
 
