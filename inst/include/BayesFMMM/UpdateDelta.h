@@ -84,9 +84,9 @@ inline void updateDeltaXi(const arma::field<arma::cube>& xi,
   double tilde_tau = 0;
   for(int d = 0; d < delta.n_slices; d++){
     for(int k = 0; k < delta.n_rows; k++){
-      for(int i = 0; i < delta.n_slices; i++){
+      for(int i = 0; i < delta.n_cols; i++){
         if(i == 0){
-          param1 = a_xi(k,0,d) + (xi(iter,0).n_rows  * delta.n_rows) / 2;
+          param1 = a_xi(k,0,d) + (xi(iter,0).n_rows  * delta.n_cols) / 2;
           param2 = 1;
           for(int j = 0; j < xi(iter,0).n_rows; j++){
             param2 = param2 + (0.5 * gamma_xi(iter,k)(j, d, 0) * std::pow(xi(iter, k)(j, d, 0), 2));
@@ -101,7 +101,7 @@ inline void updateDeltaXi(const arma::field<arma::cube>& xi,
           }
           delta(iter, 0)(k, i, d) = R::rgamma(param1, 1/param2);
         }else{
-          param1 = a_xi(k,1,d) + (xi(iter,0).n_rows  * delta.n_rows) / 2;
+          param1 = a_xi(k,1,d) + (xi(iter,0).n_rows  * (delta.n_cols- i)) / 2;
           param2 = 1;
           for(int j = 0; j < xi(iter,0).n_rows; j++){
             for(int m = i; m < xi(iter, 0).n_slices; m++){
