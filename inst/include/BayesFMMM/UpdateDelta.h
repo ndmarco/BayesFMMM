@@ -69,13 +69,13 @@ inline void updateDelta(const arma::cube& phi,
 // @name updateDelta
 // @param phi Cube containing the current values of phi
 // @param gamma Cube containing current values of gamma
-// @param a Cube containing current values of a
+// @param a_xi Cube containing current values of a_xi
 // @param iter Int containing MCMC current iteration number
 // @parma tot_mcmc_iters Int containing total number of MCMC iterations
 // @param delta Cube containing values of delta
 inline void updateDeltaXi(const arma::field<arma::cube>& xi,
                           const arma::field<arma::cube>& gamma_xi,
-                          const arma::mat& a,
+                          const arma::cube& a_xi,
                           const int& iter,
                           const int& tot_mcmc_iters,
                           arma::field<arma::cube>& delta){
@@ -86,7 +86,7 @@ inline void updateDeltaXi(const arma::field<arma::cube>& xi,
     for(int k = 0; k < delta.n_rows; k++){
       for(int i = 0; i < delta.n_slices; i++){
         if(i == 0){
-          param1 = a(k,0) + (xi(iter,0).n_rows  * delta.n_rows) / 2;
+          param1 = a_xi(k,0,d) + (xi(iter,0).n_rows  * delta.n_rows) / 2;
           param2 = 1;
           for(int j = 0; j < xi(iter,0).n_rows; j++){
             param2 = param2 + (0.5 * gamma_xi(iter,k)(j, d, 0) * std::pow(xi(iter, k)(j, d, 0), 2));
@@ -101,7 +101,7 @@ inline void updateDeltaXi(const arma::field<arma::cube>& xi,
           }
           delta(iter, 0)(k, i, d) = R::rgamma(param1, 1/param2);
         }else{
-          param1 = a(k,1) + (xi(iter,0).n_rows  * delta.n_rows) / 2;
+          param1 = a_xi(k,1,d) + (xi(iter,0).n_rows  * delta.n_rows) / 2;
           param2 = 1;
           for(int j = 0; j < xi(iter,0).n_rows; j++){
             for(int m = i; m < xi(iter, 0).n_slices; m++){
