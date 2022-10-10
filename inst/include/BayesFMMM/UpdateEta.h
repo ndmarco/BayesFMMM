@@ -281,7 +281,7 @@ inline void updateEtaMV(const arma::mat& y_obs,
 // @param X Matrix containing covariates
 // @param b_1 Vector acting as a placeholder for mean vector
 // @param B_1 Matrix acting as placeholder for covariance matrix
-// @param nu Cube containing MCMC samples for nu
+// @param eta Cube containing MCMC samples for eta
 inline void updateEtaTemperedMV(const double& beta_i,
                                 const arma::mat& y_obs,
                                 const arma::mat& tau_eta,
