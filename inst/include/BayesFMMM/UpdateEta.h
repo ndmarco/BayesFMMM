@@ -265,7 +265,7 @@ inline void updateEtaMV(const arma::mat& y_obs,
 
 // Updates the eta parameters for tempered multivariate model
 //
-// @name updateEtaMVTempered
+// @name updateEtaTemperedMV
 // @param beta_i temperature at current step
 // @param y_obs Matrix containing observed vectors
 // @param tau_eta matrix containing current tau_eta parameters
@@ -282,7 +282,7 @@ inline void updateEtaMV(const arma::mat& y_obs,
 // @param b_1 Vector acting as a placeholder for mean vector
 // @param B_1 Matrix acting as placeholder for covariance matrix
 // @param nu Cube containing MCMC samples for nu
-inline void updateEtaMVTempered(const double& beta_i,
+inline void updateEtaTemperedMV(const double& beta_i,
                                 const arma::mat& y_obs,
                                 const arma::mat& tau_eta,
                                 const arma::cube& Phi,
