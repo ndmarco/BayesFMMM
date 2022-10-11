@@ -12,6 +12,7 @@
 #include "BayesFMMM/UpdateChi.h"
 #include "BayesFMMM/UpdateClassMembership.h"
 #include "BayesFMMM/UpdateDelta.h"
+#include "BayesFMMM/UpdateEta.h"
 #include "BayesFMMM/UpdateGamma.h"
 #include "BayesFMMM/UpdateNu.h"
 #include "BayesFMMM/UpdateMixedMembership.h"
@@ -19,5 +20,6 @@
 #include "BayesFMMM/UpdatePi.h"
 #include "BayesFMMM/UpdateSigma.h"
 #include "BayesFMMM/UpdateTau.h"
+#include "BayesFMMM/UpdateXi.h"
 
 #endif

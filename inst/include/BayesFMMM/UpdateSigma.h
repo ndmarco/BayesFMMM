@@ -242,10 +242,10 @@ inline void updateSigmaCovariateAdj(const arma::field<arma::vec>& y_obs,
       for(int k = 0; k < Z.n_cols; k++){
         if(Z(i,k) != 0){
           b = b - Z(i,k) * (arma::dot(nu.row(k) , B_obs(i,0).row(l)) +
-            arma::dot(eta.slice(k) * X.t(), B_obs(i,0).row(l)));
+            arma::dot(eta.slice(k) * X.row(i).t(), B_obs(i,0).row(l)));
           for(int n = 0; n < Phi.n_slices; n++){
             b = b - Z(i,k) * chi(i,n) * (arma::dot(Phi.slice(n).row(k),
-                                 B_obs(i,0).row(l).t()) +  arma::dot(xi(iter,k).slice(n) * X.t(),
+                                 B_obs(i,0).row(l).t()) +  arma::dot(xi(iter,k).slice(n) * X.row(i).t(),
                                  B_obs(i,0).row(l)));
           }
         }
@@ -306,10 +306,10 @@ inline void updateSigmaTemperedCovariateAdj(const double& beta_i,
       for(int k = 0; k < Z.n_cols; k++){
         if(Z(i,k) != 0){
           b = b - Z(i,k) * (arma::dot(nu.row(k) , B_obs(i,0).row(l)) +
-            arma::dot(eta.slice(k) * X.t(), B_obs(i,0).row(l)));
+            arma::dot(eta.slice(k) * X.row(i).t(), B_obs(i,0).row(l)));
           for(int n = 0; n < Phi.n_slices; n++){
             b = b - Z(i,k) * chi(i,n) * (arma::dot(Phi.slice(n).row(k),
-                                 B_obs(i,0).row(l).t()) +  arma::dot(xi(iter,k).slice(n) * X.t(),
+                                 B_obs(i,0).row(l).t()) +  arma::dot(xi(iter,k).slice(n) * X.row(i).t(),
                                  B_obs(i,0).row(l)));
           }
         }
@@ -361,7 +361,7 @@ inline void updateSigmaMVCovariateAdj(const arma::mat& y_obs,
   for(int i = 0; i < Z.n_rows; i++){
     mean = arma::zeros(nu.n_cols);
     for(int k = 0; k < Z.n_cols; k++){
-      mean = mean + Z(i,k) * (nu.row(k).t() + eta.slice(k) * X.t());
+      mean = mean + Z(i,k) * (nu.row(k).t() + eta.slice(k) * X.row(i).t());
       for(int m = 0; m < Phi.n_slices; m++){
         mean = mean + Z(i,k) * chi(i,m) * (Phi.slice(m).row(k).t() +
           xi(iter,k).slice(m) * X.row(i).t());
@@ -414,7 +414,7 @@ inline void updateSigmaTemperedMVCovariateAdj(const double& beta_i,
   for(int i = 0; i < Z.n_rows; i++){
     mean = arma::zeros(nu.n_cols);
     for(int k = 0; k < Z.n_cols; k++){
-      mean = mean + Z(i,k) * (nu.row(k).t() + eta.slice(k) * X.t());
+      mean = mean + Z(i,k) * (nu.row(k).t() + eta.slice(k) * X.row(i).t());
       for(int m = 0; m < Phi.n_slices; m++){
         mean = mean + Z(i,k) * chi(i,m) * (Phi.slice(m).row(k).t() +
           xi(iter,k).slice(m) * X.row(i).t());

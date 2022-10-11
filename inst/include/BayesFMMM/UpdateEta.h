@@ -216,7 +216,6 @@ inline void updateEtaMV(const arma::mat& y_obs,
                         arma::mat& B_1,
                         arma::field<arma::cube>& eta){
 
-  double ph = 0;
   // initialize P matrix
   for(int d = 0; d < eta.n_cols; d++){
     for(int j = 0; j < eta.n_slices; j++){
@@ -299,7 +298,6 @@ inline void updateEtaTemperedMV(const double& beta_i,
                                 arma::mat& B_1,
                                 arma::field<arma::cube>& eta){
 
-  double ph = 0;
   // initialize P matrix
   for(int d = 0; d < eta.n_cols; d++){
     for(int j = 0; j < eta.n_slices; j++){
