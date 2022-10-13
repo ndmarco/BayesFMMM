@@ -66,34 +66,6 @@ inline void updateXiCovariateAdj(const arma::field<arma::vec>& y_obs,
               }
               ph = ph + (Z(i,j) * chi(i,m) * X(i,d) * arma::dot(xi(iter,j).slice(m).col(d),
                            B_obs(i,0).row(l)));
-              //ph = 0;
-              // ph = y_obs(i,0)(l) - Z(i,j) * (arma::dot(nu.row(j),
-              //                 B_obs(i,0).row(l)) + arma::dot(eta.slice(j) * X.row(i).t(),
-              //                 B_obs(i,0).row(l)));
-              // M_1 = M_1 + Z(i,j) *  Z(i,j) * X(i,d) * X(i,d) * (chi(i,m) * chi(i,m) *
-              //   B_obs(i,0).row(l).t() * B_obs(i,0).row(l));
-              // for(int k = 0; k < nu.n_rows; k++){
-              //   for(int n = 0; n < xi(iter,0).n_slices; n++){
-              //     if(k == j){
-              //       ph = ph - (Z(i,j) * chi(i,n) *
-              //         arma::dot(Phi.slice(n).row(k),B_obs(i,0).row(l)));
-              //       for(int r = 0; r < X.n_cols; r++){
-              //         if(r != d){
-              //           ph = ph - (Z(i,j) * chi(i,n) * X(i,r) *
-              //             arma::dot(xi(iter,k).slice(n).col(r), B_obs(i,0).row(l)));
-              //         }
-              //       }
-              //     }else{
-              //       ph = ph - (Z(i,k) * chi(i,n) *
-              //         arma::dot((Phi.slice(n).row(k) +
-              //         (xi(iter,k).slice(n) * X.row(i).t()).t()),  B_obs(i,0).row(l)));
-              //     }
-              //   }
-              //   if(k != j){
-              //     ph = ph - Z(i,k) * (arma::dot(nu.row(k), B_obs(i,0).row(l)) +
-              //       arma::dot(eta.slice(k) * X.row(i).t(), B_obs(i,0).row(l)));
-              //   }
-              // }
               m_1 = m_1 + Z(i,j) * chi(i,m) * X(i,d) * B_obs(i,0).row(l).t() * ph;
             }
           }
@@ -168,40 +140,21 @@ inline void updateXiTemperedCovariateAdj(const double& beta_i,
         for(int i = 0; i < Z.n_rows; i++){
           if(Z(i,j) != 0){
             for(int l = 0; l < y_obs(i,0).n_elem; l++){
-              ph = 0;
-              ph = y_obs(i,0)(l) - Z(i,j) * (arma::dot(nu.row(j),
-                              B_obs(i,0).row(l)) + arma::dot(eta.slice(j) * X.row(i).t(),
-                              B_obs(i,0).row(l)));
+              ph = y_obs(i,0)(l);
               M_1 = M_1 + Z(i,j) *  Z(i,j) * X(i,d) * X(i,d) * (chi(i,m) * chi(i,m) *
                 B_obs(i,0).row(l).t() * B_obs(i,0).row(l));
-              for(int k = 0; k < nu.n_rows; k++){
+              for(int k = 0; k < Z.n_cols; k++){
+                ph = ph - (Z(i,k) * (arma::dot(nu.row(k),B_obs(i,0).row(l)) +
+                  arma::dot(eta.slice(k) * X.row(i).t(), B_obs(i,0).row(l))));
                 for(int n = 0; n < xi(iter,0).n_slices; n++){
-                  if(k == j){
-                    if(n != m){
-                      for(int r = 0; r < X.n_cols; r++){
-                        ph = ph - (Z(i,j) * chi(i,n) * X(i,r) *
-                          arma::dot(xi(iter,k).slice(n).col(r), B_obs(i,0).row(l)));
-                      }
-                    }
-                    ph = ph - (Z(i,j) * chi(i,n) *
-                      arma::dot(Phi.slice(n).row(k),B_obs(i,0).row(l)));
-                    for(int r = 0; r < X.n_cols; r++){
-                      if(r != d){
-                        ph = ph - (Z(i,j) * chi(i,n) * X(i,r) *
-                          arma::dot(xi(iter,k).slice(n).col(r), B_obs(i,0).row(l)));
-                      }
-                    }
-                  }else{
-                    ph = ph - (Z(i,k) * chi(i,n) *
-                      arma::dot((Phi.slice(n).row(k) +
-                      (xi(iter,k).slice(n) * X.row(i).t()).t()),  B_obs(i,0).row(l)));
-                  }
-                }
-                if(k != j){
-                  ph = ph - Z(i,k) * (arma::dot(nu.row(k), B_obs(i,0).row(l)) +
-                    arma::dot(eta.slice(k) * X.row(i).t(), B_obs(i,0).row(l)));
+                  ph = ph - (Z(i,k) * chi(i,n) *(arma::dot(Phi.slice(n).row(k),
+                                          B_obs(i,0).row(l)) +
+                                            arma::dot(xi(iter,k).slice(n) * X.row(i).t(),
+                                                      B_obs(i,0).row(l))));
                 }
               }
+              ph = ph + (Z(i,j) * chi(i,m) * X(i,d) * arma::dot(xi(iter,j).slice(m).col(d),
+                           B_obs(i,0).row(l)));
               m_1 = m_1 + Z(i,j) * chi(i,m) * X(i,d) * B_obs(i,0).row(l).t() * ph;
             }
           }
@@ -270,36 +223,18 @@ inline void updateXiMVCovariateAdj(const arma::mat& y_obs,
         M_1.zeros();
         for(int i = 0; i < Z.n_rows; i++){
           if(Z(i,j) != 0){
-            arma::vec ph = arma::zeros(y_obs.n_cols);
-            ph = y_obs.row(i).t() - Z(i,j) * (nu.row(j).t() +
-              (eta.slice(j) * X.row(i).t()));
+            arma::vec ph = y_obs.row(i).t();
             M_1 = M_1 + Z(i,j) *  Z(i,j) * X(i,d) * X(i,d) * (chi(i,m) * chi(i,m) *
               arma::eye(y_obs.n_cols, y_obs.n_cols));
-            for(int k = 0; k < nu.n_rows; k++){
+            for(int k = 0; k < Z.n_cols; k++){
+              ph = ph - (Z(i,k) * (nu.row(k).t() + (eta.slice(k) * X.row(i).t())));
               for(int n = 0; n < xi(iter,0).n_slices; n++){
-                if(k == j){
-                  if(n != m){
-                    for(int r = 0; r < X.n_cols; r++){
-                      ph = ph - (Z(i,j) * chi(i,n) * X(i,r) * xi(iter,k).slice(n).col(r));
-                    }
-                  }
-                  ph = ph - (Z(i,j) * chi(i,n) * Phi.slice(n).row(k).t());
-                  for(int r = 0; r < X.n_cols; r++){
-                    if(r != d){
-                      ph = ph - (Z(i,j) * chi(i,n) * X(i,r) * xi(iter,k).slice(n).col(r));
-                    }
-                  }
-
-                }else{
-                  ph = ph - (Z(i,k) * chi(i,n) * (Phi.slice(n).row(k).t() +
-                    (xi(iter,k).slice(n) * X.row(i).t())));
-                }
-              }
-              if(k != j){
-                ph = ph - Z(i,k) * (nu.row(k).t() +  (eta.slice(k) * X.row(i).t()));
+                ph = ph - (Z(i,k) * chi(i,n) *(Phi.slice(n).row(k).t() +
+                  (xi(iter,k).slice(n) * X.row(i).t())));
               }
             }
-            m_1 = m_1 + Z(i,j) * chi(i,m) * ph;
+            ph = ph + (Z(i,j) * chi(i,m) * X(i,d) * xi(iter,j).slice(m).col(d));
+            m_1 = m_1 + Z(i,j) * chi(i,m) * X(i,d) * ph;
           }
         }
         m_1 = m_1 * (1 / sigma_sq);
@@ -368,36 +303,18 @@ inline void updateXiTemperedMVCovariateAdj(const double& beta_i,
         M_1.zeros();
         for(int i = 0; i < Z.n_rows; i++){
           if(Z(i,j) != 0){
-            arma::vec ph = arma::zeros(y_obs.n_cols);
-            ph = y_obs.row(i).t() - Z(i,j) * (nu.row(j).t() +
-              (eta.slice(j) * X.row(i).t()));
+            arma::vec ph = y_obs.row(i).t();
             M_1 = M_1 + Z(i,j) *  Z(i,j) * X(i,d) * X(i,d) * (chi(i,m) * chi(i,m) *
               arma::eye(y_obs.n_cols, y_obs.n_cols));
-            for(int k = 0; k < nu.n_rows; k++){
+            for(int k = 0; k < Z.n_cols; k++){
+              ph = ph - (Z(i,k) * (nu.row(k).t() + (eta.slice(k) * X.row(i).t())));
               for(int n = 0; n < xi(iter,0).n_slices; n++){
-                if(k == j){
-                  if(n != m){
-                    for(int r = 0; r < X.n_cols; r++){
-                      ph = ph - (Z(i,j) * chi(i,n) * X(i,r) * xi(iter,k).slice(n).col(r));
-                    }
-                  }
-                  ph = ph - (Z(i,j) * chi(i,n) * Phi.slice(n).row(k).t());
-                  for(int r = 0; r < X.n_cols; r++){
-                    if(r != d){
-                      ph = ph - (Z(i,j) * chi(i,n) * X(i,r) * xi(iter,k).slice(n).col(r));
-                    }
-                  }
-
-                }else{
-                  ph = ph - (Z(i,k) * chi(i,n) * (Phi.slice(n).row(k).t() +
-                    (xi(iter,k).slice(n) * X.row(i).t())));
-                }
-              }
-              if(k != j){
-                ph = ph - Z(i,k) * (nu.row(k).t() +  (eta.slice(k) * X.row(i).t()));
+                ph = ph - (Z(i,k) * chi(i,n) *(Phi.slice(n).row(k).t() +
+                  (xi(iter,k).slice(n) * X.row(i).t())));
               }
             }
-            m_1 = m_1 + Z(i,j) * chi(i,m) * ph;
+            ph = ph + (Z(i,j) * chi(i,m) * X(i,d) * xi(iter,j).slice(m).col(d));
+            m_1 = m_1 + Z(i,j) * chi(i,m) * X(i,d) * ph;
           }
         }
         m_1 = m_1 * (beta_i / sigma_sq);
