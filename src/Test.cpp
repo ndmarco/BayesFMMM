@@ -3,6 +3,94 @@
 #include <splines2Armadillo.h>
 #include <BayesFMMM.h>
 
+// // [[Rcpp::export]]
+// arma::field<arma::mat> TestUpdateChiMVCovariateAdj1(){
+//   // Make nu matrix
+//   arma::mat nu(3,8);
+//   nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+//   {1, 3, 0, 2, 0, 0, 3, 0},
+//   {5, 2, 5, 0, 3, 4, 1, 0}};
+//
+//
+//   // Make Phi matrix
+//   arma::cube Phi(3,8,2);
+//   for(int i=0; i < 2; i++)
+//   {
+//     Phi.slice(i) = (2-i) * arma::randn<arma::mat>(3,8);
+//   }
+//
+//   // Make eta variables
+//   arma::cube eta(8, 2, 3);
+//   for(int i = 0; i < 3; i++){
+//     eta.slice(i) = arma::randn<arma::mat>(8,2);
+//   }
+//
+//   // Make xi variables
+//   arma::field<arma::cube> xi(2000,3);
+//   for(int i = 0; i < 3; i++){
+//     xi(0,i) = arma::zeros(8,2,2);
+//     for(int j =0; j < 2; j++){
+//       xi(0,i).slice(j) = (2-i)  * arma::randn<arma::mat>(8,2);
+//     }
+//   }
+//   for(int i = 1; i < 2000; i++){
+//     for(int j = 0; j < 3; j++){
+//       xi(i,j) = xi(0,j);
+//     }
+//   }
+//
+//   double sigma_sq = 0.001;
+//
+//   // Make chi matrix
+//   arma::mat chi(40, 2, arma::fill::randn);
+//
+//
+//   // Make Z matrix
+//   arma::mat Z(40, 3);
+//   arma::mat alpha(40,3, arma::fill::ones);
+//   alpha = alpha * 10;
+//   for(int i = 0; i < Z.n_rows; i++){
+//     Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
+//   }
+//
+//   arma::mat X = arma::randn<arma::mat>(40,2);
+//   arma::mat y_obs = arma::zeros(40, 8);
+//   arma::vec mean = arma::zeros(8);
+//   arma::cube chi_samp(40, 2, 2000, arma::fill::zeros);
+//
+//   for(int i = 0; i < 2000; i++){
+//     for(int j = 0; j < 40; j++){
+//       mean = arma::zeros(8);
+//       for(int l = 0; l < 3; l++){
+//         mean = mean + Z(j,l) * (nu.row(l).t() + (eta.slice(l) * X.row(j).t()));
+//         for(int m = 0; m < Phi.n_slices; m++){
+//           mean = mean + Z(j,l) * chi(j,m) * (Phi.slice(m).row(l).t() + (xi(0,l).slice(m)* X.row(j).t()));
+//         }
+//       }
+//       y_obs.row(j) = arma::mvnrnd(mean, sigma_sq *
+//         arma::eye(mean.n_elem, mean.n_elem)).t();
+//     }
+//     BayesFMMM::updateChiMVCovariateAdj(y_obs, Phi, xi, nu, eta, Z, sigma_sq, i,
+//                                        2000, X, chi_samp);
+//   }
+//
+//   arma::vec chi_ph = arma::zeros(500);
+//   arma::mat chi_est = arma::zeros(40, 2);
+//   for(int i = 0; i < 2; i++){
+//     for(int j = 0; j < 40; j++){
+//       for(int l = 1500; l < 2000; l++){
+//         chi_ph(l - 1500) = chi_samp(j, i, l);
+//       }
+//       chi_est(j,i) = arma::median(chi_ph);
+//     }
+//   }
+//
+//   arma::field<arma::mat> mod(3,1);
+//   mod(0,0) = chi_est;
+//   mod(1,0) = chi;
+//   mod(2,0) = chi_samp.col(0);
+//   return mod;
+// }
 
 // // Tests updating Delta
 // //

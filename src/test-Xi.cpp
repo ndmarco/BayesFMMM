@@ -678,7 +678,58 @@ arma::field<arma::cube> TestUpdateDeltaXi(){
   return mod;
 }
 
+// Tests updating A
+//
+arma::field<arma::cube> TestUpdateAXi(){
+  double a_1 = 2;
+  double a_2 = 3;
+  arma::cube delta = arma::zeros(3, 5, 2);
+  double alpha1 = 2;
+  double beta1 = 1;
+  double alpha2 = 3;
+  double beta2 = 1;
+  arma::field<arma::cube> A(1000,1);
+  for(int i = 0; i < 1000; i++){
+    A(i,0) = arma::ones(3,2,2);
+  }
 
+  for(int i = 0; i < 1000; i++){
+    for(int l = 0; l < 3; l++){
+      for(int j = 0; j < 5; j++){
+        for(int d = 0; d < 2; d++){
+          if(j == 0){
+            delta(l,j,d) = 2;
+          }else{
+            delta(l,j,d) = 3;
+          }
+        }
+      }
+    }
+    BayesFMMM::updateAXi(alpha1, beta1, alpha2, beta2, delta, 1, 1, i, 1000, A);
+  }
+  arma::cube A_est = arma::zeros(3, 2, 2);
+  arma::vec ph = arma::zeros(1000);
+  for(int j = 0; j < 3; j++){
+    for(int i = 0; i < 2; i++){
+      for(int d = 0; d < 2; d++){
+        for(int m =0; m < 1000; m++){
+          ph(m) = A(m,0)(j, i, d);
+        }
+        A_est(j,i,d) = arma::median(ph);
+      }
+
+    }
+  }
+  arma::cube A_true = arma::zeros(3,2,2);
+  for(int i = 0; i < 2; i++){
+    A_true.slice(i) = {{2,3}, {2,3}, {2,3}};
+  }
+  arma::field<arma::cube> mod(2,1);
+  mod(0,0) = A_est;
+  mod(1,0) = A_true;
+
+  return mod;
+}
 
 context("Unit tests for xi parameters") {
   test_that("Sampler for xi parameters"){
@@ -813,6 +864,26 @@ context("Unit tests for xi parameters") {
       for(int j = 0; j < est.n_cols; j++){
         for(int k = 0; k < est.n_slices; k++){
           if(std::abs(est(i,j,k) - truth(i,j,k)) > 2){
+            similar = false;
+          }
+        }
+      }
+    }
+    expect_true(similar == true);
+  }
+
+  test_that("Sampler for A_xi parameters"){
+    Rcpp::Environment base_env("package:base");
+    Rcpp::Function set_seed_r = base_env["set.seed"];
+    set_seed_r(1);
+    arma::field<arma::cube> x = TestUpdateAXi();
+    arma::cube est = x(0,0);
+    arma::cube truth = x(1,0);
+    bool similar = true;
+    for(int i = 0; i < est.n_rows; i++){
+      for(int j = 0; j < est.n_cols; j++){
+        for(int k = 0; k < est.n_slices; k++){
+          if(std::abs(est(i,j,k) - truth(i,j,k)) > 0.5){
             similar = false;
           }
         }

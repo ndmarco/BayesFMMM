@@ -271,7 +271,7 @@ inline void updateChiCovariateAdj(const arma::field<arma::vec>& y_obs,
             w = w - Z(i,k1) * ph * arma::dot(nu.row(k1).t() + (eta.slice(k1) * X.row(i).t()), B_obs(i,0).row(l));
             for(int n = 0; n < chi.n_cols; n++){
               if(n != m){
-                w = w - Z(i,k1) * ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1) +
+                w = w - Z(i,k1) * ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1).t() +
                   (xi(iter,k1).slice(n) * X.row(i).t()), B_obs(i,0).row(l));
               }
             }
@@ -338,7 +338,7 @@ inline void updateChiTemperedCovariateAdj(const double& beta_i,
             w = w - Z(i,k1) * ph * arma::dot(nu.row(k1).t() + (eta.slice(k1) * X.row(i).t()), B_obs(i,0).row(l));
             for(int n = 0; n < chi.n_cols; n++){
               if(n != m){
-                w = w - Z(i,k1) * ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1) +
+                w = w - Z(i,k1) * ph * chi(i, n, iter) * arma::dot(Phi.slice(n).row(k1).t() +
                   (xi(iter,k1).slice(n) * X.row(i).t()), B_obs(i,0).row(l));
               }
             }
@@ -395,7 +395,7 @@ inline void updateChiMVCovariateAdj(const arma::mat& y_obs,
         for(int n = 0; n < Phi.n_slices; n++){
           if(n != m){
             ph2 = ph2 - Z(i,k) * chi(i,n, iter) * (Phi.slice(n).row(k).t() +
-              xi(iter,k).slice(m) * X.row(i).t());
+              xi(iter,k).slice(n) * X.row(i).t());
           }
         }
       }
@@ -451,7 +451,7 @@ inline void updateChiTemperedMVCovariateAdj(const double& beta_i,
         for(int n = 0; n < Phi.n_slices; n++){
           if(n != m){
             ph2 = ph2 - Z(i,k) * chi(i,n, iter) * (Phi.slice(n).row(k).t() +
-              xi(iter,k).slice(m) * X.row(i).t());
+              xi(iter,k).slice(n) * X.row(i).t());
           }
         }
       }

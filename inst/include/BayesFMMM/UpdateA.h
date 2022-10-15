@@ -156,7 +156,7 @@ inline void updateAXi(const double& alpha_1l,
       for(int d = 0; d < a(iter,0).n_slices; d++){
         if(i == 0){
           a_lpdf = lpdf_a1(alpha_1l, beta_1l, a(iter,0)(j, i, d), delta(j,i,d));
-          new_a = r_truncnorm(a(iter,d)(j, i, d), var_epsilon1 / beta_1l, 0,
+          new_a = r_truncnorm(a(iter,0)(j, i, d), var_epsilon1 / beta_1l, 0,
                               std::numeric_limits<double>::infinity());
 
           a_new_lpdf = lpdf_a1(alpha_1l, beta_1l, new_a, delta(j,i,d));
@@ -174,6 +174,7 @@ inline void updateAXi(const double& alpha_1l,
             a(iter,0)(j, i, d) = new_a;
           }
         }else{
+
           a_lpdf = lpdf_a2(alpha_2l, beta_2l, a(iter,0)(j, i, d), delta.slice(d).row(j).t());
           new_a = r_truncnorm(a(iter,0)(j, i, d), var_epsilon2 / beta_2l, 0,
                               std::numeric_limits<double>::infinity());

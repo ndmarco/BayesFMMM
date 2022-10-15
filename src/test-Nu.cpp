@@ -415,6 +415,440 @@ arma::mat TestUpdateTauMV(){
   return mod;
 }
 
+// Tests updating Nu for the covariate adjusted model
+//
+// @name TestUpdateNuXi
+arma::cube TestUpdateNuXi(){
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_obs, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat{bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(40,1);
+
+
+  for(int i = 0; i < 40; i++)
+  {
+    B_obs(i,0) = bspline_mat;
+  }
+
+  // Make nu matrix
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,2);
+  for(int i=0; i < 2; i++)
+  {
+    Phi.slice(i) = (2-i) * arma::randn<arma::mat>(3,8);
+  }
+
+  // Make eta variables
+  arma::cube eta(8, 2, 3);
+  for(int i = 0; i < 3; i++){
+    eta.slice(i) = arma::randn<arma::mat>(8,2);
+  }
+
+  // Make xi variables
+  arma::field<arma::cube> xi(500,3);
+  for(int i = 0; i < 3; i++){
+    xi(0,i) = arma::zeros(8,2,2);
+    for(int j =0; j < 2; j++){
+      xi(0,i).slice(j) = (2-i) * 0.1 * arma::randn<arma::mat>(8,2);
+    }
+  }
+  for(int i = 1; i < 500; i++){
+    for(int j = 0; j < 3; j++){
+      xi(i,j) = xi(0,j);
+    }
+  }
+
+  double sigma_sq = 0.001;
+
+  // Make chi matrix
+  arma::mat chi(40, 2, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z(40, 3);
+  arma::mat alpha(40,3, arma::fill::ones);
+  alpha = alpha * 10;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
+  }
+
+  arma::mat X = arma::randn<arma::mat>(40,2);
+  arma::field<arma::vec> y_obs(40, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 40; j++){
+    mean = arma::zeros(8);
+    for(int l = 0; l < 3; l++){
+      mean = mean + Z(j,l) * (nu.row(l).t() + (eta.slice(l) * X.row(j).t()));
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * (Phi.slice(m).row(l).t() + (xi(0,l).slice(m)* X.row(j).t()));
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+  }
+
+  arma::cube Nu_samp = arma::randn(nu.n_rows, nu.n_cols, 500);
+  arma::vec b_1(nu.n_cols, arma::fill::zeros);
+  arma::mat B_1(nu.n_cols, nu.n_cols, arma::fill::zeros);
+  arma::mat P(nu.n_cols, nu.n_cols, arma::fill::zeros);
+  P.zeros();
+  for(int j = 0; j < P.n_rows; j++){
+    P(0,0) = 1;
+    if(j > 0){
+      P(j,j) = 2;
+      P(j-1,j) = -1;
+      P(j,j-1) = -1;
+    }
+    P(P.n_rows - 1, P.n_rows - 1) = 1;
+  }
+  arma::vec tau(nu.n_rows, arma::fill::ones);
+  tau = tau / 10;
+  for(int i = 0; i < 500; i++){
+    BayesFMMM::updateNuCovariateAdj(y_obs, B_obs, tau, Phi, xi, eta, Z, chi,
+                                    sigma_sq, i, 500, P, X, b_1, B_1, Nu_samp);
+  }
+
+  arma::cube mod = arma::zeros(3,8,2);
+  arma::vec nu_ph = arma::zeros(200);
+  arma::mat nu_est = arma::zeros(3,8);
+  for(int i = 0; i < 3; i++){
+    for(int j = 0; j < 8; j++){
+      for(int k = 300; k < 500; k++){
+        nu_ph(k - 300) = Nu_samp(i,j,k);
+      }
+      nu_est(i,j) = arma::median(nu_ph);
+    }
+  }
+  mod.slice(1) = nu;
+  mod.slice(0) = nu_est;
+  return mod;
+}
+
+// Tests updating Nu for the covariate adjusted model
+//
+// @name TestUpdateNuXi
+arma::cube TestUpdateNuTemperedXi(){
+  // Set space of functions
+  arma::vec t_obs =  arma::regspace(0, 10, 990);
+  splines2::BSpline bspline;
+  // Create Bspline object with 8 degrees of freedom
+  // 8 - 3 - 1 internal nodes
+  bspline = splines2::BSpline(t_obs, 8);
+  // Get Basis matrix (100 x 8)
+  arma::mat bspline_mat{bspline.basis(true)};
+  // Make B_obs
+  arma::field<arma::mat> B_obs(40,1);
+
+
+  for(int i = 0; i < 40; i++)
+  {
+    B_obs(i,0) = bspline_mat;
+  }
+
+  // Make nu matrix
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,2);
+  for(int i=0; i < 2; i++)
+  {
+    Phi.slice(i) = (2-i) * arma::randn<arma::mat>(3,8);
+  }
+
+  // Make eta variables
+  arma::cube eta(8, 2, 3);
+  for(int i = 0; i < 3; i++){
+    eta.slice(i) = arma::randn<arma::mat>(8,2);
+  }
+
+  // Make xi variables
+  arma::field<arma::cube> xi(500,3);
+  for(int i = 0; i < 3; i++){
+    xi(0,i) = arma::zeros(8,2,2);
+    for(int j =0; j < 2; j++){
+      xi(0,i).slice(j) = (2-i) * 0.1 * arma::randn<arma::mat>(8,2);
+    }
+  }
+  for(int i = 1; i < 500; i++){
+    for(int j = 0; j < 3; j++){
+      xi(i,j) = xi(0,j);
+    }
+  }
+
+  double sigma_sq = 0.001;
+
+  // Make chi matrix
+  arma::mat chi(40, 2, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z(40, 3);
+  arma::mat alpha(40,3, arma::fill::ones);
+  alpha = alpha * 10;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
+  }
+
+  arma::mat X = arma::randn<arma::mat>(40,2);
+  arma::field<arma::vec> y_obs(40, 1);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 40; j++){
+    mean = arma::zeros(8);
+    for(int l = 0; l < 3; l++){
+      mean = mean + Z(j,l) * (nu.row(l).t() + (eta.slice(l) * X.row(j).t()));
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * (Phi.slice(m).row(l).t() + (xi(0,l).slice(m)* X.row(j).t()));
+      }
+    }
+    y_obs(j, 0) = arma::mvnrnd(B_obs(j, 0) * mean, sigma_sq *
+      arma::eye(B_obs(j,0).n_rows, B_obs(j,0).n_rows));
+  }
+
+  arma::cube Nu_samp = arma::randn(nu.n_rows, nu.n_cols, 500);
+  arma::vec b_1(nu.n_cols, arma::fill::zeros);
+  arma::mat B_1(nu.n_cols, nu.n_cols, arma::fill::zeros);
+  arma::mat P(nu.n_cols, nu.n_cols, arma::fill::zeros);
+  P.zeros();
+  for(int j = 0; j < P.n_rows; j++){
+    P(0,0) = 1;
+    if(j > 0){
+      P(j,j) = 2;
+      P(j-1,j) = -1;
+      P(j,j-1) = -1;
+    }
+    P(P.n_rows - 1, P.n_rows - 1) = 1;
+  }
+  arma::vec tau(nu.n_rows, arma::fill::ones);
+  tau = tau / 10;
+  for(int i = 0; i < 500; i++){
+    BayesFMMM::updateNuTemperedCovariateAdj(0.5, y_obs, B_obs, tau, Phi, xi, eta,
+                                            Z, chi, sigma_sq, i, 500, P, X, b_1,
+                                            B_1, Nu_samp);
+  }
+
+  arma::cube mod = arma::zeros(3,8,2);
+  arma::vec nu_ph = arma::zeros(200);
+  arma::mat nu_est = arma::zeros(3,8);
+  for(int i = 0; i < 3; i++){
+    for(int j = 0; j < 8; j++){
+      for(int k = 300; k < 500; k++){
+        nu_ph(k - 300) = Nu_samp(i,j,k);
+      }
+      nu_est(i,j) = arma::median(nu_ph);
+    }
+  }
+  mod.slice(1) = nu;
+  mod.slice(0) = nu_est;
+  return mod;
+}
+
+// Tests updating Nu
+//
+// @name TestUpdateNu
+arma::cube TestUpdateNuMVCovariateAdj(){
+  // Make nu matrix
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,2);
+  for(int i=0; i < 2; i++)
+  {
+    Phi.slice(i) = (2-i) * arma::randn<arma::mat>(3,8);
+  }
+
+  // Make eta variables
+  arma::cube eta(8, 2, 3);
+  for(int i = 0; i < 3; i++){
+    eta.slice(i) = arma::randn<arma::mat>(8,2);
+  }
+
+  // Make xi variables
+  arma::field<arma::cube> xi(500,3);
+  for(int i = 0; i < 3; i++){
+    xi(0,i) = arma::zeros(8,2,2);
+    for(int j =0; j < 2; j++){
+      xi(0,i).slice(j) = (2-i) * 0.1 * arma::randn<arma::mat>(8,2);
+    }
+  }
+  for(int i = 1; i < 500; i++){
+    for(int j = 0; j < 3; j++){
+      xi(i,j) = xi(0,j);
+    }
+  }
+
+  double sigma_sq = 0.001;
+
+  // Make chi matrix
+  arma::mat chi(40, 2, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z(40, 3);
+  arma::mat alpha(40,3, arma::fill::ones);
+  alpha = alpha * 10;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
+  }
+
+  arma::mat X = arma::randn<arma::mat>(40,2);
+  arma::mat y_obs = arma::zeros(40, 8);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 40; j++){
+    mean = arma::zeros(8);
+    for(int l = 0; l < 3; l++){
+      mean = mean + Z(j,l) * (nu.row(l).t() + (eta.slice(l) * X.row(j).t()));
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * (Phi.slice(m).row(l).t() + (xi(0,l).slice(m)* X.row(j).t()));
+      }
+    }
+    y_obs.row(j) = arma::mvnrnd(mean, sigma_sq *
+      arma::eye(mean.n_elem, mean.n_elem)).t();
+  }
+
+  arma::cube Nu_samp = arma::randn(nu.n_rows, nu.n_cols, 500);
+  arma::vec b_1(nu.n_cols, arma::fill::zeros);
+  arma::mat B_1(nu.n_cols, nu.n_cols, arma::fill::zeros);
+  arma::vec tau(nu.n_rows, arma::fill::ones);
+  tau = tau * 10;
+  for(int i = 0; i < 500; i++){
+    BayesFMMM::updateNuMVCovariateAdj(y_obs, tau, Phi, xi, eta, Z, chi,
+                                      sigma_sq, i, 500, X, b_1, B_1, Nu_samp);
+  }
+
+  arma::cube mod = arma::zeros(3,8,2);
+  arma::vec nu_ph = arma::zeros(200);
+  arma::mat nu_est = arma::zeros(3,8);
+  for(int i = 0; i < 3; i++){
+    for(int j = 0; j < 8; j++){
+      for(int k = 300; k < 500; k++){
+        nu_ph(k - 300) = Nu_samp(i,j,k);
+      }
+      nu_est(i,j) = arma::median(nu_ph);
+    }
+  }
+  mod.slice(1) = nu;
+  mod.slice(0) = nu_est;
+  return mod;
+}
+
+// Tests updating Nu
+//
+// @name TestUpdateNu
+arma::cube TestUpdateNuTemperedMVCovariateAdj(){
+  // Make nu matrix
+  arma::mat nu(3,8);
+  nu = {{2, 0, 1, 0, 0, 0, 1, 3},
+  {1, 3, 0, 2, 0, 0, 3, 0},
+  {5, 2, 5, 0, 3, 4, 1, 0}};
+
+
+  // Make Phi matrix
+  arma::cube Phi(3,8,2);
+  for(int i=0; i < 2; i++)
+  {
+    Phi.slice(i) = (2-i) * arma::randn<arma::mat>(3,8);
+  }
+
+  // Make eta variables
+  arma::cube eta(8, 2, 3);
+  for(int i = 0; i < 3; i++){
+    eta.slice(i) = arma::randn<arma::mat>(8,2);
+  }
+
+  // Make xi variables
+  arma::field<arma::cube> xi(500,3);
+  for(int i = 0; i < 3; i++){
+    xi(0,i) = arma::zeros(8,2,2);
+    for(int j =0; j < 2; j++){
+      xi(0,i).slice(j) = (2-i) * 0.1 * arma::randn<arma::mat>(8,2);
+    }
+  }
+  for(int i = 1; i < 500; i++){
+    for(int j = 0; j < 3; j++){
+      xi(i,j) = xi(0,j);
+    }
+  }
+
+  double sigma_sq = 0.001;
+
+  // Make chi matrix
+  arma::mat chi(40, 2, arma::fill::randn);
+
+
+  // Make Z matrix
+  arma::mat Z(40, 3);
+  arma::mat alpha(40,3, arma::fill::ones);
+  alpha = alpha * 10;
+  for(int i = 0; i < Z.n_rows; i++){
+    Z.row(i) = BayesFMMM::rdirichlet(alpha.row(i).t()).t();
+  }
+
+  arma::mat X = arma::randn<arma::mat>(40,2);
+  arma::mat y_obs = arma::zeros(40, 8);
+  arma::vec mean = arma::zeros(8);
+
+  for(int j = 0; j < 40; j++){
+    mean = arma::zeros(8);
+    for(int l = 0; l < 3; l++){
+      mean = mean + Z(j,l) * (nu.row(l).t() + (eta.slice(l) * X.row(j).t()));
+      for(int m = 0; m < Phi.n_slices; m++){
+        mean = mean + Z(j,l) * chi(j,m) * (Phi.slice(m).row(l).t() + (xi(0,l).slice(m)* X.row(j).t()));
+      }
+    }
+    y_obs.row(j) = arma::mvnrnd(mean, sigma_sq *
+      arma::eye(mean.n_elem, mean.n_elem)).t();
+  }
+
+  arma::cube Nu_samp = arma::randn(nu.n_rows, nu.n_cols, 500);
+  arma::vec b_1(nu.n_cols, arma::fill::zeros);
+  arma::mat B_1(nu.n_cols, nu.n_cols, arma::fill::zeros);
+  arma::vec tau(nu.n_rows, arma::fill::ones);
+  tau = tau * 10;
+  for(int i = 0; i < 500; i++){
+    BayesFMMM::updateNuTemperedMVCovariateAdj(0.5, y_obs, tau, Phi, xi, eta, Z, chi,
+                                              sigma_sq, i, 500, X, b_1, B_1,
+                                              Nu_samp);
+  }
+
+  arma::cube mod = arma::zeros(3,8,2);
+  arma::vec nu_ph = arma::zeros(200);
+  arma::mat nu_est = arma::zeros(3,8);
+  for(int i = 0; i < 3; i++){
+    for(int j = 0; j < 8; j++){
+      for(int k = 300; k < 500; k++){
+        nu_ph(k - 300) = Nu_samp(i,j,k);
+      }
+      nu_est(i,j) = arma::median(nu_ph);
+    }
+  }
+  mod.slice(1) = nu;
+  mod.slice(0) = nu_est;
+  return mod;
+}
+
 context("Unit tests for Nu parameters") {
   test_that("Sampler for Nu parameters"){
     Rcpp::Environment base_env("package:base");
@@ -519,5 +953,78 @@ context("Unit tests for Nu parameters") {
     }
     expect_true(similar == true);
   }
+
+  test_that("Sampler for Nu parameter for the covariate adjusted model"){
+    Rcpp::Environment base_env("package:base");
+    Rcpp::Function set_seed_r = base_env["set.seed"];
+    set_seed_r(1);
+    arma::cube x = TestUpdateNuXi();
+    arma::mat est = x.slice(0);
+    arma::mat truth = x.slice(1);
+    bool similar = true;
+    for(int i = 0; i < est.n_rows; i++){
+      for(int j = 0; j < est.n_cols; j++){
+        if(std::abs(est(i,j) - truth(i,j)) > 0.3){
+          similar = false;
+        }
+      }
+    }
+    expect_true(similar == true);
+  }
+
+  test_that("Tempered sampler for Nu parameters under the covariate adjusted model"){
+    Rcpp::Environment base_env("package:base");
+    Rcpp::Function set_seed_r = base_env["set.seed"];
+    set_seed_r(1);
+    arma::cube x = TestUpdateNuTemperedXi();
+    arma::mat est = x.slice(0);
+    arma::mat truth = x.slice(1);
+    bool similar = true;
+    for(int i = 0; i < est.n_rows; i++){
+      for(int j = 0; j < est.n_cols; j++){
+        if(std::abs(est(i,j) - truth(i,j)) > 0.6){
+          similar = false;
+        }
+      }
+    }
+    expect_true(similar == true);
+  }
+
+  test_that("Sampler for the tempered Nu parameters in the covariate adjusted multivariate model"){
+    Rcpp::Environment base_env("package:base");
+    Rcpp::Function set_seed_r = base_env["set.seed"];
+    set_seed_r(1);
+    arma::cube x = TestUpdateNuMVCovariateAdj();
+    arma::mat est = x.slice(0);
+    arma::mat truth = x.slice(1);
+    bool similar = true;
+    for(int i = 0; i < est.n_rows; i++){
+      for(int j = 0; j < est.n_cols; j++){
+        if(std::abs(est(i,j) - truth(i,j)) > 0.3){
+          similar = false;
+        }
+      }
+    }
+    expect_true(similar == true);
+  }
+
+  test_that("Sampler for the tempered Nu parameters in the covariate adjusted multivariate model"){
+    Rcpp::Environment base_env("package:base");
+    Rcpp::Function set_seed_r = base_env["set.seed"];
+    set_seed_r(1);
+    arma::cube x = TestUpdateNuTemperedMVCovariateAdj();
+    arma::mat est = x.slice(0);
+    arma::mat truth = x.slice(1);
+    bool similar = true;
+    for(int i = 0; i < est.n_rows; i++){
+      for(int j = 0; j < est.n_cols; j++){
+        if(std::abs(est(i,j) - truth(i,j)) > 0.6){
+          similar = false;
+        }
+      }
+    }
+    expect_true(similar == true);
+  }
+
 }
 
