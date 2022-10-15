@@ -603,6 +603,82 @@ arma::field<arma::cube> TestUpdateGammaXi(){
   return mod;
 }
 
+// Tests updating Delta
+//
+arma::field<arma::cube> TestUpdateDeltaXi(){
+  // Specify hyperparameters
+  arma::cube A_xi = 2 * arma::ones(3,2,2);
+
+  // Make Delta vector
+  arma::cube Delta = arma::zeros(3, 5, 2);
+  for(int l = 0; l < 2; l++){
+    for(int j = 0; j < 3; j++){
+      for(int i = 0; i < 5; i++){
+        Delta(j, i, l) = R::rgamma(2, 1);
+      }
+    }
+  }
+
+  // Make Gamma cube
+  arma::field<arma::cube> Gamma(10000,3);
+  for(int m = 0; m < 10000; m++){
+    for(int j = 0; j < 3; j++){
+      Gamma(m,j) = arma::ones(80,2,5);
+      for(int l = 0; l < 2; l++){
+        for(int i = 0; i < 5; i++){
+          for(int k = 0; k < 80; k++){
+            Gamma(m,j)(k,l,i) =  R::rgamma(1.5, 1/1.5);
+          }
+        }
+      }
+    }
+  }
+
+  // Make Phi matrix
+  arma::field<arma::cube> xi(10000, 3);
+  arma::field<arma::cube> delta(10000,1);
+  for(int m = 0; m < 10000; m++){
+    delta(m,0) = arma::ones(3,5,2);
+  }
+  double tau = 1;
+  for(int m = 0; m < 10000; m++){
+    for(int j = 0; j < 3; j++){
+      xi(m,j) = arma::zeros(80,2,5);
+      for(int l = 0; l < 2; l++){
+        tau = 1;
+        for(int i = 0; i < 5; i++){
+          tau = tau * Delta(j, i, l);
+          for(int k = 0; k < 80; k++){
+            xi(m,j)(k,l,i) = R::rnorm(0,  std::pow(Gamma(m,j)(k,l,i)*tau, -0.5));
+          }
+        }
+      }
+    }
+    BayesFMMM::updateDeltaXi(xi, Gamma,  A_xi, m, 10000, delta);
+  }
+
+  arma::cube Delta_est = arma::zeros(3, 5, 2);
+  arma::cube Delta_trace = arma::zeros(10000, 5, 2);
+  arma::vec ph = arma::zeros(10000);
+  for(int l = 0; l < 2; l++){
+    for(int j = 0; j < 3; j++){
+      for(int i = 0; i < 5; i++){
+        for(int m = 0; m < 10000; m++){
+          ph(m) = delta(m, 0)(j, i, l);
+          Delta_trace(m,i,l) = delta(m,0)(0,i,l);
+        }
+        Delta_est(j, i, l) = arma::median(ph);
+      }
+    }
+  }
+
+  arma::field<arma::cube> mod (2,1);
+  mod(0,0) = Delta_est;
+  mod(1,0) = Delta;
+  return mod;
+}
+
+
 
 context("Unit tests for xi parameters") {
   test_that("Sampler for xi parameters"){
@@ -722,6 +798,26 @@ context("Unit tests for xi parameters") {
       }
     }
 
+    expect_true(similar == true);
+  }
+
+  test_that("Sampler for Delta_xi parameters"){
+    Rcpp::Environment base_env("package:base");
+    Rcpp::Function set_seed_r = base_env["set.seed"];
+    set_seed_r(1);
+    arma::field<arma::cube> x = TestUpdateDeltaXi();
+    arma::cube est = x(0,0);
+    arma::cube truth = x(1,0);
+    bool similar = true;
+    for(int i = 0; i < est.n_rows; i++){
+      for(int j = 0; j < est.n_cols; j++){
+        for(int k = 0; k < est.n_slices; k++){
+          if(std::abs(est(i,j,k) - truth(i,j,k)) > 2){
+            similar = false;
+          }
+        }
+      }
+    }
     expect_true(similar == true);
   }
 
