@@ -832,9 +832,10 @@ inline double lpdf_zTemperedMVCovariateAdj(const double& beta_i,
 
   arma::vec mean = arma::zeros(nu.n_cols);
   for(int k = 0; k < Z.n_elem; k++){
-    mean = mean + Z(k) * nu.row(k).t();
+    mean = mean + Z(k) * (nu.row(k).t() + (eta.slice(k) * X.t()));
     for(int m = 0; m < Phi.n_slices; m++){
-      mean = mean + Z(k) * chi(m) * Phi.slice(m).row(k).t();
+      mean = mean + Z(k) * chi(m) * (Phi.slice(m).row(k).t() +
+        xi(iter,k).slice(m) * X.t());
     }
   }
 
