@@ -44,8 +44,8 @@ inline void updateEta(const arma::field<arma::vec>& y_obs,
 
   double ph = 0;
   // initialize P matrix
-  for(int d = 0; d < eta.n_cols; d++){
-    for(int j = 0; j < eta.n_slices; j++){
+  for(int d = 0; d < eta(iter,0).n_cols; d++){
+    for(int j = 0; j < eta(iter,0).n_slices; j++){
       b_1.zeros();
       B_1.zeros();
       for(int i = 0; i < Z.n_rows; i++){
@@ -54,12 +54,12 @@ inline void updateEta(const arma::field<arma::vec>& y_obs,
             ph = 0;
             ph = y_obs(i,0)(l);
             B_1 = B_1 + Z(i,j) * Z(i,j) * X(i,d) * X(i,d) * (B_obs(i,0).row(l).t() * B_obs(i,0).row(l));
-            for(int r = 0; r < eta.n_cols; r++){
+            for(int r = 0; r < eta(iter,0).n_cols; r++){
               if(r != d){
                 ph = ph - Z(i,j) * X(i,r) * arma::dot(eta(iter,0).slice(j).col(r), B_obs(i,0).row(l));
               }
             }
-            for(int k = 0; k < nu.n_rows; k++){
+            for(int k = 0; k < Z.n_cols; k++){
               if(Z(i,k) != 0){
                 if(k != j){
                   ph = ph - Z(i,k) * (arma::dot(eta(iter,0).slice(k) * X.row(i).t(),
@@ -75,7 +75,7 @@ inline void updateEta(const arma::field<arma::vec>& y_obs,
                 }
               }
             }
-            b_1 = b_1 + Z(i,j) * B_obs(i,0).row(l).t() * ph;
+            b_1 = b_1 + Z(i,j) * B_obs(i,0).row(l).t() * X(i,d) *  ph;
           }
         }
       }
@@ -84,7 +84,7 @@ inline void updateEta(const arma::field<arma::vec>& y_obs,
       B_1 = B_1 + tau_eta(j,d) * P;
       B_1 = arma::pinv(B_1);
       B_1 = (B_1 + B_1.t())/2;
-      eta(iter,0).slice(j).col(d) = arma::mvnrnd(B_1 * b_1, B_1).t();
+      eta(iter,0).slice(j).col(d) = arma::mvnrnd(B_1 * b_1, B_1);
     }
   }
 
@@ -133,8 +133,8 @@ inline void updateEtaTempered(const double& beta_i,
 
   double ph = 0;
   // initialize P matrix
-  for(int d = 0; d < eta.n_cols; d++){
-    for(int j = 0; j < eta.n_slices; j++){
+  for(int d = 0; d < eta(iter,0).n_cols; d++){
+    for(int j = 0; j < eta(iter,0).n_slices; j++){
       b_1.zeros();
       B_1.zeros();
       for(int i = 0; i < Z.n_rows; i++){
@@ -143,12 +143,12 @@ inline void updateEtaTempered(const double& beta_i,
             ph = 0;
             ph = y_obs(i,0)(l);
             B_1 = B_1 + Z(i,j) * Z(i,j) * X(i,d) * X(i,d) * (B_obs(i,0).row(l).t() * B_obs(i,0).row(l));
-            for(int r = 0; r < eta.n_cols; r++){
+            for(int r = 0; r < eta(iter,0).n_cols; r++){
               if(r != d){
                 ph = ph - Z(i,j) * X(i,r) * arma::dot(eta(iter,0).slice(j).col(r), B_obs(i,0).row(l));
               }
             }
-            for(int k = 0; k < nu.n_rows; k++){
+            for(int k = 0; k < Z.n_cols; k++){
               if(Z(i,k) != 0){
                 if(k != j){
                   ph = ph - Z(i,k) * (arma::dot(eta(iter,0).slice(k) * X.row(i).t(),
@@ -164,7 +164,7 @@ inline void updateEtaTempered(const double& beta_i,
                 }
               }
             }
-            b_1 = b_1 + Z(i,j) * B_obs(i,0).row(l).t() * ph;
+            b_1 = b_1 + Z(i,j) * B_obs(i,0).row(l).t() * X(i,d) *  ph;
           }
         }
       }
@@ -173,7 +173,7 @@ inline void updateEtaTempered(const double& beta_i,
       B_1 = B_1 + tau_eta(j,d) * P;
       B_1 = arma::pinv(B_1);
       B_1 = (B_1 + B_1.t())/2;
-      eta(iter,0).slice(j).col(d) = arma::mvnrnd(B_1 * b_1, B_1).t();
+      eta(iter,0).slice(j).col(d) = arma::mvnrnd(B_1 * b_1, B_1);
     }
   }
 
@@ -217,21 +217,21 @@ inline void updateEtaMV(const arma::mat& y_obs,
                         arma::field<arma::cube>& eta){
 
   // initialize P matrix
-  for(int d = 0; d < eta.n_cols; d++){
-    for(int j = 0; j < eta.n_slices; j++){
+  for(int d = 0; d < eta(iter,0).n_cols; d++){
+    for(int j = 0; j < eta(iter,0).n_slices; j++){
       b_1.zeros();
       B_1.zeros();
       for(int i = 0; i < Z.n_rows; i++){
         if(Z(i,j) != 0){
           arma::vec ph = arma::zeros(y_obs.n_cols);
           ph = y_obs.row(i).t();
-          B_1 = B_1 + Z(i,j) * Z(i,j) * arma::eye(y_obs.n_cols, y_obs.n_cols);
-          for(int r = 0; r < eta.n_cols; r++){
+          B_1 = B_1 + Z(i,j) * Z(i,j) * X(i,d) * X(i,d) * arma::eye(y_obs.n_cols, y_obs.n_cols);
+          for(int r = 0; r < eta(iter,0).n_cols; r++){
             if(r != d){
               ph = ph - Z(i,j) * X(i,r) * eta(iter,0).slice(j).col(r);
             }
           }
-          for(int k = 0; k < nu.n_rows; k++){
+          for(int k = 0; k < Z.n_cols; k++){
             if(Z(i,k) != 0){
               if(k != j){
                 ph = ph - Z(i,k) * eta(iter,0).slice(k) * X.row(i).t();
@@ -244,7 +244,7 @@ inline void updateEtaMV(const arma::mat& y_obs,
               }
             }
           }
-          b_1 = b_1 + Z(i,j) * ph;
+          b_1 = b_1 + Z(i,j) * X(i,d) * ph;
         }
       }
       b_1 = b_1 / sigma;
@@ -253,7 +253,7 @@ inline void updateEtaMV(const arma::mat& y_obs,
       B_1 = B_1 + D;
       B_1 = arma::pinv(B_1);
       B_1 = (B_1 + B_1.t())/2;
-      eta(iter,0).slice(j).col(d) = arma::mvnrnd(B_1 * b_1, B_1).t();
+      eta(iter,0).slice(j).col(d) = arma::mvnrnd(B_1 * b_1, B_1);
     }
   }
 
@@ -299,21 +299,21 @@ inline void updateEtaTemperedMV(const double& beta_i,
                                 arma::field<arma::cube>& eta){
 
   // initialize P matrix
-  for(int d = 0; d < eta.n_cols; d++){
-    for(int j = 0; j < eta.n_slices; j++){
+  for(int d = 0; d < eta(iter,0).n_cols; d++){
+    for(int j = 0; j < eta(iter,0).n_slices; j++){
       b_1.zeros();
       B_1.zeros();
       for(int i = 0; i < Z.n_rows; i++){
         if(Z(i,j) != 0){
           arma::vec ph = arma::zeros(y_obs.n_cols);
           ph = y_obs.row(i).t();
-          B_1 = B_1 + Z(i,j) * Z(i,j) * arma::eye(y_obs.n_cols, y_obs.n_cols);
-          for(int r = 0; r < eta.n_cols; r++){
+          B_1 = B_1 + Z(i,j) * Z(i,j) * X(i,d) * X(i,d) * arma::eye(y_obs.n_cols, y_obs.n_cols);
+          for(int r = 0; r < eta(iter,0).n_cols; r++){
             if(r != d){
               ph = ph - Z(i,j) * X(i,r) * eta(iter,0).slice(j).col(r);
             }
           }
-          for(int k = 0; k < nu.n_rows; k++){
+          for(int k = 0; k < Z.n_cols; k++){
             if(Z(i,k) != 0){
               if(k != j){
                 ph = ph - Z(i,k) * eta(iter,0).slice(k) * X.row(i).t();
@@ -326,7 +326,7 @@ inline void updateEtaTemperedMV(const double& beta_i,
               }
             }
           }
-          b_1 = b_1 + Z(i,j) * ph;
+          b_1 = b_1 + Z(i,j) * X(i,d) * ph;
         }
       }
       b_1 = b_1 * (beta_i / sigma);
@@ -335,7 +335,7 @@ inline void updateEtaTemperedMV(const double& beta_i,
       B_1 = B_1 + D;
       B_1 = arma::pinv(B_1);
       B_1 = (B_1 + B_1.t())/2;
-      eta(iter,0).slice(j).col(d) = arma::mvnrnd(B_1 * b_1, B_1).t();
+      eta(iter,0).slice(j).col(d) = arma::mvnrnd(B_1 * b_1, B_1);
     }
   }
 
