@@ -3,6 +3,88 @@
 #include <splines2Armadillo.h>
 #include <BayesFMMM.h>
 
+// [[Rcpp::export]]
+arma::cube TestUpdateTauEtaMV1(){
+  arma::mat tau1 = {{1, 2, 2, 3, 5, 6},
+  {1, 1, 2, 3, 4, 5}};
+  arma::mat tau = tau1.t();
+  arma::mat P(100, 100, arma::fill::zeros);
+  P.zeros();
+  for(int j = 0; j < P.n_rows; j++){
+    P(j,j) = 1;
+  }
+  arma::cube eta(100, 2, 6, arma::fill::zeros);
+  arma::cube tau_samp(6, 2, 200, arma::fill::zeros);
+  arma::vec zeros_nu(100, arma::fill::zeros);
+  for(int i = 0; i < 200; i++){
+    for(int j = 0; j < 6; j++){
+      for(int d = 0; d < 2; d++){
+        eta.slice(j).col(d) = arma::mvnrnd(zeros_nu, P * tau(j,d));
+      }
+    }
+    BayesFMMM::updateTauEtaMV(1, 1, eta, i, 200, tau_samp);
+  }
+  arma::mat tau_est(6, 2, arma::fill::zeros);
+  arma::vec tau_ph(200, arma::fill::zeros);
+  for(int d = 0; d < 2; d++){
+    for(int i = 0; i < 6; i++){
+      for(int j = 0; j < 200; j++){
+        tau_ph[j] = tau_samp(i, d, j);
+      }
+      tau_est(i,d) = arma::median(tau_ph);
+    }
+  }
+
+  arma::cube mod = arma::zeros(6, 2, 2);
+  mod.slice(0) = tau_est;
+  mod.slice(1) = tau;
+  return mod;
+}
+
+// // [[Rcpp::export]]
+// arma::cube TestUpdateTauEta1(){
+//   arma::mat tau1 = {{1, 2, 2, 3, 5, 6},
+//   {1, 1, 2, 3, 4, 5}};
+//   arma::mat tau = tau1.t();
+//   arma::mat P(100, 100, arma::fill::zeros);
+//   P.zeros();
+//   for(int j = 0; j < P.n_rows; j++){
+//     P(0,0) = 1;
+//     if(j > 0){
+//       P(j,j) = 2;
+//       P(j-1,j) = -1;
+//       P(j,j-1) = -1;
+//     }
+//     P(P.n_rows - 1, P.n_rows - 1) = 1;
+//   }
+//   arma::cube eta(100, 2, 6, arma::fill::zeros);
+//   arma::cube tau_samp(6, 2, 200, arma::fill::zeros);
+//   arma::vec zeros_nu(100, arma::fill::zeros);
+//   for(int i = 0; i < 200; i++){
+//     for(int j = 0; j < 6; j++){
+//       for(int d = 0; d < 2; d++){
+//         eta.slice(j).col(d) = arma::mvnrnd(zeros_nu, arma::pinv(P * tau(j,d)));
+//       }
+//     }
+//     BayesFMMM::updateTauEta(1, 1, eta, i, 200, P, tau_samp);
+//   }
+//   arma::mat tau_est(6, 2, arma::fill::zeros);
+//   arma::vec tau_ph(200, arma::fill::zeros);
+//   for(int d = 0; d < 2; d++){
+//     for(int i = 0; i < 6; i++){
+//       for(int j = 0; j < 200; j++){
+//         tau_ph[j] = tau_samp(i, d, j);
+//       }
+//       tau_est(i,d) = arma::median(tau_ph);
+//     }
+//   }
+//
+//   arma::cube mod = arma::zeros(6, 2, 2);
+//   mod.slice(0) = tau_est;
+//   mod.slice(1) = tau;
+//   return mod;
+// }
+
 // // [[Rcpp::export]]
 // arma::field<arma::cube> TestUpdateEta1(){
 //   // Set space of functions

@@ -20,6 +20,8 @@
 #include "UpdateAlpha3.h"
 #include "BSplines.h"
 #include "Distributions.h"
+#include "UpdateEta.h"
+#include "UpdateXi.h"
 
 namespace BayesFMMM {
 
@@ -3643,6 +3645,7 @@ inline Rcpp::List BHDFMMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
 // @param directory String containing path to store batches of MCMC samples
 // @returns params List of objects containing the MCMC samples from the last batch
 inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
+                                                 const arma::mat& X,
                                                  const int& thinning_num,
                                                  const int& K,
                                                  const int& M,
@@ -3683,6 +3686,7 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
                                                  const arma::mat& chi_est){
   int n_obs = y_obs.n_rows;
   int P = y_obs.n_cols;
+  int D = X.n_cols;
 
   arma::cube nu(K, P, r_stored_iters, arma::fill::randn);
   arma::mat tau(r_stored_iters, K, arma::fill::ones);
@@ -3710,7 +3714,7 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
   //parameters for covariate adjusted
   arma::field<arma::cube> eta(r_stored_iters, 1);
   arma::field<arma::cube> xi(r_stored_iters, K);
-
+  arma::cube tau_eta = arma::ones(K, D, r_stored_iters);
 
   // start numbering for output files
   int q = 0;
@@ -3718,6 +3722,10 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
   for(int i = 0; i < r_stored_iters; i++){
     gamma(i,0) = arma::cube(K, P, M, arma::fill::ones);
     Phi(i,0) = arma::randn(K, P, M);
+    eta(i,0) = arma::zeros(M, K, D);
+    for(int k = 0; k < K; k++){
+      xi(i,k) = arma::zeros(P, D, M);
+    }
   }
 
   arma::vec m_1(P, arma::fill::zeros);
@@ -3749,9 +3757,18 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
   arma::cube A_TT = arma::ones(K, 2, (2 * N_t) + 1);
   arma::vec alpha_3_TT = arma::ones((2 * N_t) + 1);
 
+  //parameters for covariate adjusted
+  arma::field<arma::cube> eta_TT((2 * N_t) + 1, 1);
+  arma::field<arma::cube> xi_TT((2 * N_t) + 1, K);
+  arma::cube tau_eta_TT = arma::ones(K, D, (2 * N_t) + 1);
+
   for(int i = 0; i < ((2 * N_t) + 1); i++){
     gamma_TT(i,0) = arma::cube(K, P, M, arma::fill::ones);
     Phi_TT(i,0) = arma::randn(K, P, M);
+    eta_TT(i,0) = arma::zeros(M, K, D);
+    for(int k = 0; k < K; k++){
+      xi_TT(i,k) = arma::zeros(P, D, M);
+    }
   }
 
   arma::mat tau_TT((2 * N_t) + 1, K, arma::fill::ones);
@@ -3772,17 +3789,16 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
   nu.slice(0) = nu_est;
   tau.row(0) = tau_est.t();
   sigma(0) = sigma_est;
-  Rcpp::Rcout << "made it";
 
   chi.slice(0) = chi_est;
 
   for(int i=0; i < tot_mcmc_iters; i++){
     if(((i % n_temp_trans) != 0) || (i == 0)){
-      updateZ_MMMV(y_obs, Phi((i % r_stored_iters),0),
-                   nu.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
-                   pi.col((i % r_stored_iters)), sigma((i % r_stored_iters)),
-                   (i % r_stored_iters), r_stored_iters, alpha_3(i % r_stored_iters),
-                   a_Z_PM, Z_ph, Z);
+      updateZ_MMMVCovariateAdj(y_obs, Phi((i % r_stored_iters),0), xi,
+                   nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                   chi.slice((i % r_stored_iters)), pi.col((i % r_stored_iters)),
+                   sigma((i % r_stored_iters)), (i % r_stored_iters),
+                   r_stored_iters, alpha_3(i % r_stored_iters), a_Z_PM, X, Z_ph, Z);
 
       updatePi_PM(alpha_3(i % r_stored_iters) ,Z.slice(i% r_stored_iters), c,
                   (i % r_stored_iters), r_stored_iters, a_pi_PM, pi_ph, pi);
@@ -3791,17 +3807,17 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
                    (i % r_stored_iters), r_stored_iters, var_alpha3, alpha_3);
 
       for(int k = 0; k < K; k++){
-        tilde_tau(k, 0) = delta(k, 0, (i % r_stored_iters));
+        tilde_tau_phi(k, 0) = delta(k, 0, (i % r_stored_iters));
         for(int j = 1; j < M; j++){
-          tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j,(i % r_stored_iters));
+          tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta(k, j,(i % r_stored_iters));
         }
       }
 
-      updatePhiMV(y_obs, nu.slice((i % r_stored_iters)),
-                  gamma((i % r_stored_iters),0), tilde_tau,
-                  Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
-                  sigma((i % r_stored_iters)), (i % r_stored_iters),
-                  r_stored_iters, m_1, M_1, Phi);
+      updatePhiMVCovariateAdj(y_obs, nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                              gamma((i % r_stored_iters),0), tilde_tau_phi, xi,
+                              Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
+                              sigma((i % r_stored_iters)), X, (i % r_stored_iters),
+                              r_stored_iters, m_1, M_1, Phi);
 
       updateDelta(Phi((i % r_stored_iters),0), gamma((i % r_stored_iters),0),
                   A.slice(i % r_stored_iters), (i % r_stored_iters),
@@ -3813,23 +3829,34 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
       updateGamma(nu_1, delta.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
                   (i % r_stored_iters), r_stored_iters, gamma);
 
-      updateNuMV(y_obs, tau.row((i % r_stored_iters)).t(),
-                 Phi((i % r_stored_iters),0), Z.slice((i % r_stored_iters)),
-                 chi.slice((i % r_stored_iters)), sigma((i % r_stored_iters)),
-                 (i % r_stored_iters), r_stored_iters, b_1, B_1, nu);
+      updateNuMVCovariateAdj(y_obs, tau.row((i % r_stored_iters)).t(),
+                             Phi((i % r_stored_iters),0), xi, eta((i % r_stored_iters),0),
+                             Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
+                             sigma((i % r_stored_iters)), (i % r_stored_iters), r_stored_iters,
+                             X, b_1, B_1, nu);
 
-      updateTauMV(alpha, beta, nu.slice((i % r_stored_iters)), (i % r_stored_iters),
-                  r_stored_iters, tau);
+      updateTauMV(alpha_nu, beta_nu, nu.slice((i % r_stored_iters)),
+                  (i % r_stored_iters), r_stored_iters, tau);
 
-      updateSigmaMV(y_obs, alpha_0, beta_0,
-                    nu.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
-                    Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
-                    (i % r_stored_iters), r_stored_iters, sigma);
+      updateSigmaMVCovariateAdj(y_obs, alpha_0, beta_0,
+                                nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                                Phi((i % r_stored_iters),0), xi, Z.slice((i % r_stored_iters)),
+                                chi.slice((i % r_stored_iters)), (i % r_stored_iters),
+                                r_stored_iters, X, sigma);
 
-      updateChiMV(y_obs, Phi((i % r_stored_iters),0),
-                  nu.slice((i % r_stored_iters)), Z.slice((i % r_stored_iters)),
-                  sigma((i % r_stored_iters)), (i % r_stored_iters), r_stored_iters,
-                  chi);
+      updateChiMVCovariateAdj(y_obs, Phi((i % r_stored_iters),0), xi,
+                              nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                              Z.slice((i % r_stored_iters)), sigma((i % r_stored_iters)),
+                              (i % r_stored_iters), r_stored_iters, X, chi);
+
+      updateEtaMV(y_obs, tau_eta.slice(i % r_stored_iters), Phi((i % r_stored_iters),0),
+                  xi, nu.slice((i % r_stored_iters)), Z.slice((i % r_stored_iters)),
+                  chi.slice((i % r_stored_iters)), sigma((i % r_stored_iters)),
+                  (i % r_stored_iters), r_stored_iters, X, b_1, B_1, eta);
+
+      updateTauEtaMV(alpha_eta, beta_eta, eta((i % r_stored_iters),0),
+                     (i % r_stored_iters), r_stored_iters, tau_eta);
+
     }
 
     if((i % n_temp_trans) == 0 && (i > 0)){
@@ -3845,6 +3872,9 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
       A_TT.slice(0) = A.slice(i % r_stored_iters);
       tau_TT.row(0) = tau.row(i % r_stored_iters);
       alpha_3_TT(0) = alpha_3(i % r_stored_iters);
+      eta_TT(0,0) = eta(i % r_stored_iters, 0);
+      tau_eta_TT.slice(0) = tau_eta(i % r_stored_iters);
+
 
       nu_TT.slice(1) = nu.slice(i % r_stored_iters);
       chi_TT.slice(1) = chi.slice(i % r_stored_iters);
@@ -3857,29 +3887,33 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
       A_TT.slice(1) = A.slice(i % r_stored_iters);
       tau_TT.row(1) = tau.row(i % r_stored_iters);
       alpha_3_TT(1) = alpha_3(i % r_stored_iters);
+      eta_TT(1,0) = eta(i % r_stored_iters, 0);
+      tau_eta_TT.slice(1) = tau_eta(i % r_stored_iters);
 
       temp_ind = 0;
 
       // Perform tempered transitions
       for(int l = 1; l < ((2 * N_t) + 1); l++){
-        updateZTempered_MMMV(beta_ladder(temp_ind), y_obs,
-                             Phi_TT(l,0), nu_TT.slice(l), chi_TT.slice(l),
-                             pi_TT.col(l), sigma_TT(l), l, (2 * N_t) + 1, alpha_3_TT(l), a_Z_PM,
-                             Z_ph, Z_TT);
+        updateZTempered_MMMVCovariateAdj(beta_ladder(temp_ind), y_obs,
+                                         Phi_TT(l,0), xi_TT, nu_TT.slice(l),
+                                         eta(l,0), chi_TT.slice(l), pi_TT.col(l),
+                                         sigma_TT(l), l, (2 * N_t) + 1,
+                                         alpha_3_TT(l), a_Z_PM, X, Z_ph, Z_TT);
         updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
         updateAlpha3(pi_TT.col(l), b, Z_TT.slice(l), l, (2 * N_t) + 1, var_alpha3, alpha_3_TT);
 
         for(int k = 0; k < K; k++){
-          tilde_tau(k, 0) = delta_TT(k, 0, l);
+          tilde_tau_phi(k, 0) = delta_TT(k, 0, l);
           for(int j = 1; j < M; j++){
-            tilde_tau(k, j) = tilde_tau(k, j-1) * delta_TT(k, j, l);
+            tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta_TT(k, j, l);
           }
         }
 
-        updatePhiTemperedMV(beta_ladder(temp_ind), y_obs,
-                            nu_TT.slice(l), gamma_TT(l,0), tilde_tau, Z_TT.slice(l),
-                            chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, m_1, M_1,
-                            Phi_TT);
+        updatePhiTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs, nu_TT.slice(l),
+                                        eta_TT(l,0), gamma_TT(l,0), tilde_tau_phi,
+                                        xi_TT, Z_TT.slice(l), chi_TT.slice(l), sigma_TT(l),
+                                        X, l, (2 * N_t) + 1, m_1, M_1, Phi_TT);
+
         updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.slice(l), l, (2 * N_t) + 1,
                     delta_TT);
 
@@ -3887,18 +3921,27 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
                 var_epsilon2, l, (2 * N_t) + 1, A_TT);
         updateGamma(nu_1, delta_TT.slice(l), Phi_TT(l,0), l, (2 * N_t) + 1,
                     gamma_TT);
-        updateNuTemperedMV(beta_ladder(temp_ind), y_obs,
-                           tau_TT.row(l).t(), Phi_TT(l,0), Z_TT.slice(l),
-                           chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1,
-                           b_1, B_1, nu_TT);
-        updateTauMV(alpha, beta, nu_TT.slice(l), l, (2 * N_t) + 1, tau_TT);
-        updateSigmaTemperedMV(beta_ladder(temp_ind), y_obs,
-                              alpha_0, beta_0, nu_TT.slice(l), Phi_TT(l,0),
-                              Z_TT.slice(l), chi_TT.slice(l), l, (2 * N_t) + 1,
-                              sigma_TT);
-        updateChiTemperedMV(beta_ladder(temp_ind), y_obs,
-                            Phi_TT(l,0), nu_TT.slice(l), Z_TT.slice(l), sigma_TT(l),
-                            l, (2 * N_t) + 1, chi_TT);
+        updateNuTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs,
+                                       tau_TT.row(l).t(), Phi_TT(l,0), xi_TT,
+                                       eta_TT(l,0), Z_TT.slice(l),
+                                       chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1,
+                                       X, b_1, B_1, nu_TT);
+        updateTauMV(alpha_nu, beta_nu, nu_TT.slice(l), l, (2 * N_t) + 1, tau_TT);
+        updateSigmaTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs,
+                                          alpha_0, beta_0, nu_TT.slice(l),
+                                          eta_TT(l,0), Phi_TT(l,0), xi_TT,
+                                          Z_TT.slice(l), chi_TT.slice(l), l,
+                                          (2 * N_t) + 1, X, sigma_TT);
+        updateChiTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs, Phi_TT(l,0),
+                                        xi_TT, nu_TT.slice(l), eta_TT(l,0),
+                                        Z_TT.slice(l), sigma_TT(l), l,
+                                        (2 * N_t) + 1, X, chi_TT);
+        updateEtaTemperedMV(beta_ladder(temp_ind), y_obs, tau_eta_TT.slice(l),
+                            Phi_TT(l,0), xi_TT, nu_TT.slice(l), Z_TT.slice(l),
+                            chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, X,
+                            b_1, B_1, eta_TT);
+        updateTauEtaMV(alpha_eta, beta_eta, eta_TT(l,0), l, (2 * N_t) + 1,
+                       tau_eta_TT);
         // update temp_ind
         if(l < N_t){
           temp_ind = temp_ind + 1;
@@ -3907,8 +3950,9 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
           temp_ind = temp_ind - 1;
         }
       }
-      logA = CalculateTTAcceptanceMV(beta_ladder, y_obs,
-                                     nu_TT, Phi_TT, Z_TT, chi_TT, sigma_TT);
+      logA = CalculateTTAcceptanceMVCovariateAdj(beta_ladder, y_obs, nu_TT, eta_TT,
+                                                 Phi_TT, xi_TT, Z_TT, chi_TT, X,
+                                                 sigma_TT);
       logu = std::log(R::runif(0,1));
 
       Rcpp::Rcout << "prob_accept: " << logA<< "\n";
@@ -3927,6 +3971,8 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
         A.slice(i % r_stored_iters) = A_TT.slice(2 * N_t);
         tau.row(i % r_stored_iters) = tau_TT.row(2 * N_t);
         alpha_3(i % r_stored_iters) = alpha_3_TT(2 * N_t);
+        eta(i % r_stored_iters,0) = eta_TT(2 * N_t, 0);
+        tau_eta.slice(i % r_stored_iters) = tau_eta_TT.slice(2 * N_t);
 
         //update accept number
         accept_num = accept_num + 1;
@@ -3944,11 +3990,14 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
         tau.row((i+1) % r_stored_iters) = tau.row(i % r_stored_iters);
         Phi((i+1) % r_stored_iters,0) = Phi(i % r_stored_iters, 0);
         alpha_3((i+1) % r_stored_iters) =  alpha_3(i % r_stored_iters);
+        eta((i+1) % r_stored_iters,0) = eta(i % r_stored_iters,0);
+        tau_eta.slice((i+1) % r_stored_iters) = tau_eta.slice(i % r_stored_iters);
       }
     }
-    loglik((i % r_stored_iters)) =  calcLikelihoodMV(y_obs,
-           nu.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
-           Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
+    loglik((i % r_stored_iters)) =  calcLikelihoodMVCovariateAdj(y_obs,
+           nu.slice((i % r_stored_iters)), eta(i % r_stored_iters, 0),
+           Phi((i % r_stored_iters),0), xi, Z.slice((i % r_stored_iters)),
+           chi.slice((i % r_stored_iters)), i % r_stored_iters, X,
            sigma((i % r_stored_iters)));
     if(((i+1) % 100) == 0){
       Rcpp::Rcout << "Iteration: " << i+1 << "\n";
@@ -3971,6 +4020,12 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
       arma::field<arma::cube> Phi1(r_stored_iters/thinning_num, 1);
       arma::mat tau1(r_stored_iters/thinning_num, K, arma::fill::ones);
 
+      //parameters for covariate adjusted
+      arma::field<arma::cube> eta1(r_stored_iters, 1);
+      arma::field<arma::cube> xi1(r_stored_iters, K);
+      arma::cube tau_eta1 = arma::ones(K, D, r_stored_iters);
+
+
       nu1.slice(0) = nu.slice(0);
       chi1.slice(0) = chi.slice(0);
       pi1.col(0) = pi.col(0);
@@ -3981,6 +4036,11 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
       gamma1(0,0) = gamma(0,0);
       Phi1(0,0) = Phi(0,0);
       tau1.row(0) = tau.row(0);
+      eta1(0,0) = eta(0,0);
+      tau_eta1.slice(0) = tau_eta.slice(0);
+      for(int k = 0; k < K; k++){
+        xi1(0,k) = xi(0,k);
+      }
 
       for(int p=1; p < r_stored_iters / thinning_num; p++){
         nu1.slice(p) = nu.slice(thinning_num*p - 1);
@@ -3992,8 +4052,13 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
         Z1.slice(p) = Z.slice(thinning_num*p - 1);
         delta1.slice(p) = delta.slice(thinning_num*p - 1);
         gamma1(p,0) = gamma(thinning_num*p - 1,0);
-        Phi1(p,0) = Phi(thinning_num*p  - 1,0);
+        Phi1(p,0) = Phi(thinning_num*p - 1,0);
         tau1.row(p) = tau.row(thinning_num*p - 1);
+        eta1(p,0) = eta(thinning_num*p - 1,0);
+        tau_eta1.slice(p) = tau_eta.slice(thinning_num*p - 1);
+        for(int k = 0; k < K; k++){
+          xi1(p,k) = xi(thinning_num*p - 1,k);
+        }
       }
 
       nu1.save(directory + "Nu" + std::to_string(q) + ".txt", arma::arma_ascii);
@@ -4007,6 +4072,10 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
       gamma1.save(directory + "Gamma" + std::to_string(q) +".txt");
       Phi1.save(directory + "Phi" + std::to_string(q) +".txt");
       Z1.save(directory + "Z" + std::to_string(q) +".txt", arma::arma_ascii);
+      xi1.save(directory + "Xi" + std::to_string(q) +".txt");
+      eta1.save(directory + "Eta" + std::to_string(q) +".txt");
+      tau_eta1.save(directory + "Tau_Eta" + std::to_string(q) +".txt", arma::arma_ascii);
+
 
       //reset all parameters
       nu.slice(0) = nu.slice(i % r_stored_iters);
@@ -4020,6 +4089,11 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
       gamma(0,0) = gamma(i % r_stored_iters, 0);
       Phi(0,0) = Phi(i % r_stored_iters, 0);
       Z.slice(0) = Z.slice(i % r_stored_iters);
+      eta(0,0) = eta(i % r_stored_iters,0);
+      tau_eta.slice(0) = tau_eta.slice(i % r_stored_iters);
+      for(int k = 0; k < K; k++){
+        xi(0,k) = xi(i % r_stored_iters,k);
+      }
 
       q = q + 1;
     }
@@ -4033,6 +4107,9 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
                                          Rcpp::Named("delta", delta),
                                          Rcpp::Named("sigma", sigma),
                                          Rcpp::Named("tau", tau),
+                                         Rcpp::Named("tau_eta", tau_eta),
+                                         Rcpp::Named("xi", xi),
+                                         Rcpp::Named("eta", eta),
                                          Rcpp::Named("gamma", gamma),
                                          Rcpp::Named("Phi", Phi),
                                          Rcpp::Named("Z", Z),

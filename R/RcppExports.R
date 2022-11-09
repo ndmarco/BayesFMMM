@@ -508,6 +508,10 @@ MV_Model_LLik <- function(dir, n_files, n_MCMC, Y) {
     .Call('_BayesFMMM_MV_Model_LLik', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, Y)
 }
 
+TestUpdateTauEtaMV1 <- function() {
+    .Call('_BayesFMMM_TestUpdateTauEtaMV1', PACKAGE = 'BayesFMMM')
+}
+
 #' Find initial starting position for nu and Z parameters for functional data
 #'
 #' Function for finding a good initial starting point for nu parameters and Z

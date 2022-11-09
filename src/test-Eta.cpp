@@ -351,21 +351,10 @@ arma::field<arma::cube> TestUpdateEtaMV(){
 
   arma::vec b_1(nu.n_cols, arma::fill::zeros);
   arma::mat B_1(nu.n_cols, nu.n_cols, arma::fill::zeros);
-  arma::mat P(nu.n_cols, nu.n_cols, arma::fill::zeros);
-  P.zeros();
-  for(int j = 0; j < P.n_rows; j++){
-    P(0,0) = 1;
-    if(j > 0){
-      P(j,j) = 2;
-      P(j-1,j) = -1;
-      P(j,j-1) = -1;
-    }
-    P(P.n_rows - 1, P.n_rows - 1) = 1;
-  }
 
   for(int i = 0; i < 250; i++){
     BayesFMMM::updateEtaMV(y_obs, tau_eta, Phi, xi, nu, Z, chi, sigma_sq,
-                           i, 250, P, X, b_1, B_1, eta_samp);
+                           i, 250, X, b_1, B_1, eta_samp);
   }
 
   arma::vec eta_ph = arma::zeros(150);
@@ -468,21 +457,10 @@ arma::field<arma::cube> TestUpdateEtaTemperedMV(){
 
   arma::vec b_1(nu.n_cols, arma::fill::zeros);
   arma::mat B_1(nu.n_cols, nu.n_cols, arma::fill::zeros);
-  arma::mat P(nu.n_cols, nu.n_cols, arma::fill::zeros);
-  P.zeros();
-  for(int j = 0; j < P.n_rows; j++){
-    P(0,0) = 1;
-    if(j > 0){
-      P(j,j) = 2;
-      P(j-1,j) = -1;
-      P(j,j-1) = -1;
-    }
-    P(P.n_rows - 1, P.n_rows - 1) = 1;
-  }
 
   for(int i = 0; i < 250; i++){
     BayesFMMM::updateEtaTemperedMV(0.5, y_obs, tau_eta, Phi, xi, nu, Z, chi,
-                                   sigma_sq, i, 250, P, X, b_1, B_1, eta_samp);
+                                   sigma_sq, i, 250, X, b_1, B_1, eta_samp);
   }
 
   arma::vec eta_ph = arma::zeros(150);
@@ -504,6 +482,91 @@ arma::field<arma::cube> TestUpdateEtaTemperedMV(){
   return mod;
 }
 
+// Tests updating Tau_eta
+//
+// @name TestUpdateTauEta
+arma::cube TestUpdateTauEta(){
+  arma::mat tau1 = {{1, 2, 2, 3, 5, 6},
+                    {1, 1, 2, 3, 4, 5}};
+  arma::mat tau = tau1.t();
+  arma::mat P(100, 100, arma::fill::zeros);
+  P.zeros();
+  for(int j = 0; j < P.n_rows; j++){
+    P(0,0) = 1;
+    if(j > 0){
+      P(j,j) = 2;
+      P(j-1,j) = -1;
+      P(j,j-1) = -1;
+    }
+    P(P.n_rows - 1, P.n_rows - 1) = 1;
+  }
+  arma::cube eta(100, 2, 6, arma::fill::zeros);
+  arma::cube tau_samp(6, 2, 200, arma::fill::zeros);
+  arma::vec zeros_nu(100, arma::fill::zeros);
+  for(int i = 0; i < 200; i++){
+    for(int j = 0; j < 6; j++){
+      for(int d = 0; d < 2; d++){
+        eta.slice(j).col(d) = arma::mvnrnd(zeros_nu, arma::pinv(P * tau(j,d)));
+      }
+    }
+    BayesFMMM::updateTauEta(1, 1, eta, i, 200, P, tau_samp);
+  }
+  arma::mat tau_est(6, 2, arma::fill::zeros);
+  arma::vec tau_ph(200, arma::fill::zeros);
+  for(int d = 0; d < 2; d++){
+    for(int i = 0; i < 6; i++){
+      for(int j = 0; j < 200; j++){
+        tau_ph[j] = tau_samp(i, d, j);
+      }
+      tau_est(i,d) = arma::median(tau_ph);
+    }
+  }
+
+  arma::cube mod = arma::zeros(6, 2, 2);
+  mod.slice(0) = tau_est;
+  mod.slice(1) = tau;
+  return mod;
+}
+
+// Tests updating Tau_eta for the Multivariate model
+//
+// @name TestUpdateTauEtaMV
+arma::cube TestUpdateTauEtaMV(){
+  arma::mat tau1 = {{1, 2, 2, 3, 5, 6},
+                   {1, 1, 2, 3, 4, 5}};
+  arma::mat tau = tau1.t();
+  arma::mat P(100, 100, arma::fill::zeros);
+  P.zeros();
+  for(int j = 0; j < P.n_rows; j++){
+    P(j,j) = 1;
+  }
+  arma::cube eta(100, 2, 6, arma::fill::zeros);
+  arma::cube tau_samp(6, 2, 200, arma::fill::zeros);
+  arma::vec zeros_nu(100, arma::fill::zeros);
+  for(int i = 0; i < 200; i++){
+    for(int j = 0; j < 6; j++){
+      for(int d = 0; d < 2; d++){
+        eta.slice(j).col(d) = arma::mvnrnd(zeros_nu, P * tau(j,d));
+      }
+    }
+    BayesFMMM::updateTauEtaMV(1, 1, eta, i, 200, tau_samp);
+  }
+  arma::mat tau_est(6, 2, arma::fill::zeros);
+  arma::vec tau_ph(200, arma::fill::zeros);
+  for(int d = 0; d < 2; d++){
+    for(int i = 0; i < 6; i++){
+      for(int j = 0; j < 200; j++){
+        tau_ph[j] = tau_samp(i, d, j);
+      }
+      tau_est(i,d) = arma::median(tau_ph);
+    }
+  }
+
+  arma::cube mod = arma::zeros(6, 2, 2);
+  mod.slice(0) = tau_est;
+  mod.slice(1) = tau;
+  return mod;
+}
 
 context("Unit tests for Eta parameters") {
   test_that("Sampler for Eta parameters"){
@@ -586,5 +649,40 @@ context("Unit tests for Eta parameters") {
     expect_true(similar == true);
   }
 
+  test_that("Sampler for Tau_eta parameters"){
+    Rcpp::Environment base_env("package:base");
+    Rcpp::Function set_seed_r = base_env["set.seed"];
+    set_seed_r(1);
+    arma::cube x = TestUpdateTauEta();
+    arma::mat est = x.slice(0);
+    arma::mat truth = x.slice(1);
+    bool similar = true;
+    for(int i = 0; i < est.n_rows; i++){
+      for(int j = 0; j < est.n_cols; j++){
+        if(std::abs(est(i,j) - truth(i,j)) > 0.7){
+          similar = false;
+        }
+      }
+    }
+    expect_true(similar == true);
+  }
+
+  test_that("Sampler for Tau_eta parameters for the multivariate model"){
+    Rcpp::Environment base_env("package:base");
+    Rcpp::Function set_seed_r = base_env["set.seed"];
+    set_seed_r(1);
+    arma::cube x = TestUpdateTauEtaMV();
+    arma::mat est = x.slice(0);
+    arma::mat truth = x.slice(1);
+    bool similar = true;
+    for(int i = 0; i < est.n_rows; i++){
+      for(int j = 0; j < est.n_cols; j++){
+        if(std::abs(est(i,j) - truth(i,j)) > 0.7){
+          similar = false;
+        }
+      }
+    }
+    expect_true(similar == true);
+  }
 }
 
