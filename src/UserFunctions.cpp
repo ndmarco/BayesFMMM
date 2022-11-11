@@ -4332,7 +4332,7 @@ Rcpp::List BMVMMM_warm_start_Mean_Cov_Adj(const int tot_mcmc_iters,
 //'                         internal_knots, est1$Z, est1$nu)
 //'
 //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
-//' MCMC.chain <-BHDFMMM_warm_startMean_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
+//' MCMC.chain <-BHDFMMM_warm_start_Mean_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
 //'                                         basis_degree, n_eigen, boundary_knots,
 //'                                         internal_knots, est1$Z, est1$pi, est1$alpha_3,
 //'                                         est2$delta, est2$gamma, est2$Phi, est2$A,
@@ -4704,7 +4704,7 @@ Rcpp::List BHDFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
 //' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
 //' \code{ReadVec}.
 //'
-//' @name BHDFMMM_warm_start_Mean_Adj
+//' @name BHDFMMM_warm_start_Mean_Cov_Adj
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param k Int containing the number of clusters
 //' @param Y List of vectors containing the observed values
@@ -4838,7 +4838,7 @@ Rcpp::List BHDFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
 //'                         internal_knots, est1$Z, est1$nu)
 //'
 //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
-//' MCMC.chain <-BHDFMMM_warm_startMean_Cov_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
+//' MCMC.chain <-BHDFMMM_warm_start_Mean_Cov_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
 //'                                             basis_degree, n_eigen, boundary_knots,
 //'                                             internal_knots, est1$Z, est1$pi, est1$alpha_3,
 //'                                             est2$delta, est2$gamma, est2$Phi, est2$A,
@@ -5194,11 +5194,11 @@ Rcpp::List BHDFMMM_warm_start_Mean_Cov_Adj(const int tot_mcmc_iters,
 }
 
 
-//' Performs MCMC for functional covariate adjusted (mean and covariance) models
+//' Performs MCMC for functional covariate adjusted (mean) models
 //'
 //' This function performs MCMC for a covariate adjusted mixed membership model
 //' for one dimensional functional data. This function is specifically for a
-//' meanand covariance adjusted model, so the covariates will affect the
+//' mean, so the covariates will not affect the
 //' covariance structure of the model.
 //' This function is meant to be used after using \code{BFMMM_Nu_Z_multiple_try}
 //' and \code{BFMMM_Theta_est}. This function will use the outputs of these two
@@ -5215,7 +5215,7 @@ Rcpp::List BHDFMMM_warm_start_Mean_Cov_Adj(const int tot_mcmc_iters,
 //' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
 //' \code{ReadVec}.
 //'
-//' @name BFMMM_warm_start_Mean_Cov_Adj
+//' @name BFMMM_warm_start_Mean_Adj
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param k Int containing the number of clusters
 //' @param Y List of vectors containing the observed values
@@ -5275,10 +5275,6 @@ Rcpp::List BHDFMMM_warm_start_Mean_Cov_Adj(const int tot_mcmc_iters,
 //'   \item{\code{sigma}}{sigma samples from the MCMC chain}
 //'   \item{\code{tau}}{tau samples from the MCMC chain}
 //'   \item{\code{tau_eta}}{tau_eta samples from the MCMC chain}
-//'   \item{\code{xi}}{xi samples from the MCMC chain}
-//'   \item{\code{delta_xi}}{delta_xi samples from the MCMC chain}
-//'   \item{\code{gamma_xi}}{gamma_xi samples from the MCMC chain}
-//'   \item{\code{A_xi}}{A_xi samples from the MCMC chain}
 //'   \item{\code{eta}}{eta samples from the MCMC chain}
 //'   \item{\code{gamma}}{gamma samples from the MCMC chain}
 //'   \item{\code{Phi}}{Phi samples from the MCMC chain}

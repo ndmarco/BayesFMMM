@@ -2189,7 +2189,7 @@ BMVMMM_warm_start_Mean_Cov_Adj <- function(tot_mcmc_iters, k, Y, X, n_eigen, Z_s
 #'                         internal_knots, est1$Z, est1$nu)
 #'
 #' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
-#' MCMC.chain <-BHDFMMM_warm_startMean_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
+#' MCMC.chain <-BHDFMMM_warm_start_Mean_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
 #'                                         basis_degree, n_eigen, boundary_knots,
 #'                                         internal_knots, est1$Z, est1$pi, est1$alpha_3,
 #'                                         est2$delta, est2$gamma, est2$Phi, est2$A,
@@ -2221,7 +2221,7 @@ BHDFMMM_warm_start_Mean_Adj <- function(tot_mcmc_iters, k, Y, X, time, n_funct, 
 #' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
 #' \code{ReadVec}.
 #'
-#' @name BHDFMMM_warm_start_Mean_Adj
+#' @name BHDFMMM_warm_start_Mean_Cov_Adj
 #' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 #' @param k Int containing the number of clusters
 #' @param Y List of vectors containing the observed values
@@ -2355,7 +2355,7 @@ BHDFMMM_warm_start_Mean_Adj <- function(tot_mcmc_iters, k, Y, X, time, n_funct, 
 #'                         internal_knots, est1$Z, est1$nu)
 #'
 #' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
-#' MCMC.chain <-BHDFMMM_warm_startMean_Cov_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
+#' MCMC.chain <-BHDFMMM_warm_start_Mean_Cov_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
 #'                                             basis_degree, n_eigen, boundary_knots,
 #'                                             internal_knots, est1$Z, est1$pi, est1$alpha_3,
 #'                                             est2$delta, est2$gamma, est2$Phi, est2$A,
@@ -2366,11 +2366,11 @@ BHDFMMM_warm_start_Mean_Cov_Adj <- function(tot_mcmc_iters, k, Y, X, time, n_fun
     .Call('_BayesFMMM_BHDFMMM_warm_start_Mean_Cov_Adj', PACKAGE = 'BayesFMMM', tot_mcmc_iters, k, Y, X, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0)
 }
 
-#' Performs MCMC for functional covariate adjusted (mean and covariance) models
+#' Performs MCMC for functional covariate adjusted (mean) models
 #'
 #' This function performs MCMC for a covariate adjusted mixed membership model
 #' for one dimensional functional data. This function is specifically for a
-#' meanand covariance adjusted model, so the covariates will affect the
+#' mean, so the covariates will not affect the
 #' covariance structure of the model.
 #' This function is meant to be used after using \code{BFMMM_Nu_Z_multiple_try}
 #' and \code{BFMMM_Theta_est}. This function will use the outputs of these two
@@ -2387,7 +2387,7 @@ BHDFMMM_warm_start_Mean_Cov_Adj <- function(tot_mcmc_iters, k, Y, X, time, n_fun
 #' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
 #' \code{ReadVec}.
 #'
-#' @name BFMMM_warm_start_Mean_Cov_Adj
+#' @name BFMMM_warm_start_Mean_Adj
 #' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 #' @param k Int containing the number of clusters
 #' @param Y List of vectors containing the observed values
@@ -2447,10 +2447,6 @@ BHDFMMM_warm_start_Mean_Cov_Adj <- function(tot_mcmc_iters, k, Y, X, time, n_fun
 #'   \item{\code{sigma}}{sigma samples from the MCMC chain}
 #'   \item{\code{tau}}{tau samples from the MCMC chain}
 #'   \item{\code{tau_eta}}{tau_eta samples from the MCMC chain}
-#'   \item{\code{xi}}{xi samples from the MCMC chain}
-#'   \item{\code{delta_xi}}{delta_xi samples from the MCMC chain}
-#'   \item{\code{gamma_xi}}{gamma_xi samples from the MCMC chain}
-#'   \item{\code{A_xi}}{A_xi samples from the MCMC chain}
 #'   \item{\code{eta}}{eta samples from the MCMC chain}
 #'   \item{\code{gamma}}{gamma samples from the MCMC chain}
 #'   \item{\code{Phi}}{Phi samples from the MCMC chain}
