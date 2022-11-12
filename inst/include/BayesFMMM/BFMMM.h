@@ -3898,7 +3898,7 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
       for(int l = 1; l < ((2 * N_t) + 1); l++){
         updateZTempered_MMMVCovariateAdj(beta_ladder(temp_ind), y_obs,
                                          Phi_TT(l,0), xi_TT, nu_TT.slice(l),
-                                         eta(l,0), chi_TT.slice(l), pi_TT.col(l),
+                                         eta_TT(l,0), chi_TT.slice(l), pi_TT.col(l),
                                          sigma_TT(l), l, (2 * N_t) + 1,
                                          alpha_3_TT(l), a_Z_PM, X, Z_ph, Z_TT);
         updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
@@ -4433,7 +4433,7 @@ inline Rcpp::List BFMMM_MTT_warm_start_MeanAdj(const arma::field<arma::vec>& y_o
       // Perform tempered transitions
       for(int l = 1; l < ((2 * N_t) + 1); l++){
         updateZTempered_PMCovariateAdj(beta_ladder(temp_ind), y_obs, B_obs,
-                                       Phi_TT(l,0), xi_TT, nu_TT.slice(l), eta(l,0),
+                                       Phi_TT(l,0), xi_TT, nu_TT.slice(l), eta_TT(l,0),
                                        chi_TT.slice(l), pi_TT.col(l), sigma_TT(l),
                                        l, (2 * N_t) + 1, alpha_3_TT(l), a_Z_PM, X,
                                        Z_ph, Z_TT);
@@ -4979,7 +4979,7 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_Mean_CovAdj(const arma::mat& y_obs,
       for(int l = 1; l < ((2 * N_t) + 1); l++){
         updateZTempered_MMMVCovariateAdj(beta_ladder(temp_ind), y_obs,
                                          Phi_TT(l,0), xi_TT, nu_TT.slice(l),
-                                         eta(l,0), chi_TT.slice(l), pi_TT.col(l),
+                                         eta_TT(l,0), chi_TT.slice(l), pi_TT.col(l),
                                          sigma_TT(l), l, (2 * N_t) + 1,
                                          alpha_3_TT(l), a_Z_PM, X, Z_ph, Z_TT);
         updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
@@ -5624,7 +5624,7 @@ inline Rcpp::List BFMMM_MTT_warm_start_Mean_CovAdj(const arma::field<arma::vec>&
       // Perform tempered transitions
       for(int l = 1; l < ((2 * N_t) + 1); l++){
         updateZTempered_PMCovariateAdj(beta_ladder(temp_ind), y_obs, B_obs,
-                                       Phi_TT(l,0), xi_TT, nu_TT.slice(l), eta(l,0),
+                                       Phi_TT(l,0), xi_TT, nu_TT.slice(l), eta_TT(l,0),
                                        chi_TT.slice(l), pi_TT.col(l), sigma_TT(l),
                                        l, (2 * N_t) + 1, alpha_3_TT(l), a_Z_PM, X,
                                        Z_ph, Z_TT);
@@ -5637,7 +5637,6 @@ inline Rcpp::List BFMMM_MTT_warm_start_Mean_CovAdj(const arma::field<arma::vec>&
             tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta_TT(k, j, l);
           }
         }
-
         updatePhiTemperedCovariateAdj(beta_ladder(temp_ind), y_obs, B_obs,
                                       nu_TT.slice(l), eta_TT(l,0), gamma_TT(l,0),
                                       tilde_tau_phi, xi_TT, Z_TT.slice(l), chi_TT.slice(l),
@@ -5677,7 +5676,6 @@ inline Rcpp::List BFMMM_MTT_warm_start_Mean_CovAdj(const arma::field<arma::vec>&
             }
           }
         }
-
         updateXiTemperedCovariateAdj(beta_ladder(temp_ind), y_obs, B_obs,
                                        nu_TT.slice(l), eta_TT(l,0),
                                        gamma_xi_TT, tilde_tau_xi, Phi_TT(l,0),
@@ -5690,7 +5688,6 @@ inline Rcpp::List BFMMM_MTT_warm_start_Mean_CovAdj(const arma::field<arma::vec>&
                   var_epsilon1, var_epsilon2, l, (2 * N_t) + 1, A_xi_TT);
         updateGammaXi(nu_1, delta_xi_TT(l,0), xi_TT, l, (2 * N_t) + 1,
                       gamma_xi_TT);
-        Rcpp::Rcout << "step: " << l<< "\n";
         // update temp_ind
         if(l < N_t){
           temp_ind = temp_ind + 1;
@@ -6197,7 +6194,7 @@ inline Rcpp::List BHDFMMM_MTT_warm_start_MeanAdj(const arma::field<arma::vec>& y
       // Perform tempered transitions
       for(int l = 1; l < ((2 * N_t) + 1); l++){
         updateZTempered_PMCovariateAdj(beta_ladder(temp_ind), y_obs, B_obs,
-                                       Phi_TT(l,0), xi_TT, nu_TT.slice(l), eta(l,0),
+                                       Phi_TT(l,0), xi_TT, nu_TT.slice(l), eta_TT(l,0),
                                        chi_TT.slice(l), pi_TT.col(l), sigma_TT(l),
                                        l, (2 * N_t) + 1, alpha_3_TT(l), a_Z_PM, X,
                                        Z_ph, Z_TT);
@@ -6758,7 +6755,7 @@ inline Rcpp::List BHDFMMM_MTT_warm_start_Mean_CovAdj(const arma::field<arma::vec
       // Perform tempered transitions
       for(int l = 1; l < ((2 * N_t) + 1); l++){
         updateZTempered_PMCovariateAdj(beta_ladder(temp_ind), y_obs, B_obs,
-                                       Phi_TT(l,0), xi_TT, nu_TT.slice(l), eta(l,0),
+                                       Phi_TT(l,0), xi_TT, nu_TT.slice(l), eta_TT(l,0),
                                        chi_TT.slice(l), pi_TT.col(l), sigma_TT(l),
                                        l, (2 * N_t) + 1, alpha_3_TT(l), a_Z_PM, X,
                                        Z_ph, Z_TT);
