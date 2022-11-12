@@ -508,6 +508,68 @@ MV_Model_LLik <- function(dir, n_files, n_MCMC, Y) {
     .Call('_BayesFMMM_MV_Model_LLik', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, Y)
 }
 
+#' Calculates the credible interval for the mean (Functional covariate adjusted model)
+#'
+#' This function calculates a credible interval with the user specified coverage
+#' in a covariate adjusted model. The function returns the estimated mean functions
+#' at the specified value of covariates (specified in 'X').
+#' In order to run this function, the directory of the posterior samples needs
+#' to be specified. The function will return the credible intervals and the median
+#' posterior estimate of the mean function at the time points specified by the
+#' user (\code{time} variable) and the covariate value specified (\code{x_i} variable).
+#' The user can specify if they would like the algorithm
+#' to automatically rescale the parameters for interpretability (suggested). If
+#' the user chooses to rescale, then all class memberships will be rescaled so
+#' that at least one observation is in only one class. The user can also specify
+#' if they want pointwise credible intervals or simultaneous credible intervals.
+#' The simultaneous intervals will likely be wider than the pointwise credible
+#' intervals.
+#'
+#' @name FMeanCI_Adj
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param time Vector containing time points of interest
+#' @param X Matrix containing covariates at points of interest (of dimension N x D (number of points of interest x number of covariates))
+#' @param basis_degree Int containing the degree of B-splines used
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
+#' @param k Int containing the cluster group of which you want to get the credible interval for
+#' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
+#' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
+#' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
+#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior samples fo the mean function are also returned.
+#'
+#' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
+#'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+#'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+#'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+#'   \item{\code{k}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
+#'   \item{\code{alpha}}{must be between 0 and 1}
+#'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+#' }
+#'
+#' @examples
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data","", package = "BayesFMMM")
+#' n_files <- 1
+#' time <- seq(0, 990, 10)
+#' k <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(200, 400, 600, 800)
+#'
+#' ## Get CI for mean function
+#' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k)
+#'
+#' @export
+FMeanCI_Adj <- function(dir, n_files, time, X, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1) {
+    .Call('_BayesFMMM_FMeanCI_Adj', PACKAGE = 'BayesFMMM', dir, n_files, time, X, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop)
+}
+
 #' Find initial starting position for nu and Z parameters for functional data
 #'
 #' Function for finding a good initial starting point for nu parameters and Z

@@ -297,6 +297,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// FMeanCI_Adj
+Rcpp::List FMeanCI_Adj(const std::string dir, const int n_files, const arma::vec time, const arma::mat X, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const int k, const double alpha, bool rescale, const bool simultaneous, const double burnin_prop);
+RcppExport SEXP _BayesFMMM_FMeanCI_Adj(SEXP dirSEXP, SEXP n_filesSEXP, SEXP timeSEXP, SEXP XSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP kSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP simultaneousSEXP, SEXP burnin_propSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type boundary_knots(boundary_knotsSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
+    Rcpp::traits::input_parameter< const int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< bool >::type rescale(rescaleSEXP);
+    Rcpp::traits::input_parameter< const bool >::type simultaneous(simultaneousSEXP);
+    Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
+    rcpp_result_gen = Rcpp::wrap(FMeanCI_Adj(dir, n_files, time, X, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop));
+    return rcpp_result_gen;
+END_RCPP
+}
 // BFMMM_Nu_Z_multiple_try
 Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters, const int n_try, const int k, const arma::field<arma::vec> Y, const arma::field<arma::vec> time, const int n_funct, const int basis_degree, const int n_eigen, const arma::vec boundary_knots, const arma::vec internal_knots, Rcpp::Nullable<Rcpp::NumericVector> c, const double b, const double alpha1l, const double alpha2l, const double beta1l, const double beta2l, const double a_Z_PM, const double a_pi_PM, const double var_alpha3, const double var_epsilon1, const double var_epsilon2, const double alpha, const double beta, const double alpha_0, const double beta_0);
 RcppExport SEXP _BayesFMMM_BFMMM_Nu_Z_multiple_try(SEXP tot_mcmc_itersSEXP, SEXP n_trySEXP, SEXP kSEXP, SEXP YSEXP, SEXP timeSEXP, SEXP n_functSEXP, SEXP basis_degreeSEXP, SEXP n_eigenSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP cSEXP, SEXP bSEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP) {
@@ -1075,6 +1097,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFMMM_MV_Model_BIC", (DL_FUNC) &_BayesFMMM_MV_Model_BIC, 5},
     {"_BayesFMMM_MV_Model_DIC", (DL_FUNC) &_BayesFMMM_MV_Model_DIC, 5},
     {"_BayesFMMM_MV_Model_LLik", (DL_FUNC) &_BayesFMMM_MV_Model_LLik, 4},
+    {"_BayesFMMM_FMeanCI_Adj", (DL_FUNC) &_BayesFMMM_FMeanCI_Adj, 12},
     {"_BayesFMMM_BFMMM_Nu_Z_multiple_try", (DL_FUNC) &_BayesFMMM_BFMMM_Nu_Z_multiple_try, 25},
     {"_BayesFMMM_BFMMM_Theta_est", (DL_FUNC) &_BayesFMMM_BFMMM_Theta_est, 29},
     {"_BayesFMMM_BFMMM_warm_start", (DL_FUNC) &_BayesFMMM_BFMMM_warm_start, 43},
