@@ -104,11 +104,11 @@ inline void updateTauEta(const double& alpha,
 // @param tot_mcmc_iters Int containing total number of MCMC iterations
 // @param tau_eta Cube containing tau for all mcmc iterations
 inline void updateTauEtaMV(const double& alpha,
-                        const double& beta,
-                        const arma::cube& eta,
-                        const int& iter,
-                        const int& tot_mcmc_iters,
-                        arma::cube& tau_eta){
+                           const double& beta,
+                           const arma::cube& eta,
+                           const int& iter,
+                           const int& tot_mcmc_iters,
+                           arma::cube& tau_eta){
   double a = 0;
   double b = 0;
   for(int j = 0; j < tau_eta.n_rows; j++){

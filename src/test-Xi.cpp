@@ -32,8 +32,7 @@ arma::field<arma::cube> TestUpdateXiCovariateAdj(){
 
   // Make Phi matrix
   arma::cube Phi(3,8,2);
-  for(int i=0; i < 2; i++)
-  {
+  for(int i=0; i < 2; i++){
     Phi.slice(i) = (2-i) * arma::randn<arma::mat>(3,8);
   }
 
