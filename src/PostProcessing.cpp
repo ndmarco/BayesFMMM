@@ -2778,21 +2778,21 @@ Rcpp::List FMeanCI_Adj(const std::string dir,
     Rcpp::stop("The number of elements in 'x_i' must be equal to the number of covariates in the model");
   }
 
-  arma::field<arma::cube> eta_samp1(nu_samp.n_slices, 1);
+  arma::field<arma::cube> eta_samp1(nu_samp1.n_slices, 1);
   for(int l = 0; l < nu_i.n_slices; l++){
     eta_samp1(l,0) = eta_i(l,0);
   }
 
   for(int i = 1; i < n_files; i++){
-    eta_i.load(dir + "Eta");
+    eta_i.load(dir + "Eta" + std::to_string(i) +".txt");
     for(int l = 0; l < nu_i.n_slices; l++){
       eta_samp1((i * nu_i.n_slices) + l, 0) = eta_i(l,0);
     }
   }
 
-  arma::field<arma::cube> eta_samp(nu_samp.n_slices * (1 - burnin_prop), 1);
-  for(int i = 0; i < std::round(nu_samp.n_slices * (1 - burnin_prop)); i++){
-    eta_samp(i,0) = eta_samp1(i + std::round(nu_samp.n_slices * burnin_prop), 0);
+  arma::field<arma::cube> eta_samp(nu_samp.n_slices, 1);
+  for(int i = 0; i < std::round(nu_samp.n_slices); i++){
+    eta_samp(i,0) = eta_samp1(i + std::round(nu_samp1.n_slices * burnin_prop), 0);
   }
 
   splines2::BSpline bspline;
@@ -2845,15 +2845,15 @@ Rcpp::List FMeanCI_Adj(const std::string dir,
 
         // transform eta parameters
         for(int d = 0; d < X.n_cols; d++){
-          for(int k = 0; k < nu_samp.n_rows; k++){
+          for(int r = 0; r < nu_samp.n_rows; r++){
             for(int p = 0; p < nu_samp.n_cols; p++){
-              eta_ph(k,p) = eta_samp(j,0)(p,d,k);
+              eta_ph(r,p) = eta_samp(j,0)(p,d,r);
             }
           }
           eta_ph = transform_mat * eta_ph;
-          for(int k = 0; k < nu_samp.n_rows; k++){
+          for(int r = 0; r < nu_samp.n_rows; r++){
             for(int p = 0; p < nu_samp.n_cols; p++){
-              eta_samp(j,0)(p,d,k) = eta_ph(k,p);
+              eta_samp(j,0)(p,d,r) = eta_ph(r,p);
             }
           }
         }
@@ -2861,23 +2861,27 @@ Rcpp::List FMeanCI_Adj(const std::string dir,
       for(int n = 0; n < X.n_rows; n++){
         for(int i = 0; i < nu_samp.n_slices; i++){
           f_samp.slice(i).row(n) = (B * (nu_samp.slice(i).row(k-1).t() +
-            (X.row(n) * eta_samp(i,0).slice(k-1)).t())).t();
+            (eta_samp(i,0).slice(k-1) * X.row(n).t()))).t();
         }
       }
     } else{
       for(int n = 0; n < X.n_rows; n++){
         for(int i = 0; i < nu_samp.n_slices; i++){
           f_samp.slice(i).row(n) = (B * (nu_samp.slice(i).row(k-1).t() +
-            (X.row(n) * eta_samp(i,0).slice(k-1)).t())).t();
+            (eta_samp(i,0).slice(k-1) * X.row(n).t()))).t();
         }
       }
     }
 
     arma::vec p = {alpha/2, 0.5, 1 - (alpha/2)};
     arma::vec q = arma::zeros(3);
+    arma::vec f_ph = arma::zeros(nu_samp.n_slices);
     for(int n = 0; n < X.n_rows; n++){
       for(int i = 0; i < time.n_elem; i++){
-        q = arma::quantile(f_samp.slice(i).row(n), p);
+        for(int r = 0; r < nu_samp.n_slices; r++){
+          f_ph(r) = f_samp(n,i,r);
+        }
+        q = arma::quantile(f_ph, p);
         CI_Lower(n,i) = q(0);
         CI_50(n,i) = q(1);
         CI_Upper(n,i) = q(2);
@@ -2917,15 +2921,15 @@ Rcpp::List FMeanCI_Adj(const std::string dir,
 
         // transform eta parameters
         for(int d = 0; d < X.n_cols; d++){
-          for(int k = 0; k < nu_samp.n_rows; k++){
+          for(int r = 0; r < nu_samp.n_rows; r++){
             for(int p = 0; p < nu_samp.n_cols; p++){
-              eta_ph(k,p) = eta_samp(j,0)(p,d,k);
+              eta_ph(r,p) = eta_samp(j,0)(p,d,r);
             }
           }
           eta_ph = transform_mat * eta_ph;
-          for(int k = 0; k < nu_samp.n_rows; k++){
+          for(int r = 0; r < nu_samp.n_rows; r++){
             for(int p = 0; p < nu_samp.n_cols; p++){
-              eta_samp(j,0)(p,d,k) = eta_ph(k,p);
+              eta_samp(j,0)(p,d,r) = eta_ph(r,p);
             }
           }
         }
@@ -2934,7 +2938,7 @@ Rcpp::List FMeanCI_Adj(const std::string dir,
       for(int n = 0; n < X.n_rows; n++){
         for(int i = 0; i < nu_samp.n_slices; i++){
           f_samp.slice(i).row(n) = (B * (nu_samp.slice(i).row(k-1).t() +
-            (X.row(n) * eta_samp(i,0).slice(k-1)).t())).t();
+            (eta_samp(i,0).slice(k-1) * X.row(n).t()))).t();
         }
       }
       arma::mat f_mean_ph = arma::zeros(nu_samp.n_slices, time.n_elem);
@@ -2971,7 +2975,7 @@ Rcpp::List FMeanCI_Adj(const std::string dir,
       for(int n = 0; n < X.n_rows; n++){
         for(int i = 0; i < nu_samp.n_slices; i++){
           f_samp.slice(i).row(n) = (B * (nu_samp.slice(i).row(k-1).t() +
-            (X.row(n) * eta_samp(i,0).slice(k-1)).t())).t();
+            (eta_samp(i,0).slice(k-1) * X.row(n).t()))).t();
         }
       }
       arma::mat f_mean_ph = arma::zeros(nu_samp.n_slices, time.n_elem);
