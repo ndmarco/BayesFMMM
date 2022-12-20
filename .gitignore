@@ -5,7 +5,7 @@
 src/PostProcessing.o 
 src/RcppExports.o 
 src/Test.o 
-src/UserFunctions.o 
+src/UserFunctions.o
 src/test-BSplines.o 
 src/test-Chi.o 
 src/test-Eta.o 
@@ -15,3 +15,4 @@ src/test-Phi.o
 src/test-Sigma.o 
 src/test-Xi.o 
 src/test-runner.o
+.DS_Store
