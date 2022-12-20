@@ -2,7 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-.DS_Store
 src/PostProcessing.o 
 src/RcppExports.o 
 src/Test.o 
@@ -16,3 +15,4 @@ src/test-Phi.o
 src/test-Sigma.o 
 src/test-Xi.o 
 src/test-runner.o
+.DS_Store
