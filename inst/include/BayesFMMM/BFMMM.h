@@ -4118,6 +4118,425 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
 }
 
 
+// Conducts un-tempered MCMC to mean and allocation parameters for
+// covariate adjusted models
+//
+// @name BFMMM_Nu_Z_Cov_Adj
+// @param y_obs Field (list) of vectors containing the observed values
+// @param t_obs Field (list) of vectors containing time points of observed values
+// @param X Matrix of covariates of interest
+// @param n_funct Int containing number of functions observed
+// @param K Int containing the number of clusters
+// @param basis degree Int containing the degree of B-splines used
+// @param M Int containing the number of eigenfunctions
+// @param boundary_knots Vector containing the boundary points of our index domain of interest
+// @param internal_knots Vector location of internal knots for B-splines
+// @param tot_mcmc_iters Int containing total number of MCMC iterations
+// @param r_stored_iters Int containing number of iterations performed for each batch
+// @param c Vector containing hyperparmeters for pi
+// @param b double containing hyperparameter for alpha_3
+// @param a_12 Vector containing hyperparameters for sampling from delta
+// @param alpha1l Double containing hyperparameters for sampling from A
+// @param alpha2l Double containing hyperparameters for sampling from A
+// @param beta1l Double containing hyperparameters for sampling from A
+// @param beta2l Double containing hyperparameters for sampling from A
+// @param var_pi Double containing variance parameter of the random walk MH for pi parameter
+// @param var_Z Double containing variance parameter of the random walk MH for Z parameter
+// @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+// @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param alpha_nu Double containing hyperparameters for sampling from tau_nu
+// @param beta_nu Double containing hyperparameters for sampling from tau_nu
+// @param alpha_eta Double containing hyperparameters for sampling from tau_eta
+// @param beta_eta Double containing hyperparameters for sampling from tau_eta
+// @param alpha_0 Double containing hyperparameters for sampling from sigma
+// @returns params List of objects containing the MCMC samples from the last batch
+inline Rcpp::List BFMMM_Nu_Z_Cov_Adj(const arma::field<arma::vec>& y_obs,
+                                     const arma::field<arma::vec>& t_obs,
+                                     const arma::mat& X,
+                                     const int& n_funct,
+                                     const int& K,
+                                     const int basis_degree,
+                                     const int& M,
+                                     const arma::vec boundary_knots,
+                                     const arma::vec internal_knots,
+                                     const int& tot_mcmc_iters,
+                                     const arma::vec& c,
+                                     const double& b,
+                                     const double& alpha1l,
+                                     const double& alpha2l,
+                                     const double& beta1l,
+                                     const double& beta2l,
+                                     const double& a_Z_PM,
+                                     const double& a_pi_PM,
+                                     const double& var_alpha3,
+                                     const double& var_epsilon1,
+                                     const double& var_epsilon2,
+                                     const double& alpha_nu,
+                                     const double& beta_nu,
+                                     const double& alpha_eta,
+                                     const double& beta_eta,
+                                     const double& alpha_0,
+                                     const double& beta_0){
+  // Make B_obs
+  arma::field<arma::mat> B_obs(n_funct,1);
+  int P = internal_knots.n_elem + basis_degree + 1;
+  int D = X.n_cols;
+
+  for(int i = 0; i < n_funct; i++){
+    splines2::BSpline bspline;
+    // Create Bspline object
+    bspline = splines2::BSpline(t_obs(i,0), internal_knots, basis_degree,
+                                boundary_knots);
+    // Get Basis matrix (100 x 8)
+    arma::mat bspline_mat {bspline.basis(true)};
+    B_obs(i,0) = bspline_mat;
+  }
+
+  arma::mat P_mat(P, P, arma::fill::zeros);
+  P_mat.zeros();
+  for(int j = 0; j < P_mat.n_rows; j++){
+    P_mat(0,0) = 1;
+    if(j > 0){
+      P_mat(j,j) = 2;
+      P_mat(j-1,j) = -1;
+      P_mat(j,j-1) = -1;
+    }
+    P_mat(P_mat.n_rows - 1, P_mat.n_rows - 1) = 1;
+  }
+
+  arma::cube nu(K, P, tot_mcmc_iters, arma::fill::randn);
+  arma::cube chi(n_funct, M, tot_mcmc_iters, arma::fill::zeros);
+  arma::mat pi(K, tot_mcmc_iters, arma::fill::zeros);
+  arma::vec pi_ph = arma::zeros(K);
+  pi.col(0) = rdirichlet(c);
+  arma::vec sigma(tot_mcmc_iters, arma::fill::ones);
+  arma::vec Z_ph = arma::zeros(K);
+  arma::vec alpha_3 = arma::ones(tot_mcmc_iters);
+  arma::cube Z = arma::randi<arma::cube>(n_funct, K, tot_mcmc_iters,
+                                         arma::distr_param(0,1));
+
+  //parameters for covariate adjusted
+  arma::field<arma::cube> eta(tot_mcmc_iters, 1);
+  arma::field<arma::cube> xi(tot_mcmc_iters, K);
+  arma::cube tau_eta = arma::ones(K, D, tot_mcmc_iters);
+  arma::field<arma::cube> gamma(tot_mcmc_iters,1);
+  arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
+
+  for(int i = 0; i < tot_mcmc_iters; i++){
+    gamma(i,0) = arma::cube(K, P, M, arma::fill::ones);
+    Phi(i,0) = arma::randn(K, P, M);
+    eta(i,0) = arma::zeros(P, D, K);
+    for(int k = 0; k < K; k++){
+      xi(i,k) = arma::zeros(P, D, M);
+    }
+  }
+
+  for(int i = 0; i < n_funct; i++){
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
+  }
+
+  arma::cube delta(K, M, tot_mcmc_iters, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, tot_mcmc_iters);
+  arma::vec loglik = arma::zeros(tot_mcmc_iters);
+
+
+  arma::vec m_1(P, arma::fill::zeros);
+  arma::mat M_1(P, P, arma::fill::zeros);
+  arma::mat tau(tot_mcmc_iters, K, arma::fill::ones);
+
+  arma::vec b_1(P, arma::fill::zeros);
+  arma::mat B_1(P, P, arma::fill::zeros);
+
+  for(int i = 0; i < tot_mcmc_iters; i++){
+    updateZ_PMCovariateAdj(y_obs, B_obs, Phi(i,0), xi,
+                           nu.slice(i), eta(i,0), chi.slice(i),
+                           pi.col(i), sigma(i),
+                           i, tot_mcmc_iters, alpha_3(i),
+                           a_Z_PM, X, Z_ph, Z);
+    updatePi_PM(alpha_3(i) ,Z.slice(i), c,
+                (i), tot_mcmc_iters, a_pi_PM, pi_ph, pi);
+
+    updateAlpha3(pi.col(i), b, Z.slice(i),
+                 (i), tot_mcmc_iters, var_alpha3, alpha_3);
+
+    updateNuCovariateAdj(y_obs, B_obs, tau.row((i)).t(),
+                         Phi((i),0), xi, eta(i,0), Z.slice((i)),
+                         chi.slice((i)), sigma((i)),
+                         (i), tot_mcmc_iters, P_mat, X, b_1, B_1, nu);
+
+    updateTau(alpha_nu, beta_nu, nu.slice((i)), (i),
+              tot_mcmc_iters, P_mat, tau);
+
+    updateSigmaCovariateAdj(y_obs, B_obs, alpha_0, beta_0,
+                            nu.slice((i)), eta(i,0), Phi((i),0), xi,
+                            Z.slice((i)), chi.slice((i)),
+                            (i), tot_mcmc_iters, X, sigma);
+    updateEta(y_obs, B_obs, tau_eta.slice(i), Phi(i,0),
+              xi, nu.slice(i), Z.slice(i), chi.slice(i), sigma(i),
+              i, tot_mcmc_iters, P_mat, X, b_1, B_1, eta);
+
+    updateTauEta(alpha_eta, beta_eta, eta(i,0),
+                 (i), tot_mcmc_iters, P_mat, tau_eta);
+
+    // Calculate log likelihood
+    loglik((i)) =  calcLikelihoodCovariateAdj(y_obs, B_obs, nu.slice((i)), eta(i,0),
+           Phi((i),0), xi, Z.slice((i)), chi.slice((i)), i, X, sigma((i)));
+    if(((i+1) % 100) == 0){
+      Rcpp::Rcout << "Iteration: " << i+1 << "\n";
+      Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i)-19, (i))) << "\n";
+      Rcpp::checkUserInterrupt();
+    }
+  }
+  Rcpp::List params = Rcpp::List::create(Rcpp::Named("nu", nu),
+                                         Rcpp::Named("eta", eta),
+                                         Rcpp::Named("pi", pi),
+                                         Rcpp::Named("alpha_3", alpha_3),
+                                         Rcpp::Named("A", A),
+                                         Rcpp::Named("delta", delta),
+                                         Rcpp::Named("sigma", sigma),
+                                         Rcpp::Named("tau", tau),
+                                         Rcpp::Named("tau_eta", tau_eta),
+                                         Rcpp::Named("Z", Z),
+                                         Rcpp::Named("loglik", loglik));
+  return params;
+}
+
+// Conducts un-tempered MCMC to estimate the posterior distribution of parameters not related to Z or Nu, conditioned on a value of Nu and Z
+//
+// @name BFMMM_Theta
+// @param y_obs Field (list) of vectors containing the observed values
+// @param t_obs Field (list) of vectors containing time points of observed values
+// @param n_funct Int containing number of functions observed
+// @param K Int containing the number of clusters
+// @param basis degree Int containing the degree of B-splines used
+// @param M Int containing the number of eigenfunctions
+// @param boundary_knots Vector containing the boundary points of our index domain of interest
+// @param internal_knots Vector location of internal knots for B-splines
+// @param tot_mcmc_iters Int containing total number of MCMC iterations
+// @param c Vector containing hyperparmeter for pi
+// @param b double containing hyperparamete for alpha_3
+// @param alpha1l Double containing hyperparameter for sampling from A
+// @param alpha2l Double containing hyperparameter for sampling from A
+// @param beta1l Double containing hyperparameter for sampling from A
+// @param beta2l Double containing hyperparameter for sampling from A
+// @param var_pi Double containing variance parameter of the random walk MH for pi parameter
+// @param var_Z Double containing variance parameter of the random walk MH for Z parameter
+// @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+// @param var_epslion1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param var_epslion2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param alpha Double containing hyperparameter for sampling from tau
+// @param beta Double containing hyperparameter for sampling from tau
+// @param alpha_0 Double containing hyperparameter for sampling from sigma
+// @param beta_0 Double containing hyperparameter for sampling from sigma
+// @param Z_est Matrix containing Z values to be conditioned on
+// @param nu_est Matrix containing nu values to be conditioned on
+// @returns params List of objects containing the MCMC samples from the last batch
+inline Rcpp::List BFMMM_Theta_Cov_Adj(const arma::field<arma::vec>& y_obs,
+                                      const arma::field<arma::vec>& t_obs,
+                                      const arma::mat& X,
+                                      const int& n_funct,
+                                      const int& K,
+                                      const int basis_degree,
+                                      const int& M,
+                                      const arma::vec boundary_knots,
+                                      const arma::vec internal_knots,
+                                      const int& tot_mcmc_iters,
+                                      const arma::vec& c,
+                                      const double& b,
+                                      const double& nu_1,
+                                      const double& alpha1l,
+                                      const double& alpha2l,
+                                      const double& beta1l,
+                                      const double& beta2l,
+                                      const double& a_Z_PM,
+                                      const double& a_pi_PM,
+                                      const double& var_alpha3,
+                                      const double& var_epsilon1,
+                                      const double& var_epsilon2,
+                                      const double& alpha_nu,
+                                      const double& beta_nu,
+                                      const double& alpha_eta,
+                                      const double& beta_eta,
+                                      const double& alpha_0,
+                                      const double& beta_0,
+                                      const arma::mat& Z_est,
+                                      const arma::mat& nu_est,
+                                      const arma::cube& eta_est,
+                                      const bool covariance_adj){
+  // Make B_obs
+  arma::field<arma::mat> B_obs(n_funct,1);
+  int P = internal_knots.n_elem + basis_degree + 1;
+  int D = X.n_cols;
+
+  for(int i = 0; i < n_funct; i++){
+    splines2::BSpline bspline;
+    // Create Bspline object
+    bspline = splines2::BSpline(t_obs(i,0), internal_knots, basis_degree,
+                                boundary_knots);
+    // Get Basis matrix (100 x 8)
+    arma::mat bspline_mat {bspline.basis(true)};
+    B_obs(i,0) = bspline_mat;
+  }
+
+  arma::mat P_mat(P, P, arma::fill::zeros);
+  P_mat.zeros();
+  for(int j = 0; j < P_mat.n_rows; j++){
+    P_mat(0,0) = 1;
+    if(j > 0){
+      P_mat(j,j) = 2;
+      P_mat(j-1,j) = -1;
+      P_mat(j,j-1) = -1;
+    }
+    P_mat(P_mat.n_rows - 1, P_mat.n_rows - 1) = 1;
+  }
+
+  arma::cube nu(K, P, tot_mcmc_iters, arma::fill::randn);
+  arma::cube chi(n_funct, M, tot_mcmc_iters, arma::fill::randn);
+  arma::mat pi(K, tot_mcmc_iters, arma::fill::zeros);
+  arma::vec pi_ph = arma::zeros(K);
+  pi.col(0) = rdirichlet(c);
+  arma::vec sigma(tot_mcmc_iters, arma::fill::ones);
+  arma::vec Z_ph = arma::zeros(K);
+  arma::vec alpha_3 = arma::ones(tot_mcmc_iters);
+  arma::cube Z = arma::randi<arma::cube>(n_funct, K, tot_mcmc_iters,
+                                         arma::distr_param(0,1));
+
+  //parameters for covariate adjusted
+  arma::field<arma::cube> eta(tot_mcmc_iters, 1);
+  arma::field<arma::cube> xi(tot_mcmc_iters, K);
+  arma::cube tau_eta = arma::ones(K, D, tot_mcmc_iters);
+  arma::field<arma::cube> gamma_xi(tot_mcmc_iters, K);
+  arma::field<arma::cube> delta_xi(tot_mcmc_iters, 1);
+  arma::field<arma::cube> A_xi(tot_mcmc_iters, 1);
+  arma::field<arma::cube> gamma(tot_mcmc_iters,1);
+  arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
+
+  for(int i = 0; i < tot_mcmc_iters; i++){
+    gamma(i,0) = arma::cube(K, P, M, arma::fill::ones);
+    Phi(i,0) = arma::randn(K, P, M);
+    eta(i,0) = arma::zeros(P, D, K);
+    delta_xi(i,0) = arma::ones(K, M, D);
+    A_xi(i,0) = arma::ones(K, 2, D);
+    for(int k = 0; k < K; k++){
+      xi(i,k) = arma::zeros(P, D, M);
+      gamma_xi(i,k) = arma::ones(P, D, M);
+    }
+  }
+
+  for(int i = 0; i < n_funct; i++){
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
+  }
+
+  arma::cube delta(K, M, tot_mcmc_iters, arma::fill::ones);
+  arma::mat tilde_tau_phi(K, M, arma::fill::ones);
+  arma::cube tilde_tau_xi(K, M, D, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, tot_mcmc_iters);
+  arma::vec loglik = arma::zeros(tot_mcmc_iters);
+
+  arma::vec m_1(P, arma::fill::zeros);
+  arma::mat M_1(P, P, arma::fill::zeros);
+  arma::mat tau(tot_mcmc_iters, K, arma::fill::ones);
+
+  arma::vec b_1(P, arma::fill::zeros);
+  arma::mat B_1(P, P, arma::fill::zeros);
+
+  Z.slice(0) = Z_est;
+  nu.slice(0) = nu_est;
+  eta(0,0) = eta_est;
+
+  for(int i = 1; i < tot_mcmc_iters; i++){
+    Z.slice(i) = Z_est;
+    nu.slice(i) = nu_est;
+    eta(i,0) = eta_est;
+  }
+
+  for(int i = 0; i < tot_mcmc_iters; i++){
+    for(int k = 0; k < K; k++){
+      tilde_tau_phi(k, 0) = delta(k, 0, i);
+      for(int j = 1; j < M; j++){
+        tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta(k, j, i);
+      }
+    }
+
+    updatePhiCovariateAdj(y_obs, B_obs, nu.slice((i)), eta(i,0),
+                          gamma((i),0), tilde_tau_phi, xi,
+                          Z.slice((i)), chi.slice((i)),
+                          sigma((i)), X, (i),
+                          tot_mcmc_iters, m_1, M_1, Phi);
+
+    updateDelta(Phi((i),0), gamma((i),0),
+                A.slice(i), (i),
+                tot_mcmc_iters, delta);
+
+    updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i)),
+            var_epsilon1, var_epsilon2, (i), tot_mcmc_iters, A);
+
+    updateGamma(nu_1, delta.slice((i)), Phi((i),0),
+                (i), tot_mcmc_iters, gamma);
+
+    updateTau(alpha_nu, beta_nu, nu.slice((i)), (i),
+              tot_mcmc_iters, P_mat, tau);
+
+    updateSigmaCovariateAdj(y_obs, B_obs, alpha_0, beta_0,
+                            nu.slice((i)),eta(i,0), Phi((i),0), xi,
+                            Z.slice((i)), chi.slice((i)),
+                            (i), tot_mcmc_iters, X, sigma);
+
+    updateChiCovariateAdj(y_obs, B_obs, Phi((i),0), xi,
+                          nu.slice((i)), eta(i,0), Z.slice((i)),
+                          sigma((i)), (i), tot_mcmc_iters,
+                          X, chi);
+    updateTauEta(alpha_eta, beta_eta, eta(i,0),
+                 i, tot_mcmc_iters, P_mat, tau_eta);
+
+    if(covariance_adj == true){
+      for(int k = 0; k < K; k++){
+        for(int m = 0; m < D; m++){
+          tilde_tau_xi(k,0,m) = delta_xi(i,0)(k,0,m);
+          for(int j = 1; j < M; j++){
+            tilde_tau_xi(k,j,m) = tilde_tau_xi(k,j-1,m) * delta_xi(i,0)(k,j,m);
+          }
+        }
+      }
+
+      updateXiCovariateAdj(y_obs, B_obs, nu.slice(i), eta(i,0), gamma_xi,
+                           tilde_tau_xi, Phi(i,0), Z.slice(i), chi.slice(i),
+                           sigma(i), X, i, tot_mcmc_iters, m_1, M_1, xi);
+      updateDeltaXi(xi, gamma_xi, A_xi(i,0), i, tot_mcmc_iters, delta_xi);
+      updateAXi(alpha1l, beta1l, alpha2l, beta2l, delta_xi(i, 0),
+                var_epsilon1, var_epsilon2, (i), tot_mcmc_iters, A_xi);
+      updateGammaXi(nu_1, delta_xi(i, 0), xi, i, tot_mcmc_iters, gamma_xi);
+    }
+
+    // Calculate log likelihood
+    loglik((i)) =  calcLikelihoodCovariateAdj(y_obs, B_obs, nu.slice((i)), eta(i,0),
+           Phi((i),0), xi, Z.slice((i)), chi.slice((i)), i, X, sigma((i)));
+    if(((i+1) % 100) == 0){
+      Rcpp::Rcout << "Iteration: " << i+1 << "\n";
+      Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i)-99, (i))) << "\n";
+      Rcpp::checkUserInterrupt();
+    }
+  }
+  Rcpp::List params = Rcpp::List::create(Rcpp::Named("Z", Z),
+                                         Rcpp::Named("nu", nu),
+                                         Rcpp::Named("eta", eta),
+                                         Rcpp::Named("chi", chi),
+                                         Rcpp::Named("A", A),
+                                         Rcpp::Named("A_xi", A_xi),
+                                         Rcpp::Named("delta", delta),
+                                         Rcpp::Named("delta_xi", delta_xi),
+                                         Rcpp::Named("gamma_xi", gamma_xi),
+                                         Rcpp::Named("sigma", sigma),
+                                         Rcpp::Named("tau", tau),
+                                         Rcpp::Named("tau_eta", tau_eta),
+                                         Rcpp::Named("gamma", gamma),
+                                         Rcpp::Named("Phi", Phi),
+                                         Rcpp::Named("xi", xi),
+                                         Rcpp::Named("loglik", loglik));
+  return params;
+}
+
 // Conducts a mixture of untempered sampling and termpered sampling to get posterior
 // draws from the covariate adjusted (mean only) mixed membership model
 //

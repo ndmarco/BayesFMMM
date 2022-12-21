@@ -83,6 +83,8 @@ BMVMMM_Theta_est(
 \value{
 a List containing:
 \describe{
+  \item{\code{Z}}{estimates of Z}
+  \item{\code{nu}}{estimates of nu}
   \item{\code{chi}}{chi samples from MCMC chain}
   \item{\code{A}}{A samples from MCMC chain}
   \item{\code{delta}}{delta samples from MCMC chain}
