@@ -4304,7 +4304,7 @@ inline Rcpp::List BFMMM_Nu_Z_Cov_Adj(const arma::field<arma::vec>& y_obs,
 
 // Conducts un-tempered MCMC to estimate the posterior distribution of parameters not related to Z or Nu, conditioned on a value of Nu and Z
 //
-// @name BFMMM_Theta
+// @name BFMMM_Theta_Cov_Adj
 // @param y_obs Field (list) of vectors containing the observed values
 // @param t_obs Field (list) of vectors containing time points of observed values
 // @param n_funct Int containing number of functions observed
@@ -4616,7 +4616,9 @@ inline Rcpp::List BFMMM_MTT_warm_start_MeanAdj(const arma::field<arma::vec>& y_o
                                                const arma::cube& Phi_est,
                                                const arma::mat& A_est,
                                                const arma::mat& nu_est,
+                                               const arma::cube& eta_est,
                                                const arma::vec& tau_est,
+                                               const arma::mat& tau_eta_est,
                                                const double& sigma_est,
                                                const arma::mat& chi_est){
   // Make B_obs
@@ -4745,7 +4747,9 @@ inline Rcpp::List BFMMM_MTT_warm_start_MeanAdj(const arma::field<arma::vec>& y_o
   Phi(0,0) = Phi_est;
   A.slice(0) = A_est;
   nu.slice(0) = nu_est;
+  eta(0,0) = eta_est;
   tau.row(0) = tau_est.t();
+  tau_eta.slice(0) = tau_eta_est;
   sigma(0) = sigma_est;
 
   chi.slice(0) = chi_est;

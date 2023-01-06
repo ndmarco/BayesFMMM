@@ -976,12 +976,12 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
   arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < delta_samp.n_cols; k++){
+  for(int j = 0; j < delta_samp.n_cols; j++){
     for(int i = 0; i < delta_samp.n_rows; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,k,l);
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,j,l);
       }
-      delta_est(i, k) = arma::median(ph_delta);
+      delta_est(i, j) = arma::median(ph_delta);
     }
   }
 
@@ -2266,12 +2266,12 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
   arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < delta_samp.n_cols; k++){
+  for(int j = 0; j < delta_samp.n_cols; j++){
     for(int i = 0; i < delta_samp.n_rows; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,k,l);
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,j,l);
       }
-      delta_est(i, k) = arma::median(ph_delta);
+      delta_est(i, j) = arma::median(ph_delta);
     }
   }
 
@@ -3167,12 +3167,12 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
   arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < delta_samp.n_cols; k++){
+  for(int j = 0; j < delta_samp.n_cols; j++){
     for(int i = 0; i < delta_samp.n_rows; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,k,l);
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,j,l);
       }
-      delta_est(i, k) = arma::median(ph_delta);
+      delta_est(i, j) = arma::median(ph_delta);
     }
   }
 
@@ -3614,12 +3614,12 @@ Rcpp::List BMVMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
   arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < delta_samp.n_cols; k++){
+  for(int j = 0; j < delta_samp.n_cols; j++){
     for(int i = 0; i < delta_samp.n_rows; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,k,l);
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,j,l);
       }
-      delta_est(i, k) = arma::median(ph_delta);
+      delta_est(i, j) = arma::median(ph_delta);
     }
   }
 
@@ -4068,12 +4068,12 @@ Rcpp::List BMVMMM_warm_start_Mean_Cov_Adj(const int tot_mcmc_iters,
   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
   arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < delta_samp.n_cols; k++){
+  for(int j = 0; j < delta_samp.n_cols; j++){
     for(int i = 0; i < delta_samp.n_rows; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,k,l);
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,j,l);
       }
-      delta_est(i, k) = arma::median(ph_delta);
+      delta_est(i, j) = arma::median(ph_delta);
     }
   }
 
@@ -4572,12 +4572,12 @@ Rcpp::List BHDFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
   arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < delta_samp.n_cols; k++){
+  for(int j = 0; j < delta_samp.n_cols; j++){
     for(int i = 0; i < delta_samp.n_rows; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,k,l);
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,j,l);
       }
-      delta_est(i, k) = arma::median(ph_delta);
+      delta_est(i, j) = arma::median(ph_delta);
     }
   }
 
@@ -5078,12 +5078,12 @@ Rcpp::List BHDFMMM_warm_start_Mean_Cov_Adj(const int tot_mcmc_iters,
   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
   arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < delta_samp.n_cols; k++){
+  for(int j = 0; j < delta_samp.n_cols; j++){
     for(int i = 0; i < delta_samp.n_rows; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,k,l);
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,j,l);
       }
-      delta_est(i, k) = arma::median(ph_delta);
+      delta_est(i, j) = arma::median(ph_delta);
     }
   }
 
@@ -5314,22 +5314,24 @@ Rcpp::List BHDFMMM_warm_start_Mean_Cov_Adj(const int tot_mcmc_iters,
 //' boundary_knots <- c(0, 1000)
 //' internal_knots <- c(250, 500, 750)
 //'
-//' ## Get Estimates of Z and nu
-//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
-//'                                 basis_degree, n_eigen, boundary_knots,
-//'                                 internal_knots)
-//'
-//' ## Get estimates of other parameters
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
-//'                         basis_degree, n_eigen, boundary_knots,
-//'                         internal_knots, est1$Z, est1$nu)
-//'
 //' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+//'
+//' ## Get Estimates of Z and nu
+//' est1 <- BFMMM_Nu_Z_multiple_try_Cov_Adj(tot_mcmc_iters, n_try, k, Y, time, X, n_funct,
+//'                                         basis_degree, n_eigen, boundary_knots,
+//'                                         internal_knots)
+//'
+//' ## Run function
+//' est2 <- BFMMM_Theta_est_Cov_Adj(tot_mcmc_iters, n_try, k, Y, time, X, n_funct,
+//'                                 basis_degree, n_eigen, boundary_knots,
+//'                                 internal_knots, est1$Z, est1$nu, est1$eta)
+//'
 //' MCMC.chain <- BFMMM_warm_start_Mean_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
 //'                                         basis_degree, n_eigen, boundary_knots,
 //'                                         internal_knots, est1$Z, est1$pi, est1$alpha_3,
 //'                                         est2$delta, est2$gamma, est2$Phi, est2$A,
-//'                                         est1$nu, est1$tau, est2$sigma, est2$chi)
+//'                                         est1$nu, est1$eta, est1$tau, est1$tau_eta,
+//'                                         est2$sigma, est2$chi)
 //'
 //' @export
 // [[Rcpp::export]]
@@ -5351,7 +5353,9 @@ Rcpp::List BFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
                                      const arma::field<arma::cube> Phi_samp,
                                      const arma::cube A_samp,
                                      const arma::cube nu_samp,
+                                     const arma::field<arma::cube> eta_samp,
                                      const arma::mat tau_samp,
+                                     const arma::cube tau_eta_samp,
                                      const arma::vec sigma_samp,
                                      const arma::cube chi_samp,
                                      const double burnin_prop = 0.8,
@@ -5558,10 +5562,12 @@ Rcpp::List BFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
   arma::vec pi_est = arma::zeros(pi_samp.n_rows);
   arma::mat Z_est = arma::zeros(n_funct, Z_samp.n_cols);
   arma::mat nu_est = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+  arma::cube eta_est = arma::zeros(eta_samp(0,0).n_rows, eta_samp(0,0).n_cols, eta_samp(0,0).n_slices);
   arma::vec ph_Z = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
   arma::vec ph_nu = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+  arma::vec ph_eta = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+
   for(int i = 0; i < Z_est.n_cols; i++){
-    pi_est(i) = arma::median(pi_samp.row(i).subvec(std::round(n_nu * burnin_prop), n_nu - 1));
     for(int j = 0; j < Z_est.n_rows; j++){
       for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
         ph_Z(l - std::round(n_nu * burnin_prop)) = Z_samp(j,i,l);
@@ -5573,6 +5579,12 @@ Rcpp::List BFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
         ph_nu(l - std::round(n_nu * burnin_prop)) = nu_samp(i,j,l);
       }
       nu_est(i,j) = arma::median(ph_nu);
+      for(int d = 0; d < X.n_cols; d++){
+        for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+          ph_eta(l - std::round(n_nu * burnin_prop)) = eta_samp(l,0)(j,d,i);
+        }
+        eta_est(j,d,i) = arma::median(ph_eta);
+      }
     }
   }
 
@@ -5588,12 +5600,12 @@ Rcpp::List BFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
   arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < delta_samp.n_cols; k++){
+  for(int j = 0; j < delta_samp.n_cols; j++){
     for(int i = 0; i < delta_samp.n_rows; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,k,l);
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,j,l);
       }
-      delta_est(i, k) = arma::median(ph_delta);
+      delta_est(i, j) = arma::median(ph_delta);
     }
   }
 
@@ -5627,12 +5639,20 @@ Rcpp::List BFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
   }
 
   arma::vec tau_est = arma::zeros(tau_samp.n_cols);
+  arma::mat tau_eta_est = arma::zeros(tau_eta_samp.n_rows, tau_eta_samp.n_cols);
   arma::vec ph_tau = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+  arma::vec ph_tau_eta = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
   for(int i = 0; i < tau_est.n_elem; i++){
     for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
       ph_tau(l - std::round(n_nu * burnin_prop)) = tau_samp(l,i);
     }
     tau_est(i) = arma::median(ph_tau);
+    for(int j = 0; j < tau_eta_est.n_cols; j++){
+      for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+        ph_tau_eta(l - std::round(n_nu * burnin_prop)) = tau_eta_samp(i,j,l);
+      }
+      tau_eta_est(i,j) = arma::median(ph_tau_eta);
+    }
   }
   arma::mat chi_est = arma::zeros(chi_samp.n_rows, chi_samp.n_cols);
   arma::vec ph_chi = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
@@ -5658,7 +5678,8 @@ Rcpp::List BFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
                                                             beta_0, dir1, beta_N_t, N_t,
                                                             Z_est, pi_est, alpha_3_est,
                                                             delta_est, gamma_est, Phi_est, A_est,
-                                                            nu_est, tau_est, sigma_est, chi_est);
+                                                            nu_est, eta_est, tau_est, tau_eta_est,
+                                                            sigma_est, chi_est);
 
   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
                                         Rcpp::Named("nu", mod1["nu"]),
@@ -6093,12 +6114,12 @@ Rcpp::List BFMMM_warm_start_Mean_Cov_Adj(const int tot_mcmc_iters,
   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
   arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < delta_samp.n_cols; k++){
+  for(int j = 0; j < delta_samp.n_cols; j++){
     for(int i = 0; i < delta_samp.n_rows; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,k,l);
+        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,j,l);
       }
-      delta_est(i, k) = arma::median(ph_delta);
+      delta_est(i, j) = arma::median(ph_delta);
     }
   }
 

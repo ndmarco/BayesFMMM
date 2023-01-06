@@ -2574,26 +2574,28 @@ BHDFMMM_warm_start_Mean_Cov_Adj <- function(tot_mcmc_iters, k, Y, X, time, n_fun
 #' boundary_knots <- c(0, 1000)
 #' internal_knots <- c(250, 500, 750)
 #'
-#' ## Get Estimates of Z and nu
-#' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
-#'                                 basis_degree, n_eigen, boundary_knots,
-#'                                 internal_knots)
-#'
-#' ## Get estimates of other parameters
-#' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
-#'                         basis_degree, n_eigen, boundary_knots,
-#'                         internal_knots, est1$Z, est1$nu)
-#'
 #' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#'
+#' ## Get Estimates of Z and nu
+#' est1 <- BFMMM_Nu_Z_multiple_try_Cov_Adj(tot_mcmc_iters, n_try, k, Y, time, X, n_funct,
+#'                                         basis_degree, n_eigen, boundary_knots,
+#'                                         internal_knots)
+#'
+#' ## Run function
+#' est2 <- BFMMM_Theta_est_Cov_Adj(tot_mcmc_iters, n_try, k, Y, time, X, n_funct,
+#'                                 basis_degree, n_eigen, boundary_knots,
+#'                                 internal_knots, est1$Z, est1$nu, est1$eta)
+#'
 #' MCMC.chain <- BFMMM_warm_start_Mean_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
 #'                                         basis_degree, n_eigen, boundary_knots,
 #'                                         internal_knots, est1$Z, est1$pi, est1$alpha_3,
 #'                                         est2$delta, est2$gamma, est2$Phi, est2$A,
-#'                                         est1$nu, est1$tau, est2$sigma, est2$chi)
+#'                                         est1$nu, est1$eta, est1$tau, est1$tau_eta,
+#'                                         est2$sigma, est2$chi)
 #'
 #' @export
-BFMMM_warm_start_Mean_Adj <- function(tot_mcmc_iters, k, Y, X, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 2, beta2l = 2, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 1, beta_nu = 10, alpha_eta = 1, beta_eta = 10, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFMMM_BFMMM_warm_start_Mean_Adj', PACKAGE = 'BayesFMMM', tot_mcmc_iters, k, Y, X, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0)
+BFMMM_warm_start_Mean_Adj <- function(tot_mcmc_iters, k, Y, X, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, eta_samp, tau_samp, tau_eta_samp, sigma_samp, chi_samp, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 2, beta2l = 2, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 1, beta_nu = 10, alpha_eta = 1, beta_eta = 10, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFMMM_BFMMM_warm_start_Mean_Adj', PACKAGE = 'BayesFMMM', tot_mcmc_iters, k, Y, X, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, eta_samp, tau_samp, tau_eta_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0)
 }
 
 #' Performs MCMC for functional covariate adjusted (mean only) models

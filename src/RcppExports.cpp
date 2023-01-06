@@ -966,8 +966,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // BFMMM_warm_start_Mean_Adj
-Rcpp::List BFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters, const int k, const arma::field<arma::vec> Y, const arma::mat X, const arma::field<arma::vec> time, const int n_funct, const int basis_degree, const int n_eigen, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::cube Z_samp, const arma::mat pi_samp, const arma::vec alpha_3_samp, const arma::cube delta_samp, const arma::field<arma::cube> gamma_samp, const arma::field<arma::cube> Phi_samp, const arma::cube A_samp, const arma::cube nu_samp, const arma::mat tau_samp, const arma::vec sigma_samp, const arma::cube chi_samp, const double burnin_prop, Rcpp::Nullable<Rcpp::CharacterVector> dir, const double thinning_num, const double beta_N_t, int N_t, int n_temp_trans, int r_stored_iters, Rcpp::Nullable<Rcpp::NumericVector> c, const double b, const double nu_1, const double alpha1l, const double alpha2l, const double beta1l, const double beta2l, const double a_Z_PM, const double a_pi_PM, const double var_alpha3, const double var_epsilon1, const double var_epsilon2, const double alpha_nu, const double beta_nu, const double alpha_eta, const double beta_eta, const double alpha_0, const double beta_0);
-RcppExport SEXP _BayesFMMM_BFMMM_warm_start_Mean_Adj(SEXP tot_mcmc_itersSEXP, SEXP kSEXP, SEXP YSEXP, SEXP XSEXP, SEXP timeSEXP, SEXP n_functSEXP, SEXP basis_degreeSEXP, SEXP n_eigenSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP Z_sampSEXP, SEXP pi_sampSEXP, SEXP alpha_3_sampSEXP, SEXP delta_sampSEXP, SEXP gamma_sampSEXP, SEXP Phi_sampSEXP, SEXP A_sampSEXP, SEXP nu_sampSEXP, SEXP tau_sampSEXP, SEXP sigma_sampSEXP, SEXP chi_sampSEXP, SEXP burnin_propSEXP, SEXP dirSEXP, SEXP thinning_numSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP n_temp_transSEXP, SEXP r_stored_itersSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alpha_nuSEXP, SEXP beta_nuSEXP, SEXP alpha_etaSEXP, SEXP beta_etaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP) {
+Rcpp::List BFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters, const int k, const arma::field<arma::vec> Y, const arma::mat X, const arma::field<arma::vec> time, const int n_funct, const int basis_degree, const int n_eigen, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::cube Z_samp, const arma::mat pi_samp, const arma::vec alpha_3_samp, const arma::cube delta_samp, const arma::field<arma::cube> gamma_samp, const arma::field<arma::cube> Phi_samp, const arma::cube A_samp, const arma::cube nu_samp, const arma::field<arma::cube> eta_samp, const arma::mat tau_samp, const arma::cube tau_eta_samp, const arma::vec sigma_samp, const arma::cube chi_samp, const double burnin_prop, Rcpp::Nullable<Rcpp::CharacterVector> dir, const double thinning_num, const double beta_N_t, int N_t, int n_temp_trans, int r_stored_iters, Rcpp::Nullable<Rcpp::NumericVector> c, const double b, const double nu_1, const double alpha1l, const double alpha2l, const double beta1l, const double beta2l, const double a_Z_PM, const double a_pi_PM, const double var_alpha3, const double var_epsilon1, const double var_epsilon2, const double alpha_nu, const double beta_nu, const double alpha_eta, const double beta_eta, const double alpha_0, const double beta_0);
+RcppExport SEXP _BayesFMMM_BFMMM_warm_start_Mean_Adj(SEXP tot_mcmc_itersSEXP, SEXP kSEXP, SEXP YSEXP, SEXP XSEXP, SEXP timeSEXP, SEXP n_functSEXP, SEXP basis_degreeSEXP, SEXP n_eigenSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP Z_sampSEXP, SEXP pi_sampSEXP, SEXP alpha_3_sampSEXP, SEXP delta_sampSEXP, SEXP gamma_sampSEXP, SEXP Phi_sampSEXP, SEXP A_sampSEXP, SEXP nu_sampSEXP, SEXP eta_sampSEXP, SEXP tau_sampSEXP, SEXP tau_eta_sampSEXP, SEXP sigma_sampSEXP, SEXP chi_sampSEXP, SEXP burnin_propSEXP, SEXP dirSEXP, SEXP thinning_numSEXP, SEXP beta_N_tSEXP, SEXP N_tSEXP, SEXP n_temp_transSEXP, SEXP r_stored_itersSEXP, SEXP cSEXP, SEXP bSEXP, SEXP nu_1SEXP, SEXP alpha1lSEXP, SEXP alpha2lSEXP, SEXP beta1lSEXP, SEXP beta2lSEXP, SEXP a_Z_PMSEXP, SEXP a_pi_PMSEXP, SEXP var_alpha3SEXP, SEXP var_epsilon1SEXP, SEXP var_epsilon2SEXP, SEXP alpha_nuSEXP, SEXP beta_nuSEXP, SEXP alpha_etaSEXP, SEXP beta_etaSEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -989,7 +989,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::field<arma::cube> >::type Phi_samp(Phi_sampSEXP);
     Rcpp::traits::input_parameter< const arma::cube >::type A_samp(A_sampSEXP);
     Rcpp::traits::input_parameter< const arma::cube >::type nu_samp(nu_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::cube> >::type eta_samp(eta_sampSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type tau_samp(tau_sampSEXP);
+    Rcpp::traits::input_parameter< const arma::cube >::type tau_eta_samp(tau_eta_sampSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type sigma_samp(sigma_sampSEXP);
     Rcpp::traits::input_parameter< const arma::cube >::type chi_samp(chi_sampSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
@@ -1017,7 +1019,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type beta_eta(beta_etaSEXP);
     Rcpp::traits::input_parameter< const double >::type alpha_0(alpha_0SEXP);
     Rcpp::traits::input_parameter< const double >::type beta_0(beta_0SEXP);
-    rcpp_result_gen = Rcpp::wrap(BFMMM_warm_start_Mean_Adj(tot_mcmc_iters, k, Y, X, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, tau_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0));
+    rcpp_result_gen = Rcpp::wrap(BFMMM_warm_start_Mean_Adj(tot_mcmc_iters, k, Y, X, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, Z_samp, pi_samp, alpha_3_samp, delta_samp, gamma_samp, Phi_samp, A_samp, nu_samp, eta_samp, tau_samp, tau_eta_samp, sigma_samp, chi_samp, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1199,7 +1201,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFMMM_BMVMMM_warm_start_Mean_Cov_Adj", (DL_FUNC) &_BayesFMMM_BMVMMM_warm_start_Mean_Cov_Adj, 41},
     {"_BayesFMMM_BHDFMMM_warm_start_Mean_Adj", (DL_FUNC) &_BayesFMMM_BHDFMMM_warm_start_Mean_Adj, 46},
     {"_BayesFMMM_BHDFMMM_warm_start_Mean_Cov_Adj", (DL_FUNC) &_BayesFMMM_BHDFMMM_warm_start_Mean_Cov_Adj, 46},
-    {"_BayesFMMM_BFMMM_warm_start_Mean_Adj", (DL_FUNC) &_BayesFMMM_BFMMM_warm_start_Mean_Adj, 46},
+    {"_BayesFMMM_BFMMM_warm_start_Mean_Adj", (DL_FUNC) &_BayesFMMM_BFMMM_warm_start_Mean_Adj, 48},
     {"_BayesFMMM_BFMMM_warm_start_Mean_Cov_Adj", (DL_FUNC) &_BayesFMMM_BFMMM_warm_start_Mean_Cov_Adj, 46},
     {"_BayesFMMM_BFMMM_Nu_Z_multiple_try_Cov_Adj", (DL_FUNC) &_BayesFMMM_BFMMM_Nu_Z_multiple_try_Cov_Adj, 28},
     {"_BayesFMMM_BFMMM_Theta_est_Cov_Adj", (DL_FUNC) &_BayesFMMM_BFMMM_Theta_est_Cov_Adj, 34},
