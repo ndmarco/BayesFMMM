@@ -114,8 +114,8 @@ Rcpp::List FMeanCI(const std::string dir,
   }
 
   arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols,
-                                   std::round((nu_i.n_slices * n_files)* (1 - burnin_prop)));
-  nu_samp = nu_samp1.subcube(0, 0, std::round(nu_i.n_slices * n_files * burnin_prop),
+                                   std::ceil((nu_i.n_slices * n_files)* (1 - burnin_prop)));
+  nu_samp = nu_samp1.subcube(0, 0, std::floor(nu_i.n_slices * n_files * burnin_prop),
                              nu_samp1.n_rows-1, nu_samp1.n_cols-1, nu_samp1.n_slices-1);
 
   if(rescale == true){
@@ -153,8 +153,8 @@ Rcpp::List FMeanCI(const std::string dir,
         Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
       }
       arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                      std::round((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-      Z_samp = Z_samp1.subcube(0, 0, std::round(Z_i.n_slices * n_files * burnin_prop),
+                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
                                Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
 
       // rescale Z and nu
@@ -204,8 +204,8 @@ Rcpp::List FMeanCI(const std::string dir,
       }
 
       arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                      std::round((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-      Z_samp = Z_samp1.subcube(0, 0, std::round(Z_i.n_slices * n_files * burnin_prop),
+                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
                                Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
       // rescale Z and nu
       arma::mat transform_mat;
@@ -398,8 +398,8 @@ Rcpp::List HDFMeanCI(const std::string dir,
   }
 
   arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols,
-                                   std::round((nu_i.n_slices * n_files)* (1 - burnin_prop)));
-  nu_samp = nu_samp1.subcube(0, 0, std::round(nu_i.n_slices * n_files * burnin_prop),
+                                   std::ceil((nu_i.n_slices * n_files)* (1 - burnin_prop)));
+  nu_samp = nu_samp1.subcube(0, 0, std::floor(nu_i.n_slices * n_files * burnin_prop),
                              nu_samp1.n_rows-1, nu_samp1.n_cols-1, nu_samp1.n_slices-1);
   arma::field<arma::mat> time1(1,1);
   time1(0,0) = time;
@@ -434,8 +434,8 @@ Rcpp::List HDFMeanCI(const std::string dir,
         Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
       }
       arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                      std::round((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-      Z_samp = Z_samp1.subcube(0, 0, std::round(Z_i.n_slices * n_files * burnin_prop),
+                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
                                Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
 
       // rescale Z and nu
@@ -485,8 +485,8 @@ Rcpp::List HDFMeanCI(const std::string dir,
       }
 
       arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                      std::round((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-      Z_samp = Z_samp1.subcube(0, 0, std::round(Z_i.n_slices * n_files * burnin_prop),
+                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
                                Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
       // rescale Z and nu
       arma::mat transform_mat;
@@ -634,8 +634,8 @@ Rcpp::List MVMeanCI(const std::string dir,
   }
 
   arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols,
-                                   std::round((nu_i.n_slices * n_files)* (1 - burnin_prop)));
-  nu_samp = nu_samp1.subcube(0, 0, std::round(nu_i.n_slices * n_files * burnin_prop),
+                                   std::ceil((nu_i.n_slices * n_files)* (1 - burnin_prop)));
+  nu_samp = nu_samp1.subcube(0, 0, std::floor(nu_i.n_slices * n_files * burnin_prop),
                              nu_samp1.n_rows-1, nu_samp1.n_cols-1, nu_samp1.n_slices-1);
 
   if(rescale == true){
@@ -661,8 +661,8 @@ Rcpp::List MVMeanCI(const std::string dir,
       Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
     }
     arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                    std::round((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-    Z_samp = Z_samp1.subcube(0, 0, std::round(Z_i.n_slices * n_files * burnin_prop),
+                                    std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+    Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
                              Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
 
     // rescale Z and nu
@@ -848,9 +848,9 @@ Rcpp::List FCovCI(const std::string dir,
     }
   }
 
-  arma::field<arma::cube> phi_samp(std::round((n_MCMC * n_files) * (1 - burnin_prop)), 1);
-  for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
-    phi_samp(i,0) = phi_samp1(i + std::round((n_MCMC * n_files) * burnin_prop), 0);
+  arma::field<arma::cube> phi_samp(std::ceil((n_MCMC * n_files) * (1 - burnin_prop)), 1);
+  for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+    phi_samp(i,0) = phi_samp1(i + (n_MCMC * n_files) - std::ceil((n_MCMC * n_files) * burnin_prop), 0);
   }
 
   // Make spline basis 1
@@ -875,7 +875,7 @@ Rcpp::List FCovCI(const std::string dir,
   arma::mat CI_Upper = arma::zeros(time1.n_elem, time2.n_elem);
   arma::mat CI_50 = arma::zeros(time1.n_elem, time2.n_elem);
   arma::mat CI_Lower = arma::zeros(time2.n_elem, time2.n_elem);
-  arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
+  arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, std::ceil((n_MCMC * n_files) * (1 - burnin_prop)));
 
   if(simultaneous == false){
     if(rescale == true){
@@ -890,8 +890,8 @@ Rcpp::List FCovCI(const std::string dir,
       }
 
       arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                      std::round((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-      Z_samp = Z_samp1.subcube(0, 0, std::round(Z_i.n_slices * n_files * burnin_prop),
+                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
                                Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
       // rescale Z and Phi
       arma::mat transform_mat;
@@ -911,7 +911,7 @@ Rcpp::List FCovCI(const std::string dir,
         }
       }
     }
-    for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+    for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
       for(int j = 0; j < phi_samp(i,0).n_slices; j++){
         cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
           (B2 * phi_samp(i,0).slice(j).row(m-1).t()).t());
@@ -944,8 +944,8 @@ Rcpp::List FCovCI(const std::string dir,
       }
 
       arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                      std::round((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-      Z_samp = Z_samp1.subcube(0, 0, std::round(Z_i.n_slices * n_files * burnin_prop),
+                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
                                Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
       // rescale Z and Phi
       arma::mat transform_mat;
@@ -965,7 +965,7 @@ Rcpp::List FCovCI(const std::string dir,
         }
       }
     }
-    for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+    for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
       for(int j = 0; j < phi_samp(i,0).n_slices; j++){
         cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
           (B2 * (phi_samp(i,0).slice(j).row(m-1)).t()).t());
@@ -1162,9 +1162,9 @@ Rcpp::List HDFCovCI(const std::string dir,
     }
   }
 
-  arma::field<arma::cube> phi_samp(std::round((n_MCMC * n_files) * (1 - burnin_prop)), 1);
-  for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
-    phi_samp(i,0) = phi_samp1(i + std::round((n_MCMC * n_files) * burnin_prop), 0);
+  arma::field<arma::cube> phi_samp(std::ceil((n_MCMC * n_files) * (1 - burnin_prop)), 1);
+  for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+    phi_samp(i,0) = phi_samp1(i + (n_MCMC * n_files) - std::ceil((n_MCMC * n_files) * (1 - burnin_prop)), 0);
   }
 
   // Make spline basis 1
@@ -1185,7 +1185,7 @@ Rcpp::List HDFCovCI(const std::string dir,
   arma::mat CI_Upper = arma::zeros(time1.n_rows, time2.n_rows);
   arma::mat CI_50 = arma::zeros(time1.n_rows, time2.n_rows);
   arma::mat CI_Lower = arma::zeros(time2.n_rows, time2.n_rows);
-  arma::cube cov_samp = arma::zeros(time1.n_rows, time2.n_rows, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
+  arma::cube cov_samp = arma::zeros(time1.n_rows, time2.n_rows, std::ceil((n_MCMC * n_files) * (1 - burnin_prop)));
 
   if(simultaneous == false){
     if(rescale == true){
@@ -1200,8 +1200,8 @@ Rcpp::List HDFCovCI(const std::string dir,
       }
 
       arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                      std::round((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-      Z_samp = Z_samp1.subcube(0, 0, std::round(Z_i.n_slices * n_files * burnin_prop),
+                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
                                Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
       // rescale Z and Phi
       arma::mat transform_mat;
@@ -1221,7 +1221,7 @@ Rcpp::List HDFCovCI(const std::string dir,
         }
       }
     }
-    for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+    for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
       for(int j = 0; j < phi_samp(i,0).n_slices; j++){
         cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
           (B2 * phi_samp(i,0).slice(j).row(m-1).t()).t());
@@ -1254,8 +1254,8 @@ Rcpp::List HDFCovCI(const std::string dir,
       }
 
       arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                      std::round((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-      Z_samp = Z_samp1.subcube(0, 0, std::round(Z_i.n_slices * n_files * burnin_prop),
+                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
                                Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
       // rescale Z and Phi
       arma::mat transform_mat;
@@ -1275,7 +1275,7 @@ Rcpp::List HDFCovCI(const std::string dir,
         }
       }
     }
-    for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+    for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
       for(int j = 0; j < phi_samp(i,0).n_slices; j++){
         cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
           (B2 * (phi_samp(i,0).slice(j).row(m-1)).t()).t());
@@ -1429,16 +1429,16 @@ Rcpp::List MVCovCI(const std::string dir,
     }
   }
 
-  arma::field<arma::cube> phi_samp(std::round((n_MCMC * n_files) * (1 - burnin_prop)), 1);
-  for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
-    phi_samp(i,0) = phi_samp1(i + std::round((n_MCMC * n_files) * burnin_prop), 0);
+  arma::field<arma::cube> phi_samp(std::ceil((n_MCMC * n_files) * (1 - burnin_prop)), 1);
+  for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+    phi_samp(i,0) = phi_samp1(i + (n_MCMC * n_files) - std::ceil((n_MCMC * n_files) * (1 - burnin_prop)), 0);
   }
 
   // Initialize placeholders
   arma::mat CI_Upper = arma::zeros(phi_i(0,0).n_cols, phi_i(0,0).n_cols);
   arma::mat CI_50 = arma::zeros(phi_i(0,0).n_cols, phi_i(0,0).n_cols);
   arma::mat CI_Lower = arma::zeros(phi_i(0,0).n_cols, phi_i(0,0).n_cols);
-  arma::cube cov_samp = arma::zeros(phi_i(0,0).n_cols, phi_i(0,0).n_cols, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
+  arma::cube cov_samp = arma::zeros(phi_i(0,0).n_cols, phi_i(0,0).n_cols, std::ceil((n_MCMC * n_files) * (1 - burnin_prop)));
 
   if(rescale == true){
     // Get Z matrix
@@ -1451,8 +1451,8 @@ Rcpp::List MVCovCI(const std::string dir,
       Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
     }
     arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                    std::round((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-    Z_samp = Z_samp1.subcube(0, 0, std::round(Z_i.n_slices * n_files * burnin_prop),
+                                    std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+    Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
                              Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
 
     // rescale Z and nu
@@ -1475,7 +1475,7 @@ Rcpp::List MVCovCI(const std::string dir,
 
   }
 
-  for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+  for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
     for(int j = 0; j < phi_samp(0,0).n_slices; j++){
       cov_samp.slice(i) = cov_samp.slice(i) + ((phi_samp(i,0).slice(j).row(l-1)).t() *
         (phi_samp(i,0).slice(j).row(m-1)));
@@ -1626,11 +1626,11 @@ Rcpp::List ZCI(const std::string dir,
   arma::mat CI_50 = arma::zeros(Z_i.n_rows, Z_i.n_cols);
   arma::mat CI_Lower = arma::zeros(Z_i.n_rows, Z_i.n_cols);
 
-  arma::vec ph(std::round(Z_samp.n_slices * (1 - burnin_prop)), arma::fill::zeros);
+  arma::vec ph(std::ceil(Z_samp.n_slices * (1 - burnin_prop)), arma::fill::zeros);
   for(int i = 0; i < Z_i.n_rows; i++){
     for(int j = 0; j < Z_i.n_cols; j++){
-      for(int l = 0; l < std::round(Z_samp.n_slices * (1 - burnin_prop)); l++){
-        ph(l) = Z_samp(i,j, l + std::round(Z_samp.n_slices * burnin_prop));
+      for(int l = 0; l < std::ceil(Z_samp.n_slices * (1 - burnin_prop)); l++){
+        ph(l) = Z_samp(i,j, l + std::floor(Z_samp.n_slices * burnin_prop));
       }
       q = arma::quantile(ph, p);
       CI_Upper(i,j) = q(2);
@@ -1758,24 +1758,24 @@ double Model_DIC(const std::string dir,
   }
 
   double expected_log_f = 0;
-  for(int i = std::round(burnin_prop *nu_samp.n_slices) ; i < nu_samp.n_slices; i++){
+  for(int i = std::floor(burnin_prop *nu_samp.n_slices) ; i < nu_samp.n_slices; i++){
     expected_log_f = expected_log_f + BayesFMMM::calcLikelihood(Y, B_obs, nu_samp.slice(i),
                                                                 phi_samp(i,0), Z_samp.slice(i),
                                                                 chi_samp.slice(i), sigma_samp(i));
   }
-  expected_log_f = expected_log_f / std::round((1-burnin_prop) *nu_samp.n_slices);
+  expected_log_f = expected_log_f / std::ceil((1-burnin_prop) *nu_samp.n_slices);
 
   double f_hat = 0;
   double f_hat_ij = 0;
   for(int i = 0; i < Z_samp.n_rows; i++){
     for(int j = 0; j < time(i,0).n_elem; j++){
       f_hat_ij = 0;
-      for(int n = std::round(burnin_prop *nu_samp.n_slices); n < nu_samp.n_slices; n++){
+      for(int n = std::floor(burnin_prop *nu_samp.n_slices); n < nu_samp.n_slices; n++){
         f_hat_ij = f_hat_ij + BayesFMMM::calcDIC2(Y(i,0), B_obs(i,0), nu_samp.slice(n), phi_samp(n,0),
                                                   Z_samp.slice(n), chi_samp.slice(n), i, j,
                                                   sigma_samp(n));
       }
-      f_hat = f_hat + std::log(f_hat_ij / std::round((1-burnin_prop) *nu_samp.n_slices));
+      f_hat = f_hat + std::log(f_hat_ij / std::ceil((1-burnin_prop) *nu_samp.n_slices));
     }
   }
 
@@ -1899,12 +1899,12 @@ double Model_AIC(const std::string dir,
   arma::field<arma::mat> curve_fit(Z_i.n_rows, 1);
   arma::rowvec Z_ph(Z_i.n_cols, arma::fill::zeros);
   for(int i = 0; i < Z_i.n_rows; i++){
-    curve_fit(i,0) = arma::zeros(std::round((1 - burnin_prop) * sigma_i.n_elem * n_files), Y(i,0).n_elem);
-    for(int j = std::round(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
+    curve_fit(i,0) = arma::zeros(std::ceil((1 - burnin_prop) * sigma_i.n_elem * n_files), Y(i,0).n_elem);
+    for(int j = std::ceil(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
       Z_ph = Z_samp(arma::span(i), arma::span::all, arma::span(j));
-      curve_fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) = Z_ph * nu_samp.slice(j) * B_obs(i,0).t();
+      curve_fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) = Z_ph * nu_samp.slice(j) * B_obs(i,0).t();
       for(int k = 0; k < chi_samp.n_cols; k++){
-        curve_fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) = curve_fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) + (chi_samp(i, k, j) *
+        curve_fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) = curve_fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) + (chi_samp(i, k, j) *
           Z_ph * phi_samp(j,0).slice(k) * B_obs(i,0).t());
       }
     }
@@ -2051,12 +2051,12 @@ double Model_BIC(const std::string dir,
   arma::field<arma::mat> curve_fit(Z_i.n_rows, 1);
   arma::rowvec Z_ph(Z_i.n_cols, arma::fill::zeros);
   for(int i = 0; i < Z_i.n_rows; i++){
-    curve_fit(i,0) = arma::zeros(std::round((1 - burnin_prop) * sigma_i.n_elem * n_files), Y(i,0).n_elem);
-    for(int j = std::round(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
+    curve_fit(i,0) = arma::zeros(std::ceil((1 - burnin_prop) * sigma_i.n_elem * n_files), Y(i,0).n_elem);
+    for(int j = std::floor(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
       Z_ph = Z_samp(arma::span(i), arma::span::all, arma::span(j));
-      curve_fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) = Z_ph * nu_samp.slice(j) * B_obs(i,0).t();
+      curve_fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) = Z_ph * nu_samp.slice(j) * B_obs(i,0).t();
       for(int k = 0; k < chi_samp.n_cols; k++){
-        curve_fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) = curve_fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) + (chi_samp(i, k, j) *
+        curve_fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) = curve_fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) + (chi_samp(i, k, j) *
           Z_ph * phi_samp(j,0).slice(k) * B_obs(i,0).t());
       }
     }
@@ -2294,12 +2294,12 @@ double MV_Model_AIC(const std::string dir,
   arma::field<arma::mat> fit(Z_i.n_rows, 1);
   arma::rowvec Z_ph(Z_i.n_cols, arma::fill::zeros);
   for(int i = 0; i < Z_i.n_rows; i++){
-    fit(i,0) = arma::zeros(std::round((1 - burnin_prop) * sigma_i.n_elem * n_files), Y.n_cols);
-    for(int j = std::round(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
+    fit(i,0) = arma::zeros(std::ceil((1 - burnin_prop) * sigma_i.n_elem * n_files), Y.n_cols);
+    for(int j = std::floor(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
       Z_ph = Z_samp(arma::span(i), arma::span::all, arma::span(j));
-      fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) = Z_ph * nu_samp.slice(j);
+      fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) = Z_ph * nu_samp.slice(j);
       for(int k = 0; k < chi_samp.n_cols; k++){
-        fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) = fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) + (chi_samp(i, k, j) *
+        fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) = fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) + (chi_samp(i, k, j) *
           Z_ph * phi_samp(j,0).slice(k));
       }
     }
@@ -2417,12 +2417,12 @@ double MV_Model_BIC(const std::string dir,
   arma::field<arma::mat> fit(Z_i.n_rows, 1);
   arma::rowvec Z_ph(Z_i.n_cols, arma::fill::zeros);
   for(int i = 0; i < Z_i.n_rows; i++){
-    fit(i,0) = arma::zeros(std::round((1 - burnin_prop) * sigma_i.n_elem * n_files), Y.n_cols);
-    for(int j = std::round(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
+    fit(i,0) = arma::zeros(std::ceil((1 - burnin_prop) * sigma_i.n_elem * n_files), Y.n_cols);
+    for(int j = std::floor(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
       Z_ph = Z_samp(arma::span(i), arma::span::all, arma::span(j));
-      fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) = Z_ph * nu_samp.slice(j);
+      fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) = Z_ph * nu_samp.slice(j);
       for(int k = 0; k < chi_samp.n_cols; k++){
-        fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) = fit(i,0).row(j - std::round(burnin_prop * sigma_i.n_elem * n_files)) + (chi_samp(i, k, j) *
+        fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) = fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) + (chi_samp(i, k, j) *
           Z_ph * phi_samp(j,0).slice(k));
       }
     }
@@ -2533,23 +2533,23 @@ double MV_Model_DIC(const std::string dir,
 
 
   double expected_log_f = 0;
-  for(int i = std::round(burnin_prop *nu_samp.n_slices) ; i < nu_samp.n_slices; i++){
+  for(int i = std::floor(burnin_prop *nu_samp.n_slices) ; i < nu_samp.n_slices; i++){
     expected_log_f = expected_log_f + BayesFMMM::calcLikelihoodMV(Y, nu_samp.slice(i),
                                                                   phi_samp(i,0), Z_samp.slice(i),
                                                                   chi_samp.slice(i), sigma_samp(i));
   }
-  expected_log_f = expected_log_f / std::round((1-burnin_prop) *nu_samp.n_slices);
+  expected_log_f = expected_log_f / std::ceil((1-burnin_prop) *nu_samp.n_slices);
 
   double f_hat = 0;
   double f_hat_i = 0;
   for(int i = 0; i < Z_samp.n_rows; i++){
     f_hat_i = 0;
-    for(int n = std::round(burnin_prop *nu_samp.n_slices); n < nu_samp.n_slices; n++){
+    for(int n = std::floor(burnin_prop *nu_samp.n_slices); n < nu_samp.n_slices; n++){
       f_hat_i = f_hat_i + BayesFMMM::calcDIC2MV(Y.row(i), nu_samp.slice(n), phi_samp(n,0),
                                                 Z_samp.slice(n), chi_samp.slice(n), i,
                                                 sigma_samp(n));
     }
-    f_hat = f_hat + std::log(f_hat_i / std::round((1-burnin_prop) *nu_samp.n_slices));
+    f_hat = f_hat + std::log(f_hat_i / std::ceil((1-burnin_prop) *nu_samp.n_slices));
   }
 
   double DIC = (2 * f_hat) - (4 * expected_log_f);
@@ -2761,8 +2761,8 @@ Rcpp::List FMeanCI_Adj(const std::string dir,
   }
 
   arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols,
-                                   std::round((nu_i.n_slices * n_files)* (1 - burnin_prop)));
-  nu_samp = nu_samp1.subcube(0, 0, std::round(nu_i.n_slices * n_files * burnin_prop),
+                                   std::ceil((nu_i.n_slices * n_files)* (1 - burnin_prop)));
+  nu_samp = nu_samp1.subcube(0, 0, std::floor(nu_i.n_slices * n_files * burnin_prop),
                              nu_samp1.n_rows-1, nu_samp1.n_cols-1, nu_samp1.n_slices-1);
 
   if(rescale == true){
@@ -2774,7 +2774,7 @@ Rcpp::List FMeanCI_Adj(const std::string dir,
 
   arma::field<arma::cube> eta_i;
   eta_i.load(dir + "Eta0.txt");
-  if(X.n_cols != eta_i(0,0).n_slices){
+  if(X.n_cols != eta_i(0,0).n_cols){
     Rcpp::stop("The number of elements in 'x_i' must be equal to the number of covariates in the model");
   }
 
@@ -2792,7 +2792,7 @@ Rcpp::List FMeanCI_Adj(const std::string dir,
 
   arma::field<arma::cube> eta_samp(nu_samp.n_slices, 1);
   for(int i = 0; i < std::round(nu_samp.n_slices); i++){
-    eta_samp(i,0) = eta_samp1(i + std::round(nu_samp1.n_slices * burnin_prop), 0);
+    eta_samp(i,0) = eta_samp1(i + std::floor(nu_samp1.n_slices * burnin_prop), 0);
   }
 
   splines2::BSpline bspline;
@@ -2823,8 +2823,8 @@ Rcpp::List FMeanCI_Adj(const std::string dir,
         Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
       }
       arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                      std::round((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-      Z_samp = Z_samp1.subcube(0, 0, std::round(Z_i.n_slices * n_files * burnin_prop),
+                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
                                Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
 
       // rescale Z and nu
@@ -2900,8 +2900,8 @@ Rcpp::List FMeanCI_Adj(const std::string dir,
       }
 
       arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                      std::round((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-      Z_samp = Z_samp1.subcube(0, 0, std::round(Z_i.n_slices * n_files * burnin_prop),
+                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
                                Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
       // rescale Z and nu
       arma::mat eta_ph = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
