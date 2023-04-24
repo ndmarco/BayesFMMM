@@ -238,5 +238,64 @@ inline double calcLikelihoodMVCovariateAdj(const arma::mat& y_obs,
   return log_lik;
 }
 
+// Calculates the CPO of the covariate adjusted partial membership model for functional data
+//
+// @name calcLikelihoodCPO
+// @param y_obs Field of vectors containing observed time points
+// @param B_obs Field of matrices containing basis functions evaluated at observed time points
+// @param nu Matrix containing current nu parameters
+// @param eta Cube containing current eta parameters
+// @param Phi Cube containing current Phi parameters
+// @param xi Field of cubes containing current xi parameters
+// @param Z Matrix containing current Z parameters
+// @param chi Matrix containing current chi parameters
+// @param iter int containing current iteration number
+// @param X Matrix containing covariates
+// @param sigma Double containing current sigma parameter
+// @return log_lik Double containing the log likelihood of the model
+inline arma::vec calcLikelihoodCPO(const arma::field<arma::vec>& y_obs,
+                                   const arma::field<arma::mat>& B_obs,
+                                   const arma::cube& nu,
+                                   const arma::field<arma::cube>& eta,
+                                   const arma::field<arma::cube>& Phi,
+                                   const arma::field<arma::cube>& xi,
+                                   const arma::cube& Z,
+                                   const arma::cube& chi,
+                                   const arma::mat& X,
+                                   const arma::vec& sigma,
+                                   const int& mcmc_iters,
+                                   const double& burnin_prop){
+  double N = Z.n_rows;
+  arma::vec CPO = arma::zeros(N);
+  for(int i = 0; i < N; i++){
+    arma::vec logl_i = arma::zeros(std::ceil((1-burnin_prop) * mcmc_iters));
+    for(int l = std::floor(burnin_prop * mcmc_iters); l < mcmc_iters; l++){
+      arma::vec mean = arma::zeros(y_obs(i,0).n_elem);
+      arma::mat cov = arma::zeros(y_obs(i,0).n_elem, y_obs(i,0).n_elem);
+      for(int k = 0; k < Z.n_cols; k++){
+        mean = mean + Z(i,k,l) * B_obs(i,0) * (nu.slice(l).row(k).t() + (eta(l,0).slice(k) * X.row(i).t()));
+        for(int k1 = 0; k1< Z.n_cols; k1++){
+          for(int m = 0; m < chi.n_cols; m++){
+            cov = cov + Z(i,k,l) * Z(i,k1,l) * (B_obs(i,0) * (Phi(l,0).slice(m).row(k).t() + xi(l,k).slice(m) * X.row(i).t()) *
+              (Phi(l,0).slice(m).row(k1).t() + xi(l,k1).slice(m) * X.row(i).t()).t() * B_obs(i,0).t());
+          }
+        }
+      }
+      cov.diag() = cov.diag() + sigma(l);
+
+      logl_i(l- std::floor(burnin_prop * mcmc_iters)) = -(0.5*y_obs(i,0).n_elem)*std::log(2 * arma::datum::pi) -
+        0.5*arma::log_det_sympd(cov) - 0.5*arma::dot((y_obs(i,0) - mean).t() * arma::inv_sympd(cov), (y_obs(i,0) - mean));
+    }
+    double logl_i_min = logl_i.min();
+    double ph = 0;
+    for(int l = 0; l < logl_i.n_elem; l++){
+      ph = ph + std::exp(logl_i_min - logl_i(l));
+    }
+    CPO(i) = std::log(logl_i.n_elem) + logl_i_min - std::log(ph);
+    Rcpp::Rcout << "CPO calculated for observation " << i + 1 << "\n";
+  }
+  return CPO;
+}
+
 }
 #endif

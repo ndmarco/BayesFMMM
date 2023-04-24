@@ -3684,6 +3684,7 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
                                                  const arma::mat& A_est,
                                                  const arma::mat& nu_est,
                                                  const arma::vec& tau_est,
+                                                 const arma::mat& tau_eta_est,
                                                  const double& sigma_est,
                                                  const arma::mat& chi_est){
   int n_obs = y_obs.n_rows;
@@ -3790,6 +3791,7 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
   A.slice(0) = A_est;
   nu.slice(0) = nu_est;
   tau.row(0) = tau_est.t();
+  tau_eta.slice(0) = tau_eta_est;
   sigma(0) = sigma_est;
 
   chi.slice(0) = chi_est;
@@ -5141,6 +5143,7 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_Mean_CovAdj(const arma::mat& y_obs,
                                                      const arma::mat& A_est,
                                                      const arma::mat& nu_est,
                                                      const arma::vec& tau_est,
+                                                     const arma::mat& tau_eta_est,
                                                      const double& sigma_est,
                                                      const arma::mat& chi_est){
   int n_obs = y_obs.n_rows;
@@ -5261,6 +5264,7 @@ inline Rcpp::List BFMMM_MTT_warm_startMV_Mean_CovAdj(const arma::mat& y_obs,
   A.slice(0) = A_est;
   nu.slice(0) = nu_est;
   tau.row(0) = tau_est.t();
+  tau_eta.slice(0) = tau_eta_est;
   sigma(0) = sigma_est;
 
   chi.slice(0) = chi_est;
@@ -5762,6 +5766,7 @@ inline Rcpp::List BFMMM_MTT_warm_start_Mean_CovAdj(const arma::field<arma::vec>&
                                                    const arma::mat& A_est,
                                                    const arma::mat& nu_est,
                                                    const arma::vec& tau_est,
+                                                   const arma::mat& tau_eta_est,
                                                    const double& sigma_est,
                                                    const arma::mat& chi_est){
 
@@ -5906,6 +5911,7 @@ inline Rcpp::List BFMMM_MTT_warm_start_Mean_CovAdj(const arma::field<arma::vec>&
   A.slice(0) = A_est;
   nu.slice(0) = nu_est;
   tau.row(0) = tau_est.t();
+  tau_eta.slice(0) = tau_eta_est;
   sigma(0) = sigma_est;
 
   chi.slice(0) = chi_est;

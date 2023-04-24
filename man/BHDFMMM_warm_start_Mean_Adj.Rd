@@ -45,10 +45,10 @@ BHDFMMM_warm_start_Mean_Adj(
   var_alpha3 = 0.05,
   var_epsilon1 = 1,
   var_epsilon2 = 1,
-  alpha_nu = 1,
-  beta_nu = 10,
-  alpha_eta = 1,
-  beta_eta = 10,
+  alpha_nu = 10,
+  beta_nu = 1,
+  alpha_eta = 10,
+  beta_eta = 1,
   alpha_0 = 1,
   beta_0 = 1
 )

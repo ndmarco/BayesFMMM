@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFMMM_Nu_Z_multiple_try}
 \alias{BFMMM_Nu_Z_multiple_try}
-\title{Find initial starting position for nu and Z parameters for functional data}
+\title{Find initial starting position for mean and allocation structure for functional data}
 \usage{
 BFMMM_Nu_Z_multiple_try(
   tot_mcmc_iters,
@@ -15,8 +15,10 @@ BFMMM_Nu_Z_multiple_try(
   n_eigen,
   boundary_knots,
   internal_knots,
+  X = NULL,
   c = NULL,
   b = 10,
+  nu_1 = 3,
   alpha1l = 1,
   alpha2l = 2,
   beta1l = 1,
@@ -26,10 +28,13 @@ BFMMM_Nu_Z_multiple_try(
   var_alpha3 = 0.05,
   var_epsilon1 = 1,
   var_epsilon2 = 1,
-  alpha = 1,
-  beta = 10,
+  alpha_nu = 10,
+  beta_nu = 1,
+  alpha_eta = 10,
+  beta_eta = 1,
   alpha_0 = 1,
-  beta_0 = 1
+  beta_0 = 1,
+  covariance_adj = FALSE
 )
 }
 \arguments{
@@ -53,6 +58,8 @@ BFMMM_Nu_Z_multiple_try(
 
 \item{internal_knots}{Vector location of internal knots for B-splines}
 
+\item{X}{Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)}
+
 \item{c}{Vector containing hyperparmeters for sampling from pi (If left NULL, the one vector will be used)}
 
 \item{b}{Double containing hyperparameter for sampling from alpha_3}
@@ -75,9 +82,13 @@ BFMMM_Nu_Z_multiple_try(
 
 \item{var_epsilon2}{Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm}
 
-\item{alpha}{Double containing hyperparameter for sampling from tau}
+\item{alpha_nu}{Double containing hyperparameter for sampling from tau_nu}
 
-\item{beta}{Double containing hyperparameter for sampling from tau (scale)}
+\item{beta_nu}{Double containing hyperparameter for sampling from tau_nu (scale)}
+
+\item{alpha_eta}{Double containing hyperparameter for sampling from tau_eta}
+
+\item{beta_eta}{Double containing hyperparameter for sampling from tau_eta (scale)}
 
 \item{alpha_0}{Double containing hyperparameter for sampling from sigma}
 
@@ -88,27 +99,31 @@ a List containing:
 \describe{
   \item{\code{B}}{The basis functions evaluated at the observed time points}
   \item{\code{nu}}{Nu samples from the chain with the highest average log-likelihood}
+  \item{\code{eta}}{Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
   \item{\code{pi}}{Pi samples from the chain with the highest average log-likelihood}
   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
   \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
+  \item{\code{tau_eta}}{Tau_Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
 }
 }
 \description{
-Function for finding a good initial starting point for nu parameters and Z
+Function for finding a good initial starting point for nu parameters, Z, and
+eta (if covariate adjusted)
 parameters for functional data, with option for tempered transitions. This
 function tries running multiple different MCMC chains to find the optimal
 starting position. This function will return the chain that has the highest
-log-likelihood average in the last 100 MCMC iterations.
+log-likelihood average in the last 100 MCMC iterations. To specify a covariate
+adjusted model, please provide the design matrix X.
 }
 \section{Warning}{
 
 The following must be true:
-\describe{
+//' \describe{
   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
   \item{\code{n_try}}{must be an integer larger than or equal to 1}
   \item{\code{k}}{must be an integer larger than or equal to 2}
@@ -116,6 +131,7 @@ The following must be true:
   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+  \item{\code{X}}{must have n_funct number of rows (if specified)}
   \item{\code{c}}{must be greater than 0 and have k elements}
   \item{\code{b}}{must be positive}
   \item{\code{alpha1l}}{must be positive}
@@ -127,14 +143,20 @@ The following must be true:
   \item{\code{var_alpha3}}{must be positive}
   \item{\code{var_epsilon1}}{must be positive}
   \item{\code{var_epsilon2}}{must be positive}
-  \item{\code{alpha}}{must be positive}
-  \item{\code{beta}}{must be positive}
+  \item{\code{alpha_nu}}{must be positive}
+  \item{\code{beta_nu}}{must be positive}
+  \item{\code{alpha_eta}}{must be positive}
+  \item{\code{beta_eta}}{must be positive}
   \item{\code{alpha_0}}{must be positive}
   \item{\code{beta_0}}{must be positive}
 }
 }
 
 \examples{
+#########################
+### Not Covariate Adj ###
+#########################
+
 ## Load sample data
 Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
@@ -153,5 +175,29 @@ internal_knots <- c(250, 500, 750)
 x <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
                              basis_degree, n_eigen, boundary_knots,
                              internal_knots)
+#####################
+### Covariate Adj ###
+#####################
+
+## Load sample data
+Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+
+## Set Hyperparameters
+tot_mcmc_iters <- 150
+n_try <- 1
+k <- 2
+n_funct <- 40
+basis_degree <- 3
+n_eigen <- 3
+boundary_knots <- c(0, 1000)
+internal_knots <- c(250, 500, 750)
+
+X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+
+## Get Estimates of Z and nu
+est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+                                basis_degree, n_eigen, boundary_knots,
+                                internal_knots, X)
 
 }

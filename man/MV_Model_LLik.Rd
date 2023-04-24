@@ -2,9 +2,18 @@
 % Please edit documentation in R/RcppExports.R
 \name{MV_Model_LLik}
 \alias{MV_Model_LLik}
-\title{Calculates the log-likelihood of the parameters for each iteration of a multivariate model}
+\title{Calculates the log-likelihood of the parameters for each iteration of a multivariate model.
+This function can handle covariate adjusted models as well as non-adjusted models.}
 \usage{
-MV_Model_LLik(dir, n_files, n_MCMC, Y)
+MV_Model_LLik(
+  dir,
+  n_files,
+  n_MCMC,
+  Y,
+  X = NULL,
+  mean_adj = FALSE,
+  cov_adj = FALSE
+)
 }
 \arguments{
 \item{dir}{String containing the directory where the MCMC files are located}
@@ -14,10 +23,17 @@ MV_Model_LLik(dir, n_files, n_MCMC, Y)
 \item{n_MCMC}{Int containing the number of saved MCMC iterations per file}
 
 \item{Y}{Matrix of observed vectors (each row is an observation)}
+
+\item{X}{Matrix of covariates (each row contains the covariates for a single observation) (optional arugment)}
+
+\item{mean_adj}{Boolean containing whether the model fit had a mean structure that is covariate-dependent (optional argument)}
+
+\item{cov_adj}{Boolean containing whether the model fit had a covariance structure that is covariate-dependent (optional argument)}
 }
 \value{
 LLik Vector containing the log-likelihood evaluated at each iteration
 }
 \description{
-Calculates the log-likelihood of the parameters for each iteration of a multivariate model
+Calculates the log-likelihood of the parameters for each iteration of a multivariate model.
+This function can handle covariate adjusted models as well as non-adjusted models.
 }

@@ -21,8 +21,8 @@ BMVMMM_Nu_Z_multiple_try(
   var_alpha3 = 0.05,
   var_epsilon1 = 1,
   var_epsilon2 = 1,
-  alpha = 1,
-  beta = 10,
+  alpha = 10,
+  beta = 1,
   alpha_0 = 1,
   beta_0 = 1
 )

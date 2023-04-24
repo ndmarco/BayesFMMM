@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BMVMMM_warm_start}
 \alias{BMVMMM_warm_start}
-\alias{BMVMMM_warm_start_Mean_Adj}
+\alias{BMVMMM_warm_start_Cov_Adj}
 \title{Performs MCMC for multivariate models given an informed set of starting points}
 \usage{
 BMVMMM_warm_start(
@@ -40,13 +40,13 @@ BMVMMM_warm_start(
   var_alpha3 = 0.05,
   var_epsilon1 = 1,
   var_epsilon2 = 1,
-  alpha = 1,
-  beta = 10,
+  alpha = 10,
+  beta = 1,
   alpha_0 = 1,
   beta_0 = 1
 )
 
-BMVMMM_warm_start_Mean_Adj(
+BMVMMM_warm_start_Cov_Adj(
   tot_mcmc_iters,
   k,
   Y,
@@ -61,6 +61,7 @@ BMVMMM_warm_start_Mean_Adj(
   A_samp,
   nu_samp,
   tau_samp,
+  tau_eta_samp,
   sigma_samp,
   chi_samp,
   burnin_prop = 0.8,
@@ -82,12 +83,13 @@ BMVMMM_warm_start_Mean_Adj(
   var_alpha3 = 0.05,
   var_epsilon1 = 1,
   var_epsilon2 = 1,
-  alpha_nu = 1,
-  beta_nu = 10,
-  alpha_eta = 1,
-  beta_eta = 10,
+  alpha_nu = 10,
+  beta_nu = 1,
+  alpha_eta = 10,
+  beta_eta = 1,
   alpha_0 = 1,
-  beta_0 = 1
+  beta_0 = 1,
+  covariance_adj = FALSE
 )
 }
 \arguments{
@@ -99,27 +101,27 @@ BMVMMM_warm_start_Mean_Adj(
 
 \item{n_eigen}{Int containing the number of eigenfunctions}
 
-\item{Z_samp}{Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})}
+\item{Z_samp}{Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})}
 
-\item{pi_samp}{Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})}
+\item{pi_samp}{Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})}
 
-\item{alpha_3_samp}{Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})}
+\item{alpha_3_samp}{Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})}
 
-\item{delta_samp}{Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})}
+\item{delta_samp}{Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est_Cov_Adj})}
 
-\item{gamma_samp}{List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})}
+\item{gamma_samp}{List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est_Cov_Adj})}
 
-\item{Phi_samp}{List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})}
+\item{Phi_samp}{List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est_Cov_Adj})}
 
-\item{A_samp}{Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})}
+\item{A_samp}{Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est_Cov_Adj})}
 
-\item{nu_samp}{Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})}
+\item{nu_samp}{Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})}
 
-\item{tau_samp}{Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})}
+\item{tau_samp}{Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})}
 
-\item{sigma_samp}{Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})}
+\item{sigma_samp}{Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est_Cov_Adj})}
 
-\item{chi_samp}{Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})}
+\item{chi_samp}{Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est_Cov_Adj})}
 
 \item{burnin_prop}{Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters}
 
@@ -169,6 +171,8 @@ BMVMMM_warm_start_Mean_Adj(
 
 \item{X}{Matrix of covariates (each row corresponds to an observation)}
 
+\item{tau_eta_samp}{Cube containing initial chain of tau_eta parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})}
+
 \item{alpha_nu}{Double containing hyperparameter for sampling from tau_nu}
 
 \item{beta_nu}{Double containing hyperparameter for sampling from tau_nu (scale)}
@@ -176,6 +180,8 @@ BMVMMM_warm_start_Mean_Adj(
 \item{alpha_eta}{Double containing hyperparameter for sampling from tau_eta}
 
 \item{beta_eta}{Double containing hyperparameter for sampling from tau_eta (scale)}
+
+\item{covariance_adj}{Boolean containing whether or not the covariance structure should depend on the covariates}
 }
 \value{
 a List containing:
@@ -206,6 +212,9 @@ a List containing:
   \item{\code{tau}}{tau samples from the MCMC chain}
   \item{\code{tau_eta}}{tau_eta samples from the MCMC chain}
   \item{\code{eta}}{eta samples from the MCMC chain}
+  \item{\code{xi}}{xi samples from the MCMC chain (if covariance_adj is true)}
+  \item{\code{delta_xi}}{delta_xi samples from the MCMC chain (if covariance_adj is true)}
+  \item{\code{gamma_xi}}{gamma_xi samples from the MCMC chain (if covariance_adj is true)}
   \item{\code{gamma}}{gamma samples from the MCMC chain}
   \item{\code{Phi}}{Phi samples from the MCMC chain}
   \item{\code{Z}}{Z samples from the MCMC chain}
@@ -229,10 +238,10 @@ parameter can be viewed using the following functions: \code{ReadFieldCube},
 \code{ReadVec}.
 
 This function performs MCMC for a covariate adjusted mixed membership model
-for multivariate data. This function is specifically for a mean adjusted model,
-so the covariates will not affect the covariance structure of the model.
-This function is meant to be used after using \code{BMVMMM_Nu_Z_multiple_try}
-and \code{BMVMMM_Theta_est}. This function will use the outputs of these two
+for multivariate data. This function can handle covariate dependent mean models,
+as well as covariate dependent mean and covariance models through the parameter \code{covariance_adj}.
+This function is meant to be used after using \code{BMVMMM_Nu_Z_multiple_try_Cov_Adj}
+and \code{BMVMMM_Theta_est_Cov_Adj}. This function will use the outputs of these two
 functions to start the MCMC chain in a good location. Since the posterior distribution
 can often be multimodal, it is important to have a good starting position.
 To help move across modes, this function allows users to use tempered transitions
@@ -350,7 +359,7 @@ est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
 est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
 
 X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
-MCMC.chain <-BMVMMM_warm_start_Mean_Adj(tot_mcmc_iters, k, Y, X, n_eigen,
+MCMC.chain <-BMVMMM_warm_start_Cov_Adj(tot_mcmc_iters, k, Y, X, n_eigen,
                                         est1$Z, est1$pi, est1$alpha_3,
                                         est2$delta, est2$gamma, est2$Phi, est2$A,
                                         est1$nu, est1$tau, est2$sigma, est2$chi)
