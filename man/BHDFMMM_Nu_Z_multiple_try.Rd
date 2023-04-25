@@ -7,7 +7,7 @@
 BHDFMMM_Nu_Z_multiple_try(
   tot_mcmc_iters,
   n_try,
-  k,
+  K,
   Y,
   time,
   n_funct,
@@ -37,7 +37,7 @@ BHDFMMM_Nu_Z_multiple_try(
 
 \item{n_try}{Int containing how many different chains are tried}
 
-\item{k}{Int containing the number of clusters}
+\item{K}{Int containing the number of clusters}
 
 \item{Y}{List of vectors containing the observed values (flattened)}
 
@@ -113,12 +113,12 @@ The following must be true:
 \describe{
   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
   \item{\code{n_try}}{must be an integer larger than or equal to 1}
-  \item{\code{k}}{must be an integer larger than or equal to 2}
+  \item{\code{K}}{must be an integer larger than or equal to 2}
   \item{\code{n_funct}}{must be an integer larger than 1}
   \item{\code{basis_degree}}{each element must be an integer larger than or equal to 1}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
   \item{\code{internal_knots}}{must lie in the range of corresponding \code{boundary_knots}}
-  \item{\code{c}}{must be greater than 0 and have k elements}
+  \item{\code{c}}{must be greater than 0 and have K elements}
   \item{\code{b}}{must be positive}
   \item{\code{alpha1l}}{must be positive}
   \item{\code{beta1l}}{must be positive}
@@ -144,7 +144,7 @@ time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 ## Set Hyperparameters
 tot_mcmc_iters <- 150
 n_try <- 1
-k <- 2
+K <- 2
 n_funct <- 20
 basis_degree <- c(2,2)
 n_eigen <- 2
@@ -152,7 +152,7 @@ boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
 internal_knots <- rep(list(c(250, 500, 750)), 2)
 
 ## Run function
-est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                   basis_degree, n_eigen, boundary_knots,
                                   internal_knots)
 

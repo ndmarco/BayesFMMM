@@ -7,7 +7,7 @@
 BFMMM_Nu_Z_multiple_try(
   tot_mcmc_iters,
   n_try,
-  k,
+  K,
   Y,
   time,
   n_funct,
@@ -33,8 +33,7 @@ BFMMM_Nu_Z_multiple_try(
   alpha_eta = 10,
   beta_eta = 1,
   alpha_0 = 1,
-  beta_0 = 1,
-  covariance_adj = FALSE
+  beta_0 = 1
 )
 }
 \arguments{
@@ -42,7 +41,7 @@ BFMMM_Nu_Z_multiple_try(
 
 \item{n_try}{Int containing how many different chains are tried}
 
-\item{k}{Int containing the number of clusters}
+\item{K}{Int containing the number of clusters}
 
 \item{Y}{List of vectors containing the observed values}
 
@@ -126,13 +125,13 @@ The following must be true:
 //' \describe{
   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
   \item{\code{n_try}}{must be an integer larger than or equal to 1}
-  \item{\code{k}}{must be an integer larger than or equal to 2}
+  \item{\code{K}}{must be an integer larger than or equal to 2}
   \item{\code{n_funct}}{must be an integer larger than 1}
   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
   \item{\code{X}}{must have n_funct number of rows (if specified)}
-  \item{\code{c}}{must be greater than 0 and have k elements}
+  \item{\code{c}}{must be greater than 0 and have K elements}
   \item{\code{b}}{must be positive}
   \item{\code{alpha1l}}{must be positive}
   \item{\code{beta1l}}{must be positive}
@@ -164,7 +163,7 @@ time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 ## Set Hyperparameters
 tot_mcmc_iters <- 150
 n_try <- 1
-k <- 2
+K <- 2
 n_funct <- 40
 basis_degree <- 3
 n_eigen <- 3
@@ -172,7 +171,7 @@ boundary_knots <- c(0, 1000)
 internal_knots <- c(250, 500, 750)
 
 ## Run function
-x <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+x <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                              basis_degree, n_eigen, boundary_knots,
                              internal_knots)
 #####################
@@ -186,7 +185,7 @@ time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 ## Set Hyperparameters
 tot_mcmc_iters <- 150
 n_try <- 1
-k <- 2
+K <- 2
 n_funct <- 40
 basis_degree <- 3
 n_eigen <- 3
@@ -196,7 +195,7 @@ internal_knots <- c(250, 500, 750)
 X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 
 ## Get Estimates of Z and nu
-est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                 basis_degree, n_eigen, boundary_knots,
                                 internal_knots, X)
 

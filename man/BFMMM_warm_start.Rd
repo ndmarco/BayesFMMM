@@ -6,7 +6,7 @@
 \usage{
 BFMMM_warm_start(
   tot_mcmc_iters,
-  k,
+  K,
   Y,
   time,
   n_funct,
@@ -48,7 +48,7 @@ BFMMM_warm_start(
 \arguments{
 \item{tot_mcmc_iters}{Int containing the total number of MCMC iterations}
 
-\item{k}{Int containing the number of clusters}
+\item{K}{Int containing the number of clusters}
 
 \item{Y}{List of vectors containing the observed values}
 
@@ -63,6 +63,10 @@ BFMMM_warm_start(
 \item{boundary_knots}{Vector containing the boundary points of our index domain of interest}
 
 \item{internal_knots}{Vector location of internal knots for B-splines}
+
+\item{multiple_try}{List containing results from \code{BFMMM_Nu_Z_multiple_try}}
+
+\item{theta_est}{List containing results from \code{BFMMM_Theta_est}}
 
 \item{X}{Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)}
 
@@ -117,32 +121,6 @@ BFMMM_warm_start(
 \item{beta_0}{Double containing hyperparameter for sampling from sigma (scale)}
 
 \item{covariance_adj}{Boolean containing whether or not the covariance structure should depend on the covariates}
-
-\item{Z_samp}{Cube containing initial chain of Z parameters from \code{BFMMM_NU_Z_multiple_try}}
-
-\item{pi_samp}{Matrix containing initial chain of pi parameters from \code{BFMMM_NU_Z_multiple_try}}
-
-\item{alpha_3_samp}{Vector containing initial chain of alpha_3 parameters from \code{BFMMM_NU_Z_multiple_try}}
-
-\item{delta_samp}{Matrix containing initial chain of delta parameters from \code{BFMMM_Theta_est}}
-
-\item{gamma_samp}{List of cubes containing initial chain of gamma parameters from \code{BFMMM_Theta_est}}
-
-\item{Phi_samp}{List of cubes containing initial chain of phi parameters from \code{BFMMM_Theta_est}}
-
-\item{A_samp}{Matrix containing initial chain of A parameters from \code{BFMMM_Theta_est}}
-
-\item{nu_samp}{Cube containing initial chain of nu parameters from \code{BFMMM_NU_Z_multiple_try}}
-
-\item{tau_samp}{Matrix containing initial chain of tau parameters from \code{BFMMM_NU_Z_multiple_try}}
-
-\item{sigma_samp}{Vector containing initial chain of sigma parameters from \code{BFMMM_Theta_est}}
-
-\item{chi_samp}{Cube containing initial chain of chi parameters from \code{BFMMM_Theta_est}}
-
-\item{eta_samp}{Field of cubes containing initial chain of eta parameters from \code{BFMMM_NU_Z_multiple_try} (if covariate adjusted)}
-
-\item{tau_eta_samp}{Cube containing initial chain of tau_eta parameters from \code{BFMMM_NU_Z_multiple_try} (if covariate adjusted)}
 }
 \value{
 a List containing:
@@ -192,7 +170,7 @@ The following must be true:
   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
   \item{\code{X}}{ must have n_funct number of rows}
   \item{\code{burnin_prop}}{must be between 0 and 1}
-  \item{\code{k}}{must be an integer larger than or equal to 2}
+  \item{\code{K}}{must be an integer larger than or equal to 2}
   \item{\code{n_funct}}{must be an integer larger than 1}
   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
@@ -203,7 +181,7 @@ The following must be true:
   \item{\code{N_t}}{must be a positive integer}
   \item{\code{n_temp_trans}}{must be a non-negative integer}
   \item{\code{r_stored_iters}}{must be a non-negative integer}
-  \item{\code{c}}{must be greater than 0 and have k elements}
+  \item{\code{c}}{must be greater than 0 and have K elements}
   \item{\code{b}}{must be positive}
   \item{\code{nu_1}}{must be positive}
   \item{\code{alpha1l}}{must be positive}
@@ -236,7 +214,7 @@ time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 ## Set Hyperparameters
 tot_mcmc_iters <- 150
 n_try <- 1
-k <- 2
+K <- 2
 n_funct <- 40
 basis_degree <- 3
 n_eigen <- 3
@@ -244,17 +222,17 @@ boundary_knots <- c(0, 1000)
 internal_knots <- c(250, 500, 750)
 
 ## Get Estimates of Z and nu
-est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                 basis_degree, n_eigen, boundary_knots,
                                 internal_knots)
 
 ## Run function
-est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
                         internal_knots, est1)
 
 ## Run MCMC sampler
-MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
+MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
                                basis_degree, n_eigen, boundary_knots,
                                internal_knots, est1, est2)
 
@@ -269,7 +247,7 @@ time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 ## Set Hyperparameters
 tot_mcmc_iters <- 150
 n_try <- 1
-k <- 2
+K <- 2
 n_funct <- 40
 basis_degree <- 3
 n_eigen <- 3
@@ -279,17 +257,52 @@ internal_knots <- c(250, 500, 750)
 X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 
 ## Get Estimates of Z and nu
-est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                 basis_degree, n_eigen, boundary_knots,
                                 internal_knots, X)
 
 ## Run function
-est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
                         internal_knots, est1, X)
 
 ## Run MCMC sampler
-MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
+MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
                                basis_degree, n_eigen, boundary_knots,
                                internal_knots, est1, est2, X)
+
+#####################################################################
+### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#####################################################################
+
+## Load sample data
+Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+
+## Set Hyperparameters
+tot_mcmc_iters <- 150
+n_try <- 1
+K <- 2
+n_funct <- 40
+basis_degree <- 3
+n_eigen <- 3
+boundary_knots <- c(0, 1000)
+internal_knots <- c(250, 500, 750)
+
+X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+
+## Get Estimates of Z and nu
+est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+                                basis_degree, n_eigen, boundary_knots,
+                                internal_knots, X)
+
+## Run function
+est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+                        basis_degree, n_eigen, boundary_knots,
+                        internal_knots, est1, X, covariance_adj = T)
+
+## Run MCMC sampler
+MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
+                               basis_degree, n_eigen, boundary_knots,
+                               internal_knots, est1, est2, X, covariance_adj = T)
 }

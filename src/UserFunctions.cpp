@@ -16,7 +16,7 @@
 //' @name BFMMM_Nu_Z_multiple_try
 //' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 //' @param n_try Int containing how many different chains are tried
-//' @param k Int containing the number of clusters
+//' @param K Int containing the number of clusters
 //' @param Y List of vectors containing the observed values
 //' @param time List of vectors containing the observed time points
 //' @param n_funct Int containing the number of functions
@@ -63,13 +63,13 @@
 //' //' \describe{
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
 //'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
-//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_funct}}{must be an integer larger than 1}
 //'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
 //'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
 //'   \item{\code{X}}{must have n_funct number of rows (if specified)}
-//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{alpha1l}}{must be positive}
 //'   \item{\code{beta1l}}{must be positive}
@@ -100,7 +100,7 @@
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_funct <- 40
 //' basis_degree <- 3
 //' n_eigen <- 3
@@ -108,7 +108,7 @@
 //' internal_knots <- c(250, 500, 750)
 //'
 //' ## Run function
-//' x <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' x <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                              basis_degree, n_eigen, boundary_knots,
 //'                              internal_knots)
 //' #####################
@@ -122,7 +122,7 @@
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_funct <- 40
 //' basis_degree <- 3
 //' n_eigen <- 3
@@ -132,7 +132,7 @@
 //' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                                 basis_degree, n_eigen, boundary_knots,
 //'                                 internal_knots, X)
 //'
@@ -140,7 +140,7 @@
 // [[Rcpp::export]]
 Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                    const int n_try,
-                                   const int k,
+                                   const int K,
                                    const arma::field<arma::vec> Y,
                                    const arma::field<arma::vec> time,
                                    const int n_funct,
@@ -166,8 +166,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                    const double alpha_eta = 10,
                                    const double beta_eta = 1,
                                    const double alpha_0 = 1,
-                                   const double beta_0 = 1,
-                                   const bool covariance_adj = false){
+                                   const double beta_0 = 1){
   Rcpp::List BestChain;
 
   if(X.isNull()){
@@ -178,8 +177,8 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
     if(n_try <  1){
       Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
     }
-    if(k <  2){
-      Rcpp::stop("'k' must be an integer greater than or equal to 2");
+    if(K <  2){
+      Rcpp::stop("'K' must be an integer greater than or equal to 2");
     }
     if(n_funct <  1){
       Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
@@ -246,17 +245,17 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
     }
 
     // initialize hyperparameter c
-    arma::vec c1 = arma::ones(k) * 10;
+    arma::vec c1 = arma::ones(K) * 10;
     if(c.isNotNull()) {
       Rcpp::NumericVector c_(c);
       c1 = Rcpp::as<arma::vec>(c_);
     }
 
     // generate warning for c
-    if(c1.n_elem != k){
-      Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+    if(c1.n_elem != K){
+      Rcpp::stop("number of elements of the vector 'c' must be equal to K");
     }
-    for(int i = 0; i < k; i++){
+    for(int i = 0; i < K; i++){
       if(c1(i) <= 0){
         Rcpp::stop("all elements of 'c' must be positive");
       }
@@ -276,7 +275,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
     }
 
     // start MCMC sampling
-    Rcpp::List mod1 = BayesFMMM::BFMMM_Nu_Z(Y, time, n_funct, k, basis_degree,
+    Rcpp::List mod1 = BayesFMMM::BFMMM_Nu_Z(Y, time, n_funct, K, basis_degree,
                                             n_eigen, boundary_knots, internal_knots,
                                             tot_mcmc_iters, c1, b, alpha1l,
                                             alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
@@ -287,7 +286,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
     for(int i = 0; i < n_try; i++){
       Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-      Rcpp::List modi = BayesFMMM::BFMMM_Nu_Z(Y, time, n_funct, k, basis_degree,
+      Rcpp::List modi = BayesFMMM::BFMMM_Nu_Z(Y, time, n_funct, K, basis_degree,
                                               n_eigen, boundary_knots, internal_knots,
                                               tot_mcmc_iters, c1, b, alpha1l,
                                               alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
@@ -325,8 +324,8 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
     if(n_try <  1){
       Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
     }
-    if(k <  2){
-      Rcpp::stop("'k' must be an integer greater than or equal to 2");
+    if(K <  2){
+      Rcpp::stop("'K' must be an integer greater than or equal to 2");
     }
     if(n_funct <  1){
       Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
@@ -399,17 +398,17 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
     }
 
     // initialize hyperparameter c
-    arma::vec c1 = arma::ones(k) * 10;
+    arma::vec c1 = arma::ones(K) * 10;
     if(c.isNotNull()) {
       Rcpp::NumericVector c_(c);
       c1 = Rcpp::as<arma::vec>(c_);
     }
 
     // generate warning for c
-    if(c1.n_elem != k){
-      Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+    if(c1.n_elem != K){
+      Rcpp::stop("number of elements of the vector 'c' must be equal to K");
     }
-    for(int i = 0; i < k; i++){
+    for(int i = 0; i < K; i++){
       if(c1(i) <= 0){
         Rcpp::stop("all elements of 'c' must be positive");
       }
@@ -429,7 +428,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
     }
 
     // start MCMC sampling
-    Rcpp::List mod1 = BayesFMMM::BFMMM_Nu_Z_Cov_Adj(Y, time, X1, n_funct, k, basis_degree,
+    Rcpp::List mod1 = BayesFMMM::BFMMM_Nu_Z_Cov_Adj(Y, time, X1, n_funct, K, basis_degree,
                                                     n_eigen, boundary_knots, internal_knots,
                                                     tot_mcmc_iters, c1, b, alpha1l,
                                                     alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
@@ -441,7 +440,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
     for(int i = 0; i < n_try; i++){
       Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-      Rcpp::List modi =BayesFMMM::BFMMM_Nu_Z_Cov_Adj(Y, time, X1, n_funct, k, basis_degree,
+      Rcpp::List modi =BayesFMMM::BFMMM_Nu_Z_Cov_Adj(Y, time, X1, n_funct, K, basis_degree,
                                                      n_eigen, boundary_knots, internal_knots,
                                                      tot_mcmc_iters, c1, b, alpha1l,
                                                      alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
@@ -486,7 +485,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @name BFMMM_Theta_est
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param n_try Int containing how many different chains are tried
-//' @param k Int containing the number of clusters
+//' @param K Int containing the number of clusters
 //' @param Y List of vectors containing the observed values
 //' @param time List of vectors containing the observed time points
 //' @param n_funct Int containing the number of functions
@@ -536,13 +535,13 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
 //'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
 //'   \item{\code{burnin_prop}}{must be between 0 and 1}
-//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_funct}}{must be an integer larger than 1}
 //'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
 //'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
 //'   \item{\code{X}}{must have n_funct number of rows (if specified)}
-//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{nu_1}}{must be positive}
 //'   \item{\code{alpha1l}}{must be positive}
@@ -574,7 +573,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_funct <- 40
 //' basis_degree <- 3
 //' n_eigen <- 3
@@ -582,12 +581,12 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' internal_knots <- c(250, 500, 750)
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                                 basis_degree, n_eigen, boundary_knots,
 //'                                 internal_knots)
 //'
 //' ## Run function
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1)
 //'
@@ -602,7 +601,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_funct <- 40
 //' basis_degree <- 3
 //' n_eigen <- 3
@@ -612,20 +611,50 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                                 basis_degree, n_eigen, boundary_knots,
 //'                                 internal_knots, X)
 //'
 //' ## Run function
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1, X)
+//'
+//' #####################################################################
+//' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+//' #####################################################################
+//'
+//' ## Load sample data
+//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+//'
+//' ## Set Hyperparameters
+//' tot_mcmc_iters <- 150
+//' n_try <- 1
+//' K <- 2
+//' n_funct <- 40
+//' basis_degree <- 3
+//' n_eigen <- 3
+//' boundary_knots <- c(0, 1000)
+//' internal_knots <- c(250, 500, 750)
+//'
+//' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+//'
+//' ## Get Estimates of Z and nu
+//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+//'                                 basis_degree, n_eigen, boundary_knots,
+//'                                 internal_knots, X)
+//'
+//' ## Run function
+//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+//'                         basis_degree, n_eigen, boundary_knots,
+//'                         internal_knots, est1, X, covariance_adj = T)
 //'
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
                            const int n_try,
-                           const int k,
+                           const int K,
                            const arma::field<arma::vec> Y,
                            const arma::field<arma::vec> time,
                            const int n_funct,
@@ -673,8 +702,8 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
     if(burnin_prop >= 1){
       Rcpp::stop("'burnin_prop' must be between 0 and 1");
     }
-    if(k <  2){
-      Rcpp::stop("'k' must be an integer greater than or equal to 2");
+    if(K <  2){
+      Rcpp::stop("'K' must be an integer greater than or equal to 2");
     }
     if(n_funct <  1){
       Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
@@ -743,17 +772,17 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
     }
 
     // initialize hyperparameter c
-    arma::vec c1 = arma::ones(k) * 10;
+    arma::vec c1 = arma::ones(K) * 10;
     if(c.isNotNull()) {
       Rcpp::NumericVector c_(c);
       c1 = Rcpp::as<arma::vec>(c_);
     }
 
     // generate warning for c
-    if(c1.n_elem != k){
-      Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+    if(c1.n_elem != K){
+      Rcpp::stop("number of elements of the vector 'c' must be equal to K");
     }
-    for(int i = 0; i < k; i++){
+    for(int i = 0; i < K; i++){
       if(c1(i) <= 0){
         Rcpp::stop("all elements of 'c' must be positive");
       }
@@ -800,7 +829,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
     }
 
     // start MCMC sampling
-    Rcpp::List mod1 = BayesFMMM::BFMMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+    Rcpp::List mod1 = BayesFMMM::BFMMM_Theta(Y, time, n_funct, K, basis_degree, n_eigen,
                                              boundary_knots, internal_knots, tot_mcmc_iters,
                                              c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                              beta2l, a_Z_PM, a_pi_PM, var_alpha3,
@@ -812,7 +841,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 
     for(int i = 0; i < n_try; i++){
       Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-      Rcpp::List modi = BayesFMMM::BFMMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+      Rcpp::List modi = BayesFMMM::BFMMM_Theta(Y, time, n_funct, K, basis_degree, n_eigen,
                                                boundary_knots, internal_knots, tot_mcmc_iters,
                                                c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                                beta2l, a_Z_PM, a_pi_PM, var_alpha3,
@@ -863,8 +892,8 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
     if(burnin_prop >= 1){
       Rcpp::stop("'burnin_prop' must be between 0 and 1");
     }
-    if(k <  2){
-      Rcpp::stop("'k' must be an integer greater than or equal to 2");
+    if(K <  2){
+      Rcpp::stop("'K' must be an integer greater than or equal to 2");
     }
     if(n_funct <  1){
       Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
@@ -939,17 +968,17 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
     }
 
     // initialize hyperparameter c
-    arma::vec c1 = arma::ones(k) * 10;
+    arma::vec c1 = arma::ones(K) * 10;
     if(c.isNotNull()) {
       Rcpp::NumericVector c_(c);
       c1 = Rcpp::as<arma::vec>(c_);
     }
 
     // generate warning for c
-    if(c1.n_elem != k){
-      Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+    if(c1.n_elem != K){
+      Rcpp::stop("number of elements of the vector 'c' must be equal to K");
     }
-    for(int i = 0; i < k; i++){
+    for(int i = 0; i < K; i++){
       if(c1(i) <= 0){
         Rcpp::stop("all elements of 'c' must be positive");
       }
@@ -1005,7 +1034,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
     }
 
     // start MCMC sampling
-    Rcpp::List mod1 = BayesFMMM::BFMMM_Theta_Cov_Adj(Y, time, X1, n_funct, k, basis_degree, n_eigen,
+    Rcpp::List mod1 = BayesFMMM::BFMMM_Theta_Cov_Adj(Y, time, X1, n_funct, K, basis_degree, n_eigen,
                                                      boundary_knots, internal_knots, tot_mcmc_iters,
                                                      c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                                      beta2l, a_Z_PM, a_pi_PM, var_alpha3,
@@ -1018,7 +1047,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 
     for(int i = 0; i < n_try; i++){
       Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-      Rcpp::List modi = BayesFMMM::BFMMM_Theta_Cov_Adj(Y, time, X1, n_funct, k, basis_degree, n_eigen,
+      Rcpp::List modi = BayesFMMM::BFMMM_Theta_Cov_Adj(Y, time, X1, n_funct, K, basis_degree, n_eigen,
                                                        boundary_knots, internal_knots, tot_mcmc_iters,
                                                        c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                                        beta2l, a_Z_PM, a_pi_PM, var_alpha3,
@@ -1076,7 +1105,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 //'
 //' @name BFMMM_warm_start
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
-//' @param k Int containing the number of clusters
+//' @param K Int containing the number of clusters
 //' @param Y List of vectors containing the observed values
 //' @param time List of vectors containing the observed time points
 //' @param n_funct Int containing the number of functions
@@ -1084,19 +1113,8 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param boundary_knots Vector containing the boundary points of our index domain of interest
 //' @param internal_knots Vector location of internal knots for B-splines
-//' @param Z_samp Cube containing initial chain of Z parameters from \code{BFMMM_NU_Z_multiple_try}
-//' @param pi_samp Matrix containing initial chain of pi parameters from \code{BFMMM_NU_Z_multiple_try}
-//' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters from \code{BFMMM_NU_Z_multiple_try}
-//' @param delta_samp Matrix containing initial chain of delta parameters from \code{BFMMM_Theta_est}
-//' @param gamma_samp List of cubes containing initial chain of gamma parameters from \code{BFMMM_Theta_est}
-//' @param Phi_samp List of cubes containing initial chain of phi parameters from \code{BFMMM_Theta_est}
-//' @param A_samp Matrix containing initial chain of A parameters from \code{BFMMM_Theta_est}
-//' @param nu_samp Cube containing initial chain of nu parameters from \code{BFMMM_NU_Z_multiple_try}
-//' @param tau_samp Matrix containing initial chain of tau parameters from \code{BFMMM_NU_Z_multiple_try}
-//' @param sigma_samp Vector containing initial chain of sigma parameters from \code{BFMMM_Theta_est}
-//' @param chi_samp Cube containing initial chain of chi parameters from \code{BFMMM_Theta_est}
-//' @param eta_samp Field of cubes containing initial chain of eta parameters from \code{BFMMM_NU_Z_multiple_try} (if covariate adjusted)
-//' @param tau_eta_samp Cube containing initial chain of tau_eta parameters from \code{BFMMM_NU_Z_multiple_try} (if covariate adjusted)
+//' @param multiple_try List containing results from \code{BFMMM_Nu_Z_multiple_try}
+//' @param theta_est List containing results from \code{BFMMM_Theta_est}
 //' @param X Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)
 //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 //' @param dir String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)
@@ -1154,7 +1172,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
 //'   \item{\code{X}}{ must have n_funct number of rows}
 //'   \item{\code{burnin_prop}}{must be between 0 and 1}
-//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_funct}}{must be an integer larger than 1}
 //'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
@@ -1165,7 +1183,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 //'   \item{\code{N_t}}{must be a positive integer}
 //'   \item{\code{n_temp_trans}}{must be a non-negative integer}
 //'   \item{\code{r_stored_iters}}{must be a non-negative integer}
-//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{nu_1}}{must be positive}
 //'   \item{\code{alpha1l}}{must be positive}
@@ -1197,7 +1215,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_funct <- 40
 //' basis_degree <- 3
 //' n_eigen <- 3
@@ -1205,17 +1223,17 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 //' internal_knots <- c(250, 500, 750)
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                                 basis_degree, n_eigen, boundary_knots,
 //'                                 internal_knots)
 //'
 //' ## Run function
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1)
 //'
 //' ## Run MCMC sampler
-//' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
+//' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
 //'                                basis_degree, n_eigen, boundary_knots,
 //'                                internal_knots, est1, est2)
 //'
@@ -1230,7 +1248,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_funct <- 40
 //' basis_degree <- 3
 //' n_eigen <- 3
@@ -1240,23 +1258,58 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 //' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                                 basis_degree, n_eigen, boundary_knots,
 //'                                 internal_knots, X)
 //'
 //' ## Run function
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1, X)
 //'
 //' ## Run MCMC sampler
-//' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
+//' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
 //'                                basis_degree, n_eigen, boundary_knots,
 //'                                internal_knots, est1, est2, X)
+//'
+//' #####################################################################
+//' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+//' #####################################################################
+//'
+//' ## Load sample data
+//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+//'
+//' ## Set Hyperparameters
+//' tot_mcmc_iters <- 150
+//' n_try <- 1
+//' K <- 2
+//' n_funct <- 40
+//' basis_degree <- 3
+//' n_eigen <- 3
+//' boundary_knots <- c(0, 1000)
+//' internal_knots <- c(250, 500, 750)
+//'
+//' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+//'
+//' ## Get Estimates of Z and nu
+//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+//'                                 basis_degree, n_eigen, boundary_knots,
+//'                                 internal_knots, X)
+//'
+//' ## Run function
+//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+//'                         basis_degree, n_eigen, boundary_knots,
+//'                         internal_knots, est1, X, covariance_adj = T)
+//'
+//' ## Run MCMC sampler
+//' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
+//'                                basis_degree, n_eigen, boundary_knots,
+//'                                internal_knots, est1, est2, X, covariance_adj = T)
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
-                            const int k,
+                            const int K,
                             const arma::field<arma::vec> Y,
                             const arma::field<arma::vec> time,
                             const int n_funct,
@@ -1318,8 +1371,8 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
     if(burnin_prop >= 1){
       Rcpp::stop("'burnin_prop' must be between 0 and 1");
     }
-    if(k <  2){
-      Rcpp::stop("'k' must be an integer greater than or equal to 2");
+    if(K <  2){
+      Rcpp::stop("'K' must be an integer greater than or equal to 2");
     }
     if(n_funct <  1){
       Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
@@ -1406,17 +1459,17 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
     }
 
     // initialize hyperparameter c
-    arma::vec c1 = arma::ones(k) * 10;
+    arma::vec c1 = arma::ones(K) * 10;
     if(c.isNotNull()){
       Rcpp::NumericVector c_(c);
       c1 = Rcpp::as<arma::vec>(c_);
     }
 
     // generate warning for c
-    if(c1.n_elem != k){
-      Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+    if(c1.n_elem != K){
+      Rcpp::stop("number of elements of the vector 'c' must be equal to K");
     }
-    for(int i = 0; i < k; i++){
+    for(int i = 0; i < K; i++){
       if(c1(i) <= 0){
         Rcpp::stop("all elements of 'c' must be positive");
       }
@@ -1536,12 +1589,12 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
 
     arma::mat A_est = arma::zeros(A_samp.n_rows, A_samp.n_cols);
     arma::vec ph_A = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-    for(int k = 0; k < A_samp.n_rows; k++){
+    for(int j = 0; j < A_samp.n_rows; j++){
       for(int i = 0; i < A_samp.n_cols; i++){
         for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-          ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(k, i, l);
+          ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(j, i, l);
         }
-        A_est(k, i) = arma::median(ph_A);
+        A_est(j, i) = arma::median(ph_A);
       }
     }
 
@@ -1565,7 +1618,7 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
     }
 
     // start MCMC sampling
-    Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_start(Y, time, n_funct, thinning_num, k,
+    Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_start(Y, time, n_funct, thinning_num, K,
                                                       basis_degree, n_eigen, boundary_knots,
                                                       internal_knots, tot_mcmc_iters,
                                                       r_stored_iters, n_temp_trans,
@@ -1623,8 +1676,8 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
     if(burnin_prop >= 1){
       Rcpp::stop("'burnin_prop' must be between 0 and 1");
     }
-    if(k <  2){
-      Rcpp::stop("'k' must be an integer greater than or equal to 2");
+    if(K <  2){
+      Rcpp::stop("'K' must be an integer greater than or equal to 2");
     }
     if(n_funct <  1){
       Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
@@ -1717,17 +1770,17 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
     }
 
     // initialize hyperparameter c
-    arma::vec c1 = arma::ones(k) * 10;
+    arma::vec c1 = arma::ones(K) * 10;
     if(c.isNotNull()){
       Rcpp::NumericVector c_(c);
       c1 = Rcpp::as<arma::vec>(c_);
     }
 
     // generate warning for c
-    if(c1.n_elem != k){
-      Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+    if(c1.n_elem != K){
+      Rcpp::stop("number of elements of the vector 'c' must be equal to K");
     }
-    for(int i = 0; i < k; i++){
+    for(int i = 0; i < K; i++){
       if(c1(i) <= 0){
         Rcpp::stop("all elements of 'c' must be positive");
       }
@@ -1794,6 +1847,10 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
     arma::vec ph_eta = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
 
     for(int i = 0; i < Z_est.n_cols; i++){
+      pi_est(i) = arma::median(pi_samp.row(i).subvec(std::round(n_nu * burnin_prop), n_nu - 1));
+    }
+
+    for(int i = 0; i < Z_est.n_cols; i++){
       for(int j = 0; j < Z_est.n_rows; j++){
         for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
           ph_Z(l - std::round(n_nu * burnin_prop)) = Z_samp(j,i,l);
@@ -1855,12 +1912,12 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
 
     arma::mat A_est = arma::zeros(A_samp.n_rows, A_samp.n_cols);
     arma::vec ph_A = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-    for(int k = 0; k < A_samp.n_rows; k++){
+    for(int j = 0; j < A_samp.n_rows; j++){
       for(int i = 0; i < A_samp.n_cols; i++){
         for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-          ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(k, i, l);
+          ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(j, i, l);
         }
-        A_est(k, i) = arma::median(ph_A);
+        A_est(j, i) = arma::median(ph_A);
       }
     }
 
@@ -1893,7 +1950,7 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
 
     if(covariance_adj == false){
       // start MCMC sampling
-      Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_start_MeanAdj(Y, time, X1, n_funct, thinning_num, k,
+      Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_start_MeanAdj(Y, time, X1, n_funct, thinning_num, K,
                                                                 basis_degree, n_eigen, boundary_knots,
                                                                 internal_knots, tot_mcmc_iters,
                                                                 r_stored_iters, n_temp_trans,
@@ -1923,7 +1980,58 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
                                  Rcpp::Named("Z", mod1["Z"]),
                                  Rcpp::Named("loglik", mod1["loglik"]));
     }else{
-      Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_start_Mean_CovAdj(Y, time, X1, n_funct, thinning_num, k,
+      arma::field<arma::cube> delta_xi_samp = theta_est["delta_xi"];
+      arma::field<arma::cube> A_xi_samp = theta_est["A_xi"];
+      arma::field<arma::cube> xi_samp = theta_est["xi"];
+      arma::field<arma::cube> gamma_xi_samp; theta_est["gamma_xi"];
+
+      arma::cube delta_xi_est = arma::zeros(delta_xi_samp(0,0).n_rows,
+                                            delta_xi_samp(0,0).n_cols,
+                                            delta_xi_samp(0,0).n_slices);
+      arma::cube A_xi_est = arma::zeros(A_xi_samp(0,0).n_rows,
+                                        A_xi_samp(0,0).n_cols,
+                                        A_xi_samp(0,0).n_slices);
+
+      arma::field<arma::cube> xi_est(1,K);
+      arma::field<arma::cube> gamma_xi_est(1,K);
+      for(int j = 0; j < K; j++){
+        xi_est(0,j) = arma::zeros(xi_samp(0,j).n_rows, xi_samp(0,j).n_cols,
+               xi_samp(0,j).n_slices);
+        gamma_xi_est(0,j) = arma::zeros(gamma_xi_samp(0,j).n_rows,
+                     gamma_xi_samp(0,j).n_cols, gamma_xi_samp(0,j).n_slices);
+      }
+
+      arma::vec delta_xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+      arma::vec A_xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+      arma::vec xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+      arma::vec gamma_xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+
+      for(int j = 0; j < K; j++){
+        for(int d = 0; X1.n_cols; d++){
+          for(int i = 0; i < 2; i++){
+            for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+              A_xi_ph(l - std::round(n_nu * burnin_prop)) = A_xi_samp(l,0)(j, i, d);
+            }
+            A_xi_est(j, i, d) = arma::median(A_xi_ph);
+          }
+          for(int m = 0; m < n_eigen; m++){
+            for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+              delta_xi_ph(l - std::round(n_nu * burnin_prop)) = delta_xi_samp(l,0)(j, m, d);
+            }
+            delta_xi_est(j, m, d) = arma::median(delta_xi_ph);
+            for(int p = 0; p < xi_samp(0,j).n_rows; p++){
+              for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+                xi_ph(l - std::round(n_nu * burnin_prop)) = xi_samp(l,j)(p, m, d);
+                gamma_xi_ph(l - std::round(n_nu * burnin_prop)) = gamma_xi_samp(l,j)(p, m, d);
+              }
+              xi_est(0,j)(p, m, d) = arma::median(xi_ph);
+              gamma_xi_est(0,j)(p, m, d) = arma::median(gamma_xi_ph);
+            }
+          }
+        }
+      }
+
+      Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_start_Mean_CovAdj(Y, time, X1, n_funct, thinning_num, K,
                                                                     basis_degree, n_eigen, boundary_knots,
                                                                     internal_knots, tot_mcmc_iters,
                                                                     r_stored_iters, n_temp_trans,
@@ -1934,8 +2042,10 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
                                                                     alpha_eta, beta_eta, alpha_0,
                                                                     beta_0, dir1, beta_N_t, N_t,
                                                                     Z_est, pi_est, alpha_3_est,
-                                                                    delta_est, gamma_est, Phi_est, A_est,
-                                                                    nu_est, tau_est, tau_eta_est, sigma_est, chi_est);
+                                                                    delta_est, delta_xi_est, gamma_est,
+                                                                    gamma_xi_est, Phi_est, xi_est, A_est,
+                                                                    A_xi_est, nu_est, eta_est, tau_est,
+                                                                    tau_eta_est, sigma_est, chi_est);
 
       mod2 =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
                                  Rcpp::Named("nu", mod1["nu"]),
@@ -2213,7 +2323,7 @@ arma::field<arma::vec> ReadFieldVec(std::string file){
 //' @name BHDFMMM_Nu_Z_multiple_try
 //' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 //' @param n_try Int containing how many different chains are tried
-//' @param k Int containing the number of clusters
+//' @param K Int containing the number of clusters
 //' @param Y List of vectors containing the observed values (flattened)
 //' @param time List of matrices that contain the observed time points (each column is a dimension)
 //' @param n_funct Int containing the number of functions
@@ -2255,12 +2365,12 @@ arma::field<arma::vec> ReadFieldVec(std::string file){
 //' \describe{
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
 //'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
-//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_funct}}{must be an integer larger than 1}
 //'   \item{\code{basis_degree}}{each element must be an integer larger than or equal to 1}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
 //'   \item{\code{internal_knots}}{must lie in the range of corresponding \code{boundary_knots}}
-//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{alpha1l}}{must be positive}
 //'   \item{\code{beta1l}}{must be positive}
@@ -2285,7 +2395,7 @@ arma::field<arma::vec> ReadFieldVec(std::string file){
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_funct <- 20
 //' basis_degree <- c(2,2)
 //' n_eigen <- 2
@@ -2293,7 +2403,7 @@ arma::field<arma::vec> ReadFieldVec(std::string file){
 //' internal_knots <- rep(list(c(250, 500, 750)), 2)
 //'
 //' ## Run function
-//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                                   basis_degree, n_eigen, boundary_knots,
 //'                                   internal_knots)
 //'
@@ -2301,7 +2411,7 @@ arma::field<arma::vec> ReadFieldVec(std::string file){
 // [[Rcpp::export]]
 Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                      const int n_try,
-                                     const int k,
+                                     const int K,
                                      const arma::field<arma::vec> Y,
                                      const arma::field<arma::mat> time,
                                      const int n_funct,
@@ -2332,8 +2442,8 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   if(n_try <  1){
     Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
   }
-  if(k <  2){
-    Rcpp::stop("'k' must be an integer greater than or equal to 2");
+  if(K <  2){
+    Rcpp::stop("'K' must be an integer greater than or equal to 2");
   }
   if(n_funct <  1){
     Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
@@ -2408,17 +2518,17 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k) * 10;
+  arma::vec c1 = arma::ones(K) * 10;
   if(c.isNotNull()) {
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
   }
 
   // generate warning for c
-  if(c1.n_elem != k){
-    Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+  if(c1.n_elem != K){
+    Rcpp::stop("number of elements of the vector 'c' must be equal to K");
   }
-  for(int i = 0; i < k; i++){
+  for(int i = 0; i < K; i++){
     if(c1(i) <= 0){
       Rcpp::stop("all elements of 'c' must be positive");
     }
@@ -2427,7 +2537,7 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                                           boundary_knots, internal_knots);
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFMMM::BHDFMMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
+  Rcpp::List mod1 = BayesFMMM::BHDFMMM_Nu_Z(Y, time, n_funct, K, basis_degree, n_eigen,
                                             boundary_knots, internal_knots,
                                             tot_mcmc_iters, c1, b, alpha1l,
                                             alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
@@ -2438,7 +2548,7 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
   for(int i = 0; i < n_try; i++){
     Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-    Rcpp::List modi = BayesFMMM::BHDFMMM_Nu_Z(Y, time, n_funct, k, basis_degree, n_eigen,
+    Rcpp::List modi = BayesFMMM::BHDFMMM_Nu_Z(Y, time, n_funct, K, basis_degree, n_eigen,
                                               boundary_knots, internal_knots,
                                               tot_mcmc_iters, c1, b, alpha1l,
                                               alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
@@ -2477,7 +2587,7 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @name BHDFMMM_Theta_est
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param n_try Int containing how many different chains are tried
-//' @param k Int containing the number of clusters
+//' @param K Int containing the number of clusters
 //' @param Y List of vectors containing the observed values (flattened)
 //' @param time List of matrices that contain the observed time points (each column is a dimension)
 //' @param n_funct Int containing the number of functions
@@ -2524,12 +2634,12 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
 //'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
 //'   \item{\code{burnin_prop}}{must be between 0 and 1}
-//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_funct}}{must be an integer larger than 1}
 //'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
 //'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
-//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{nu_1}}{must be positive}
 //'   \item{\code{alpha1l}}{must be positive}
@@ -2555,7 +2665,7 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_funct <- 20
 //' basis_degree <- c(2,2)
 //' n_eigen <- 2
@@ -2563,12 +2673,12 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' internal_knots <- rep(list(c(250, 500, 750)), 2)
 //'
 //' ## Run function
-//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                                   basis_degree, n_eigen, boundary_knots,
 //'                                   internal_knots)
 //'
 //' ## Run function
-//' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1$Z, est1$nu)
 //'
@@ -2576,7 +2686,7 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 // [[Rcpp::export]]
 Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
                              const int n_try,
-                             const int k,
+                             const int K,
                              const arma::field<arma::vec> Y,
                              const arma::field<arma::mat> time,
                              const int n_funct,
@@ -2617,8 +2727,8 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
   if(burnin_prop >= 1){
     Rcpp::stop("'burnin_prop' must be between 0 and 1");
   }
-  if(k <  2){
-    Rcpp::stop("'k' must be an integer greater than or equal to 2");
+  if(K <  2){
+    Rcpp::stop("'K' must be an integer greater than or equal to 2");
   }
   if(n_funct <  1){
     Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
@@ -2695,17 +2805,17 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k) * 10;
+  arma::vec c1 = arma::ones(K) * 10;
   if(c.isNotNull()) {
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
   }
 
   // generate warning for c
-  if(c1.n_elem != k){
-    Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+  if(c1.n_elem != K){
+    Rcpp::stop("number of elements of the vector 'c' must be equal to K");
   }
-  for(int i = 0; i < k; i++){
+  for(int i = 0; i < K; i++){
     if(c1(i) <= 0){
       Rcpp::stop("all elements of 'c' must be positive");
     }
@@ -2735,7 +2845,7 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFMMM::BHDFMMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+  Rcpp::List mod1 = BayesFMMM::BHDFMMM_Theta(Y, time, n_funct, K, basis_degree, n_eigen,
                                              boundary_knots, internal_knots, tot_mcmc_iters,
                                              c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                              beta2l, a_Z_PM, a_pi_PM, var_alpha3,
@@ -2746,7 +2856,7 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
 
   for(int i = 0; i < n_try; i++){
     Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-    Rcpp::List modi = BayesFMMM::BHDFMMM_Theta(Y, time, n_funct, k, basis_degree, n_eigen,
+    Rcpp::List modi = BayesFMMM::BHDFMMM_Theta(Y, time, n_funct, K, basis_degree, n_eigen,
                                                boundary_knots, internal_knots, tot_mcmc_iters,
                                                c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                                beta2l, a_Z_PM, a_pi_PM, var_alpha3,
@@ -2796,7 +2906,7 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
 //'
 //' @name BHDFMMM_warm_start
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
-//' @param k Int containing the number of clusters
+//' @param K Int containing the number of clusters
 //' @param Y List of vectors containing the observed values
 //' @param time List of matrices that contain the observed time points (each column is a dimension)
 //' @param n_funct Int containing the number of functions
@@ -2861,7 +2971,7 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
 //' \describe{
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
 //'   \item{\code{burnin_prop}}{must be between 0 and 1}
-//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_funct}}{must be an integer larger than 1}
 //'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
@@ -2872,7 +2982,7 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
 //'   \item{\code{N_t}}{must be a positive integer}
 //'   \item{\code{n_temp_trans}}{must be a non-negative integer}
 //'   \item{\code{r_stored_iters}}{must be a non-negative integer}
-//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{nu_1}}{must be positive}
 //'   \item{\code{alpha1l}}{must be positive}
@@ -2898,7 +3008,7 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_funct <- 20
 //' basis_degree <- c(2,2)
 //' n_eigen <- 2
@@ -2906,16 +3016,16 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
 //' internal_knots <- rep(list(c(250, 500, 750)), 2)
 //'
 //' ## Run function
-//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                                   basis_degree, n_eigen, boundary_knots,
 //'                                   internal_knots)
 //'
 //' ## Run function
-//' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1$Z, est1$nu)
 //'
-//' MCMC.chain <-BHDFMMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
+//' MCMC.chain <-BHDFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
 //'                                 basis_degree, n_eigen, boundary_knots,
 //'                                 internal_knots, est1$Z, est1$pi, est1$alpha_3,
 //'                                 est2$delta, est2$gamma, est2$Phi, est2$A,
@@ -2924,7 +3034,7 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
-                              const int k,
+                              const int K,
                               const arma::field<arma::vec> Y,
                               const arma::field<arma::mat> time,
                               const int n_funct,
@@ -2977,8 +3087,8 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
   if(burnin_prop >= 1){
     Rcpp::stop("'burnin_prop' must be between 0 and 1");
   }
-  if(k <  2){
-    Rcpp::stop("'k' must be an integer greater than or equal to 2");
+  if(K <  2){
+    Rcpp::stop("'K' must be an integer greater than or equal to 2");
   }
   if(n_funct <  1){
     Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
@@ -3072,17 +3182,17 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k) * 10;
+  arma::vec c1 = arma::ones(K) * 10;
   if(c.isNotNull()){
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
   }
 
   // generate warning for c
-  if(c1.n_elem != k){
-    Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+  if(c1.n_elem != K){
+    Rcpp::stop("number of elements of the vector 'c' must be equal to K");
   }
-  for(int i = 0; i < k; i++){
+  for(int i = 0; i < K; i++){
     if(c1(i) <= 0){
       Rcpp::stop("all elements of 'c' must be positive");
     }
@@ -3192,12 +3302,12 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 
   arma::mat A_est = arma::zeros(A_samp.n_rows, A_samp.n_cols);
   arma::vec ph_A = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < A_samp.n_rows; k++){
+  for(int j = 0; j < A_samp.n_rows; j++){
     for(int i = 0; i < A_samp.n_cols; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(k, i, l);
+        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(j, i, l);
       }
-      A_est(k, i) = arma::median(ph_A);
+      A_est(j, i) = arma::median(ph_A);
     }
   }
 
@@ -3221,7 +3331,7 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFMMM::BHDFMMM_MTT_warm_start(Y, time, n_funct, thinning_num, k,
+  Rcpp::List mod1 = BayesFMMM::BHDFMMM_MTT_warm_start(Y, time, n_funct, thinning_num, K,
                                                       basis_degree, n_eigen, boundary_knots,
                                                       internal_knots, tot_mcmc_iters,
                                                       r_stored_iters, n_temp_trans,
@@ -3262,7 +3372,7 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 //' @name BMVMMM_Nu_Z_multiple_try
 //' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
 //' @param n_try Int containing how many different chains are tried
-//' @param k Int containing the number of clusters
+//' @param K Int containing the number of clusters
 //' @param Y Matrix of observed vectors (each row is an observation)
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param c Vector containing hyperparmeters for sampling from pi (If left NULL, the one vector will be used)
@@ -3298,9 +3408,9 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 //' \describe{
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
 //'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
-//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
-//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{alpha1l}}{must be positive}
 //'   \item{\code{beta1l}}{must be positive}
@@ -3324,17 +3434,17 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_eigen <- 2
 //'
 //' ## Run function
-//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 //'
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                     const int n_try,
-                                    const int k,
+                                    const int K,
                                     const arma::mat Y,
                                     const int n_eigen,
                                     Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
@@ -3360,8 +3470,8 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   if(n_try <  1){
     Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
   }
-  if(k <  2){
-    Rcpp::stop("'k' must be an integer greater than or equal to 2");
+  if(K <  2){
+    Rcpp::stop("'K' must be an integer greater than or equal to 2");
   }
 
 
@@ -3413,24 +3523,24 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k) * 10;
+  arma::vec c1 = arma::ones(K) * 10;
   if(c.isNotNull()) {
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
   }
 
   // generate warning for c
-  if(c1.n_elem != k){
-    Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+  if(c1.n_elem != K){
+    Rcpp::stop("number of elements of the vector 'c' must be equal to K");
   }
-  for(int i = 0; i < k; i++){
+  for(int i = 0; i < K; i++){
     if(c1(i) <= 0){
       Rcpp::stop("all elements of 'c' must be positive");
     }
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFMMM::BFMMM_Nu_ZMV(Y, k, n_eigen,
+  Rcpp::List mod1 = BayesFMMM::BFMMM_Nu_ZMV(Y, K, n_eigen,
                                             tot_mcmc_iters, c1, b, alpha1l,
                                             alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
                                             var_alpha3, var_epsilon1, var_epsilon2,
@@ -3440,7 +3550,7 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 
   for(int i = 0; i < n_try; i++){
     Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-    Rcpp::List modi = BayesFMMM::BFMMM_Nu_ZMV(Y, k, n_eigen,
+    Rcpp::List modi = BayesFMMM::BFMMM_Nu_ZMV(Y, K, n_eigen,
                                               tot_mcmc_iters, c1, b, alpha1l,
                                               alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
                                               var_alpha3, var_epsilon1, var_epsilon2,
@@ -3477,7 +3587,7 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @name BMVMMM_Theta_est
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
 //' @param n_try Int containing how many different chains are tried
-//' @param k Int containing the number of clusters
+//' @param K Int containing the number of clusters
 //' @param Y Matrix of observed vectors (each row is an observation)
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param Z_samp Cube containing initial chain of Z parameters from \code{BFMMM_Nu_Z_multiple_try}
@@ -3517,10 +3627,10 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' \describe{
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
 //'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
-//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
 //'   \item{\code{burnin_prop}}{must be between 0 and 1}
-//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{nu_1}}{must be positive}
 //'   \item{\code{alpha1l}}{must be positive}
@@ -3545,20 +3655,20 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_eigen <- 2
 //'
 //' ## Run function
-//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 //'
 //' ## Run function
-//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
+//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, n_eigen, est1$Z, est1$nu)
 //'
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
                             const int n_try,
-                            const int k,
+                            const int K,
                             const arma::mat Y,
                             const int n_eigen,
                             const arma::cube Z_samp,
@@ -3593,8 +3703,8 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
   if(burnin_prop >= 1){
     Rcpp::stop("'burnin_prop' must be between 0 and 1");
   }
-  if(k <  2){
-    Rcpp::stop("'k' must be an integer greater than or equal to 2");
+  if(K <  2){
+    Rcpp::stop("'K' must be an integer greater than or equal to 2");
   }
   if(n_eigen <  1){
     Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
@@ -3646,17 +3756,17 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k) * 10;
+  arma::vec c1 = arma::ones(K) * 10;
   if(c.isNotNull()) {
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
   }
 
   // generate warning for c
-  if(c1.n_elem != k){
-    Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+  if(c1.n_elem != K){
+    Rcpp::stop("number of elements of the vector 'c' must be equal to K");
   }
-  for(int i = 0; i < k; i++){
+  for(int i = 0; i < K; i++){
     if(c1(i) <= 0){
       Rcpp::stop("all elements of 'c' must be positive");
     }
@@ -3690,7 +3800,7 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFMMM::BFMMM_ThetaMV(Y, k, n_eigen, tot_mcmc_iters,
+  Rcpp::List mod1 = BayesFMMM::BFMMM_ThetaMV(Y, K, n_eigen, tot_mcmc_iters,
                                              c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                              beta2l, a_Z_PM, a_pi_PM, var_alpha3,
                                              var_epsilon1, var_epsilon2, alpha, beta,
@@ -3701,7 +3811,7 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
 
   for(int i = 0; i < n_try; i++){
     Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-    Rcpp::List modi = BayesFMMM::BFMMM_ThetaMV(Y, k, n_eigen, tot_mcmc_iters,
+    Rcpp::List modi = BayesFMMM::BFMMM_ThetaMV(Y, K, n_eigen, tot_mcmc_iters,
                                                c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                                beta2l, a_Z_PM, a_pi_PM, var_alpha3,
                                                var_epsilon1, var_epsilon2, alpha, beta,
@@ -3747,7 +3857,7 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
 //'
 //' @name BMVMMM_warm_start
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
-//' @param k Int containing the number of clusters
+//' @param K Int containing the number of clusters
 //' @param Y Matrix of observed vectors (each row is an observation)
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})
@@ -3806,7 +3916,7 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
 //' \describe{
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
 //'   \item{\code{burnin_prop}}{must be between 0 and 1}
-//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
 //'   \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
 //'   \item{\code{n_thinning}}{must be a positive integer}
@@ -3814,7 +3924,7 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
 //'   \item{\code{N_t}}{must be a positive integer}
 //'   \item{\code{n_temp_trans}}{must be a non-negative integer}
 //'   \item{\code{r_stored_iters}}{must be a non-negative integer}
-//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{nu_1}}{must be positive}
 //'   \item{\code{alpha1l}}{must be positive}
@@ -3839,16 +3949,16 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_eigen <- 2
 //'
 //' ## Run function
-//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 //'
 //' ## Run function
-//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
+//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, n_eigen, est1$Z, est1$nu)
 //'
-//' MCMC.chain <-BMVMMM_warm_start(tot_mcmc_iters, k, Y, n_eigen,
+//' MCMC.chain <-BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen,
 //'                                est1$Z, est1$pi, est1$alpha_3,
 //'                                est2$delta, est2$gamma, est2$Phi, est2$A,
 //'                                est1$nu, est1$tau, est2$sigma, est2$chi)
@@ -3856,7 +3966,7 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
-                             const int k,
+                             const int K,
                              const arma::mat Y,
                              const int n_eigen,
                              const arma::cube Z_samp,
@@ -3904,8 +4014,8 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
   if(burnin_prop >= 1){
     Rcpp::stop("'burnin_prop' must be between 0 and 1");
   }
-  if(k <  2){
-    Rcpp::stop("'k' must be an integer greater than or equal to 2");
+  if(K <  2){
+    Rcpp::stop("'K' must be an integer greater than or equal to 2");
   }
   if(n_eigen <  1){
     Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
@@ -3975,17 +4085,17 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k) * 10;
+  arma::vec c1 = arma::ones(K) * 10;
   if(c.isNotNull()){
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
   }
 
   // generate warning for c
-  if(c1.n_elem != k){
-    Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+  if(c1.n_elem != K){
+    Rcpp::stop("number of elements of the vector 'c' must be equal to K");
   }
-  for(int i = 0; i < k; i++){
+  for(int i = 0; i < K; i++){
     if(c1(i) <= 0){
       Rcpp::stop("all elements of 'c' must be positive");
     }
@@ -4093,12 +4203,12 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
 
   arma::mat A_est = arma::zeros(A_samp.n_rows, A_samp.n_cols);
   arma::vec ph_A = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < A_samp.n_rows; k++){
+  for(int j = 0; j < A_samp.n_rows; j++){
     for(int i = 0; i < A_samp.n_cols; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(k, i, l);
+        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(j, i, l);
       }
-      A_est(k, i) = arma::median(ph_A);
+      A_est(j, i) = arma::median(ph_A);
     }
   }
 
@@ -4122,7 +4232,7 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
   }
 
   // start MCMC sampling
-  Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_startMV(Y, thinning_num, k,
+  Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_startMV(Y, thinning_num, K,
                                                       n_eigen, tot_mcmc_iters,
                                                       r_stored_iters, n_temp_trans,
                                                       c1, b, nu_1, alpha1l, alpha2l,
@@ -4173,22 +4283,13 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
 //'
 //' @name BMVMMM_warm_start
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
-//' @param k Int containing the number of clusters
+//' @param K Int containing the number of clusters
 //' @param Y Matrix of observed vectors (each row is an observation)
 //' @param X Matrix of covariates (each row corresponds to an observation)
 //' @param n_eigen Int containing the number of eigenfunctions
-//' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})
-//' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})
-//' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})
-//' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est_Cov_Adj})
-//' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est_Cov_Adj})
-//' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est_Cov_Adj})
-//' @param A_samp Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est_Cov_Adj})
-//' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})
-//' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})
-//' @param tau_eta_samp Cube containing initial chain of tau_eta parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})
-//' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est_Cov_Adj})
-//' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est_Cov_Adj})
+//' @param multiple_try List containing results from \code{BMVMMM_Nu_Z_multiple_try}
+//' @param theta_est List containing results from \code{BMVMMM_Theta_est}
+//' @param X Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)
 //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 //' @param dir String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)
 //' @param thinning_num Int containing how often we should save MCMC iterations
@@ -4243,7 +4344,7 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
 //'   \item{\code{X}}{must have the same number of rows as Y}
 //'   \item{\code{burnin_prop}}{must be between 0 and 1}
-//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
 //'   \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
 //'   \item{\code{n_thinning}}{must be a positive integer}
@@ -4251,7 +4352,7 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
 //'   \item{\code{N_t}}{must be a positive integer}
 //'   \item{\code{n_temp_trans}}{must be a non-negative integer}
 //'   \item{\code{r_stored_iters}}{must be a non-negative integer}
-//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{nu_1}}{must be positive}
 //'   \item{\code{alpha1l}}{must be positive}
@@ -4278,17 +4379,17 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_eigen <- 2
 //'
 //' ## Run function
-//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 //'
 //' ## Run function
-//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
+//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, n_eigen, est1$Z, est1$nu)
 //'
 //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
-//' MCMC.chain <-BMVMMM_warm_start_Cov_Adj(tot_mcmc_iters, k, Y, X, n_eigen,
+//' MCMC.chain <-BMVMMM_warm_start_Cov_Adj(tot_mcmc_iters, K, Y, X, n_eigen,
 //'                                         est1$Z, est1$pi, est1$alpha_3,
 //'                                         est2$delta, est2$gamma, est2$Phi, est2$A,
 //'                                         est1$nu, est1$tau, est2$sigma, est2$chi)
@@ -4296,22 +4397,12 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
-                                     const int k,
+                                     const int K,
                                      const arma::mat Y,
-                                     const arma::mat X,
                                      const int n_eigen,
-                                     const arma::cube Z_samp,
-                                     const arma::mat pi_samp,
-                                     const arma::vec alpha_3_samp,
-                                     const arma::cube delta_samp,
-                                     const arma::field<arma::cube> gamma_samp,
-                                     const arma::field<arma::cube> Phi_samp,
-                                     const arma::cube A_samp,
-                                     const arma::cube nu_samp,
-                                     const arma::mat tau_samp,
-                                     const arma::cube tau_eta_samp,
-                                     const arma::vec sigma_samp,
-                                     const arma::cube chi_samp,
+                                     const Rcpp::List multiple_try,
+                                     const Rcpp::List theta_est,
+                                     Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
                                      const double burnin_prop = 0.8,
                                      Rcpp::Nullable<Rcpp::CharacterVector> dir = R_NilValue,
                                      const double thinning_num = 1,
@@ -4339,8 +4430,25 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
                                      const double beta_0 = 1,
                                      const bool covariance_adj = false){
 
+  Rcpp::NumericMatrix X_(X);
+  arma::mat X1 = Rcpp::as<arma::mat>(X_);
+
+  arma::cube Z_samp = multiple_try["Z"];
+  arma::cube nu_samp = multiple_try["nu"];
+  arma::mat pi_samp = multiple_try["pi"];
+  arma::vec alpha_3_samp = multiple_try["alpha_3"];
+  arma::cube delta_samp = theta_est["delta"];
+  arma::field<arma::cube> gamma_samp = theta_est["gamma"];
+  arma::field<arma::cube> Phi_samp = theta_est["Phi"];
+  arma::cube A_samp = theta_est["A"];
+  arma::mat tau_samp = multiple_try["tau"];
+  arma::vec sigma_samp = theta_est["sigma"];
+  arma::cube chi_samp = theta_est["chi"];
+  arma::field<arma::cube> eta_samp = multiple_try["eta"];
+  arma::cube tau_eta_samp = multiple_try["tau_eta"];
+
   // generate warnings
-  if(Y.n_rows != X.n_rows){
+  if(Y.n_rows != X1.n_rows){
     Rcpp::stop("'X' and 'Y' must have the same number of rows");
   }
   if(tot_mcmc_iters <  100){
@@ -4352,8 +4460,8 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
   if(burnin_prop >= 1){
     Rcpp::stop("'burnin_prop' must be between 0 and 1");
   }
-  if(k <  2){
-    Rcpp::stop("'k' must be an integer greater than or equal to 2");
+  if(K <  2){
+    Rcpp::stop("'K' must be an integer greater than or equal to 2");
   }
   if(n_eigen <  1){
     Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
@@ -4429,17 +4537,17 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k) * 10;
+  arma::vec c1 = arma::ones(K) * 10;
   if(c.isNotNull()){
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
   }
 
   // generate warning for c
-  if(c1.n_elem != k){
-    Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+  if(c1.n_elem != K){
+    Rcpp::stop("number of elements of the vector 'c' must be equal to K");
   }
-  for(int i = 0; i < k; i++){
+  for(int i = 0; i < K; i++){
     if(c1(i) <= 0){
       Rcpp::stop("all elements of 'c' must be positive");
     }
@@ -4488,10 +4596,12 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
   arma::vec pi_est = arma::zeros(pi_samp.n_rows);
   arma::mat Z_est = arma::zeros(Y.n_rows, Z_samp.n_cols);
   arma::mat nu_est = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+  arma::cube eta_est = arma::zeros(eta_samp(0,0).n_rows, eta_samp(0,0).n_cols, eta_samp(0,0).n_slices);
   arma::vec ph_Z = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
   arma::vec ph_nu = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+  arma::vec ph_eta = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+
   for(int i = 0; i < Z_est.n_cols; i++){
-    pi_est(i) = arma::median(pi_samp.row(i).subvec(std::round(n_nu * burnin_prop), n_nu - 1));
     for(int j = 0; j < Z_est.n_rows; j++){
       for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
         ph_Z(l - std::round(n_nu * burnin_prop)) = Z_samp(j,i,l);
@@ -4503,7 +4613,17 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
         ph_nu(l - std::round(n_nu * burnin_prop)) = nu_samp(i,j,l);
       }
       nu_est(i,j) = arma::median(ph_nu);
+      for(int d = 0; d < X1.n_cols; d++){
+        for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+          ph_eta(l - std::round(n_nu * burnin_prop)) = eta_samp(l,0)(j,d,i);
+        }
+        eta_est(j,d,i) = arma::median(ph_eta);
+      }
     }
+  }
+
+  for(int i = 0; i < Z_est.n_cols; i++){
+    pi_est(i) = arma::median(pi_samp.row(i).subvec(std::round(n_nu * burnin_prop), n_nu - 1));
   }
 
   // normalize
@@ -4547,12 +4667,12 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
 
   arma::mat A_est = arma::zeros(A_samp.n_rows, A_samp.n_cols);
   arma::vec ph_A = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < A_samp.n_rows; k++){
+  for(int j = 0; j < A_samp.n_rows; j++){
     for(int i = 0; i < A_samp.n_cols; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(k, i, l);
+        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(j, i, l);
       }
-      A_est(k, i) = arma::median(ph_A);
+      A_est(j, i) = arma::median(ph_A);
     }
   }
 
@@ -4587,7 +4707,7 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
   Rcpp::List mod2;
   if(covariance_adj == false){
     // start MCMC sampling
-    Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_startMV_MeanAdj(Y, X, thinning_num, k,
+    Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_startMV_MeanAdj(Y, X1, thinning_num, K,
                                                                 n_eigen, tot_mcmc_iters,
                                                                 r_stored_iters, n_temp_trans,
                                                                 c1, b, nu_1, alpha1l, alpha2l,
@@ -4598,7 +4718,8 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
                                                                 beta_0, dir1, beta_N_t, N_t,
                                                                 Z_est, pi_est, alpha_3_est,
                                                                 delta_est, gamma_est, Phi_est, A_est,
-                                                                nu_est, tau_est, tau_eta_est, sigma_est, chi_est);
+                                                                nu_est, eta_est, tau_est, tau_eta_est,
+                                                                sigma_est, chi_est);
 
     mod2 =  Rcpp::List::create(Rcpp::Named("nu", mod1["nu"]),
                                Rcpp::Named("chi", mod1["chi"]),
@@ -4615,7 +4736,58 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
                                Rcpp::Named("Z", mod1["Z"]),
                                Rcpp::Named("loglik", mod1["loglik"]));
   }else{
-    Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_startMV_Mean_CovAdj(Y, X, thinning_num, k,
+    arma::field<arma::cube> delta_xi_samp = theta_est["delta_xi"];
+    arma::field<arma::cube> A_xi_samp = theta_est["A_xi"];
+    arma::field<arma::cube> xi_samp = theta_est["xi"];
+    arma::field<arma::cube> gamma_xi_samp; theta_est["gamma_xi"];
+
+    arma::cube delta_xi_est = arma::zeros(delta_xi_samp(0,0).n_rows,
+                                          delta_xi_samp(0,0).n_cols,
+                                          delta_xi_samp(0,0).n_slices);
+    arma::cube A_xi_est = arma::zeros(A_xi_samp(0,0).n_rows,
+                                      A_xi_samp(0,0).n_cols,
+                                      A_xi_samp(0,0).n_slices);
+
+    arma::field<arma::cube> xi_est(1,K);
+    arma::field<arma::cube> gamma_xi_est(1,K);
+    for(int j = 0; j < K; j++){
+      xi_est(0,j) = arma::zeros(xi_samp(0,j).n_rows, xi_samp(0,j).n_cols,
+             xi_samp(0,j).n_slices);
+      gamma_xi_est(0,j) = arma::zeros(gamma_xi_samp(0,j).n_rows,
+                   gamma_xi_samp(0,j).n_cols, gamma_xi_samp(0,j).n_slices);
+    }
+
+    arma::vec delta_xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    arma::vec A_xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    arma::vec xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    arma::vec gamma_xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+
+    for(int j = 0; j < K; j++){
+      for(int d = 0; X1.n_cols; d++){
+        for(int i = 0; i < 2; i++){
+          for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+            A_xi_ph(l - std::round(n_nu * burnin_prop)) = A_xi_samp(l,0)(j, i, d);
+          }
+          A_xi_est(j, i, d) = arma::median(A_xi_ph);
+        }
+        for(int m = 0; m < n_eigen; m++){
+          for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+            delta_xi_ph(l - std::round(n_nu * burnin_prop)) = delta_xi_samp(l,0)(j, m, d);
+          }
+          delta_xi_est(j, m, d) = arma::median(delta_xi_ph);
+          for(int p = 0; p < xi_samp(0,j).n_rows; p++){
+            for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+              xi_ph(l - std::round(n_nu * burnin_prop)) = xi_samp(l,j)(p, m, d);
+              gamma_xi_ph(l - std::round(n_nu * burnin_prop)) = gamma_xi_samp(l,j)(p, m, d);
+            }
+            xi_est(0,j)(p, m, d) = arma::median(xi_ph);
+            gamma_xi_est(0,j)(p, m, d) = arma::median(gamma_xi_ph);
+          }
+        }
+      }
+    }
+
+    Rcpp::List mod1 = BayesFMMM::BFMMM_MTT_warm_startMV_Mean_CovAdj(Y, X1, thinning_num, K,
                                                                     n_eigen, tot_mcmc_iters,
                                                                     r_stored_iters, n_temp_trans,
                                                                     c1, b, nu_1, alpha1l, alpha2l,
@@ -4625,8 +4797,10 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
                                                                     alpha_eta, beta_eta, alpha_0,
                                                                     beta_0, dir1, beta_N_t, N_t,
                                                                     Z_est, pi_est, alpha_3_est,
-                                                                    delta_est, gamma_est, Phi_est, A_est,
-                                                                    nu_est, tau_est, tau_eta_est, sigma_est, chi_est);
+                                                                    delta_est, delta_xi_est, gamma_est,
+                                                                    gamma_xi_est, Phi_est, xi_est,
+                                                                    A_est, A_xi_est,  nu_est, eta_est,
+                                                                    tau_est, tau_eta_est, sigma_est, chi_est);
 
     mod2 =  Rcpp::List::create(Rcpp::Named("nu", mod1["nu"]),
                                           Rcpp::Named("chi", mod1["chi"]),
@@ -4676,26 +4850,17 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
 //'
 //' @name BHDFMMM_warm_start_Mean_Adj
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
-//' @param k Int containing the number of clusters
+//' @param K Int containing the number of clusters
 //' @param Y List of vectors containing the observed values
-//' @param X Matrix of covariates (each row corresponds to an observation)
 //' @param time List of matrices that contain the observed time points (each column is a dimension)
 //' @param n_funct Int containing the number of functions
 //' @param basis_degree Vector containing the desired basis degree for each dimension
 //' @param n_eigen Int containing the number of eigenfunctions
 //' @param boundary_knots Matrix containing the boundary knots for each dimension (each row is a dimension)
 //' @param internal_knots List of vectors containing the internal knots for each dimension
-//' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})
-//' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})
-//' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})
-//' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})
-//' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})
-//' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})
-//' @param A_samp Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})
-//' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})
-//' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})
-//' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})
-//' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})
+//' @param multiple_try List containing results from \code{BFMMM_Nu_Z_multiple_try}
+//' @param theta_est List containing results from \code{BFMMM_Theta_est}
+//' @param X Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)
 //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 //' @param dir String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)
 //' @param thinning_num Int containing how often we should save MCMC iterations
@@ -4721,6 +4886,7 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
 //' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
 //' @param alpha_0 Double containing hyperparameter for sampling from sigma
 //' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+//' @param covariance_adj Boolean containing whether or not the covariance structure should depend on the covariates
 //'
 //' @returns a List containing:
 //' \describe{
@@ -4747,7 +4913,7 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
 //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
 //'   \item{\code{X}}{ must have n_funct number of rows}
 //'   \item{\code{burnin_prop}}{must be between 0 and 1}
-//'   \item{\code{k}}{must be an integer larger than or equal to 2}
+//'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_funct}}{must be an integer larger than 1}
 //'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
@@ -4758,7 +4924,7 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
 //'   \item{\code{N_t}}{must be a positive integer}
 //'   \item{\code{n_temp_trans}}{must be a non-negative integer}
 //'   \item{\code{r_stored_iters}}{must be a non-negative integer}
-//'   \item{\code{c}}{must be greater than 0 and have k elements}
+//'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{nu_1}}{must be positive}
 //'   \item{\code{alpha1l}}{must be positive}
@@ -4786,7 +4952,7 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
 //' ## Set Hyperparameters
 //' tot_mcmc_iters <- 150
 //' n_try <- 1
-//' k <- 2
+//' K <- 2
 //' n_funct <- 20
 //' basis_degree <- c(2,2)
 //' n_eigen <- 2
@@ -4794,17 +4960,17 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
 //' internal_knots <- rep(list(c(250, 500, 750)), 2)
 //'
 //' ## Run function
-//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                                   basis_degree, n_eigen, boundary_knots,
 //'                                   internal_knots)
 //'
 //' ## Run function
-//' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+//' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1$Z, est1$nu)
 //'
 //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
-//' MCMC.chain <-BHDFMMM_warm_start_Mean_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
+//' MCMC.chain <-BHDFMMM_warm_start_Mean_Adj(tot_mcmc_iters, K, Y, X, time, n_funct,
 //'                                         basis_degree, n_eigen, boundary_knots,
 //'                                         internal_knots, est1$Z, est1$pi, est1$alpha_3,
 //'                                         est2$delta, est2$gamma, est2$Phi, est2$A,
@@ -4813,26 +4979,17 @@ Rcpp::List BMVMMM_warm_start_Cov_Adj(const int tot_mcmc_iters,
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BHDFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
-                                       const int k,
+                                       const int K,
                                        const arma::field<arma::vec> Y,
-                                       const arma::mat X,
                                        const arma::field<arma::mat> time,
                                        const int n_funct,
                                        const arma::vec basis_degree,
                                        const int n_eigen,
                                        const arma::mat boundary_knots,
                                        const arma::field<arma::vec> internal_knots,
-                                       const arma::cube Z_samp,
-                                       const arma::mat pi_samp,
-                                       const arma::vec alpha_3_samp,
-                                       const arma::cube delta_samp,
-                                       const arma::field<arma::cube> gamma_samp,
-                                       const arma::field<arma::cube> Phi_samp,
-                                       const arma::cube A_samp,
-                                       const arma::cube nu_samp,
-                                       const arma::mat tau_samp,
-                                       const arma::vec sigma_samp,
-                                       const arma::cube chi_samp,
+                                       const Rcpp::List multiple_try,
+                                       const Rcpp::List theta_est,
+                                       Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
                                        const double burnin_prop = 0.8,
                                        Rcpp::Nullable<Rcpp::CharacterVector> dir = R_NilValue,
                                        const double thinning_num = 1,
@@ -4857,10 +5014,28 @@ Rcpp::List BHDFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
                                        const double alpha_eta = 10,
                                        const double beta_eta = 1,
                                        const double alpha_0 = 1,
-                                       const double beta_0 = 1){
+                                       const double beta_0 = 1,
+                                       const bool covariance_adj = false){
+
+  Rcpp::NumericMatrix X_(X);
+  arma::mat X1 = Rcpp::as<arma::mat>(X_);
+
+  arma::cube Z_samp = multiple_try["Z"];
+  arma::cube nu_samp = multiple_try["nu"];
+  arma::mat pi_samp = multiple_try["pi"];
+  arma::vec alpha_3_samp = multiple_try["alpha_3"];
+  arma::cube delta_samp = theta_est["delta"];
+  arma::field<arma::cube> gamma_samp = theta_est["gamma"];
+  arma::field<arma::cube> Phi_samp = theta_est["Phi"];
+  arma::cube A_samp = theta_est["A"];
+  arma::mat tau_samp = multiple_try["tau"];
+  arma::vec sigma_samp = theta_est["sigma"];
+  arma::cube chi_samp = theta_est["chi"];
+  arma::field<arma::cube> eta_samp = multiple_try["eta"];
+  arma::cube tau_eta_samp = multiple_try["tau_eta"];
 
   // generate warnings
-  if(X.n_rows != n_funct){
+  if(X1.n_rows != n_funct){
     Rcpp::stop("'X' must be have 'n_funct' number of rows");
   }
   if(tot_mcmc_iters <  100){
@@ -4872,8 +5047,8 @@ Rcpp::List BHDFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
   if(burnin_prop >= 1){
     Rcpp::stop("'burnin_prop' must be between 0 and 1");
   }
-  if(k <  2){
-    Rcpp::stop("'k' must be an integer greater than or equal to 2");
+  if(K <  2){
+    Rcpp::stop("'K' must be an integer greater than or equal to 2");
   }
   if(n_funct <  1){
     Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
@@ -4973,17 +5148,17 @@ Rcpp::List BHDFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
   }
 
   // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k) * 10;
+  arma::vec c1 = arma::ones(K) * 10;
   if(c.isNotNull()){
     Rcpp::NumericVector c_(c);
     c1 = Rcpp::as<arma::vec>(c_);
   }
 
   // generate warning for c
-  if(c1.n_elem != k){
-    Rcpp::stop("number of elements of the vector 'c' must be equal to k");
+  if(c1.n_elem != K){
+    Rcpp::stop("number of elements of the vector 'c' must be equal to K");
   }
-  for(int i = 0; i < k; i++){
+  for(int i = 0; i < K; i++){
     if(c1(i) <= 0){
       Rcpp::stop("all elements of 'c' must be positive");
     }
@@ -5034,10 +5209,16 @@ Rcpp::List BHDFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
   arma::vec pi_est = arma::zeros(pi_samp.n_rows);
   arma::mat Z_est = arma::zeros(n_funct, Z_samp.n_cols);
   arma::mat nu_est = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+  arma::cube eta_est = arma::zeros(eta_samp(0,0).n_rows, eta_samp(0,0).n_cols, eta_samp(0,0).n_slices);
   arma::vec ph_Z = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
   arma::vec ph_nu = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+  arma::vec ph_eta = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+
   for(int i = 0; i < Z_est.n_cols; i++){
     pi_est(i) = arma::median(pi_samp.row(i).subvec(std::round(n_nu * burnin_prop), n_nu - 1));
+  }
+
+  for(int i = 0; i < Z_est.n_cols; i++){
     for(int j = 0; j < Z_est.n_rows; j++){
       for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
         ph_Z(l - std::round(n_nu * burnin_prop)) = Z_samp(j,i,l);
@@ -5049,6 +5230,12 @@ Rcpp::List BHDFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
         ph_nu(l - std::round(n_nu * burnin_prop)) = nu_samp(i,j,l);
       }
       nu_est(i,j) = arma::median(ph_nu);
+      for(int d = 0; d < X1.n_cols; d++){
+        for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+          ph_eta(l - std::round(n_nu * burnin_prop)) = eta_samp(l,0)(j,d,i);
+        }
+        eta_est(j,d,i) = arma::median(ph_eta);
+      }
     }
   }
 
@@ -5093,22 +5280,30 @@ Rcpp::List BHDFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
 
   arma::mat A_est = arma::zeros(A_samp.n_rows, A_samp.n_cols);
   arma::vec ph_A = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < A_samp.n_rows; k++){
+  for(int j = 0; j < A_samp.n_rows; j++){
     for(int i = 0; i < A_samp.n_cols; i++){
       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(k, i, l);
+        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(j, i, l);
       }
-      A_est(k, i) = arma::median(ph_A);
+      A_est(j, i) = arma::median(ph_A);
     }
   }
 
   arma::vec tau_est = arma::zeros(tau_samp.n_cols);
+  arma::mat tau_eta_est = arma::zeros(tau_eta_samp.n_rows, tau_eta_samp.n_cols);
   arma::vec ph_tau = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+  arma::vec ph_tau_eta = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
   for(int i = 0; i < tau_est.n_elem; i++){
     for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
       ph_tau(l - std::round(n_nu * burnin_prop)) = tau_samp(l,i);
     }
     tau_est(i) = arma::median(ph_tau);
+    for(int j = 0; j < tau_eta_est.n_cols; j++){
+      for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+        ph_tau_eta(l - std::round(n_nu * burnin_prop)) = tau_eta_samp(i,j,l);
+      }
+      tau_eta_est(i,j) = arma::median(ph_tau_eta);
+    }
   }
   arma::mat chi_est = arma::zeros(chi_samp.n_rows, chi_samp.n_cols);
   arma::vec ph_chi = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
@@ -5121,547 +5316,639 @@ Rcpp::List BHDFMMM_warm_start_Mean_Adj(const int tot_mcmc_iters,
     }
   }
 
-  // start MCMC sampling
-  Rcpp::List mod1 = BayesFMMM::BHDFMMM_MTT_warm_start_MeanAdj(Y, time, X, n_funct, thinning_num, k,
-                                                              basis_degree, n_eigen, boundary_knots,
-                                                              internal_knots, tot_mcmc_iters,
-                                                              r_stored_iters, n_temp_trans,
-                                                              c1, b, nu_1, alpha1l, alpha2l,
-                                                              beta1l, beta2l, a_Z_PM, a_pi_PM,
-                                                              var_alpha3, var_epsilon1,
-                                                              var_epsilon2, alpha_nu, beta_nu,
-                                                              alpha_eta, beta_eta, alpha_0,
-                                                              beta_0, dir1, beta_N_t, N_t,
-                                                              Z_est, pi_est, alpha_3_est,
-                                                              delta_est, gamma_est, Phi_est, A_est,
-                                                              nu_est, tau_est, sigma_est, chi_est);
+  Rcpp::List mod2;
 
-  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
-                                        Rcpp::Named("nu", mod1["nu"]),
-                                        Rcpp::Named("chi", mod1["chi"]),
-                                        Rcpp::Named("pi", mod1["pi"]),
-                                        Rcpp::Named("alpha_3", mod1["alpha_3"]),
-                                        Rcpp::Named("A", mod1["A"]),
-                                        Rcpp::Named("delta", mod1["delta"]),
-                                        Rcpp::Named("sigma", mod1["sigma"]),
-                                        Rcpp::Named("tau", mod1["tau"]),
-                                        Rcpp::Named("tau_eta", mod1["tau_eta"]),
-                                        Rcpp::Named("eta", mod1["eta"]),
-                                        Rcpp::Named("gamma", mod1["gamma"]),
-                                        Rcpp::Named("Phi", mod1["Phi"]),
-                                        Rcpp::Named("Z", mod1["Z"]),
-                                        Rcpp::Named("loglik", mod1["loglik"]));
+  if(covariance_adj == false){
+    // start MCMC sampling
+    Rcpp::List mod1 = BayesFMMM::BHDFMMM_MTT_warm_start_MeanAdj(Y, time, X1, n_funct, thinning_num, K,
+                                                                basis_degree, n_eigen, boundary_knots,
+                                                                internal_knots, tot_mcmc_iters,
+                                                                r_stored_iters, n_temp_trans,
+                                                                c1, b, nu_1, alpha1l, alpha2l,
+                                                                beta1l, beta2l, a_Z_PM, a_pi_PM,
+                                                                var_alpha3, var_epsilon1,
+                                                                var_epsilon2, alpha_nu, beta_nu,
+                                                                alpha_eta, beta_eta, alpha_0,
+                                                                beta_0, dir1, beta_N_t, N_t,
+                                                                Z_est, pi_est, alpha_3_est,
+                                                                delta_est, gamma_est, Phi_est, A_est,
+                                                                nu_est, eta_est, tau_est, tau_eta_est,
+                                                                sigma_est, chi_est);
 
-  return mod2;
-}
+    Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
+                                          Rcpp::Named("nu", mod1["nu"]),
+                                          Rcpp::Named("chi", mod1["chi"]),
+                                          Rcpp::Named("pi", mod1["pi"]),
+                                          Rcpp::Named("alpha_3", mod1["alpha_3"]),
+                                          Rcpp::Named("A", mod1["A"]),
+                                          Rcpp::Named("delta", mod1["delta"]),
+                                          Rcpp::Named("sigma", mod1["sigma"]),
+                                          Rcpp::Named("tau", mod1["tau"]),
+                                          Rcpp::Named("tau_eta", mod1["tau_eta"]),
+                                          Rcpp::Named("eta", mod1["eta"]),
+                                          Rcpp::Named("gamma", mod1["gamma"]),
+                                          Rcpp::Named("Phi", mod1["Phi"]),
+                                          Rcpp::Named("Z", mod1["Z"]),
+                                          Rcpp::Named("loglik", mod1["loglik"]));
+  }else{
+    arma::field<arma::cube> delta_xi_samp = theta_est["delta_xi"];
+    arma::field<arma::cube> A_xi_samp = theta_est["A_xi"];
+    arma::field<arma::cube> xi_samp = theta_est["xi"];
+    arma::field<arma::cube> gamma_xi_samp; theta_est["gamma_xi"];
 
-//' Performs MCMC for high dimensional covariate adjusted (mean and covariance) functional model
-//'
-//' This function performs MCMC for a covariate adjusted mixed membership model
-//' for high dimeansional functional data. This function is specifically for a
-//' mean and covaraiance adjusted model, so the covariates do affect the
-//' covariance structure of the model.
-//' This function is meant to be used after using \code{BHDFMMM_Nu_Z_multiple_try}
-//' and \code{BHDFMMM_Theta_est}. This function will use the outputs of these two
-//' functions to start the MCMC chain in a good location. Since the posterior distribution
-//' can often be multimodal, it is important to have a good starting position.
-//' To help move across modes, this function allows users to use tempered transitions
-//' every \code{n_temp_trans} iterations. By using a mixture of tempered transitions
-//' and un-tempered transitions, we can allow the chain to explore multiple modes without
-//' while keeping sampling relatively computationally efficient. To save on RAM usage, we
-//' allow users to specify how many samples are kept in memory using \code{r_stored_iters}.
-//' If \code{r_stored_iters} is less than \code{tot_mcmc_iters}, then a thinned version
-//' of the chain is stored in the user specified directory (\code{dir}). The samples from each
-//' parameter can be viewed using the following functions: \code{ReadFieldCube},
-//' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
-//' \code{ReadVec}.
-//'
-//' @name BHDFMMM_warm_start_Mean_Cov_Adj
-//' @param tot_mcmc_iters Int containing the total number of MCMC iterations
-//' @param k Int containing the number of clusters
-//' @param Y List of vectors containing the observed values
-//' @param X Matrix of covariates (each row corresponds to an observation)
-//' @param time List of matrices that contain the observed time points (each column is a dimension)
-//' @param n_funct Int containing the number of functions
-//' @param basis_degree Vector containing the desired basis degree for each dimension
-//' @param n_eigen Int containing the number of eigenfunctions
-//' @param boundary_knots Matrix containing the boundary knots for each dimension (each row is a dimension)
-//' @param internal_knots List of vectors containing the internal knots for each dimension
-//' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})
-//' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})
-//' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})
-//' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})
-//' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})
-//' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})
-//' @param A_samp Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})
-//' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})
-//' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})
-//' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})
-//' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})
-//' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
-//' @param dir String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)
-//' @param thinning_num Int containing how often we should save MCMC iterations
-//' @param beta_N_t Double containing the maximum weight for tempered transitions
-//' @param N_t Int containing total number of tempered transitions
-//' @param n_temp_trans Int containing how often tempered transitions are performed (if 0, then no tempered transitions are performed)
-//' @param r_stored_iters Int containing how many MCMC iterations are stored in RAM (if 0, then all MCMC iterations are stored in RAM)
-//' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
-//' @param b double containing hyperparamete for sampling from alpha_3
-//' @param nu_1 double containing hyperparameter for sampling from gamma
-//' @param alpha1l Double containing hyperparameter for sampling from A
-//' @param alpha2l Double containing hyperparameter for sampling from A
-//' @param beta1l Double containing hyperparameter for sampling from A (scale)
-//' @param beta2l Double containing hyperparameter for sampling from A (scale)
-//' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
-//' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
-//' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
-//' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
-//' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
-//' @param alpha_nu Double containing hyperparameter for sampling from tau_nu
-//' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
-//' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
-//' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-//' @param alpha_0 Double containing hyperparameter for sampling from sigma
-//' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
-//'
-//' @returns a List containing:
-//' \describe{
-//'   \item{\code{B}}{The basis functions evaluated at the observed time points}
-//'   \item{\code{nu}}{Nu samples from the MCMC chain}
-//'   \item{\code{chi}}{chi samples from the MCMC chain}
-//'   \item{\code{pi}}{pi samples from the MCMC chain}
-//'   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
-//'   \item{\code{A}}{A samples from MCMC chain}
-//'   \item{\code{delta}}{delta samples from the MCMC chain}
-//'   \item{\code{sigma}}{sigma samples from the MCMC chain}
-//'   \item{\code{tau}}{tau samples from the MCMC chain}
-//'   \item{\code{tau_eta}}{tau_eta samples from the MCMC chain}
-//'   \item{\code{xi}}{xi samples from the MCMC chain}
-//'   \item{\code{delta_xi}}{delta_xi samples from the MCMC chain}
-//'   \item{\code{gamma_xi}}{gamma_xi samples from the MCMC chain}
-//'   \item{\code{A_xi}}{A_xi samples from the MCMC chain}
-//'   \item{\code{eta}}{eta samples from the MCMC chain}
-//'   \item{\code{gamma}}{gamma samples from the MCMC chain}
-//'   \item{\code{Phi}}{Phi samples from the MCMC chain}
-//'   \item{\code{Z}}{Z samples from the MCMC chain}
-//'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
-//' }
-//'
-//' @section Warning:
-//' The following must be true:
-//' \describe{
-//'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
-//'   \item{\code{X}}{ must have n_funct number of rows}
-//'   \item{\code{burnin_prop}}{must be between 0 and 1}
-//'   \item{\code{k}}{must be an integer larger than or equal to 2}
-//'   \item{\code{n_funct}}{must be an integer larger than 1}
-//'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
-//'   \item{\code{n_eigen}}{must be greater than or equal to 1}
-//'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
-//'   \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
-//'   \item{\code{n_thinning}}{must be a positive integer}
-//'   \item{\code{beta_N_t}}{must be between 1 and 0}
-//'   \item{\code{N_t}}{must be a positive integer}
-//'   \item{\code{n_temp_trans}}{must be a non-negative integer}
-//'   \item{\code{r_stored_iters}}{must be a non-negative integer}
-//'   \item{\code{c}}{must be greater than 0 and have k elements}
-//'   \item{\code{b}}{must be positive}
-//'   \item{\code{nu_1}}{must be positive}
-//'   \item{\code{alpha1l}}{must be positive}
-//'   \item{\code{beta1l}}{must be positive}
-//'   \item{\code{alpha2l}}{must be positive}
-//'   \item{\code{beta1l}}{must be positive}
-//'   \item{\code{a_Z_PM}}{must be positive}
-//'   \item{\code{a_pi_PM}}{must be positive}
-//'   \item{\code{var_alpha3}}{must be positive}
-//'   \item{\code{var_epsilon1}}{must be positive}
-//'   \item{\code{var_epsilon2}}{must be positive}
-//'   \item{\code{alpha_nu}}{must be positive}
-//'   \item{\code{beta_nu}}{must be positive}
-//'   \item{\code{alpha_eta}}{must be positive}
-//'   \item{\code{beta_eta}}{must be positive}
-//'   \item{\code{alpha_0}}{must be positive}
-//'   \item{\code{beta_0}}{must be positive}
-//' }
-//'
-//'@examples
-//' ## Load sample data
-//' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
-//' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
-//'
-//' ## Set Hyperparameters
-//' tot_mcmc_iters <- 150
-//' n_try <- 1
-//' k <- 2
-//' n_funct <- 20
-//' basis_degree <- c(2,2)
-//' n_eigen <- 2
-//' boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
-//' internal_knots <- rep(list(c(250, 500, 750)), 2)
-//'
-//' ## Run function
-//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
-//'                                   basis_degree, n_eigen, boundary_knots,
-//'                                   internal_knots)
-//'
-//' ## Run function
-//' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
-//'                         basis_degree, n_eigen, boundary_knots,
-//'                         internal_knots, est1$Z, est1$nu)
-//'
-//' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
-//' MCMC.chain <-BHDFMMM_warm_start_Mean_Cov_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
-//'                                             basis_degree, n_eigen, boundary_knots,
-//'                                             internal_knots, est1$Z, est1$pi, est1$alpha_3,
-//'                                             est2$delta, est2$gamma, est2$Phi, est2$A,
-//'                                             est1$nu, est1$tau, est2$sigma, est2$chi)
-//'
-//' @export
-// [[Rcpp::export]]
-Rcpp::List BHDFMMM_warm_start_Mean_Cov_Adj(const int tot_mcmc_iters,
-                                           const int k,
-                                           const arma::field<arma::vec> Y,
-                                           const arma::mat X,
-                                           const arma::field<arma::mat> time,
-                                           const int n_funct,
-                                           const arma::vec basis_degree,
-                                           const int n_eigen,
-                                           const arma::mat boundary_knots,
-                                           const arma::field<arma::vec> internal_knots,
-                                           const arma::cube Z_samp,
-                                           const arma::mat pi_samp,
-                                           const arma::vec alpha_3_samp,
-                                           const arma::cube delta_samp,
-                                           const arma::field<arma::cube> gamma_samp,
-                                           const arma::field<arma::cube> Phi_samp,
-                                           const arma::cube A_samp,
-                                           const arma::cube nu_samp,
-                                           const arma::mat tau_samp,
-                                           const arma::vec sigma_samp,
-                                           const arma::cube chi_samp,
-                                           const double burnin_prop = 0.8,
-                                           Rcpp::Nullable<Rcpp::CharacterVector> dir = R_NilValue,
-                                           const double thinning_num = 1,
-                                           const double beta_N_t = 1,
-                                           int N_t = 1,
-                                           int n_temp_trans = 0,
-                                           int r_stored_iters = 0,
-                                           Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
-                                           const double b = 10,
-                                           const double nu_1 = 3,
-                                           const double alpha1l = 1,
-                                           const double alpha2l = 2,
-                                           const double beta1l = 1,
-                                           const double beta2l = 1,
-                                           const double a_Z_PM = 10000,
-                                           const double a_pi_PM = 1000,
-                                           const double var_alpha3 = 0.05,
-                                           const double var_epsilon1 = 1,
-                                           const double var_epsilon2 = 1,
-                                           const double alpha_nu = 10,
-                                           const double beta_nu = 1,
-                                           const double alpha_eta = 10,
-                                           const double beta_eta = 1,
-                                           const double alpha_0 = 1,
-                                           const double beta_0 = 1){
+    arma::cube delta_xi_est = arma::zeros(delta_xi_samp(0,0).n_rows,
+                                          delta_xi_samp(0,0).n_cols,
+                                          delta_xi_samp(0,0).n_slices);
+    arma::cube A_xi_est = arma::zeros(A_xi_samp(0,0).n_rows,
+                                      A_xi_samp(0,0).n_cols,
+                                      A_xi_samp(0,0).n_slices);
 
-  // generate warnings
-  if(X.n_rows != n_funct){
-    Rcpp::stop("'X' must be have 'n_funct' number of rows");
-  }
-  if(tot_mcmc_iters <  100){
-    Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
-  }
-  if(burnin_prop < 0){
-    Rcpp::stop("'burnin_prop' must be between 0 and 1");
-  }
-  if(burnin_prop >= 1){
-    Rcpp::stop("'burnin_prop' must be between 0 and 1");
-  }
-  if(k <  2){
-    Rcpp::stop("'k' must be an integer greater than or equal to 2");
-  }
-  if(n_funct <  1){
-    Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
-  }
-  if(basis_degree.n_elem != time(0,0).n_cols){
-    Rcpp::stop("number of elemnts in 'basis_degree' does not match number of columns in time matrix");
-  }
-  for(int i = 0; i < basis_degree.n_elem; i++){
-    if(basis_degree(i) <  1){
-      Rcpp::stop("'basis_degree' elements must be an integer greater than or equal to 1");
+    arma::field<arma::cube> xi_est(1,K);
+    arma::field<arma::cube> gamma_xi_est(1,K);
+    for(int j = 0; j < K; j++){
+      xi_est(0,j) = arma::zeros(xi_samp(0,j).n_rows, xi_samp(0,j).n_cols,
+             xi_samp(0,j).n_slices);
+      gamma_xi_est(0,j) = arma::zeros(gamma_xi_samp(0,j).n_rows,
+                   gamma_xi_samp(0,j).n_cols, gamma_xi_samp(0,j).n_slices);
     }
-  }
-  if(n_eigen <  1){
-    Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
-  }
-  if(n_funct <  1){
-    Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
-  }
-  for(int j = 0; j < boundary_knots.n_rows; j++){
-    for(int i = 0; i < internal_knots(j,0).n_elem; i++){
-      if(boundary_knots(j,0) >= internal_knots(j,0)(i)){
-        Rcpp::stop("at least one element in 'internal_knots' is less than or equal to first boundary knot");
-      }
-      if(boundary_knots(j,1) <= internal_knots(j,0)(i)){
-        Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
-      }
-    }
-  }
-  if(b <= 0){
-    Rcpp::stop("'b' must be positive");
-  }
-  if(nu_1 <= 0){
-    Rcpp::stop("'nu_1' must be positive");
-  }
-  if(alpha1l <= 0){
-    Rcpp::stop("'alpha1l' must be positive");
-  }
-  if(beta1l <= 0){
-    Rcpp::stop("'beta1l' must be positive");
-  }
-  if(alpha2l <= 0){
-    Rcpp::stop("'alpha2l' must be positive");
-  }
-  if(beta2l <= 0){
-    Rcpp::stop("'beta2l' must be positive");
-  }
-  if(a_Z_PM <= 0){
-    Rcpp::stop("'a_Z_PM' must be positive");
-  }
-  if(a_pi_PM <= 0){
-    Rcpp::stop("'a_pi_PM' must be positive");
-  }
-  if(var_alpha3 <= 0){
-    Rcpp::stop("'var_alpha3' must be positive");
-  }
-  if(var_epsilon1 <= 0){
-    Rcpp::stop("'var_epsilon1' must be positive");
-  }
-  if(var_epsilon2 <= 0){
-    Rcpp::stop("'var_epsilon2' must be positive");
-  }
-  if(alpha_nu <= 0){
-    Rcpp::stop("'alpha' must be positive");
-  }
-  if(beta_nu <= 0){
-    Rcpp::stop("'beta' must be positive");
-  }
-  if(alpha_eta <= 0){
-    Rcpp::stop("'alpha' must be positive");
-  }
-  if(beta_eta <= 0){
-    Rcpp::stop("'beta' must be positive");
-  }
-  if(alpha_0 <= 0){
-    Rcpp::stop("'alpha_0' must be positive");
-  }
-  if(beta_0 <= 0){
-    Rcpp::stop("'beta_0' must be positive");
-  }
-  if(thinning_num <= 0){
-    Rcpp::stop("'thinning_num' must be a positive integer");
-  }
-  if(beta_N_t <= 0){
-    Rcpp::stop("'beta_N_t' must be between 0 and 1");
-  }
-  if(beta_N_t > 1){
-    Rcpp::stop("'beta_N_t' must be between 0 and 1");
-  }
-  if(N_t < 1){
-    Rcpp::stop("'N_t' must be a positive integer");
-  }
-  if(r_stored_iters < 0){
-    Rcpp::stop("'r_stored_iters' must be a non-negative integer");
-  }
-  if(n_temp_trans < 0){
-    Rcpp::stop("'n_temp_trans' must be a non-negative integer");
-  }
 
-  // initialize hyperparameter c
-  arma::vec c1 = arma::ones(k) * 10;
-  if(c.isNotNull()){
-    Rcpp::NumericVector c_(c);
-    c1 = Rcpp::as<arma::vec>(c_);
-  }
+    arma::vec delta_xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    arma::vec A_xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    arma::vec xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    arma::vec gamma_xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
 
-  // generate warning for c
-  if(c1.n_elem != k){
-    Rcpp::stop("number of elements of the vector 'c' must be equal to k");
-  }
-  for(int i = 0; i < k; i++){
-    if(c1(i) <= 0){
-      Rcpp::stop("all elements of 'c' must be positive");
-    }
-  }
-
-  // if r_stored_iters is default, do not save anything
-  std::string dir1 = "";
-  if(r_stored_iters == 0){
-    r_stored_iters = tot_mcmc_iters + 1;
-  }
-
-  // check if directory is specified
-  if(dir.isNotNull()){
-    Rcpp::CharacterVector s(dir);
-    dir1 = std::string(s[0]);
-
-    // save entire chain at last iteration
-    if(r_stored_iters == 0){
-      r_stored_iters = tot_mcmc_iters;
-    }
-  }
-
-  // Check if there is a place to store files if r_stored_iters < tot_mcmc_iters
-  if(dir.isNull()){
-    if(r_stored_iters <= tot_mcmc_iters){
-      Rcpp::stop("'r_stored_iters' <= 'tot_mcmc_iters' with no 'dir' specified. Either specify 'dir' or increase 'r_stored_iters'");
-    }
-  }
-
-  // if n_temp_trans is default set to greater than tot_mcmc_iters
-  if(n_temp_trans == 0){
-    n_temp_trans = tot_mcmc_iters + 1;
-    N_t = 1;
-  }
-
-  // save RAM
-  if(r_stored_iters > tot_mcmc_iters + 1){
-    r_stored_iters = tot_mcmc_iters + 1;
-  }
-
-  // Start of Algorithm
-  arma::field<arma::mat> B_obs = BayesFMMM::TensorBSpline(time, n_funct, basis_degree,
-                                                          boundary_knots, internal_knots);
-
-  int n_nu = alpha_3_samp.n_elem;
-
-  double alpha_3_est = arma::median(alpha_3_samp.subvec(std::round(n_nu * burnin_prop), n_nu - 1));
-  arma::vec pi_est = arma::zeros(pi_samp.n_rows);
-  arma::mat Z_est = arma::zeros(n_funct, Z_samp.n_cols);
-  arma::mat nu_est = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
-  arma::vec ph_Z = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
-  arma::vec ph_nu = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
-  for(int i = 0; i < Z_est.n_cols; i++){
-    pi_est(i) = arma::median(pi_samp.row(i).subvec(std::round(n_nu * burnin_prop), n_nu - 1));
-    for(int j = 0; j < Z_est.n_rows; j++){
-      for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
-        ph_Z(l - std::round(n_nu * burnin_prop)) = Z_samp(j,i,l);
-      }
-      Z_est(j,i) = arma::median(ph_Z);
-    }
-    for(int j = 0; j < nu_samp.n_cols; j++){
-      for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
-        ph_nu(l - std::round(n_nu * burnin_prop)) = nu_samp(i,j,l);
-      }
-      nu_est(i,j) = arma::median(ph_nu);
-    }
-  }
-
-  // normalize
-  for(int i = 0; i < Z_est.n_rows; i++){
-    Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
-  }
-
-  pi_est = pi_est / arma::accu(pi_est);
-
-  int n_Phi = sigma_samp.n_elem;
-
-  double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
-  arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
-  arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int j = 0; j < delta_samp.n_cols; j++){
-    for(int i = 0; i < delta_samp.n_rows; i++){
-      for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,j,l);
-      }
-      delta_est(i, j) = arma::median(ph_delta);
-    }
-  }
-
-  arma::cube gamma_est = arma::zeros(gamma_samp(0,0).n_rows, gamma_samp(0,0).n_cols, gamma_samp(0,0).n_slices);
-  arma::cube Phi_est = arma::zeros(Phi_samp(0,0).n_rows, Phi_samp(0,0).n_cols, Phi_samp(0,0).n_slices);
-  arma::vec ph_phi = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  arma::vec ph_gamma = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int i = 0; i < Phi_est.n_rows; i++){
-    for(int j = 0; j < Phi_est.n_cols; j++){
-      for(int m = 0; m < Phi_est.n_slices; m++){
-        for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-          ph_phi(l - std::round(n_Phi * burnin_prop)) = Phi_samp(l,0)(i,j,m);
-
-          ph_gamma(l - std::round(n_Phi * burnin_prop)) = gamma_samp(l,0)(i,j,m);
+    for(int j = 0; j < K; j++){
+      for(int d = 0; X1.n_cols; d++){
+        for(int i = 0; i < 2; i++){
+          for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+            A_xi_ph(l - std::round(n_nu * burnin_prop)) = A_xi_samp(l,0)(j, i, d);
+          }
+          A_xi_est(j, i, d) = arma::median(A_xi_ph);
         }
-        Phi_est(i,j,m) = arma::median(ph_phi);
-        gamma_est(i,j,m) = arma::median(ph_gamma);
+        for(int m = 0; m < n_eigen; m++){
+          for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+            delta_xi_ph(l - std::round(n_nu * burnin_prop)) = delta_xi_samp(l,0)(j, m, d);
+          }
+          delta_xi_est(j, m, d) = arma::median(delta_xi_ph);
+          for(int p = 0; p < xi_samp(0,j).n_rows; p++){
+            for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+              xi_ph(l - std::round(n_nu * burnin_prop)) = xi_samp(l,j)(p, m, d);
+              gamma_xi_ph(l - std::round(n_nu * burnin_prop)) = gamma_xi_samp(l,j)(p, m, d);
+            }
+            xi_est(0,j)(p, m, d) = arma::median(xi_ph);
+            gamma_xi_est(0,j)(p, m, d) = arma::median(gamma_xi_ph);
+          }
+        }
       }
     }
-  }
+    // start MCMC sampling
+    Rcpp::List mod1 = BayesFMMM::BHDFMMM_MTT_warm_start_Mean_CovAdj(Y, time, X1, n_funct, thinning_num, K,
+                                                                    basis_degree, n_eigen, boundary_knots,
+                                                                    internal_knots, tot_mcmc_iters,
+                                                                    r_stored_iters, n_temp_trans,
+                                                                    c1, b, nu_1, alpha1l, alpha2l,
+                                                                    beta1l, beta2l, a_Z_PM, a_pi_PM,
+                                                                    var_alpha3, var_epsilon1,
+                                                                    var_epsilon2, alpha_nu, beta_nu,
+                                                                    alpha_eta, beta_eta, alpha_0,
+                                                                    beta_0, dir1, beta_N_t, N_t,
+                                                                    Z_est, pi_est, alpha_3_est,
+                                                                    delta_est, delta_xi_est, gamma_est,
+                                                                    gamma_xi_est, Phi_est, xi_est, A_est,
+                                                                    A_xi_est, nu_est, eta_est, tau_est,
+                                                                    tau_eta_est, sigma_est, chi_est);
 
-  arma::mat A_est = arma::zeros(A_samp.n_rows, A_samp.n_cols);
-  arma::vec ph_A = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int k = 0; k < A_samp.n_rows; k++){
-    for(int i = 0; i < A_samp.n_cols; i++){
-      for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(k, i, l);
-      }
-      A_est(k, i) = arma::median(ph_A);
-    }
+    mod2 =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
+                               Rcpp::Named("nu", mod1["nu"]),
+                               Rcpp::Named("chi", mod1["chi"]),
+                               Rcpp::Named("pi", mod1["pi"]),
+                               Rcpp::Named("alpha_3", mod1["alpha_3"]),
+                               Rcpp::Named("A", mod1["A"]),
+                               Rcpp::Named("delta", mod1["delta"]),
+                               Rcpp::Named("sigma", mod1["sigma"]),
+                               Rcpp::Named("tau", mod1["tau"]),
+                               Rcpp::Named("tau_eta", mod1["tau_eta"]),
+                               Rcpp::Named("xi", mod1["xi"]),
+                               Rcpp::Named("delta_xi", mod1["delta_xi"]),
+                               Rcpp::Named("gamma_xi", mod1["gamma_xi"]),
+                               Rcpp::Named("A_xi", mod1["A_xi"]),
+                               Rcpp::Named("eta", mod1["eta"]),
+                               Rcpp::Named("gamma", mod1["gamma"]),
+                               Rcpp::Named("Phi", mod1["Phi"]),
+                               Rcpp::Named("Z", mod1["Z"]),
+                               Rcpp::Named("loglik", mod1["loglik"]));
   }
-
-  arma::vec tau_est = arma::zeros(tau_samp.n_cols);
-  arma::vec ph_tau = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
-  for(int i = 0; i < tau_est.n_elem; i++){
-    for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
-      ph_tau(l - std::round(n_nu * burnin_prop)) = tau_samp(l,i);
-    }
-    tau_est(i) = arma::median(ph_tau);
-  }
-  arma::mat chi_est = arma::zeros(chi_samp.n_rows, chi_samp.n_cols);
-  arma::vec ph_chi = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
-  for(int i = 0; i < chi_est.n_rows; i++){
-    for(int j = 0; j < chi_est.n_cols; j++){
-      for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
-        ph_chi(l - std::round(n_Phi * burnin_prop)) = chi_samp(i,j,l);
-      }
-      chi_est(i,j) = arma::median(ph_chi);
-    }
-  }
-
-  // start MCMC sampling
-  Rcpp::List mod1 = BayesFMMM::BHDFMMM_MTT_warm_start_Mean_CovAdj(Y, time, X, n_funct, thinning_num, k,
-                                                                  basis_degree, n_eigen, boundary_knots,
-                                                                  internal_knots, tot_mcmc_iters,
-                                                                  r_stored_iters, n_temp_trans,
-                                                                  c1, b, nu_1, alpha1l, alpha2l,
-                                                                  beta1l, beta2l, a_Z_PM, a_pi_PM,
-                                                                  var_alpha3, var_epsilon1,
-                                                                  var_epsilon2, alpha_nu, beta_nu,
-                                                                  alpha_eta, beta_eta, alpha_0,
-                                                                  beta_0, dir1, beta_N_t, N_t,
-                                                                  Z_est, pi_est, alpha_3_est,
-                                                                  delta_est, gamma_est, Phi_est, A_est,
-                                                                  nu_est, tau_est, sigma_est, chi_est);
-
-  Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
-                                        Rcpp::Named("nu", mod1["nu"]),
-                                        Rcpp::Named("chi", mod1["chi"]),
-                                        Rcpp::Named("pi", mod1["pi"]),
-                                        Rcpp::Named("alpha_3", mod1["alpha_3"]),
-                                        Rcpp::Named("A", mod1["A"]),
-                                        Rcpp::Named("delta", mod1["delta"]),
-                                        Rcpp::Named("sigma", mod1["sigma"]),
-                                        Rcpp::Named("tau", mod1["tau"]),
-                                        Rcpp::Named("tau_eta", mod1["tau_eta"]),
-                                        Rcpp::Named("xi", mod1["xi"]),
-                                        Rcpp::Named("delta_xi", mod1["delta_xi"]),
-                                        Rcpp::Named("gamma_xi", mod1["gamma_xi"]),
-                                        Rcpp::Named("A_xi", mod1["A_xi"]),
-                                        Rcpp::Named("eta", mod1["eta"]),
-                                        Rcpp::Named("gamma", mod1["gamma"]),
-                                        Rcpp::Named("Phi", mod1["Phi"]),
-                                        Rcpp::Named("Z", mod1["Z"]),
-                                        Rcpp::Named("loglik", mod1["loglik"]));
 
   return mod2;
 }
+
+// //' Performs MCMC for high dimensional covariate adjusted (mean and covariance) functional model
+// //'
+// //' This function performs MCMC for a covariate adjusted mixed membership model
+// //' for high dimeansional functional data. This function is specifically for a
+// //' mean and covaraiance adjusted model, so the covariates do affect the
+// //' covariance structure of the model.
+// //' This function is meant to be used after using \code{BHDFMMM_Nu_Z_multiple_try}
+// //' and \code{BHDFMMM_Theta_est}. This function will use the outputs of these two
+// //' functions to start the MCMC chain in a good location. Since the posterior distribution
+// //' can often be multimodal, it is important to have a good starting position.
+// //' To help move across modes, this function allows users to use tempered transitions
+// //' every \code{n_temp_trans} iterations. By using a mixture of tempered transitions
+// //' and un-tempered transitions, we can allow the chain to explore multiple modes without
+// //' while keeping sampling relatively computationally efficient. To save on RAM usage, we
+// //' allow users to specify how many samples are kept in memory using \code{r_stored_iters}.
+// //' If \code{r_stored_iters} is less than \code{tot_mcmc_iters}, then a thinned version
+// //' of the chain is stored in the user specified directory (\code{dir}). The samples from each
+// //' parameter can be viewed using the following functions: \code{ReadFieldCube},
+// //' \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
+// //' \code{ReadVec}.
+// //'
+// //' @name BHDFMMM_warm_start_Mean_Cov_Adj
+// //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
+// //' @param K Int containing the number of clusters
+// //' @param Y List of vectors containing the observed values
+// //' @param X Matrix of covariates (each row corresponds to an observation)
+// //' @param time List of matrices that contain the observed time points (each column is a dimension)
+// //' @param n_funct Int containing the number of functions
+// //' @param basis_degree Vector containing the desired basis degree for each dimension
+// //' @param n_eigen Int containing the number of eigenfunctions
+// //' @param boundary_knots Matrix containing the boundary knots for each dimension (each row is a dimension)
+// //' @param internal_knots List of vectors containing the internal knots for each dimension
+// //' @param Z_samp Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})
+// //' @param pi_samp Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})
+// //' @param alpha_3_samp Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})
+// //' @param delta_samp Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})
+// //' @param gamma_samp List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})
+// //' @param Phi_samp List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})
+// //' @param A_samp Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})
+// //' @param nu_samp Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})
+// //' @param tau_samp Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})
+// //' @param sigma_samp Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})
+// //' @param chi_samp Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})
+// //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
+// //' @param dir String containing directory where the MCMC files should be saved (if NULL, then no files will be saved)
+// //' @param thinning_num Int containing how often we should save MCMC iterations
+// //' @param beta_N_t Double containing the maximum weight for tempered transitions
+// //' @param N_t Int containing total number of tempered transitions
+// //' @param n_temp_trans Int containing how often tempered transitions are performed (if 0, then no tempered transitions are performed)
+// //' @param r_stored_iters Int containing how many MCMC iterations are stored in RAM (if 0, then all MCMC iterations are stored in RAM)
+// //' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
+// //' @param b double containing hyperparamete for sampling from alpha_3
+// //' @param nu_1 double containing hyperparameter for sampling from gamma
+// //' @param alpha1l Double containing hyperparameter for sampling from A
+// //' @param alpha2l Double containing hyperparameter for sampling from A
+// //' @param beta1l Double containing hyperparameter for sampling from A (scale)
+// //' @param beta2l Double containing hyperparameter for sampling from A (scale)
+// //' @param a_Z_PM Double containing hyperparameter of the random walk MH for Z parameter
+// //' @param a_pi_PM Double containing hyperparameter of the random walk MH for pi parameter
+// //' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+// //' @param var_epsilon1 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// //' @param var_epsilon2 Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// //' @param alpha_nu Double containing hyperparameter for sampling from tau_nu
+// //' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
+// //' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
+// //' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
+// //' @param alpha_0 Double containing hyperparameter for sampling from sigma
+// //' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+// //'
+// //' @returns a List containing:
+// //' \describe{
+// //'   \item{\code{B}}{The basis functions evaluated at the observed time points}
+// //'   \item{\code{nu}}{Nu samples from the MCMC chain}
+// //'   \item{\code{chi}}{chi samples from the MCMC chain}
+// //'   \item{\code{pi}}{pi samples from the MCMC chain}
+// //'   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
+// //'   \item{\code{A}}{A samples from MCMC chain}
+// //'   \item{\code{delta}}{delta samples from the MCMC chain}
+// //'   \item{\code{sigma}}{sigma samples from the MCMC chain}
+// //'   \item{\code{tau}}{tau samples from the MCMC chain}
+// //'   \item{\code{tau_eta}}{tau_eta samples from the MCMC chain}
+// //'   \item{\code{xi}}{xi samples from the MCMC chain}
+// //'   \item{\code{delta_xi}}{delta_xi samples from the MCMC chain}
+// //'   \item{\code{gamma_xi}}{gamma_xi samples from the MCMC chain}
+// //'   \item{\code{A_xi}}{A_xi samples from the MCMC chain}
+// //'   \item{\code{eta}}{eta samples from the MCMC chain}
+// //'   \item{\code{gamma}}{gamma samples from the MCMC chain}
+// //'   \item{\code{Phi}}{Phi samples from the MCMC chain}
+// //'   \item{\code{Z}}{Z samples from the MCMC chain}
+// //'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
+// //' }
+// //'
+// //' @section Warning:
+// //' The following must be true:
+// //' \describe{
+// //'   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
+// //'   \item{\code{X}}{ must have n_funct number of rows}
+// //'   \item{\code{burnin_prop}}{must be between 0 and 1}
+// //'   \item{\code{K}}{must be an integer larger than or equal to 2}
+// //'   \item{\code{n_funct}}{must be an integer larger than 1}
+// //'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+// //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
+// //'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+// //'   \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
+// //'   \item{\code{n_thinning}}{must be a positive integer}
+// //'   \item{\code{beta_N_t}}{must be between 1 and 0}
+// //'   \item{\code{N_t}}{must be a positive integer}
+// //'   \item{\code{n_temp_trans}}{must be a non-negative integer}
+// //'   \item{\code{r_stored_iters}}{must be a non-negative integer}
+// //'   \item{\code{c}}{must be greater than 0 and have K elements}
+// //'   \item{\code{b}}{must be positive}
+// //'   \item{\code{nu_1}}{must be positive}
+// //'   \item{\code{alpha1l}}{must be positive}
+// //'   \item{\code{beta1l}}{must be positive}
+// //'   \item{\code{alpha2l}}{must be positive}
+// //'   \item{\code{beta1l}}{must be positive}
+// //'   \item{\code{a_Z_PM}}{must be positive}
+// //'   \item{\code{a_pi_PM}}{must be positive}
+// //'   \item{\code{var_alpha3}}{must be positive}
+// //'   \item{\code{var_epsilon1}}{must be positive}
+// //'   \item{\code{var_epsilon2}}{must be positive}
+// //'   \item{\code{alpha_nu}}{must be positive}
+// //'   \item{\code{beta_nu}}{must be positive}
+// //'   \item{\code{alpha_eta}}{must be positive}
+// //'   \item{\code{beta_eta}}{must be positive}
+// //'   \item{\code{alpha_0}}{must be positive}
+// //'   \item{\code{beta_0}}{must be positive}
+// //' }
+// //'
+// //'@examples
+// //' ## Load sample data
+// //' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+// //' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+// //'
+// //' ## Set Hyperparameters
+// //' tot_mcmc_iters <- 150
+// //' n_try <- 1
+// //' K <- 2
+// //' n_funct <- 20
+// //' basis_degree <- c(2,2)
+// //' n_eigen <- 2
+// //' boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+// //' internal_knots <- rep(list(c(250, 500, 750)), 2)
+// //'
+// //' ## Run function
+// //' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+// //'                                   basis_degree, n_eigen, boundary_knots,
+// //'                                   internal_knots)
+// //'
+// //' ## Run function
+// //' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+// //'                         basis_degree, n_eigen, boundary_knots,
+// //'                         internal_knots, est1$Z, est1$nu)
+// //'
+// //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+// //' MCMC.chain <-BHDFMMM_warm_start_Mean_Cov_Adj(tot_mcmc_iters, K, Y, X, time, n_funct,
+// //'                                             basis_degree, n_eigen, boundary_knots,
+// //'                                             internal_knots, est1$Z, est1$pi, est1$alpha_3,
+// //'                                             est2$delta, est2$gamma, est2$Phi, est2$A,
+// //'                                             est1$nu, est1$tau, est2$sigma, est2$chi)
+// //'
+// //' @export
+// // [[Rcpp::export]]
+// Rcpp::List BHDFMMM_warm_start_Mean_Cov_Adj(const int tot_mcmc_iters,
+//                                            const int K,
+//                                            const arma::field<arma::vec> Y,
+//                                            const arma::mat X,
+//                                            const arma::field<arma::mat> time,
+//                                            const int n_funct,
+//                                            const arma::vec basis_degree,
+//                                            const int n_eigen,
+//                                            const arma::mat boundary_knots,
+//                                            const arma::field<arma::vec> internal_knots,
+//                                            const arma::cube Z_samp,
+//                                            const arma::mat pi_samp,
+//                                            const arma::vec alpha_3_samp,
+//                                            const arma::cube delta_samp,
+//                                            const arma::field<arma::cube> gamma_samp,
+//                                            const arma::field<arma::cube> Phi_samp,
+//                                            const arma::cube A_samp,
+//                                            const arma::cube nu_samp,
+//                                            const arma::mat tau_samp,
+//                                            const arma::vec sigma_samp,
+//                                            const arma::cube chi_samp,
+//                                            const double burnin_prop = 0.8,
+//                                            Rcpp::Nullable<Rcpp::CharacterVector> dir = R_NilValue,
+//                                            const double thinning_num = 1,
+//                                            const double beta_N_t = 1,
+//                                            int N_t = 1,
+//                                            int n_temp_trans = 0,
+//                                            int r_stored_iters = 0,
+//                                            Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
+//                                            const double b = 10,
+//                                            const double nu_1 = 3,
+//                                            const double alpha1l = 1,
+//                                            const double alpha2l = 2,
+//                                            const double beta1l = 1,
+//                                            const double beta2l = 1,
+//                                            const double a_Z_PM = 10000,
+//                                            const double a_pi_PM = 1000,
+//                                            const double var_alpha3 = 0.05,
+//                                            const double var_epsilon1 = 1,
+//                                            const double var_epsilon2 = 1,
+//                                            const double alpha_nu = 10,
+//                                            const double beta_nu = 1,
+//                                            const double alpha_eta = 10,
+//                                            const double beta_eta = 1,
+//                                            const double alpha_0 = 1,
+//                                            const double beta_0 = 1){
+//
+//   // generate warnings
+//   if(X.n_rows != n_funct){
+//     Rcpp::stop("'X' must be have 'n_funct' number of rows");
+//   }
+//   if(tot_mcmc_iters <  100){
+//     Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
+//   }
+//   if(burnin_prop < 0){
+//     Rcpp::stop("'burnin_prop' must be between 0 and 1");
+//   }
+//   if(burnin_prop >= 1){
+//     Rcpp::stop("'burnin_prop' must be between 0 and 1");
+//   }
+//   if(K <  2){
+//     Rcpp::stop("'K' must be an integer greater than or equal to 2");
+//   }
+//   if(n_funct <  1){
+//     Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
+//   }
+//   if(basis_degree.n_elem != time(0,0).n_cols){
+//     Rcpp::stop("number of elemnts in 'basis_degree' does not match number of columns in time matrix");
+//   }
+//   for(int i = 0; i < basis_degree.n_elem; i++){
+//     if(basis_degree(i) <  1){
+//       Rcpp::stop("'basis_degree' elements must be an integer greater than or equal to 1");
+//     }
+//   }
+//   if(n_eigen <  1){
+//     Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
+//   }
+//   if(n_funct <  1){
+//     Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
+//   }
+//   for(int j = 0; j < boundary_knots.n_rows; j++){
+//     for(int i = 0; i < internal_knots(j,0).n_elem; i++){
+//       if(boundary_knots(j,0) >= internal_knots(j,0)(i)){
+//         Rcpp::stop("at least one element in 'internal_knots' is less than or equal to first boundary knot");
+//       }
+//       if(boundary_knots(j,1) <= internal_knots(j,0)(i)){
+//         Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
+//       }
+//     }
+//   }
+//   if(b <= 0){
+//     Rcpp::stop("'b' must be positive");
+//   }
+//   if(nu_1 <= 0){
+//     Rcpp::stop("'nu_1' must be positive");
+//   }
+//   if(alpha1l <= 0){
+//     Rcpp::stop("'alpha1l' must be positive");
+//   }
+//   if(beta1l <= 0){
+//     Rcpp::stop("'beta1l' must be positive");
+//   }
+//   if(alpha2l <= 0){
+//     Rcpp::stop("'alpha2l' must be positive");
+//   }
+//   if(beta2l <= 0){
+//     Rcpp::stop("'beta2l' must be positive");
+//   }
+//   if(a_Z_PM <= 0){
+//     Rcpp::stop("'a_Z_PM' must be positive");
+//   }
+//   if(a_pi_PM <= 0){
+//     Rcpp::stop("'a_pi_PM' must be positive");
+//   }
+//   if(var_alpha3 <= 0){
+//     Rcpp::stop("'var_alpha3' must be positive");
+//   }
+//   if(var_epsilon1 <= 0){
+//     Rcpp::stop("'var_epsilon1' must be positive");
+//   }
+//   if(var_epsilon2 <= 0){
+//     Rcpp::stop("'var_epsilon2' must be positive");
+//   }
+//   if(alpha_nu <= 0){
+//     Rcpp::stop("'alpha' must be positive");
+//   }
+//   if(beta_nu <= 0){
+//     Rcpp::stop("'beta' must be positive");
+//   }
+//   if(alpha_eta <= 0){
+//     Rcpp::stop("'alpha' must be positive");
+//   }
+//   if(beta_eta <= 0){
+//     Rcpp::stop("'beta' must be positive");
+//   }
+//   if(alpha_0 <= 0){
+//     Rcpp::stop("'alpha_0' must be positive");
+//   }
+//   if(beta_0 <= 0){
+//     Rcpp::stop("'beta_0' must be positive");
+//   }
+//   if(thinning_num <= 0){
+//     Rcpp::stop("'thinning_num' must be a positive integer");
+//   }
+//   if(beta_N_t <= 0){
+//     Rcpp::stop("'beta_N_t' must be between 0 and 1");
+//   }
+//   if(beta_N_t > 1){
+//     Rcpp::stop("'beta_N_t' must be between 0 and 1");
+//   }
+//   if(N_t < 1){
+//     Rcpp::stop("'N_t' must be a positive integer");
+//   }
+//   if(r_stored_iters < 0){
+//     Rcpp::stop("'r_stored_iters' must be a non-negative integer");
+//   }
+//   if(n_temp_trans < 0){
+//     Rcpp::stop("'n_temp_trans' must be a non-negative integer");
+//   }
+//
+//   // initialize hyperparameter c
+//   arma::vec c1 = arma::ones(K) * 10;
+//   if(c.isNotNull()){
+//     Rcpp::NumericVector c_(c);
+//     c1 = Rcpp::as<arma::vec>(c_);
+//   }
+//
+//   // generate warning for c
+//   if(c1.n_elem != K){
+//     Rcpp::stop("number of elements of the vector 'c' must be equal to K");
+//   }
+//   for(int i = 0; i < K; i++){
+//     if(c1(i) <= 0){
+//       Rcpp::stop("all elements of 'c' must be positive");
+//     }
+//   }
+//
+//   // if r_stored_iters is default, do not save anything
+//   std::string dir1 = "";
+//   if(r_stored_iters == 0){
+//     r_stored_iters = tot_mcmc_iters + 1;
+//   }
+//
+//   // check if directory is specified
+//   if(dir.isNotNull()){
+//     Rcpp::CharacterVector s(dir);
+//     dir1 = std::string(s[0]);
+//
+//     // save entire chain at last iteration
+//     if(r_stored_iters == 0){
+//       r_stored_iters = tot_mcmc_iters;
+//     }
+//   }
+//
+//   // Check if there is a place to store files if r_stored_iters < tot_mcmc_iters
+//   if(dir.isNull()){
+//     if(r_stored_iters <= tot_mcmc_iters){
+//       Rcpp::stop("'r_stored_iters' <= 'tot_mcmc_iters' with no 'dir' specified. Either specify 'dir' or increase 'r_stored_iters'");
+//     }
+//   }
+//
+//   // if n_temp_trans is default set to greater than tot_mcmc_iters
+//   if(n_temp_trans == 0){
+//     n_temp_trans = tot_mcmc_iters + 1;
+//     N_t = 1;
+//   }
+//
+//   // save RAM
+//   if(r_stored_iters > tot_mcmc_iters + 1){
+//     r_stored_iters = tot_mcmc_iters + 1;
+//   }
+//
+//   // Start of Algorithm
+//   arma::field<arma::mat> B_obs = BayesFMMM::TensorBSpline(time, n_funct, basis_degree,
+//                                                           boundary_knots, internal_knots);
+//
+//   int n_nu = alpha_3_samp.n_elem;
+//
+//   double alpha_3_est = arma::median(alpha_3_samp.subvec(std::round(n_nu * burnin_prop), n_nu - 1));
+//   arma::vec pi_est = arma::zeros(pi_samp.n_rows);
+//   arma::mat Z_est = arma::zeros(n_funct, Z_samp.n_cols);
+//   arma::mat nu_est = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+//   arma::vec ph_Z = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+//   arma::vec ph_nu = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+//   for(int i = 0; i < Z_est.n_cols; i++){
+//     pi_est(i) = arma::median(pi_samp.row(i).subvec(std::round(n_nu * burnin_prop), n_nu - 1));
+//     for(int j = 0; j < Z_est.n_rows; j++){
+//       for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+//         ph_Z(l - std::round(n_nu * burnin_prop)) = Z_samp(j,i,l);
+//       }
+//       Z_est(j,i) = arma::median(ph_Z);
+//     }
+//     for(int j = 0; j < nu_samp.n_cols; j++){
+//       for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+//         ph_nu(l - std::round(n_nu * burnin_prop)) = nu_samp(i,j,l);
+//       }
+//       nu_est(i,j) = arma::median(ph_nu);
+//     }
+//   }
+//
+//   // normalize
+//   for(int i = 0; i < Z_est.n_rows; i++){
+//     Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
+//   }
+//
+//   pi_est = pi_est / arma::accu(pi_est);
+//
+//   int n_Phi = sigma_samp.n_elem;
+//
+//   double sigma_est = arma::median(sigma_samp.subvec(std::round(n_Phi * burnin_prop), n_Phi - 1));
+//   arma::mat delta_est = arma::zeros(delta_samp.n_rows, delta_samp.n_cols);
+//   arma::vec ph_delta = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
+//   for(int j = 0; j < delta_samp.n_cols; j++){
+//     for(int i = 0; i < delta_samp.n_rows; i++){
+//       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+//         ph_delta(l - std::round(n_Phi * burnin_prop)) = delta_samp(i,j,l);
+//       }
+//       delta_est(i, j) = arma::median(ph_delta);
+//     }
+//   }
+//
+//   arma::cube gamma_est = arma::zeros(gamma_samp(0,0).n_rows, gamma_samp(0,0).n_cols, gamma_samp(0,0).n_slices);
+//   arma::cube Phi_est = arma::zeros(Phi_samp(0,0).n_rows, Phi_samp(0,0).n_cols, Phi_samp(0,0).n_slices);
+//   arma::vec ph_phi = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
+//   arma::vec ph_gamma = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
+//   for(int i = 0; i < Phi_est.n_rows; i++){
+//     for(int j = 0; j < Phi_est.n_cols; j++){
+//       for(int m = 0; m < Phi_est.n_slices; m++){
+//         for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+//           ph_phi(l - std::round(n_Phi * burnin_prop)) = Phi_samp(l,0)(i,j,m);
+//
+//           ph_gamma(l - std::round(n_Phi * burnin_prop)) = gamma_samp(l,0)(i,j,m);
+//         }
+//         Phi_est(i,j,m) = arma::median(ph_phi);
+//         gamma_est(i,j,m) = arma::median(ph_gamma);
+//       }
+//     }
+//   }
+//
+//   arma::mat A_est = arma::zeros(A_samp.n_rows, A_samp.n_cols);
+//   arma::vec ph_A = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
+//   for(int j = 0; j < A_samp.n_rows; j++){
+//     for(int i = 0; i < A_samp.n_cols; i++){
+//       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+//         ph_A(l - std::round(n_Phi * burnin_prop)) = A_samp(j, i, l);
+//       }
+//       A_est(j, i) = arma::median(ph_A);
+//     }
+//   }
+//
+//   arma::vec tau_est = arma::zeros(tau_samp.n_cols);
+//   arma::vec ph_tau = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+//   for(int i = 0; i < tau_est.n_elem; i++){
+//     for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+//       ph_tau(l - std::round(n_nu * burnin_prop)) = tau_samp(l,i);
+//     }
+//     tau_est(i) = arma::median(ph_tau);
+//   }
+//   arma::mat chi_est = arma::zeros(chi_samp.n_rows, chi_samp.n_cols);
+//   arma::vec ph_chi = arma::zeros(n_Phi - std::round(n_Phi * burnin_prop));
+//   for(int i = 0; i < chi_est.n_rows; i++){
+//     for(int j = 0; j < chi_est.n_cols; j++){
+//       for(int l = std::round(n_Phi * burnin_prop); l < n_Phi; l++){
+//         ph_chi(l - std::round(n_Phi * burnin_prop)) = chi_samp(i,j,l);
+//       }
+//       chi_est(i,j) = arma::median(ph_chi);
+//     }
+//   }
+//
+//   // start MCMC sampling
+//   Rcpp::List mod1 = BayesFMMM::BHDFMMM_MTT_warm_start_Mean_CovAdj(Y, time, X, n_funct, thinning_num, K,
+//                                                                   basis_degree, n_eigen, boundary_knots,
+//                                                                   internal_knots, tot_mcmc_iters,
+//                                                                   r_stored_iters, n_temp_trans,
+//                                                                   c1, b, nu_1, alpha1l, alpha2l,
+//                                                                   beta1l, beta2l, a_Z_PM, a_pi_PM,
+//                                                                   var_alpha3, var_epsilon1,
+//                                                                   var_epsilon2, alpha_nu, beta_nu,
+//                                                                   alpha_eta, beta_eta, alpha_0,
+//                                                                   beta_0, dir1, beta_N_t, N_t,
+//                                                                   Z_est, pi_est, alpha_3_est,
+//                                                                   delta_est, gamma_est, Phi_est, A_est,
+//                                                                   nu_est, tau_est, sigma_est, chi_est);
+//
+//   Rcpp::List mod2 =  Rcpp::List::create(Rcpp::Named("B_obs", B_obs),
+//                                         Rcpp::Named("nu", mod1["nu"]),
+//                                         Rcpp::Named("chi", mod1["chi"]),
+//                                         Rcpp::Named("pi", mod1["pi"]),
+//                                         Rcpp::Named("alpha_3", mod1["alpha_3"]),
+//                                         Rcpp::Named("A", mod1["A"]),
+//                                         Rcpp::Named("delta", mod1["delta"]),
+//                                         Rcpp::Named("sigma", mod1["sigma"]),
+//                                         Rcpp::Named("tau", mod1["tau"]),
+//                                         Rcpp::Named("tau_eta", mod1["tau_eta"]),
+//                                         Rcpp::Named("xi", mod1["xi"]),
+//                                         Rcpp::Named("delta_xi", mod1["delta_xi"]),
+//                                         Rcpp::Named("gamma_xi", mod1["gamma_xi"]),
+//                                         Rcpp::Named("A_xi", mod1["A_xi"]),
+//                                         Rcpp::Named("eta", mod1["eta"]),
+//                                         Rcpp::Named("gamma", mod1["gamma"]),
+//                                         Rcpp::Named("Phi", mod1["Phi"]),
+//                                         Rcpp::Named("Z", mod1["Z"]),
+//                                         Rcpp::Named("loglik", mod1["loglik"]));
+//
+//   return mod2;
+// }
 

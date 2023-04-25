@@ -2154,7 +2154,7 @@ inline Rcpp::List BFMMM_MTTMV(const arma::mat& y_obs,
   return params;
 }
 
-// Conducts un-tempered MCMC to mean and allocation parameters for the multivariate model
+// Conducts un-tempered MCMC to find mean and allocation parameters for the multivariate model
 //
 // @name BFMMM_Nu_ZMV
 // @param y_obs Matrix of observed vectors
@@ -2220,7 +2220,6 @@ inline Rcpp::List BFMMM_Nu_ZMV(const arma::mat& y_obs,
   arma::cube delta(K, M, tot_mcmc_iters, arma::fill::ones);
   arma::field<arma::cube> gamma(tot_mcmc_iters,1);
   arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
-  arma::mat tilde_tau(K, M, arma::fill::ones);
   arma::cube A = arma::ones(K, 2, tot_mcmc_iters);
   arma::vec loglik = arma::zeros(tot_mcmc_iters);
 
@@ -2247,13 +2246,6 @@ inline Rcpp::List BFMMM_Nu_ZMV(const arma::mat& y_obs,
 
     updateAlpha3(pi.col(i), b, Z.slice(i),
                  (i), tot_mcmc_iters, var_alpha3, alpha_3);
-
-    for(int k = 0; k < K; k++){
-      tilde_tau(k, 0) = delta(k, 0, i);
-      for(int j = 1; j < M; j++){
-        tilde_tau(k, j) = tilde_tau(k, j-1) * delta(k, j, i);
-      }
-    }
 
     updateNuMV(y_obs, tau.row((i)).t(),
                Phi((i),0), Z.slice((i)),
@@ -2291,7 +2283,7 @@ inline Rcpp::List BFMMM_Nu_ZMV(const arma::mat& y_obs,
 
 // Conducts un-tempered MCMC to estimate the posterior distribution of parameters not related to Z or Nu, conditioned on a value of Nu and Z
 //
-// @name BFMMM_Theta
+// @name BFMMM_ThetaMV
 // @param y_obs Matrix of observed vectors
 // @param K Int containing the number of clusters
 // @param basis degree Int containing the degree of B-splines used
@@ -3614,510 +3606,6 @@ inline Rcpp::List BHDFMMM_MTT_warm_start(const arma::field<arma::vec>& y_obs,
   return params;
 }
 
-// Conducts a mixture of untempered sampling and termpered sampling to get
-// posterior draws from the covariate adjusted (mean only) mixed membership model
-//
-// @name BFMMM_MTT_warm_startMV_MeanAdj
-// @param y_obs Matrix of observed vectors
-// @param X Matrix of covariates of interest
-// @param thinning_num Int containing how often we save an MCMC iteration
-// @param K Int containing the number of clusters
-// @param M Int containing the number of eigenfunctions
-// @param tot_mcmc_iters Int containing total number of MCMC iterations
-// @param r_stored_iters Int constaining number of iterations performed for each batch
-// @param t_star Field (list) of vectors containing time points of interest that are not observed (optional)
-// @param rho Double containing hyperparmater for sampling from Z
-// @param alpha_3 Double hyperparameter for sampling from pi
-// @param a_12 Vec containing hyperparameters for sampling from delta
-// @param alpha1l Double containing hyperparameters for sampling from A
-// @param alpha2l Double containing hyperparameters for sampling from A
-// @param beta1l Double containing hyperparameters for sampling from A
-// @param beta2l Double containing hyperparameters for sampling from A
-// @param a_Z_PM Double containing hyperparameter used to sample from the posterior of Z
-// @param a_pi_PM Double containing hyperparameter used to sample from the posterior of pi
-// @param var_alpha3 Doubel containing hyperparameter for sampling from alpha_3
-// @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
-// @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
-// @param alpha_nu Double containing hyperparameters for sampling from tau_nu
-// @param beta_nu Double containing hyperparameters for sampling from tau_nu
-// @param alpha_eta Double containing hyperparameters for sampling from tau_eta
-// @param beta_eta Double containing hyperparameters for sampling from tau_eta
-// @param alpha_0 Double containing hyperparameters for sampling from sigma
-// @param beta_0 Double containing hyperparameters for sampling from sigma
-// @param directory String containing path to store batches of MCMC samples
-// @returns params List of objects containing the MCMC samples from the last batch
-inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
-                                                 const arma::mat& X,
-                                                 const int& thinning_num,
-                                                 const int& K,
-                                                 const int& M,
-                                                 const int& tot_mcmc_iters,
-                                                 const int& r_stored_iters,
-                                                 const int& n_temp_trans,
-                                                 const arma::vec& c,
-                                                 const double& b,
-                                                 const double& nu_1,
-                                                 const double& alpha1l,
-                                                 const double& alpha2l,
-                                                 const double& beta1l,
-                                                 const double& beta2l,
-                                                 const double& a_Z_PM,
-                                                 const double& a_pi_PM,
-                                                 const double& var_alpha3,
-                                                 const double& var_epsilon1,
-                                                 const double& var_epsilon2,
-                                                 const double& alpha_nu,
-                                                 const double& beta_nu,
-                                                 const double& alpha_eta,
-                                                 const double& beta_eta,
-                                                 const double& alpha_0,
-                                                 const double& beta_0,
-                                                 const std::string directory,
-                                                 const double& beta_N_t,
-                                                 const int& N_t,
-                                                 const arma::mat& Z_est,
-                                                 const arma::vec& pi_est,
-                                                 const double& alpha_3_est,
-                                                 const arma::mat& delta_est,
-                                                 const arma::cube& gamma_est,
-                                                 const arma::cube& Phi_est,
-                                                 const arma::mat& A_est,
-                                                 const arma::mat& nu_est,
-                                                 const arma::vec& tau_est,
-                                                 const arma::mat& tau_eta_est,
-                                                 const double& sigma_est,
-                                                 const arma::mat& chi_est){
-  int n_obs = y_obs.n_rows;
-  int P = y_obs.n_cols;
-  int D = X.n_cols;
-
-  arma::cube nu(K, P, r_stored_iters, arma::fill::randn);
-  arma::mat tau(r_stored_iters, K, arma::fill::ones);
-  arma::cube chi(n_obs, M, r_stored_iters, arma::fill::randn);
-  arma::mat pi(K, r_stored_iters, arma::fill::zeros);
-  arma::vec pi_ph = arma::zeros(K);
-  pi.col(0) = rdirichlet(c);
-  arma::vec sigma(r_stored_iters, arma::fill::ones);
-  arma::vec Z_ph = arma::zeros(K);
-  arma::vec alpha_3 = arma::ones(r_stored_iters);
-  arma::cube Z = arma::randi<arma::cube>(n_obs, K, r_stored_iters,
-                                         arma::distr_param(0,1));
-
-  for(int i = 0; i < n_obs; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
-  }
-
-  arma::cube delta(K, M, r_stored_iters, arma::fill::ones);
-  arma::field<arma::cube> gamma(r_stored_iters,1);
-  arma::field<arma::cube> Phi(r_stored_iters, 1);
-  arma::mat tilde_tau_phi(K, M, arma::fill::ones);
-  arma::cube A = arma::ones(K, 2, r_stored_iters);
-  arma::vec loglik = arma::zeros(r_stored_iters);
-
-  //parameters for covariate adjusted
-  arma::field<arma::cube> eta(r_stored_iters, 1);
-  arma::field<arma::cube> xi(r_stored_iters, K);
-  arma::cube tau_eta = arma::ones(K, D, r_stored_iters);
-
-  // start numbering for output files
-  int q = 0;
-
-  for(int i = 0; i < r_stored_iters; i++){
-    gamma(i,0) = arma::cube(K, P, M, arma::fill::ones);
-    Phi(i,0) = arma::randn(K, P, M);
-    eta(i,0) = arma::zeros(P, D, K);
-    for(int k = 0; k < K; k++){
-      xi(i,k) = arma::zeros(P, D, M);
-    }
-  }
-
-  arma::vec m_1(P, arma::fill::zeros);
-  arma::mat M_1(P, P, arma::fill::zeros);
-
-  arma::vec b_1(P, arma::fill::zeros);
-  arma::mat B_1(P, P, arma::fill::zeros);
-
-  // Create parameters for tempered transitions using geometric scheme
-  arma::vec beta_ladder(N_t, arma::fill::ones);
-  beta_ladder(N_t - 1) = beta_N_t;
-  double geom_mult = std::pow(beta_N_t, 1.0/N_t);
-  Rcpp::Rcout << "geom_mult: " << geom_mult << "\n";
-  for(int i = 1; i < N_t; i++){
-    beta_ladder(i) = beta_ladder(i-1) * geom_mult;
-    // beta_ladder(i) = 1 - ((1- beta_N_t) *(std::pow(i/ (N_t - 1.0), 2.0)));
-    Rcpp::Rcout << "beta_i: " << beta_ladder(i) << "\n";
-  }
-  // Create storage for tempered transitions
-  arma::cube nu_TT(K, P, (2 * N_t) + 1, arma::fill::randn);
-  arma::cube chi_TT(n_obs, M, (2 * N_t) + 1, arma::fill::randn);
-  arma::mat pi_TT(K, (2 * N_t) + 1, arma::fill::zeros);
-  arma::vec sigma_TT((2 * N_t) + 1, arma::fill::ones);
-  arma::cube Z_TT = arma::randi<arma::cube>(n_obs, K, (2 * N_t) + 1,
-                                            arma::distr_param(0,1));
-  arma::cube delta_TT(K, M, (2 * N_t) + 1, arma::fill::ones);
-  arma::field<arma::cube> gamma_TT((2 * N_t) + 1, 1);
-  arma::field<arma::cube> Phi_TT((2 * N_t) + 1, 1);
-  arma::cube A_TT = arma::ones(K, 2, (2 * N_t) + 1);
-  arma::vec alpha_3_TT = arma::ones((2 * N_t) + 1);
-
-  //parameters for covariate adjusted
-  arma::field<arma::cube> eta_TT((2 * N_t) + 1, 1);
-  arma::field<arma::cube> xi_TT((2 * N_t) + 1, K);
-  arma::cube tau_eta_TT = arma::ones(K, D, (2 * N_t) + 1);
-
-  for(int i = 0; i < ((2 * N_t) + 1); i++){
-    gamma_TT(i,0) = arma::cube(K, P, M, arma::fill::ones);
-    Phi_TT(i,0) = arma::randn(K, P, M);
-    eta_TT(i,0) = arma::zeros(P, D, K);
-    for(int k = 0; k < K; k++){
-      xi_TT(i,k) = arma::zeros(P, D, M);
-    }
-  }
-
-  arma::mat tau_TT((2 * N_t) + 1, K, arma::fill::ones);
-
-  int temp_ind = 0;
-  double logA = 0;
-  double logu = 0;
-  int accept_num = 0;
-
-  Z.slice(0) = Z_est;
-  pi.col(0) = pi_est;
-
-  alpha_3(0) = alpha_3_est;
-  delta.slice(0) = delta_est;
-  gamma(0,0) = gamma_est;
-  Phi(0,0) = Phi_est;
-  A.slice(0) = A_est;
-  nu.slice(0) = nu_est;
-  tau.row(0) = tau_est.t();
-  tau_eta.slice(0) = tau_eta_est;
-  sigma(0) = sigma_est;
-
-  chi.slice(0) = chi_est;
-
-  for(int i=0; i < tot_mcmc_iters; i++){
-    if(((i % n_temp_trans) != 0) || (i == 0)){
-      updateZ_MMMVCovariateAdj(y_obs, Phi((i % r_stored_iters),0), xi,
-                   nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
-                   chi.slice((i % r_stored_iters)), pi.col((i % r_stored_iters)),
-                   sigma((i % r_stored_iters)), (i % r_stored_iters),
-                   r_stored_iters, alpha_3(i % r_stored_iters), a_Z_PM, X, Z_ph, Z);
-
-      updatePi_PM(alpha_3(i % r_stored_iters) ,Z.slice(i% r_stored_iters), c,
-                  (i % r_stored_iters), r_stored_iters, a_pi_PM, pi_ph, pi);
-
-      updateAlpha3(pi.col(i % r_stored_iters), b, Z.slice(i % r_stored_iters),
-                   (i % r_stored_iters), r_stored_iters, var_alpha3, alpha_3);
-
-      for(int k = 0; k < K; k++){
-        tilde_tau_phi(k, 0) = delta(k, 0, (i % r_stored_iters));
-        for(int j = 1; j < M; j++){
-          tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta(k, j,(i % r_stored_iters));
-        }
-      }
-
-      updatePhiMVCovariateAdj(y_obs, nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
-                              gamma((i % r_stored_iters),0), tilde_tau_phi, xi,
-                              Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
-                              sigma((i % r_stored_iters)), X, (i % r_stored_iters),
-                              r_stored_iters, m_1, M_1, Phi);
-
-      updateDelta(Phi((i % r_stored_iters),0), gamma((i % r_stored_iters),0),
-                  A.slice(i % r_stored_iters), (i % r_stored_iters),
-                  r_stored_iters, delta);
-
-      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i % r_stored_iters)),
-              var_epsilon1, var_epsilon2, (i % r_stored_iters), r_stored_iters, A);
-
-      updateGamma(nu_1, delta.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
-                  (i % r_stored_iters), r_stored_iters, gamma);
-
-      updateNuMVCovariateAdj(y_obs, tau.row((i % r_stored_iters)).t(),
-                             Phi((i % r_stored_iters),0), xi, eta((i % r_stored_iters),0),
-                             Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
-                             sigma((i % r_stored_iters)), (i % r_stored_iters), r_stored_iters,
-                             X, b_1, B_1, nu);
-
-      updateTauMV(alpha_nu, beta_nu, nu.slice((i % r_stored_iters)),
-                  (i % r_stored_iters), r_stored_iters, tau);
-
-      updateSigmaMVCovariateAdj(y_obs, alpha_0, beta_0,
-                                nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
-                                Phi((i % r_stored_iters),0), xi, Z.slice((i % r_stored_iters)),
-                                chi.slice((i % r_stored_iters)), (i % r_stored_iters),
-                                r_stored_iters, X, sigma);
-
-      updateChiMVCovariateAdj(y_obs, Phi((i % r_stored_iters),0), xi,
-                              nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
-                              Z.slice((i % r_stored_iters)), sigma((i % r_stored_iters)),
-                              (i % r_stored_iters), r_stored_iters, X, chi);
-
-      updateEtaMV(y_obs, tau_eta.slice(i % r_stored_iters), Phi((i % r_stored_iters),0),
-                  xi, nu.slice((i % r_stored_iters)), Z.slice((i % r_stored_iters)),
-                  chi.slice((i % r_stored_iters)), sigma((i % r_stored_iters)),
-                  (i % r_stored_iters), r_stored_iters, X, b_1, B_1, eta);
-
-      updateTauEtaMV(alpha_eta, beta_eta, eta((i % r_stored_iters),0),
-                     (i % r_stored_iters), r_stored_iters, tau_eta);
-
-    }
-
-    if((i % n_temp_trans) == 0 && (i > 0)){
-      // initialize placeholders
-      nu_TT.slice(0) = nu.slice (i % r_stored_iters);
-      chi_TT.slice(0) = chi.slice(i % r_stored_iters);
-      pi_TT.col(0) = pi.col(i % r_stored_iters);
-      sigma_TT(0) = sigma(i % r_stored_iters);
-      Z_TT.slice(0) = Z.slice(i % r_stored_iters);
-      delta_TT.slice(0) = delta.slice(i % r_stored_iters);
-      gamma_TT(0,0) = gamma(i % r_stored_iters,0);
-      Phi_TT(0,0) = Phi(i % r_stored_iters,0);
-      A_TT.slice(0) = A.slice(i % r_stored_iters);
-      tau_TT.row(0) = tau.row(i % r_stored_iters);
-      alpha_3_TT(0) = alpha_3(i % r_stored_iters);
-      eta_TT(0,0) = eta(i % r_stored_iters, 0);
-      tau_eta_TT.slice(0) = tau_eta.slice(i % r_stored_iters);
-
-
-      nu_TT.slice(1) = nu.slice(i % r_stored_iters);
-      chi_TT.slice(1) = chi.slice(i % r_stored_iters);
-      pi_TT.col(1) = pi.col(i % r_stored_iters);
-      sigma_TT(1) = sigma(i % r_stored_iters);
-      Z_TT.slice(1) = Z.slice(i % r_stored_iters);
-      delta_TT.slice(1) = delta.slice(i % r_stored_iters);
-      gamma_TT(1,0) = gamma(i % r_stored_iters,0);
-      Phi_TT(1,0) = Phi(i % r_stored_iters,0);
-      A_TT.slice(1) = A.slice(i % r_stored_iters);
-      tau_TT.row(1) = tau.row(i % r_stored_iters);
-      alpha_3_TT(1) = alpha_3(i % r_stored_iters);
-      eta_TT(1,0) = eta(i % r_stored_iters, 0);
-      tau_eta_TT.slice(1) = tau_eta.slice(i % r_stored_iters);
-
-      temp_ind = 0;
-
-      // Perform tempered transitions
-      for(int l = 1; l < ((2 * N_t) + 1); l++){
-        updateZTempered_MMMVCovariateAdj(beta_ladder(temp_ind), y_obs,
-                                         Phi_TT(l,0), xi_TT, nu_TT.slice(l),
-                                         eta_TT(l,0), chi_TT.slice(l), pi_TT.col(l),
-                                         sigma_TT(l), l, (2 * N_t) + 1,
-                                         alpha_3_TT(l), a_Z_PM, X, Z_ph, Z_TT);
-        updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
-        updateAlpha3(pi_TT.col(l), b, Z_TT.slice(l), l, (2 * N_t) + 1, var_alpha3, alpha_3_TT);
-
-        for(int k = 0; k < K; k++){
-          tilde_tau_phi(k, 0) = delta_TT(k, 0, l);
-          for(int j = 1; j < M; j++){
-            tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta_TT(k, j, l);
-          }
-        }
-
-        updatePhiTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs, nu_TT.slice(l),
-                                        eta_TT(l,0), gamma_TT(l,0), tilde_tau_phi,
-                                        xi_TT, Z_TT.slice(l), chi_TT.slice(l), sigma_TT(l),
-                                        X, l, (2 * N_t) + 1, m_1, M_1, Phi_TT);
-
-        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.slice(l), l, (2 * N_t) + 1,
-                    delta_TT);
-
-        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.slice(l), var_epsilon1,
-                var_epsilon2, l, (2 * N_t) + 1, A_TT);
-        updateGamma(nu_1, delta_TT.slice(l), Phi_TT(l,0), l, (2 * N_t) + 1,
-                    gamma_TT);
-        updateNuTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs,
-                                       tau_TT.row(l).t(), Phi_TT(l,0), xi_TT,
-                                       eta_TT(l,0), Z_TT.slice(l),
-                                       chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1,
-                                       X, b_1, B_1, nu_TT);
-        updateTauMV(alpha_nu, beta_nu, nu_TT.slice(l), l, (2 * N_t) + 1, tau_TT);
-        updateSigmaTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs,
-                                          alpha_0, beta_0, nu_TT.slice(l),
-                                          eta_TT(l,0), Phi_TT(l,0), xi_TT,
-                                          Z_TT.slice(l), chi_TT.slice(l), l,
-                                          (2 * N_t) + 1, X, sigma_TT);
-        updateChiTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs, Phi_TT(l,0),
-                                        xi_TT, nu_TT.slice(l), eta_TT(l,0),
-                                        Z_TT.slice(l), sigma_TT(l), l,
-                                        (2 * N_t) + 1, X, chi_TT);
-        updateEtaTemperedMV(beta_ladder(temp_ind), y_obs, tau_eta_TT.slice(l),
-                            Phi_TT(l,0), xi_TT, nu_TT.slice(l), Z_TT.slice(l),
-                            chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, X,
-                            b_1, B_1, eta_TT);
-        updateTauEtaMV(alpha_eta, beta_eta, eta_TT(l,0), l, (2 * N_t) + 1,
-                       tau_eta_TT);
-        // update temp_ind
-        if(l < N_t){
-          temp_ind = temp_ind + 1;
-        }
-        if(l > N_t){
-          temp_ind = temp_ind - 1;
-        }
-      }
-      logA = CalculateTTAcceptanceMVCovariateAdj(beta_ladder, y_obs, nu_TT, eta_TT,
-                                                 Phi_TT, xi_TT, Z_TT, chi_TT, X,
-                                                 sigma_TT);
-      logu = std::log(R::runif(0,1));
-
-      Rcpp::Rcout << "prob_accept: " << logA<< "\n";
-      Rcpp::Rcout << "logu: " << logu<< "\n";
-
-      if(logu < logA){
-        Rcpp::Rcout << "Accept \n";
-        nu.slice(i % r_stored_iters) = nu_TT.slice(2 * N_t);
-        chi.slice(i % r_stored_iters) = chi_TT.slice(2 * N_t);
-        pi.col(i % r_stored_iters) = pi_TT.col(2 * N_t);
-        sigma(i % r_stored_iters) = sigma_TT(2 * N_t);
-        Z.slice(i % r_stored_iters) = Z_TT.slice(2 * N_t);
-        delta.slice(i % r_stored_iters) = delta_TT.slice(2 * N_t);
-        gamma(i % r_stored_iters,0) = gamma_TT(2 * N_t,0);
-        Phi(i % r_stored_iters,0) = Phi_TT(2 * N_t,0);
-        A.slice(i % r_stored_iters) = A_TT.slice(2 * N_t);
-        tau.row(i % r_stored_iters) = tau_TT.row(2 * N_t);
-        alpha_3(i % r_stored_iters) = alpha_3_TT(2 * N_t);
-        eta(i % r_stored_iters,0) = eta_TT(2 * N_t, 0);
-        tau_eta.slice(i % r_stored_iters) = tau_eta_TT.slice(2 * N_t);
-
-        //update accept number
-        accept_num = accept_num + 1;
-      }
-
-      //initialize next state
-      if(((i+1) % r_stored_iters) != 0){
-        nu.slice((i+1) % r_stored_iters) = nu.slice(i % r_stored_iters);
-        chi.slice((i+1) % r_stored_iters) = chi.slice(i % r_stored_iters);
-        pi.col((i+1) % r_stored_iters) = pi.col(i % r_stored_iters);
-        sigma((i+1) % r_stored_iters) = sigma(i % r_stored_iters);
-        Z.slice((i+1) % r_stored_iters) = Z.slice(i % r_stored_iters);
-        delta.slice((i+1) % r_stored_iters) = delta.slice(i % r_stored_iters);
-        A.slice((i+1) % r_stored_iters) = A.slice(i % r_stored_iters);
-        tau.row((i+1) % r_stored_iters) = tau.row(i % r_stored_iters);
-        Phi((i+1) % r_stored_iters,0) = Phi(i % r_stored_iters, 0);
-        alpha_3((i+1) % r_stored_iters) =  alpha_3(i % r_stored_iters);
-        eta((i+1) % r_stored_iters,0) = eta(i % r_stored_iters,0);
-        tau_eta.slice((i+1) % r_stored_iters) = tau_eta.slice(i % r_stored_iters);
-      }
-    }
-    loglik((i % r_stored_iters)) =  calcLikelihoodMVCovariateAdj(y_obs,
-           nu.slice((i % r_stored_iters)), eta(i % r_stored_iters, 0),
-           Phi((i % r_stored_iters),0), xi, Z.slice((i % r_stored_iters)),
-           chi.slice((i % r_stored_iters)), i % r_stored_iters, X,
-           sigma((i % r_stored_iters)));
-    if(((i+1) % 100) == 0){
-      Rcpp::Rcout << "Iteration: " << i+1 << "\n";
-      Rcpp::Rcout << "Accpetance Probability: " << accept_num / (std::round(i / n_temp_trans)) << "\n";
-      Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i % r_stored_iters)-4, (i % r_stored_iters))) << "\n";
-      Rcpp::checkUserInterrupt();
-    }
-    if(((i+1) % r_stored_iters) == 0 && i > 1){
-      // Save parameters
-      arma::cube nu1(K, P, r_stored_iters/thinning_num, arma::fill::randn);
-      arma::cube chi1(n_obs, M, r_stored_iters/thinning_num, arma::fill::randn);
-      arma::mat pi1(K, r_stored_iters/thinning_num, arma::fill::zeros);
-      arma::vec alpha_31(r_stored_iters/thinning_num, arma::fill::zeros);
-      arma::vec sigma1(r_stored_iters/thinning_num, arma::fill::ones);
-      arma::cube A1 = arma::ones(K, 2, r_stored_iters/thinning_num);
-      arma::cube Z1 = arma::randi<arma::cube>(n_obs, K, r_stored_iters/thinning_num,
-                                              arma::distr_param(0,1));
-      arma::cube delta1(K, M, r_stored_iters/thinning_num, arma::fill::ones);
-      arma::field<arma::cube> gamma1(r_stored_iters/thinning_num,1);
-      arma::field<arma::cube> Phi1(r_stored_iters/thinning_num, 1);
-      arma::mat tau1(r_stored_iters/thinning_num, K, arma::fill::ones);
-
-      //parameters for covariate adjusted
-      arma::field<arma::cube> eta1(r_stored_iters, 1);
-      arma::field<arma::cube> xi1(r_stored_iters, K);
-      arma::cube tau_eta1 = arma::ones(K, D, r_stored_iters);
-
-
-      nu1.slice(0) = nu.slice(0);
-      chi1.slice(0) = chi.slice(0);
-      pi1.col(0) = pi.col(0);
-      sigma1(0) = sigma(0);
-      A1.slice(0) = A.slice(0);
-      Z1.slice(0) = Z.slice(0);
-      delta1.slice(0) = delta.slice(0);
-      gamma1(0,0) = gamma(0,0);
-      Phi1(0,0) = Phi(0,0);
-      tau1.row(0) = tau.row(0);
-      eta1(0,0) = eta(0,0);
-      tau_eta1.slice(0) = tau_eta.slice(0);
-      for(int k = 0; k < K; k++){
-        xi1(0,k) = xi(0,k);
-      }
-
-      for(int p=1; p < r_stored_iters / thinning_num; p++){
-        nu1.slice(p) = nu.slice(thinning_num*p - 1);
-        chi1.slice(p) = chi.slice(thinning_num*p - 1);
-        pi1.col(p) = pi.col(thinning_num*p - 1);
-        alpha_31(p) = alpha_3(thinning_num*p - 1);
-        sigma1(p) = sigma(thinning_num*p - 1);
-        A1.slice(p) = A.slice(thinning_num*p - 1);
-        Z1.slice(p) = Z.slice(thinning_num*p - 1);
-        delta1.slice(p) = delta.slice(thinning_num*p - 1);
-        gamma1(p,0) = gamma(thinning_num*p - 1,0);
-        Phi1(p,0) = Phi(thinning_num*p - 1,0);
-        tau1.row(p) = tau.row(thinning_num*p - 1);
-        eta1(p,0) = eta(thinning_num*p - 1,0);
-        tau_eta1.slice(p) = tau_eta.slice(thinning_num*p - 1);
-        for(int k = 0; k < K; k++){
-          xi1(p,k) = xi(thinning_num*p - 1,k);
-        }
-      }
-
-      nu1.save(directory + "Nu" + std::to_string(q) + ".txt", arma::arma_ascii);
-      chi1.save(directory + "Chi" + std::to_string(q) +".txt", arma::arma_ascii);
-      pi1.save(directory + "Pi" + std::to_string(q) +".txt", arma::arma_ascii);
-      alpha_31.save(directory + "alpha_3" + std::to_string(q) + ".txt", arma::arma_ascii);
-      A1.save(directory + "A" + std::to_string(q) +".txt", arma::arma_ascii);
-      delta1.save(directory + "Delta" + std::to_string(q) +".txt", arma::arma_ascii);
-      sigma1.save(directory + "Sigma" + std::to_string(q) +".txt", arma::arma_ascii);
-      tau1.save(directory + "Tau" + std::to_string(q) +".txt", arma::arma_ascii);
-      gamma1.save(directory + "Gamma" + std::to_string(q) +".txt");
-      Phi1.save(directory + "Phi" + std::to_string(q) +".txt");
-      Z1.save(directory + "Z" + std::to_string(q) +".txt", arma::arma_ascii);
-      eta1.save(directory + "Eta" + std::to_string(q) +".txt");
-      tau_eta1.save(directory + "Tau_Eta" + std::to_string(q) +".txt", arma::arma_ascii);
-
-
-      //reset all parameters
-      nu.slice(0) = nu.slice(i % r_stored_iters);
-      chi.slice(0) = chi.slice(i % r_stored_iters);
-      pi.col(0) = pi.col(i % r_stored_iters);
-      alpha_3(0) = alpha_3(i % r_stored_iters);
-      A.slice(0) = A.slice(i % r_stored_iters);
-      delta.slice(0) = delta.slice(i % r_stored_iters);
-      sigma(0) = sigma(i % r_stored_iters);
-      tau.row(0) = tau.row(i % r_stored_iters);
-      gamma(0,0) = gamma(i % r_stored_iters, 0);
-      Phi(0,0) = Phi(i % r_stored_iters, 0);
-      Z.slice(0) = Z.slice(i % r_stored_iters);
-      eta(0,0) = eta(i % r_stored_iters,0);
-      tau_eta.slice(0) = tau_eta.slice(i % r_stored_iters);
-      for(int k = 0; k < K; k++){
-        xi(0,k) = xi(i % r_stored_iters,k);
-      }
-
-      q = q + 1;
-    }
-  }
-
-  Rcpp::List params = Rcpp::List::create(Rcpp::Named("nu", nu),
-                                         Rcpp::Named("alpha_3", alpha_3),
-                                         Rcpp::Named("chi", chi),
-                                         Rcpp::Named("pi", pi),
-                                         Rcpp::Named("A", A),
-                                         Rcpp::Named("delta", delta),
-                                         Rcpp::Named("sigma", sigma),
-                                         Rcpp::Named("tau", tau),
-                                         Rcpp::Named("tau_eta", tau_eta),
-                                         Rcpp::Named("eta", eta),
-                                         Rcpp::Named("gamma", gamma),
-                                         Rcpp::Named("Phi", Phi),
-                                         Rcpp::Named("Z", Z),
-                                         Rcpp::Named("loglik", loglik));
-  return params;
-}
 
 
 // Conducts un-tempered MCMC to mean and allocation parameters for
@@ -5073,618 +4561,6 @@ inline Rcpp::List BFMMM_MTT_warm_start_MeanAdj(const arma::field<arma::vec>& y_o
   return params;
 }
 
-// Conducts a mixture of untempered sampling and termpered sampling to get
-// posterior draws from the covariate adjusted (mean and covariance) mixed membership model
-//
-// @name BFMMM_MTT_warm_startMV_Mean_CovAdj
-// @param y_obs Matrix of observed vectors
-// @param X Matrix of covariates of interest
-// @param thinning_num Int containing how often we save an MCMC iteration
-// @param K Int containing the number of clusters
-// @param M Int containing the number of eigenfunctions
-// @param tot_mcmc_iters Int containing total number of MCMC iterations
-// @param r_stored_iters Int constaining number of iterations performed for each batch
-// @param t_star Field (list) of vectors containing time points of interest that are not observed (optional)
-// @param rho Double containing hyperparmater for sampling from Z
-// @param alpha_3 Double hyperparameter for sampling from pi
-// @param a_12 Vec containing hyperparameters for sampling from delta
-// @param alpha1l Double containing hyperparameters for sampling from A
-// @param alpha2l Double containing hyperparameters for sampling from A
-// @param beta1l Double containing hyperparameters for sampling from A
-// @param beta2l Double containing hyperparameters for sampling from A
-// @param a_Z_PM Double containing hyperparameter used to sample from the posterior of Z
-// @param a_pi_PM Double containing hyperparameter used to sample from the posterior of pi
-// @param var_alpha3 Doubel containing hyperparameter for sampling from alpha_3
-// @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
-// @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
-// @param alpha_nu Double containing hyperparameters for sampling from tau_nu
-// @param beta_nu Double containing hyperparameters for sampling from tau_nu
-// @param alpha_eta Double containing hyperparameters for sampling from tau_eta
-// @param beta_eta Double containing hyperparameters for sampling from tau_eta
-// @param alpha_0 Double containing hyperparameters for sampling from sigma
-// @param beta_0 Double containing hyperparameters for sampling from sigma
-// @param directory String containing path to store batches of MCMC samples
-// @returns params List of objects containing the MCMC samples from the last batch
-inline Rcpp::List BFMMM_MTT_warm_startMV_Mean_CovAdj(const arma::mat& y_obs,
-                                                     const arma::mat& X,
-                                                     const int& thinning_num,
-                                                     const int& K,
-                                                     const int& M,
-                                                     const int& tot_mcmc_iters,
-                                                     const int& r_stored_iters,
-                                                     const int& n_temp_trans,
-                                                     const arma::vec& c,
-                                                     const double& b,
-                                                     const double& nu_1,
-                                                     const double& alpha1l,
-                                                     const double& alpha2l,
-                                                     const double& beta1l,
-                                                     const double& beta2l,
-                                                     const double& a_Z_PM,
-                                                     const double& a_pi_PM,
-                                                     const double& var_alpha3,
-                                                     const double& var_epsilon1,
-                                                     const double& var_epsilon2,
-                                                     const double& alpha_nu,
-                                                     const double& beta_nu,
-                                                     const double& alpha_eta,
-                                                     const double& beta_eta,
-                                                     const double& alpha_0,
-                                                     const double& beta_0,
-                                                     const std::string directory,
-                                                     const double& beta_N_t,
-                                                     const int& N_t,
-                                                     const arma::mat& Z_est,
-                                                     const arma::vec& pi_est,
-                                                     const double& alpha_3_est,
-                                                     const arma::mat& delta_est,
-                                                     const arma::cube& gamma_est,
-                                                     const arma::cube& Phi_est,
-                                                     const arma::mat& A_est,
-                                                     const arma::mat& nu_est,
-                                                     const arma::vec& tau_est,
-                                                     const arma::mat& tau_eta_est,
-                                                     const double& sigma_est,
-                                                     const arma::mat& chi_est){
-  int n_obs = y_obs.n_rows;
-  int P = y_obs.n_cols;
-  int D = X.n_cols;
-
-  arma::cube nu(K, P, r_stored_iters, arma::fill::randn);
-  arma::mat tau(r_stored_iters, K, arma::fill::ones);
-  arma::cube chi(n_obs, M, r_stored_iters, arma::fill::randn);
-  arma::mat pi(K, r_stored_iters, arma::fill::zeros);
-  arma::vec pi_ph = arma::zeros(K);
-  pi.col(0) = rdirichlet(c);
-  arma::vec sigma(r_stored_iters, arma::fill::ones);
-  arma::vec Z_ph = arma::zeros(K);
-  arma::vec alpha_3 = arma::ones(r_stored_iters);
-  arma::cube Z = arma::randi<arma::cube>(n_obs, K, r_stored_iters,
-                                         arma::distr_param(0,1));
-
-  for(int i = 0; i < n_obs; i++){
-    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
-  }
-
-  arma::cube delta(K, M, r_stored_iters, arma::fill::ones);
-  arma::field<arma::cube> gamma(r_stored_iters,1);
-  arma::field<arma::cube> Phi(r_stored_iters, 1);
-  arma::mat tilde_tau_phi(K, M, arma::fill::ones);
-  arma::cube tilde_tau_xi(K, M, D, arma::fill::ones);
-  arma::cube A = arma::ones(K, 2, r_stored_iters);
-  arma::vec loglik = arma::zeros(r_stored_iters);
-
-  //parameters for covariate adjusted
-  arma::field<arma::cube> eta(r_stored_iters, 1);
-  arma::field<arma::cube> xi(r_stored_iters, K);
-  arma::cube tau_eta = arma::ones(K, D, r_stored_iters);
-  arma::field<arma::cube> gamma_xi(r_stored_iters, K);
-  arma::field<arma::cube> delta_xi(r_stored_iters, 1);
-  arma::field<arma::cube> A_xi(r_stored_iters, 1);
-
-
-  // start numbering for output files
-  int q = 0;
-
-  for(int i = 0; i < r_stored_iters; i++){
-    gamma(i,0) = arma::cube(K, P, M, arma::fill::ones);
-    Phi(i,0) = arma::randn(K, P, M);
-    eta(i,0) = arma::zeros(P, D, K);
-    delta_xi(i,0) = arma::ones(K, M, D);
-    A_xi(i,0) = arma::ones(K, 2, D);
-    for(int k = 0; k < K; k++){
-      xi(i,k) = arma::zeros(P, D, M);
-      gamma_xi(i,k) = arma::ones(P, D, M);
-    }
-  }
-
-  arma::vec m_1(P, arma::fill::zeros);
-  arma::mat M_1(P, P, arma::fill::zeros);
-
-  arma::vec b_1(P, arma::fill::zeros);
-  arma::mat B_1(P, P, arma::fill::zeros);
-
-  // Create parameters for tempered transitions using geometric scheme
-  arma::vec beta_ladder(N_t, arma::fill::ones);
-  beta_ladder(N_t - 1) = beta_N_t;
-  double geom_mult = std::pow(beta_N_t, 1.0/N_t);
-  Rcpp::Rcout << "geom_mult: " << geom_mult << "\n";
-  for(int i = 1; i < N_t; i++){
-    beta_ladder(i) = beta_ladder(i-1) * geom_mult;
-    // beta_ladder(i) = 1 - ((1- beta_N_t) *(std::pow(i/ (N_t - 1.0), 2.0)));
-    Rcpp::Rcout << "beta_i: " << beta_ladder(i) << "\n";
-  }
-  // Create storage for tempered transitions
-  arma::cube nu_TT(K, P, (2 * N_t) + 1, arma::fill::randn);
-  arma::cube chi_TT(n_obs, M, (2 * N_t) + 1, arma::fill::randn);
-  arma::mat pi_TT(K, (2 * N_t) + 1, arma::fill::zeros);
-  arma::vec sigma_TT((2 * N_t) + 1, arma::fill::ones);
-  arma::cube Z_TT = arma::randi<arma::cube>(n_obs, K, (2 * N_t) + 1,
-                                            arma::distr_param(0,1));
-  arma::cube delta_TT(K, M, (2 * N_t) + 1, arma::fill::ones);
-  arma::field<arma::cube> gamma_TT((2 * N_t) + 1, 1);
-  arma::field<arma::cube> Phi_TT((2 * N_t) + 1, 1);
-  arma::cube A_TT = arma::ones(K, 2, (2 * N_t) + 1);
-  arma::vec alpha_3_TT = arma::ones((2 * N_t) + 1);
-
-  //parameters for covariate adjusted
-  arma::field<arma::cube> eta_TT((2 * N_t) + 1, 1);
-  arma::field<arma::cube> xi_TT((2 * N_t) + 1, K);
-  arma::cube tau_eta_TT = arma::ones(K, D, (2 * N_t) + 1);
-  arma::field<arma::cube> gamma_xi_TT((2 * N_t) + 1, K);
-  arma::field<arma::cube> delta_xi_TT((2 * N_t) + 1, 1);
-  arma::field<arma::cube> A_xi_TT((2 * N_t) + 1, 1);
-
-  for(int i = 0; i < ((2 * N_t) + 1); i++){
-    gamma_TT(i,0) = arma::cube(K, P, M, arma::fill::ones);
-    Phi_TT(i,0) = arma::randn(K, P, M);
-    eta_TT(i,0) = arma::zeros(P, D, K);
-    delta_xi_TT(i,0) = arma::ones(K, M, D);
-    A_xi_TT(i,0) = arma::ones(K, 2, D);
-    for(int k = 0; k < K; k++){
-      xi_TT(i,k) = arma::zeros(P, D, M);
-      gamma_xi_TT(i,k) = arma::ones(P, D, M);
-    }
-  }
-
-  arma::mat tau_TT((2 * N_t) + 1, K, arma::fill::ones);
-
-  int temp_ind = 0;
-  double logA = 0;
-  double logu = 0;
-  int accept_num = 0;
-
-  Z.slice(0) = Z_est;
-  pi.col(0) = pi_est;
-
-  alpha_3(0) = alpha_3_est;
-  delta.slice(0) = delta_est;
-  gamma(0,0) = gamma_est;
-  Phi(0,0) = Phi_est;
-  A.slice(0) = A_est;
-  nu.slice(0) = nu_est;
-  tau.row(0) = tau_est.t();
-  tau_eta.slice(0) = tau_eta_est;
-  sigma(0) = sigma_est;
-
-  chi.slice(0) = chi_est;
-
-  for(int i=0; i < tot_mcmc_iters; i++){
-    if(((i % n_temp_trans) != 0) || (i == 0)){
-      updateZ_MMMVCovariateAdj(y_obs, Phi((i % r_stored_iters),0), xi,
-                               nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
-                               chi.slice((i % r_stored_iters)), pi.col((i % r_stored_iters)),
-                               sigma((i % r_stored_iters)), (i % r_stored_iters),
-                               r_stored_iters, alpha_3(i % r_stored_iters), a_Z_PM, X, Z_ph, Z);
-
-      updatePi_PM(alpha_3(i % r_stored_iters) ,Z.slice(i% r_stored_iters), c,
-                  (i % r_stored_iters), r_stored_iters, a_pi_PM, pi_ph, pi);
-
-      updateAlpha3(pi.col(i % r_stored_iters), b, Z.slice(i % r_stored_iters),
-                   (i % r_stored_iters), r_stored_iters, var_alpha3, alpha_3);
-
-      for(int k = 0; k < K; k++){
-        tilde_tau_phi(k, 0) = delta(k, 0, (i % r_stored_iters));
-        for(int j = 1; j < M; j++){
-          tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta(k, j,(i % r_stored_iters));
-        }
-      }
-
-      updatePhiMVCovariateAdj(y_obs, nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
-                              gamma((i % r_stored_iters),0), tilde_tau_phi, xi,
-                              Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
-                              sigma((i % r_stored_iters)), X, (i % r_stored_iters),
-                              r_stored_iters, m_1, M_1, Phi);
-
-      updateDelta(Phi((i % r_stored_iters),0), gamma((i % r_stored_iters),0),
-                  A.slice(i % r_stored_iters), (i % r_stored_iters),
-                  r_stored_iters, delta);
-
-      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i % r_stored_iters)),
-              var_epsilon1, var_epsilon2, (i % r_stored_iters), r_stored_iters, A);
-
-      updateGamma(nu_1, delta.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
-                  (i % r_stored_iters), r_stored_iters, gamma);
-
-      updateNuMVCovariateAdj(y_obs, tau.row((i % r_stored_iters)).t(),
-                             Phi((i % r_stored_iters),0), xi, eta((i % r_stored_iters),0),
-                             Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
-                             sigma((i % r_stored_iters)), (i % r_stored_iters), r_stored_iters,
-                             X, b_1, B_1, nu);
-
-      updateTauMV(alpha_nu, beta_nu, nu.slice((i % r_stored_iters)),
-                  (i % r_stored_iters), r_stored_iters, tau);
-
-      updateSigmaMVCovariateAdj(y_obs, alpha_0, beta_0,
-                                nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
-                                Phi((i % r_stored_iters),0), xi, Z.slice((i % r_stored_iters)),
-                                chi.slice((i % r_stored_iters)), (i % r_stored_iters),
-                                r_stored_iters, X, sigma);
-
-      updateChiMVCovariateAdj(y_obs, Phi((i % r_stored_iters),0), xi,
-                              nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
-                              Z.slice((i % r_stored_iters)), sigma((i % r_stored_iters)),
-                              (i % r_stored_iters), r_stored_iters, X, chi);
-
-      updateEtaMV(y_obs, tau_eta.slice(i % r_stored_iters), Phi((i % r_stored_iters),0),
-                  xi, nu.slice((i % r_stored_iters)), Z.slice((i % r_stored_iters)),
-                  chi.slice((i % r_stored_iters)), sigma((i % r_stored_iters)),
-                  (i % r_stored_iters), r_stored_iters, X, b_1, B_1, eta);
-
-      updateTauEtaMV(alpha_eta, beta_eta, eta((i % r_stored_iters),0),
-                     (i % r_stored_iters), r_stored_iters, tau_eta);
-
-      for(int k = 0; k < K; k++){
-        for(int m = 0; m < D; m++){
-          tilde_tau_xi(k,0,m) = delta_xi((i % r_stored_iters),0)(k,0,m);
-          for(int j = 1; j < M; j++){
-            tilde_tau_xi(k,j,m) = tilde_tau_xi(k,j-1,m) * delta_xi((i % r_stored_iters),0)(k,j,m);
-          }
-        }
-      }
-
-      updateXiMVCovariateAdj(y_obs, nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
-                            gamma_xi, tilde_tau_xi, Phi((i % r_stored_iters),0),
-                            Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
-                            sigma((i % r_stored_iters)), X, (i % r_stored_iters), r_stored_iters,
-                            m_1, M_1, xi);
-      updateDeltaXi(xi, gamma_xi, A_xi(i % r_stored_iters,0), i % r_stored_iters,
-                    r_stored_iters, delta_xi);
-      updateAXi(alpha1l, beta1l, alpha2l, beta2l, delta_xi(i % r_stored_iters, 0),
-                var_epsilon1, var_epsilon2, (i % r_stored_iters), r_stored_iters,
-                A_xi);
-      updateGammaXi(nu_1, delta_xi(i % r_stored_iters, 0), xi, i % r_stored_iters,
-                    r_stored_iters, gamma_xi);
-
-    }
-
-    if((i % n_temp_trans) == 0 && (i > 0)){
-      // initialize placeholders
-      nu_TT.slice(0) = nu.slice (i % r_stored_iters);
-      chi_TT.slice(0) = chi.slice(i % r_stored_iters);
-      pi_TT.col(0) = pi.col(i % r_stored_iters);
-      sigma_TT(0) = sigma(i % r_stored_iters);
-      Z_TT.slice(0) = Z.slice(i % r_stored_iters);
-      delta_TT.slice(0) = delta.slice(i % r_stored_iters);
-      gamma_TT(0,0) = gamma(i % r_stored_iters,0);
-      Phi_TT(0,0) = Phi(i % r_stored_iters,0);
-      A_TT.slice(0) = A.slice(i % r_stored_iters);
-      tau_TT.row(0) = tau.row(i % r_stored_iters);
-      alpha_3_TT(0) = alpha_3(i % r_stored_iters);
-      eta_TT(0,0) = eta(i % r_stored_iters, 0);
-      tau_eta_TT.slice(0) = tau_eta.slice(i % r_stored_iters);
-      delta_xi_TT(0,0) = delta_xi(i % r_stored_iters, 0);
-      A_xi_TT(0,0) = A_xi(i % r_stored_iters, 0);
-
-      for(int k = 0; k < K; k++){
-        xi_TT(0,k) = xi(i % r_stored_iters,k);
-        gamma_xi_TT(0,k) = gamma_xi(i % r_stored_iters,k);
-        xi_TT(1,k) = xi(i % r_stored_iters,k);
-        gamma_xi_TT(1,k) = gamma_xi(i % r_stored_iters,k);
-      }
-
-
-      nu_TT.slice(1) = nu.slice(i % r_stored_iters);
-      chi_TT.slice(1) = chi.slice(i % r_stored_iters);
-      pi_TT.col(1) = pi.col(i % r_stored_iters);
-      sigma_TT(1) = sigma(i % r_stored_iters);
-      Z_TT.slice(1) = Z.slice(i % r_stored_iters);
-      delta_TT.slice(1) = delta.slice(i % r_stored_iters);
-      gamma_TT(1,0) = gamma(i % r_stored_iters,0);
-      Phi_TT(1,0) = Phi(i % r_stored_iters,0);
-      A_TT.slice(1) = A.slice(i % r_stored_iters);
-      tau_TT.row(1) = tau.row(i % r_stored_iters);
-      alpha_3_TT(1) = alpha_3(i % r_stored_iters);
-      eta_TT(1,0) = eta(i % r_stored_iters, 0);
-      tau_eta_TT.slice(1) = tau_eta.slice(i % r_stored_iters);
-      delta_xi_TT(1,0) = delta_xi(i % r_stored_iters, 0);
-      A_xi_TT(1,0) = A_xi(i % r_stored_iters, 0);
-
-      temp_ind = 0;
-
-      // Perform tempered transitions
-      for(int l = 1; l < ((2 * N_t) + 1); l++){
-        updateZTempered_MMMVCovariateAdj(beta_ladder(temp_ind), y_obs,
-                                         Phi_TT(l,0), xi_TT, nu_TT.slice(l),
-                                         eta_TT(l,0), chi_TT.slice(l), pi_TT.col(l),
-                                         sigma_TT(l), l, (2 * N_t) + 1,
-                                         alpha_3_TT(l), a_Z_PM, X, Z_ph, Z_TT);
-        updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
-        updateAlpha3(pi_TT.col(l), b, Z_TT.slice(l), l, (2 * N_t) + 1, var_alpha3, alpha_3_TT);
-
-        for(int k = 0; k < K; k++){
-          tilde_tau_phi(k, 0) = delta_TT(k, 0, l);
-          for(int j = 1; j < M; j++){
-            tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta_TT(k, j, l);
-          }
-        }
-
-        updatePhiTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs, nu_TT.slice(l),
-                                        eta_TT(l,0), gamma_TT(l,0), tilde_tau_phi,
-                                        xi_TT, Z_TT.slice(l), chi_TT.slice(l), sigma_TT(l),
-                                        X, l, (2 * N_t) + 1, m_1, M_1, Phi_TT);
-
-        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.slice(l), l, (2 * N_t) + 1,
-                    delta_TT);
-
-        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.slice(l), var_epsilon1,
-                var_epsilon2, l, (2 * N_t) + 1, A_TT);
-        updateGamma(nu_1, delta_TT.slice(l), Phi_TT(l,0), l, (2 * N_t) + 1,
-                    gamma_TT);
-        updateNuTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs,
-                                       tau_TT.row(l).t(), Phi_TT(l,0), xi_TT,
-                                       eta_TT(l,0), Z_TT.slice(l),
-                                       chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1,
-                                       X, b_1, B_1, nu_TT);
-        updateTauMV(alpha_nu, beta_nu, nu_TT.slice(l), l, (2 * N_t) + 1, tau_TT);
-        updateSigmaTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs,
-                                          alpha_0, beta_0, nu_TT.slice(l),
-                                          eta_TT(l,0), Phi_TT(l,0), xi_TT,
-                                          Z_TT.slice(l), chi_TT.slice(l), l,
-                                          (2 * N_t) + 1, X, sigma_TT);
-        updateChiTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs, Phi_TT(l,0),
-                                        xi_TT, nu_TT.slice(l), eta_TT(l,0),
-                                        Z_TT.slice(l), sigma_TT(l), l,
-                                        (2 * N_t) + 1, X, chi_TT);
-        updateEtaTemperedMV(beta_ladder(temp_ind), y_obs, tau_eta_TT.slice(l),
-                            Phi_TT(l,0), xi_TT, nu_TT.slice(l), Z_TT.slice(l),
-                            chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, X,
-                            b_1, B_1, eta_TT);
-        updateTauEtaMV(alpha_eta, beta_eta, eta_TT(l,0), l, (2 * N_t) + 1,
-                       tau_eta_TT);
-
-        for(int k = 0; k < K; k++){
-          for(int m = 0; m < D; m++){
-            tilde_tau_xi(k,0,m) = delta_xi_TT(l,0)(k,0,m);
-            for(int j = 1; j < M; j++){
-              tilde_tau_xi(k,j,m) = tilde_tau_xi(k,j-1,m) * delta_xi_TT(l,0)(k,j,m);
-            }
-          }
-        }
-
-        updateXiTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs,
-                                       nu_TT.slice(l), eta_TT(l,0),
-                                       gamma_xi_TT, tilde_tau_xi, Phi_TT(l,0),
-                                       Z_TT.slice(l), chi_TT.slice(l),
-                                       sigma_TT(l), X, l, (2 * N_t) + 1,
-                                       m_1, M_1, xi_TT);
-        updateDeltaXi(xi_TT, gamma_xi_TT, A_xi_TT(l,0), l,
-                      (2 * N_t) + 1, delta_xi_TT);
-        updateAXi(alpha1l, beta1l, alpha2l, beta2l, delta_xi_TT(l,0),
-                  var_epsilon1, var_epsilon2, l, (2 * N_t) + 1, A_xi_TT);
-        updateGammaXi(nu_1, delta_xi_TT(l,0), xi_TT, l, (2 * N_t) + 1,
-                      gamma_xi_TT);
-
-        // update temp_ind
-        if(l < N_t){
-          temp_ind = temp_ind + 1;
-        }
-        if(l > N_t){
-          temp_ind = temp_ind - 1;
-        }
-      }
-      logA = CalculateTTAcceptanceMVCovariateAdj(beta_ladder, y_obs, nu_TT, eta_TT,
-                                                 Phi_TT, xi_TT, Z_TT, chi_TT, X,
-                                                 sigma_TT);
-      logu = std::log(R::runif(0,1));
-
-      Rcpp::Rcout << "prob_accept: " << logA<< "\n";
-      Rcpp::Rcout << "logu: " << logu<< "\n";
-
-      if(logu < logA){
-        Rcpp::Rcout << "Accept \n";
-        nu.slice(i % r_stored_iters) = nu_TT.slice(2 * N_t);
-        chi.slice(i % r_stored_iters) = chi_TT.slice(2 * N_t);
-        pi.col(i % r_stored_iters) = pi_TT.col(2 * N_t);
-        sigma(i % r_stored_iters) = sigma_TT(2 * N_t);
-        Z.slice(i % r_stored_iters) = Z_TT.slice(2 * N_t);
-        delta.slice(i % r_stored_iters) = delta_TT.slice(2 * N_t);
-        gamma(i % r_stored_iters,0) = gamma_TT(2 * N_t,0);
-        Phi(i % r_stored_iters,0) = Phi_TT(2 * N_t,0);
-        A.slice(i % r_stored_iters) = A_TT.slice(2 * N_t);
-        tau.row(i % r_stored_iters) = tau_TT.row(2 * N_t);
-        alpha_3(i % r_stored_iters) = alpha_3_TT(2 * N_t);
-        eta(i % r_stored_iters,0) = eta_TT(2 * N_t, 0);
-        tau_eta.slice(i % r_stored_iters) = tau_eta_TT.slice(2 * N_t);
-        delta_xi(i % r_stored_iters, 0) = delta_xi_TT(2 * N_t,0);
-        A_xi(i % r_stored_iters, 0) = A_xi_TT(2 * N_t,0);
-
-        for(int k = 0; k < K; k++){
-          xi(i % r_stored_iters,k) = xi_TT(2 * N_t,k);
-          gamma_xi(i % r_stored_iters,k) = gamma_xi_TT(2 * N_t,k);
-        }
-
-        //update accept number
-        accept_num = accept_num + 1;
-      }
-
-      //initialize next state
-      if(((i+1) % r_stored_iters) != 0){
-        nu.slice((i+1) % r_stored_iters) = nu.slice(i % r_stored_iters);
-        chi.slice((i+1) % r_stored_iters) = chi.slice(i % r_stored_iters);
-        pi.col((i+1) % r_stored_iters) = pi.col(i % r_stored_iters);
-        sigma((i+1) % r_stored_iters) = sigma(i % r_stored_iters);
-        Z.slice((i+1) % r_stored_iters) = Z.slice(i % r_stored_iters);
-        delta.slice((i+1) % r_stored_iters) = delta.slice(i % r_stored_iters);
-        A.slice((i+1) % r_stored_iters) = A.slice(i % r_stored_iters);
-        tau.row((i+1) % r_stored_iters) = tau.row(i % r_stored_iters);
-        Phi((i+1) % r_stored_iters,0) = Phi(i % r_stored_iters, 0);
-        alpha_3((i+1) % r_stored_iters) =  alpha_3(i % r_stored_iters);
-        eta((i+1) % r_stored_iters,0) = eta(i % r_stored_iters,0);
-        tau_eta.slice((i+1) % r_stored_iters) = tau_eta.slice(i % r_stored_iters);
-        delta_xi((i+1) % r_stored_iters, 0) = delta_xi(i % r_stored_iters, 0);
-        A_xi((i+1) % r_stored_iters, 0) = A_xi(i % r_stored_iters, 0);
-
-        for(int k = 0; k < K; k++){
-          xi((i+1) % r_stored_iters,k) = xi(i % r_stored_iters,k);
-          gamma_xi((i+1) % r_stored_iters,k) = gamma_xi(i % r_stored_iters,k);
-        }
-      }
-    }
-    loglik((i % r_stored_iters)) =  calcLikelihoodMVCovariateAdj(y_obs,
-           nu.slice((i % r_stored_iters)), eta(i % r_stored_iters, 0),
-           Phi((i % r_stored_iters),0), xi, Z.slice((i % r_stored_iters)),
-           chi.slice((i % r_stored_iters)), i % r_stored_iters, X,
-           sigma((i % r_stored_iters)));
-    if(((i+1) % 100) == 0){
-      Rcpp::Rcout << "Iteration: " << i+1 << "\n";
-      Rcpp::Rcout << "Accpetance Probability: " << accept_num / (std::round(i / n_temp_trans)) << "\n";
-      Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i % r_stored_iters)-4, (i % r_stored_iters))) << "\n";
-      Rcpp::checkUserInterrupt();
-    }
-    if(((i+1) % r_stored_iters) == 0 && i > 1){
-      // Save parameters
-      arma::cube nu1(K, P, r_stored_iters/thinning_num, arma::fill::randn);
-      arma::cube chi1(n_obs, M, r_stored_iters/thinning_num, arma::fill::randn);
-      arma::mat pi1(K, r_stored_iters/thinning_num, arma::fill::zeros);
-      arma::vec alpha_31(r_stored_iters/thinning_num, arma::fill::zeros);
-      arma::vec sigma1(r_stored_iters/thinning_num, arma::fill::ones);
-      arma::cube A1 = arma::ones(K, 2, r_stored_iters/thinning_num);
-      arma::cube Z1 = arma::randi<arma::cube>(n_obs, K, r_stored_iters/thinning_num,
-                                              arma::distr_param(0,1));
-      arma::cube delta1(K, M, r_stored_iters/thinning_num, arma::fill::ones);
-      arma::field<arma::cube> gamma1(r_stored_iters/thinning_num,1);
-      arma::field<arma::cube> Phi1(r_stored_iters/thinning_num, 1);
-      arma::mat tau1(r_stored_iters/thinning_num, K, arma::fill::ones);
-
-      //parameters for covariate adjusted
-      arma::field<arma::cube> eta1(r_stored_iters, 1);
-      arma::field<arma::cube> xi1(r_stored_iters, K);
-      arma::cube tau_eta1 = arma::ones(K, D, r_stored_iters);
-      arma::field<arma::cube> gamma_xi1(r_stored_iters, K);
-      arma::field<arma::cube> delta_xi1(r_stored_iters, 1);
-      arma::field<arma::cube> A_xi1(r_stored_iters, 1);
-
-
-      nu1.slice(0) = nu.slice(0);
-      chi1.slice(0) = chi.slice(0);
-      pi1.col(0) = pi.col(0);
-      sigma1(0) = sigma(0);
-      A1.slice(0) = A.slice(0);
-      Z1.slice(0) = Z.slice(0);
-      delta1.slice(0) = delta.slice(0);
-      gamma1(0,0) = gamma(0,0);
-      Phi1(0,0) = Phi(0,0);
-      tau1.row(0) = tau.row(0);
-      eta1(0,0) = eta(0,0);
-      tau_eta1.slice(0) = tau_eta.slice(0);
-      delta_xi1(0,0) = delta_xi(0,0);
-      A_xi1(0,0) = A_xi(0,0);
-
-      for(int k = 0; k < K; k++){
-        xi1(0,k) = xi(0,k);
-        gamma_xi1(0,k) = gamma_xi(0,k);
-      }
-
-      for(int p=1; p < r_stored_iters / thinning_num; p++){
-        nu1.slice(p) = nu.slice(thinning_num*p - 1);
-        chi1.slice(p) = chi.slice(thinning_num*p - 1);
-        pi1.col(p) = pi.col(thinning_num*p - 1);
-        alpha_31(p) = alpha_3(thinning_num*p - 1);
-        sigma1(p) = sigma(thinning_num*p - 1);
-        A1.slice(p) = A.slice(thinning_num*p - 1);
-        Z1.slice(p) = Z.slice(thinning_num*p - 1);
-        delta1.slice(p) = delta.slice(thinning_num*p - 1);
-        gamma1(p,0) = gamma(thinning_num*p - 1,0);
-        Phi1(p,0) = Phi(thinning_num*p - 1,0);
-        tau1.row(p) = tau.row(thinning_num*p - 1);
-        eta1(p,0) = eta(thinning_num*p - 1,0);
-        tau_eta1.slice(p) = tau_eta.slice(thinning_num*p - 1);
-        delta_xi1(p,0) = delta_xi(thinning_num*p - 1,0);
-        A_xi1(p,0) = A_xi(thinning_num*p - 1,0);
-
-        for(int k = 0; k < K; k++){
-          xi1(p,k) = xi(thinning_num*p - 1,k);
-          gamma_xi1(p,k) = gamma_xi(thinning_num*p - 1,k);
-        }
-      }
-
-      nu1.save(directory + "Nu" + std::to_string(q) + ".txt", arma::arma_ascii);
-      chi1.save(directory + "Chi" + std::to_string(q) +".txt", arma::arma_ascii);
-      pi1.save(directory + "Pi" + std::to_string(q) +".txt", arma::arma_ascii);
-      alpha_31.save(directory + "alpha_3" + std::to_string(q) + ".txt", arma::arma_ascii);
-      A1.save(directory + "A" + std::to_string(q) +".txt", arma::arma_ascii);
-      delta1.save(directory + "Delta" + std::to_string(q) +".txt", arma::arma_ascii);
-      sigma1.save(directory + "Sigma" + std::to_string(q) +".txt", arma::arma_ascii);
-      tau1.save(directory + "Tau" + std::to_string(q) +".txt", arma::arma_ascii);
-      gamma1.save(directory + "Gamma" + std::to_string(q) +".txt");
-      Phi1.save(directory + "Phi" + std::to_string(q) +".txt");
-      Z1.save(directory + "Z" + std::to_string(q) +".txt", arma::arma_ascii);
-      xi1.save(directory + "Xi" + std::to_string(q) +".txt");
-      gamma_xi1.save(directory + "Gamma_Xi" + std::to_string(q) +".txt");
-      delta_xi1.save(directory + "Delta_Xi" + std::to_string(q) +".txt");
-      A_xi1.save(directory + "A_Xi" + std::to_string(q) +".txt");
-      eta1.save(directory + "Eta" + std::to_string(q) +".txt");
-      tau_eta1.save(directory + "Tau_Eta" + std::to_string(q) +".txt", arma::arma_ascii);
-
-
-      //reset all parameters
-      nu.slice(0) = nu.slice(i % r_stored_iters);
-      chi.slice(0) = chi.slice(i % r_stored_iters);
-      pi.col(0) = pi.col(i % r_stored_iters);
-      alpha_3(0) = alpha_3(i % r_stored_iters);
-      A.slice(0) = A.slice(i % r_stored_iters);
-      delta.slice(0) = delta.slice(i % r_stored_iters);
-      sigma(0) = sigma(i % r_stored_iters);
-      tau.row(0) = tau.row(i % r_stored_iters);
-      gamma(0,0) = gamma(i % r_stored_iters, 0);
-      Phi(0,0) = Phi(i % r_stored_iters, 0);
-      Z.slice(0) = Z.slice(i % r_stored_iters);
-      eta(0,0) = eta(i % r_stored_iters,0);
-      tau_eta.slice(0) = tau_eta.slice(i % r_stored_iters);
-      delta_xi(0,0) = delta_xi(i % r_stored_iters,0);
-      A_xi(0,0) = A_xi(i % r_stored_iters,0);
-
-      for(int k = 0; k < K; k++){
-        xi(0,k) = xi(i % r_stored_iters,k);
-        gamma_xi(0,k) = gamma_xi(i % r_stored_iters,k);
-      }
-
-      q = q + 1;
-    }
-  }
-
-  Rcpp::List params = Rcpp::List::create(Rcpp::Named("nu", nu),
-                                         Rcpp::Named("alpha_3", alpha_3),
-                                         Rcpp::Named("chi", chi),
-                                         Rcpp::Named("pi", pi),
-                                         Rcpp::Named("A", A),
-                                         Rcpp::Named("delta", delta),
-                                         Rcpp::Named("sigma", sigma),
-                                         Rcpp::Named("tau", tau),
-                                         Rcpp::Named("tau_eta", tau_eta),
-                                         Rcpp::Named("xi", xi),
-                                         Rcpp::Named("delta_xi", delta_xi),
-                                         Rcpp::Named("gamma_xi", gamma_xi),
-                                         Rcpp::Named("A_xi", A_xi),
-                                         Rcpp::Named("eta", eta),
-                                         Rcpp::Named("gamma", gamma),
-                                         Rcpp::Named("Phi", Phi),
-                                         Rcpp::Named("Z", Z),
-                                         Rcpp::Named("loglik", loglik));
-  return params;
-}
-
 
 // Conducts a mixture of untempered sampling and termpered sampling to get posterior
 // draws from the covariate adjusted (mean and covariance) mixed membership model
@@ -5761,10 +4637,15 @@ inline Rcpp::List BFMMM_MTT_warm_start_Mean_CovAdj(const arma::field<arma::vec>&
                                                    const arma::vec& pi_est,
                                                    const double& alpha_3_est,
                                                    const arma::mat& delta_est,
+                                                   const arma::cube& delta_xi_est,
                                                    const arma::cube& gamma_est,
+                                                   const arma::field<arma::cube>& gamma_xi_est,
                                                    const arma::cube& Phi_est,
+                                                   const arma::field<arma::cube>& xi_est,
                                                    const arma::mat& A_est,
+                                                   const arma::cube& A_xi_est,
                                                    const arma::mat& nu_est,
+                                                   const arma::cube& eta_est,
                                                    const arma::vec& tau_est,
                                                    const arma::mat& tau_eta_est,
                                                    const double& sigma_est,
@@ -5911,10 +4792,18 @@ inline Rcpp::List BFMMM_MTT_warm_start_Mean_CovAdj(const arma::field<arma::vec>&
   A.slice(0) = A_est;
   nu.slice(0) = nu_est;
   tau.row(0) = tau_est.t();
-  tau_eta.slice(0) = tau_eta_est;
   sigma(0) = sigma_est;
-
   chi.slice(0) = chi_est;
+
+  // covariate adjusted parameters
+  for(int k = 0; k < K; k++){
+    xi(0,k) = xi_est(0,k);
+    gamma_xi(0,k) = gamma_xi_est(0,k);
+  }
+  delta_xi(0,0) = delta_xi_est;
+  eta(0,0) = eta_est;
+  A_xi(0,0) = A_xi_est;
+  tau_eta.slice(0) = tau_eta_est;
 
   for(int i=0; i < tot_mcmc_iters; i++){
     if(((i % n_temp_trans) != 0) || (i == 0)){
@@ -6326,6 +5215,1499 @@ inline Rcpp::List BFMMM_MTT_warm_start_Mean_CovAdj(const arma::field<arma::vec>&
   return params;
 }
 
+
+
+// Conducts un-tempered MCMC to find mean and allocation parameters for the multivariate model
+//
+// @name BFMMM_Nu_ZMV
+// @param y_obs Matrix of observed vectors
+// @param X Matrix of covariates
+// @param K Int containing the number of clusters
+// @param M Int containing the number of eigenvectors
+// @param tot_mcmc_iters Int containing total number of MCMC iterations
+// @param r_stored_iters Int containing number of iterations performed for each batch
+// @param c Vector containing hyperparmeters for pi
+// @param b double containing hyperparameter for alpha_3
+// @param a_12 Vector containing hyperparameters for sampling from delta
+// @param alpha1l Double containing hyperparameters for sampling from A
+// @param alpha2l Double containing hyperparameters for sampling from A
+// @param beta1l Double containing hyperparameters for sampling from A
+// @param beta2l Double containing hyperparameters for sampling from A
+// @param var_pi Double containing variance parameter of the random walk MH for pi parameter
+// @param var_Z Double containing variance parameter of the random walk MH for Z parameter
+// @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+// @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param alpha_nu Double containing hyperparameters for sampling from tau
+// @param beta_nu Double containing hyperparameters for sampling from tau
+// @param alpha_eta Double containing hyperparameters for sampling from tau_eta
+// @param beta_eta Double containing hyperparameters for sampling from tau_eta
+// @param alpha_0 Double containing hyperparameters for sampling from sigma
+// @param beta_0 Double containing hyperparameters for sampling from sigma
+// @param directory String containing path to store batches of MCMC samples
+// @returns params List of objects containing the MCMC samples from the last batch
+inline Rcpp::List BFMMM_Nu_ZMV_Cov_Adj(const arma::mat& y_obs,
+                                       const arma::mat& X,
+                                       const int& K,
+                                       const int& M,
+                                       const int& tot_mcmc_iters,
+                                       const arma::vec& c,
+                                       const double& b,
+                                       const double& alpha1l,
+                                       const double& alpha2l,
+                                       const double& beta1l,
+                                       const double& beta2l,
+                                       const double& a_Z_PM,
+                                       const double& a_pi_PM,
+                                       const double& var_alpha3,
+                                       const double& var_epsilon1,
+                                       const double& var_epsilon2,
+                                       const double& alpha_nu,
+                                       const double& beta_nu,
+                                       const double& alpha_eta,
+                                       const double& beta_eta,
+                                       const double& alpha_0,
+                                       const double& beta_0){
+  int P = y_obs.n_cols;
+  int n_obs = y_obs.n_rows;
+  int D = X.n_cols;
+
+  arma::cube nu(K, P, tot_mcmc_iters, arma::fill::randn);
+  arma::cube chi(n_obs, M, tot_mcmc_iters, arma::fill::zeros);
+  arma::mat pi(K, tot_mcmc_iters, arma::fill::zeros);
+  arma::vec pi_ph = arma::zeros(K);
+  pi.col(0) = rdirichlet(c);
+  arma::vec sigma(tot_mcmc_iters, arma::fill::ones);
+  arma::vec Z_ph = arma::zeros(K);
+  arma::vec alpha_3 = arma::ones(tot_mcmc_iters);
+  arma::cube Z = arma::randi<arma::cube>(n_obs, K, tot_mcmc_iters,
+                                         arma::distr_param(0,1));
+
+  for(int i = 0; i < n_obs; i++){
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
+  }
+
+  arma::cube delta(K, M, tot_mcmc_iters, arma::fill::ones);
+  arma::field<arma::cube> gamma(tot_mcmc_iters,1);
+  arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
+  arma::cube A = arma::ones(K, 2, tot_mcmc_iters);
+  arma::vec loglik = arma::zeros(tot_mcmc_iters);
+
+  //parameters for covariate adjusted
+  arma::field<arma::cube> eta(tot_mcmc_iters, 1);
+  arma::field<arma::cube> xi(tot_mcmc_iters, K);
+  arma::cube tau_eta = arma::ones(K, D, tot_mcmc_iters);
+
+  for(int i = 0; i < tot_mcmc_iters; i++){
+    gamma(i,0) = arma::cube(K, P, M, arma::fill::ones);
+    Phi(i,0) = arma::zeros(K, P, M);
+    eta(i,0) = arma::zeros(P, D, K);
+    for(int k = 0; k < K; k++){
+      xi(i,k) = arma::zeros(P, D, M);
+    }
+  }
+
+  arma::vec m_1(P, arma::fill::zeros);
+  arma::mat M_1(P, P, arma::fill::zeros);
+  arma::mat tau(tot_mcmc_iters, K, arma::fill::ones);
+
+  arma::vec b_1(P, arma::fill::zeros);
+  arma::mat B_1(P, P, arma::fill::zeros);
+
+  for(int i = 0; i < tot_mcmc_iters; i++){
+    updateZ_MMMVCovariateAdj(y_obs, Phi(i,0), xi,
+                             nu.slice(i), eta(i,0), chi.slice(i),
+                             pi.col(i), sigma(i),
+                             i, tot_mcmc_iters, alpha_3(i),
+                             a_Z_PM, X, Z_ph, Z);
+    updatePi_PM(alpha_3(i) ,Z.slice(i), c,
+                (i), tot_mcmc_iters, a_pi_PM, pi_ph, pi);
+
+    updateAlpha3(pi.col(i), b, Z.slice(i),
+                 (i), tot_mcmc_iters, var_alpha3, alpha_3);
+
+    updateNuMVCovariateAdj(y_obs, tau.row((i)).t(),
+                           Phi((i),0), xi, eta(i,0), Z.slice((i)),
+                           chi.slice((i)), sigma((i)),
+                           (i), tot_mcmc_iters, X, b_1, B_1, nu);
+
+    updateTauMV(alpha_nu, beta_nu, nu.slice((i)), (i),
+                tot_mcmc_iters, tau);
+
+    updateSigmaMVCovariateAdj(y_obs, alpha_0, beta_0,
+                              nu.slice((i)), eta(i,0), Phi((i),0), xi,
+                              Z.slice((i)), chi.slice((i)),
+                              (i), tot_mcmc_iters, X, sigma);
+
+    updateEtaMV(y_obs, tau_eta.slice(i), Phi(i,0), xi, nu.slice(i),
+                Z.slice(i), chi.slice(i), sigma(i), i, tot_mcmc_iters, X,
+                b_1, B_1, eta);
+
+    updateTauEtaMV(alpha_eta, beta_eta, eta(i,0), i, tot_mcmc_iters, tau_eta);
+
+    // Calculate log likelihood
+    loglik((i)) =  calcLikelihoodMVCovariateAdj(y_obs, nu.slice((i)), eta(i,0),
+           Phi((i),0), xi, Z.slice((i)), chi.slice((i)), i, X, sigma((i)));
+    if(((i+1) % 100) == 0){
+      Rcpp::Rcout << "Iteration: " << i+1 << "\n";
+      Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i)-19, (i))) << "\n";
+      Rcpp::checkUserInterrupt();
+    }
+  }
+  Rcpp::List params = Rcpp::List::create(Rcpp::Named("nu", nu),
+                                         Rcpp::Named("eta", eta),
+                                         Rcpp::Named("pi", pi),
+                                         Rcpp::Named("alpha_3", alpha_3),
+                                         Rcpp::Named("A", A),
+                                         Rcpp::Named("delta", delta),
+                                         Rcpp::Named("sigma", sigma),
+                                         Rcpp::Named("tau", tau),
+                                         Rcpp::Named("tau_eta", tau_eta),
+                                         Rcpp::Named("Z", Z),
+                                         Rcpp::Named("loglik", loglik));
+  return params;
+}
+
+// Conducts un-tempered MCMC to estimate the posterior distribution of parameters
+// not related to Z or Nu, conditioned on a value of Nu and Z (Multivariate model)
+//
+// @name BFMMM_ThetaMV_Cov_Adj
+// @param y_obs Matrix of observed vectors
+// @param X Matrix of covariates
+// @param K Int containing the number of clusters
+// @param basis degree Int containing the degree of B-splines used
+// @param M Int containing the number of eigenfunctions
+// @param boundary_knots Vector containing the boundary points of our index domain of interest
+// @param internal_knots Vector location of internal knots for B-splines
+// @param tot_mcmc_iters Int containing total number of MCMC iterations
+// @param c Vector containing hyperparmeters for pi
+// @param b double containing hyperparameter for alpha_3
+// @param a_12 Vector containing hyperparameters for sampling from delta
+// @param alpha1l Double containing hyperparameters for sampling from A
+// @param alpha2l Double containing hyperparameters for sampling from A
+// @param beta1l Double containing hyperparameters for sampling from A
+// @param beta2l Double containing hyperparameters for sampling from A
+// @param var_pi Double containing variance parameter of the random walk MH for pi parameter
+// @param var_Z Double containing variance parameter of the random walk MH for Z parameter
+// @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
+// @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param alpha_nu Double containing hyperparameters for sampling from tau
+// @param beta_nu Double containing hyperparameters for sampling from tau
+// @param alpha_eta Double containing hyperparameters for sampling from tau_eta
+// @param beta_eta Double containing hyperparameters for sampling from tau_eta
+// @param alpha_0 Double containing hyperparameters for sampling from sigma
+// @param beta_0 Double containing hyperparameters for sampling from sigma
+// @param Z_est Matrix containing Z values to be conditioned on
+// @param nu_est Matrix containing nu values to be conditioned on
+// @returns params List of objects containing the MCMC samples from the last batch
+inline Rcpp::List BFMMM_ThetaMV_Cov_Adj(const arma::mat& y_obs,
+                                        const arma::mat& X,
+                                        const int& K,
+                                        const int& M,
+                                        const int& tot_mcmc_iters,
+                                        const arma::vec& c,
+                                        const double& b,
+                                        const double& nu_1,
+                                        const double& alpha1l,
+                                        const double& alpha2l,
+                                        const double& beta1l,
+                                        const double& beta2l,
+                                        const double& a_Z_PM,
+                                        const double& a_pi_PM,
+                                        const double& var_alpha3,
+                                        const double& var_epsilon1,
+                                        const double& var_epsilon2,
+                                        const double& alpha_nu,
+                                        const double& beta_nu,
+                                        const double& alpha_eta,
+                                        const double& beta_eta,
+                                        const double& alpha_0,
+                                        const double& beta_0,
+                                        const arma::mat& Z_est,
+                                        const arma::mat& nu_est,
+                                        const arma::cube& eta_est,
+                                        const bool covariance_adj){
+
+  int n_obs = y_obs.n_rows;
+  int P = y_obs.n_cols;
+  int D = X.n_cols;
+
+  arma::cube nu(K, P, tot_mcmc_iters, arma::fill::randn);
+  arma::cube chi(n_obs, M, tot_mcmc_iters, arma::fill::randn);
+  arma::mat pi(K, tot_mcmc_iters, arma::fill::zeros);
+  arma::vec pi_ph = arma::zeros(K);
+  pi.col(0) = rdirichlet(c);
+  arma::vec sigma(tot_mcmc_iters, arma::fill::ones);
+  arma::vec Z_ph = arma::zeros(K);
+  arma::vec alpha_3 = arma::ones(tot_mcmc_iters);
+  arma::cube Z = arma::randi<arma::cube>(n_obs, K, tot_mcmc_iters,
+                                         arma::distr_param(0,1));
+
+  for(int i = 0; i < n_obs; i++){
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
+  }
+
+  arma::cube delta(K, M, tot_mcmc_iters, arma::fill::ones);
+  arma::field<arma::cube> gamma(tot_mcmc_iters,1);
+  arma::field<arma::cube> Phi(tot_mcmc_iters, 1);
+  arma::mat tilde_tau_phi(K, M, arma::fill::ones);
+  arma::cube tilde_tau_xi(K, M, D, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, tot_mcmc_iters);
+  arma::vec loglik = arma::zeros(tot_mcmc_iters);
+
+  //parameters for covariate adjusted
+  arma::field<arma::cube> eta(tot_mcmc_iters, 1);
+  arma::field<arma::cube> xi(tot_mcmc_iters, K);
+  arma::cube tau_eta = arma::ones(K, D, tot_mcmc_iters);
+  arma::field<arma::cube> gamma_xi(tot_mcmc_iters, K);
+  arma::field<arma::cube> delta_xi(tot_mcmc_iters, 1);
+  arma::field<arma::cube> A_xi(tot_mcmc_iters, 1);
+
+  for(int i = 0; i < tot_mcmc_iters; i++){
+    gamma(i,0) = arma::cube(K, P, M, arma::fill::ones);
+    Phi(i,0) = arma::randn(K, P, M);
+    eta(i,0) = arma::zeros(P, D, K);
+    delta_xi(i,0) = arma::ones(K, M, D);
+    A_xi(i,0) = arma::ones(K, 2, D);
+    for(int k = 0; k < K; k++){
+      xi(i,k) = arma::zeros(P, D, M);
+      gamma_xi(i,k) = arma::ones(P, D, M);
+    }
+  }
+
+  arma::vec m_1(P, arma::fill::zeros);
+  arma::mat M_1(P, P, arma::fill::zeros);
+  arma::mat tau(tot_mcmc_iters, K, arma::fill::ones);
+
+  arma::vec b_1(P, arma::fill::zeros);
+  arma::mat B_1(P, P, arma::fill::zeros);
+
+  Z.slice(0) = Z_est;
+  nu.slice(0) = nu_est;
+  eta(0,0) = eta_est;
+
+  for(int i = 1; i < tot_mcmc_iters; i++){
+    Z.slice(i) = Z_est;
+    nu.slice(i) = nu_est;
+    eta(i,0) = eta_est;
+  }
+
+
+  for(int i = 0; i < tot_mcmc_iters; i++){
+    for(int k = 0; k < K; k++){
+      tilde_tau_phi(k, 0) = delta(k, 0, i);
+      for(int j = 1; j < M; j++){
+        tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta(k, j, i);
+      }
+    }
+
+    updatePhiMVCovariateAdj(y_obs, nu.slice((i)), eta(i,0),
+                            gamma((i),0), tilde_tau_phi, xi,
+                            Z.slice((i)), chi.slice((i)),
+                            sigma((i)), X, (i),
+                            tot_mcmc_iters, m_1, M_1, Phi);
+
+    updateDelta(Phi((i),0), gamma((i),0),
+                A.slice(i), (i),
+                tot_mcmc_iters, delta);
+
+    updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i)),
+            var_epsilon1, var_epsilon2, (i), tot_mcmc_iters, A);
+
+    updateGamma(nu_1, delta.slice((i)), Phi((i),0),
+                (i), tot_mcmc_iters, gamma);
+
+    updateTauMV(alpha_nu, beta_nu, nu.slice((i)), (i),
+                tot_mcmc_iters, tau);
+
+    updateSigmaMVCovariateAdj(y_obs, alpha_0, beta_0,
+                              nu.slice((i)), eta(i,0), Phi((i),0), xi,
+                              Z.slice((i)), chi.slice((i)),
+                              (i), tot_mcmc_iters, X, sigma);
+
+    updateChiMVCovariateAdj(y_obs, Phi((i),0), xi,
+                            nu.slice((i)), eta(i,0), Z.slice((i)),
+                            sigma((i)), (i), tot_mcmc_iters, X,
+                            chi);
+    updateTauEtaMV(alpha_eta, beta_eta, eta(i,0), i, tot_mcmc_iters, tau_eta);
+
+    if(covariance_adj == true){
+      for(int k = 0; k < K; k++){
+        for(int m = 0; m < D; m++){
+          tilde_tau_xi(k,0,m) = delta_xi(i,0)(k,0,m);
+          for(int j = 1; j < M; j++){
+            tilde_tau_xi(k,j,m) = tilde_tau_xi(k,j-1,m) * delta_xi(i,0)(k,j,m);
+          }
+        }
+      }
+
+      updateXiMVCovariateAdj(y_obs, nu.slice(i), eta(i,0), gamma_xi,
+                             tilde_tau_xi, Phi(i,0), Z.slice(i), chi.slice(i),
+                             sigma(i), X, i, tot_mcmc_iters, m_1, M_1, xi);
+      updateDeltaXi(xi, gamma_xi, A_xi(i,0), i, tot_mcmc_iters, delta_xi);
+      updateAXi(alpha1l, beta1l, alpha2l, beta2l, delta_xi(i, 0),
+                var_epsilon1, var_epsilon2, (i), tot_mcmc_iters, A_xi);
+      updateGammaXi(nu_1, delta_xi(i, 0), xi, i, tot_mcmc_iters, gamma_xi);
+    }
+
+    // Calculate log likelihood
+    loglik((i)) =  calcLikelihoodMVCovariateAdj(y_obs, nu.slice((i)), eta(i,0),
+           Phi((i),0), xi, Z.slice((i)), chi.slice((i)), i, X, sigma((i)));
+    if(((i+1) % 100) == 0){
+      Rcpp::Rcout << "Iteration: " << i+1 << "\n";
+      Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i)-99, (i))) << "\n";
+      Rcpp::checkUserInterrupt();
+    }
+  }
+  Rcpp::List params = Rcpp::List::create(Rcpp::Named("Z", Z),
+                                         Rcpp::Named("nu", nu),
+                                         Rcpp::Named("chi", chi),
+                                         Rcpp::Named("A", A),
+                                         Rcpp::Named("delta", delta),
+                                         Rcpp::Named("sigma", sigma),
+                                         Rcpp::Named("tau", tau),
+                                         Rcpp::Named("gamma", gamma),
+                                         Rcpp::Named("Phi", Phi),
+                                         Rcpp::Named("loglik", loglik));
+  return params;
+}
+
+// Conducts a mixture of untempered sampling and termpered sampling to get
+// posterior draws from the covariate adjusted (mean only) mixed membership model
+//
+// @name BFMMM_MTT_warm_startMV_MeanAdj
+// @param y_obs Matrix of observed vectors
+// @param X Matrix of covariates of interest
+// @param thinning_num Int containing how often we save an MCMC iteration
+// @param K Int containing the number of clusters
+// @param M Int containing the number of eigenfunctions
+// @param tot_mcmc_iters Int containing total number of MCMC iterations
+// @param r_stored_iters Int constaining number of iterations performed for each batch
+// @param t_star Field (list) of vectors containing time points of interest that are not observed (optional)
+// @param rho Double containing hyperparmater for sampling from Z
+// @param alpha_3 Double hyperparameter for sampling from pi
+// @param a_12 Vec containing hyperparameters for sampling from delta
+// @param alpha1l Double containing hyperparameters for sampling from A
+// @param alpha2l Double containing hyperparameters for sampling from A
+// @param beta1l Double containing hyperparameters for sampling from A
+// @param beta2l Double containing hyperparameters for sampling from A
+// @param a_Z_PM Double containing hyperparameter used to sample from the posterior of Z
+// @param a_pi_PM Double containing hyperparameter used to sample from the posterior of pi
+// @param var_alpha3 Doubel containing hyperparameter for sampling from alpha_3
+// @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param alpha_nu Double containing hyperparameters for sampling from tau_nu
+// @param beta_nu Double containing hyperparameters for sampling from tau_nu
+// @param alpha_eta Double containing hyperparameters for sampling from tau_eta
+// @param beta_eta Double containing hyperparameters for sampling from tau_eta
+// @param alpha_0 Double containing hyperparameters for sampling from sigma
+// @param beta_0 Double containing hyperparameters for sampling from sigma
+// @param directory String containing path to store batches of MCMC samples
+// @returns params List of objects containing the MCMC samples from the last batch
+inline Rcpp::List BFMMM_MTT_warm_startMV_MeanAdj(const arma::mat& y_obs,
+                                                 const arma::mat& X,
+                                                 const int& thinning_num,
+                                                 const int& K,
+                                                 const int& M,
+                                                 const int& tot_mcmc_iters,
+                                                 const int& r_stored_iters,
+                                                 const int& n_temp_trans,
+                                                 const arma::vec& c,
+                                                 const double& b,
+                                                 const double& nu_1,
+                                                 const double& alpha1l,
+                                                 const double& alpha2l,
+                                                 const double& beta1l,
+                                                 const double& beta2l,
+                                                 const double& a_Z_PM,
+                                                 const double& a_pi_PM,
+                                                 const double& var_alpha3,
+                                                 const double& var_epsilon1,
+                                                 const double& var_epsilon2,
+                                                 const double& alpha_nu,
+                                                 const double& beta_nu,
+                                                 const double& alpha_eta,
+                                                 const double& beta_eta,
+                                                 const double& alpha_0,
+                                                 const double& beta_0,
+                                                 const std::string directory,
+                                                 const double& beta_N_t,
+                                                 const int& N_t,
+                                                 const arma::mat& Z_est,
+                                                 const arma::vec& pi_est,
+                                                 const double& alpha_3_est,
+                                                 const arma::mat& delta_est,
+                                                 const arma::cube& gamma_est,
+                                                 const arma::cube& Phi_est,
+                                                 const arma::mat& A_est,
+                                                 const arma::mat& nu_est,
+                                                 const arma::cube& eta_est,
+                                                 const arma::vec& tau_est,
+                                                 const arma::mat& tau_eta_est,
+                                                 const double& sigma_est,
+                                                 const arma::mat& chi_est){
+  int n_obs = y_obs.n_rows;
+  int P = y_obs.n_cols;
+  int D = X.n_cols;
+
+  arma::cube nu(K, P, r_stored_iters, arma::fill::randn);
+  arma::mat tau(r_stored_iters, K, arma::fill::ones);
+  arma::cube chi(n_obs, M, r_stored_iters, arma::fill::randn);
+  arma::mat pi(K, r_stored_iters, arma::fill::zeros);
+  arma::vec pi_ph = arma::zeros(K);
+  pi.col(0) = rdirichlet(c);
+  arma::vec sigma(r_stored_iters, arma::fill::ones);
+  arma::vec Z_ph = arma::zeros(K);
+  arma::vec alpha_3 = arma::ones(r_stored_iters);
+  arma::cube Z = arma::randi<arma::cube>(n_obs, K, r_stored_iters,
+                                         arma::distr_param(0,1));
+
+  for(int i = 0; i < n_obs; i++){
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
+  }
+
+  arma::cube delta(K, M, r_stored_iters, arma::fill::ones);
+  arma::field<arma::cube> gamma(r_stored_iters,1);
+  arma::field<arma::cube> Phi(r_stored_iters, 1);
+  arma::mat tilde_tau_phi(K, M, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, r_stored_iters);
+  arma::vec loglik = arma::zeros(r_stored_iters);
+
+  //parameters for covariate adjusted
+  arma::field<arma::cube> eta(r_stored_iters, 1);
+  arma::field<arma::cube> xi(r_stored_iters, K);
+  arma::cube tau_eta = arma::ones(K, D, r_stored_iters);
+
+  // start numbering for output files
+  int q = 0;
+
+  for(int i = 0; i < r_stored_iters; i++){
+    gamma(i,0) = arma::cube(K, P, M, arma::fill::ones);
+    Phi(i,0) = arma::randn(K, P, M);
+    eta(i,0) = arma::zeros(P, D, K);
+    for(int k = 0; k < K; k++){
+      xi(i,k) = arma::zeros(P, D, M);
+    }
+  }
+
+  arma::vec m_1(P, arma::fill::zeros);
+  arma::mat M_1(P, P, arma::fill::zeros);
+
+  arma::vec b_1(P, arma::fill::zeros);
+  arma::mat B_1(P, P, arma::fill::zeros);
+
+  // Create parameters for tempered transitions using geometric scheme
+  arma::vec beta_ladder(N_t, arma::fill::ones);
+  beta_ladder(N_t - 1) = beta_N_t;
+  double geom_mult = std::pow(beta_N_t, 1.0/N_t);
+  Rcpp::Rcout << "geom_mult: " << geom_mult << "\n";
+  for(int i = 1; i < N_t; i++){
+    beta_ladder(i) = beta_ladder(i-1) * geom_mult;
+    // beta_ladder(i) = 1 - ((1- beta_N_t) *(std::pow(i/ (N_t - 1.0), 2.0)));
+    Rcpp::Rcout << "beta_i: " << beta_ladder(i) << "\n";
+  }
+  // Create storage for tempered transitions
+  arma::cube nu_TT(K, P, (2 * N_t) + 1, arma::fill::randn);
+  arma::cube chi_TT(n_obs, M, (2 * N_t) + 1, arma::fill::randn);
+  arma::mat pi_TT(K, (2 * N_t) + 1, arma::fill::zeros);
+  arma::vec sigma_TT((2 * N_t) + 1, arma::fill::ones);
+  arma::cube Z_TT = arma::randi<arma::cube>(n_obs, K, (2 * N_t) + 1,
+                                            arma::distr_param(0,1));
+  arma::cube delta_TT(K, M, (2 * N_t) + 1, arma::fill::ones);
+  arma::field<arma::cube> gamma_TT((2 * N_t) + 1, 1);
+  arma::field<arma::cube> Phi_TT((2 * N_t) + 1, 1);
+  arma::cube A_TT = arma::ones(K, 2, (2 * N_t) + 1);
+  arma::vec alpha_3_TT = arma::ones((2 * N_t) + 1);
+
+  //parameters for covariate adjusted
+  arma::field<arma::cube> eta_TT((2 * N_t) + 1, 1);
+  arma::field<arma::cube> xi_TT((2 * N_t) + 1, K);
+  arma::cube tau_eta_TT = arma::ones(K, D, (2 * N_t) + 1);
+
+  for(int i = 0; i < ((2 * N_t) + 1); i++){
+    gamma_TT(i,0) = arma::cube(K, P, M, arma::fill::ones);
+    Phi_TT(i,0) = arma::randn(K, P, M);
+    eta_TT(i,0) = arma::zeros(P, D, K);
+    for(int k = 0; k < K; k++){
+      xi_TT(i,k) = arma::zeros(P, D, M);
+    }
+  }
+
+  arma::mat tau_TT((2 * N_t) + 1, K, arma::fill::ones);
+
+  int temp_ind = 0;
+  double logA = 0;
+  double logu = 0;
+  int accept_num = 0;
+
+  Z.slice(0) = Z_est;
+  pi.col(0) = pi_est;
+
+  alpha_3(0) = alpha_3_est;
+  delta.slice(0) = delta_est;
+  gamma(0,0) = gamma_est;
+  Phi(0,0) = Phi_est;
+  A.slice(0) = A_est;
+  nu.slice(0) = nu_est;
+  tau.row(0) = tau_est.t();
+  sigma(0) = sigma_est;
+  chi.slice(0) = chi_est;
+
+  eta(0,0) = eta_est;
+  tau_eta.slice(0) = tau_eta_est;
+
+  for(int i=0; i < tot_mcmc_iters; i++){
+    if(((i % n_temp_trans) != 0) || (i == 0)){
+      updateZ_MMMVCovariateAdj(y_obs, Phi((i % r_stored_iters),0), xi,
+                               nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                               chi.slice((i % r_stored_iters)), pi.col((i % r_stored_iters)),
+                               sigma((i % r_stored_iters)), (i % r_stored_iters),
+                               r_stored_iters, alpha_3(i % r_stored_iters), a_Z_PM, X, Z_ph, Z);
+
+      updatePi_PM(alpha_3(i % r_stored_iters) ,Z.slice(i% r_stored_iters), c,
+                  (i % r_stored_iters), r_stored_iters, a_pi_PM, pi_ph, pi);
+
+      updateAlpha3(pi.col(i % r_stored_iters), b, Z.slice(i % r_stored_iters),
+                   (i % r_stored_iters), r_stored_iters, var_alpha3, alpha_3);
+
+      for(int k = 0; k < K; k++){
+        tilde_tau_phi(k, 0) = delta(k, 0, (i % r_stored_iters));
+        for(int j = 1; j < M; j++){
+          tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta(k, j,(i % r_stored_iters));
+        }
+      }
+
+      updatePhiMVCovariateAdj(y_obs, nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                              gamma((i % r_stored_iters),0), tilde_tau_phi, xi,
+                              Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
+                              sigma((i % r_stored_iters)), X, (i % r_stored_iters),
+                              r_stored_iters, m_1, M_1, Phi);
+
+      updateDelta(Phi((i % r_stored_iters),0), gamma((i % r_stored_iters),0),
+                  A.slice(i % r_stored_iters), (i % r_stored_iters),
+                  r_stored_iters, delta);
+
+      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i % r_stored_iters)),
+              var_epsilon1, var_epsilon2, (i % r_stored_iters), r_stored_iters, A);
+
+      updateGamma(nu_1, delta.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
+                  (i % r_stored_iters), r_stored_iters, gamma);
+
+      updateNuMVCovariateAdj(y_obs, tau.row((i % r_stored_iters)).t(),
+                             Phi((i % r_stored_iters),0), xi, eta((i % r_stored_iters),0),
+                             Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
+                             sigma((i % r_stored_iters)), (i % r_stored_iters), r_stored_iters,
+                             X, b_1, B_1, nu);
+
+      updateTauMV(alpha_nu, beta_nu, nu.slice((i % r_stored_iters)),
+                  (i % r_stored_iters), r_stored_iters, tau);
+
+      updateSigmaMVCovariateAdj(y_obs, alpha_0, beta_0,
+                                nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                                Phi((i % r_stored_iters),0), xi, Z.slice((i % r_stored_iters)),
+                                chi.slice((i % r_stored_iters)), (i % r_stored_iters),
+                                r_stored_iters, X, sigma);
+
+      updateChiMVCovariateAdj(y_obs, Phi((i % r_stored_iters),0), xi,
+                              nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                              Z.slice((i % r_stored_iters)), sigma((i % r_stored_iters)),
+                              (i % r_stored_iters), r_stored_iters, X, chi);
+
+      updateEtaMV(y_obs, tau_eta.slice(i % r_stored_iters), Phi((i % r_stored_iters),0),
+                  xi, nu.slice((i % r_stored_iters)), Z.slice((i % r_stored_iters)),
+                  chi.slice((i % r_stored_iters)), sigma((i % r_stored_iters)),
+                  (i % r_stored_iters), r_stored_iters, X, b_1, B_1, eta);
+
+      updateTauEtaMV(alpha_eta, beta_eta, eta((i % r_stored_iters),0),
+                     (i % r_stored_iters), r_stored_iters, tau_eta);
+
+    }
+
+    if((i % n_temp_trans) == 0 && (i > 0)){
+      // initialize placeholders
+      nu_TT.slice(0) = nu.slice (i % r_stored_iters);
+      chi_TT.slice(0) = chi.slice(i % r_stored_iters);
+      pi_TT.col(0) = pi.col(i % r_stored_iters);
+      sigma_TT(0) = sigma(i % r_stored_iters);
+      Z_TT.slice(0) = Z.slice(i % r_stored_iters);
+      delta_TT.slice(0) = delta.slice(i % r_stored_iters);
+      gamma_TT(0,0) = gamma(i % r_stored_iters,0);
+      Phi_TT(0,0) = Phi(i % r_stored_iters,0);
+      A_TT.slice(0) = A.slice(i % r_stored_iters);
+      tau_TT.row(0) = tau.row(i % r_stored_iters);
+      alpha_3_TT(0) = alpha_3(i % r_stored_iters);
+      eta_TT(0,0) = eta(i % r_stored_iters, 0);
+      tau_eta_TT.slice(0) = tau_eta.slice(i % r_stored_iters);
+
+
+      nu_TT.slice(1) = nu.slice(i % r_stored_iters);
+      chi_TT.slice(1) = chi.slice(i % r_stored_iters);
+      pi_TT.col(1) = pi.col(i % r_stored_iters);
+      sigma_TT(1) = sigma(i % r_stored_iters);
+      Z_TT.slice(1) = Z.slice(i % r_stored_iters);
+      delta_TT.slice(1) = delta.slice(i % r_stored_iters);
+      gamma_TT(1,0) = gamma(i % r_stored_iters,0);
+      Phi_TT(1,0) = Phi(i % r_stored_iters,0);
+      A_TT.slice(1) = A.slice(i % r_stored_iters);
+      tau_TT.row(1) = tau.row(i % r_stored_iters);
+      alpha_3_TT(1) = alpha_3(i % r_stored_iters);
+      eta_TT(1,0) = eta(i % r_stored_iters, 0);
+      tau_eta_TT.slice(1) = tau_eta.slice(i % r_stored_iters);
+
+      temp_ind = 0;
+
+      // Perform tempered transitions
+      for(int l = 1; l < ((2 * N_t) + 1); l++){
+        updateZTempered_MMMVCovariateAdj(beta_ladder(temp_ind), y_obs,
+                                         Phi_TT(l,0), xi_TT, nu_TT.slice(l),
+                                         eta_TT(l,0), chi_TT.slice(l), pi_TT.col(l),
+                                         sigma_TT(l), l, (2 * N_t) + 1,
+                                         alpha_3_TT(l), a_Z_PM, X, Z_ph, Z_TT);
+        updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
+        updateAlpha3(pi_TT.col(l), b, Z_TT.slice(l), l, (2 * N_t) + 1, var_alpha3, alpha_3_TT);
+
+        for(int k = 0; k < K; k++){
+          tilde_tau_phi(k, 0) = delta_TT(k, 0, l);
+          for(int j = 1; j < M; j++){
+            tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta_TT(k, j, l);
+          }
+        }
+
+        updatePhiTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs, nu_TT.slice(l),
+                                        eta_TT(l,0), gamma_TT(l,0), tilde_tau_phi,
+                                        xi_TT, Z_TT.slice(l), chi_TT.slice(l), sigma_TT(l),
+                                        X, l, (2 * N_t) + 1, m_1, M_1, Phi_TT);
+
+        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.slice(l), l, (2 * N_t) + 1,
+                    delta_TT);
+
+        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.slice(l), var_epsilon1,
+                var_epsilon2, l, (2 * N_t) + 1, A_TT);
+        updateGamma(nu_1, delta_TT.slice(l), Phi_TT(l,0), l, (2 * N_t) + 1,
+                    gamma_TT);
+        updateNuTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs,
+                                       tau_TT.row(l).t(), Phi_TT(l,0), xi_TT,
+                                       eta_TT(l,0), Z_TT.slice(l),
+                                       chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1,
+                                       X, b_1, B_1, nu_TT);
+        updateTauMV(alpha_nu, beta_nu, nu_TT.slice(l), l, (2 * N_t) + 1, tau_TT);
+        updateSigmaTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs,
+                                          alpha_0, beta_0, nu_TT.slice(l),
+                                          eta_TT(l,0), Phi_TT(l,0), xi_TT,
+                                          Z_TT.slice(l), chi_TT.slice(l), l,
+                                          (2 * N_t) + 1, X, sigma_TT);
+        updateChiTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs, Phi_TT(l,0),
+                                        xi_TT, nu_TT.slice(l), eta_TT(l,0),
+                                        Z_TT.slice(l), sigma_TT(l), l,
+                                        (2 * N_t) + 1, X, chi_TT);
+        updateEtaTemperedMV(beta_ladder(temp_ind), y_obs, tau_eta_TT.slice(l),
+                            Phi_TT(l,0), xi_TT, nu_TT.slice(l), Z_TT.slice(l),
+                            chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, X,
+                            b_1, B_1, eta_TT);
+        updateTauEtaMV(alpha_eta, beta_eta, eta_TT(l,0), l, (2 * N_t) + 1,
+                       tau_eta_TT);
+        // update temp_ind
+        if(l < N_t){
+          temp_ind = temp_ind + 1;
+        }
+        if(l > N_t){
+          temp_ind = temp_ind - 1;
+        }
+      }
+      logA = CalculateTTAcceptanceMVCovariateAdj(beta_ladder, y_obs, nu_TT, eta_TT,
+                                                 Phi_TT, xi_TT, Z_TT, chi_TT, X,
+                                                 sigma_TT);
+      logu = std::log(R::runif(0,1));
+
+      Rcpp::Rcout << "prob_accept: " << logA<< "\n";
+      Rcpp::Rcout << "logu: " << logu<< "\n";
+
+      if(logu < logA){
+        Rcpp::Rcout << "Accept \n";
+        nu.slice(i % r_stored_iters) = nu_TT.slice(2 * N_t);
+        chi.slice(i % r_stored_iters) = chi_TT.slice(2 * N_t);
+        pi.col(i % r_stored_iters) = pi_TT.col(2 * N_t);
+        sigma(i % r_stored_iters) = sigma_TT(2 * N_t);
+        Z.slice(i % r_stored_iters) = Z_TT.slice(2 * N_t);
+        delta.slice(i % r_stored_iters) = delta_TT.slice(2 * N_t);
+        gamma(i % r_stored_iters,0) = gamma_TT(2 * N_t,0);
+        Phi(i % r_stored_iters,0) = Phi_TT(2 * N_t,0);
+        A.slice(i % r_stored_iters) = A_TT.slice(2 * N_t);
+        tau.row(i % r_stored_iters) = tau_TT.row(2 * N_t);
+        alpha_3(i % r_stored_iters) = alpha_3_TT(2 * N_t);
+        eta(i % r_stored_iters,0) = eta_TT(2 * N_t, 0);
+        tau_eta.slice(i % r_stored_iters) = tau_eta_TT.slice(2 * N_t);
+
+        //update accept number
+        accept_num = accept_num + 1;
+      }
+
+      //initialize next state
+      if(((i+1) % r_stored_iters) != 0){
+        nu.slice((i+1) % r_stored_iters) = nu.slice(i % r_stored_iters);
+        chi.slice((i+1) % r_stored_iters) = chi.slice(i % r_stored_iters);
+        pi.col((i+1) % r_stored_iters) = pi.col(i % r_stored_iters);
+        sigma((i+1) % r_stored_iters) = sigma(i % r_stored_iters);
+        Z.slice((i+1) % r_stored_iters) = Z.slice(i % r_stored_iters);
+        delta.slice((i+1) % r_stored_iters) = delta.slice(i % r_stored_iters);
+        A.slice((i+1) % r_stored_iters) = A.slice(i % r_stored_iters);
+        tau.row((i+1) % r_stored_iters) = tau.row(i % r_stored_iters);
+        Phi((i+1) % r_stored_iters,0) = Phi(i % r_stored_iters, 0);
+        alpha_3((i+1) % r_stored_iters) =  alpha_3(i % r_stored_iters);
+        eta((i+1) % r_stored_iters,0) = eta(i % r_stored_iters,0);
+        tau_eta.slice((i+1) % r_stored_iters) = tau_eta.slice(i % r_stored_iters);
+      }
+    }
+    loglik((i % r_stored_iters)) =  calcLikelihoodMVCovariateAdj(y_obs,
+           nu.slice((i % r_stored_iters)), eta(i % r_stored_iters, 0),
+           Phi((i % r_stored_iters),0), xi, Z.slice((i % r_stored_iters)),
+           chi.slice((i % r_stored_iters)), i % r_stored_iters, X,
+           sigma((i % r_stored_iters)));
+    if(((i+1) % 100) == 0){
+      Rcpp::Rcout << "Iteration: " << i+1 << "\n";
+      Rcpp::Rcout << "Accpetance Probability: " << accept_num / (std::round(i / n_temp_trans)) << "\n";
+      Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i % r_stored_iters)-4, (i % r_stored_iters))) << "\n";
+      Rcpp::checkUserInterrupt();
+    }
+    if(((i+1) % r_stored_iters) == 0 && i > 1){
+      // Save parameters
+      arma::cube nu1(K, P, r_stored_iters/thinning_num, arma::fill::randn);
+      arma::cube chi1(n_obs, M, r_stored_iters/thinning_num, arma::fill::randn);
+      arma::mat pi1(K, r_stored_iters/thinning_num, arma::fill::zeros);
+      arma::vec alpha_31(r_stored_iters/thinning_num, arma::fill::zeros);
+      arma::vec sigma1(r_stored_iters/thinning_num, arma::fill::ones);
+      arma::cube A1 = arma::ones(K, 2, r_stored_iters/thinning_num);
+      arma::cube Z1 = arma::randi<arma::cube>(n_obs, K, r_stored_iters/thinning_num,
+                                              arma::distr_param(0,1));
+      arma::cube delta1(K, M, r_stored_iters/thinning_num, arma::fill::ones);
+      arma::field<arma::cube> gamma1(r_stored_iters/thinning_num,1);
+      arma::field<arma::cube> Phi1(r_stored_iters/thinning_num, 1);
+      arma::mat tau1(r_stored_iters/thinning_num, K, arma::fill::ones);
+
+      //parameters for covariate adjusted
+      arma::field<arma::cube> eta1(r_stored_iters, 1);
+      arma::field<arma::cube> xi1(r_stored_iters, K);
+      arma::cube tau_eta1 = arma::ones(K, D, r_stored_iters);
+
+
+      nu1.slice(0) = nu.slice(0);
+      chi1.slice(0) = chi.slice(0);
+      pi1.col(0) = pi.col(0);
+      sigma1(0) = sigma(0);
+      A1.slice(0) = A.slice(0);
+      Z1.slice(0) = Z.slice(0);
+      delta1.slice(0) = delta.slice(0);
+      gamma1(0,0) = gamma(0,0);
+      Phi1(0,0) = Phi(0,0);
+      tau1.row(0) = tau.row(0);
+      eta1(0,0) = eta(0,0);
+      tau_eta1.slice(0) = tau_eta.slice(0);
+      for(int k = 0; k < K; k++){
+        xi1(0,k) = xi(0,k);
+      }
+
+      for(int p=1; p < r_stored_iters / thinning_num; p++){
+        nu1.slice(p) = nu.slice(thinning_num*p - 1);
+        chi1.slice(p) = chi.slice(thinning_num*p - 1);
+        pi1.col(p) = pi.col(thinning_num*p - 1);
+        alpha_31(p) = alpha_3(thinning_num*p - 1);
+        sigma1(p) = sigma(thinning_num*p - 1);
+        A1.slice(p) = A.slice(thinning_num*p - 1);
+        Z1.slice(p) = Z.slice(thinning_num*p - 1);
+        delta1.slice(p) = delta.slice(thinning_num*p - 1);
+        gamma1(p,0) = gamma(thinning_num*p - 1,0);
+        Phi1(p,0) = Phi(thinning_num*p - 1,0);
+        tau1.row(p) = tau.row(thinning_num*p - 1);
+        eta1(p,0) = eta(thinning_num*p - 1,0);
+        tau_eta1.slice(p) = tau_eta.slice(thinning_num*p - 1);
+        for(int k = 0; k < K; k++){
+          xi1(p,k) = xi(thinning_num*p - 1,k);
+        }
+      }
+
+      nu1.save(directory + "Nu" + std::to_string(q) + ".txt", arma::arma_ascii);
+      chi1.save(directory + "Chi" + std::to_string(q) +".txt", arma::arma_ascii);
+      pi1.save(directory + "Pi" + std::to_string(q) +".txt", arma::arma_ascii);
+      alpha_31.save(directory + "alpha_3" + std::to_string(q) + ".txt", arma::arma_ascii);
+      A1.save(directory + "A" + std::to_string(q) +".txt", arma::arma_ascii);
+      delta1.save(directory + "Delta" + std::to_string(q) +".txt", arma::arma_ascii);
+      sigma1.save(directory + "Sigma" + std::to_string(q) +".txt", arma::arma_ascii);
+      tau1.save(directory + "Tau" + std::to_string(q) +".txt", arma::arma_ascii);
+      gamma1.save(directory + "Gamma" + std::to_string(q) +".txt");
+      Phi1.save(directory + "Phi" + std::to_string(q) +".txt");
+      Z1.save(directory + "Z" + std::to_string(q) +".txt", arma::arma_ascii);
+      eta1.save(directory + "Eta" + std::to_string(q) +".txt");
+      tau_eta1.save(directory + "Tau_Eta" + std::to_string(q) +".txt", arma::arma_ascii);
+
+
+      //reset all parameters
+      nu.slice(0) = nu.slice(i % r_stored_iters);
+      chi.slice(0) = chi.slice(i % r_stored_iters);
+      pi.col(0) = pi.col(i % r_stored_iters);
+      alpha_3(0) = alpha_3(i % r_stored_iters);
+      A.slice(0) = A.slice(i % r_stored_iters);
+      delta.slice(0) = delta.slice(i % r_stored_iters);
+      sigma(0) = sigma(i % r_stored_iters);
+      tau.row(0) = tau.row(i % r_stored_iters);
+      gamma(0,0) = gamma(i % r_stored_iters, 0);
+      Phi(0,0) = Phi(i % r_stored_iters, 0);
+      Z.slice(0) = Z.slice(i % r_stored_iters);
+      eta(0,0) = eta(i % r_stored_iters,0);
+      tau_eta.slice(0) = tau_eta.slice(i % r_stored_iters);
+      for(int k = 0; k < K; k++){
+        xi(0,k) = xi(i % r_stored_iters,k);
+      }
+
+      q = q + 1;
+    }
+  }
+
+  Rcpp::List params = Rcpp::List::create(Rcpp::Named("nu", nu),
+                                         Rcpp::Named("alpha_3", alpha_3),
+                                         Rcpp::Named("chi", chi),
+                                         Rcpp::Named("pi", pi),
+                                         Rcpp::Named("A", A),
+                                         Rcpp::Named("delta", delta),
+                                         Rcpp::Named("sigma", sigma),
+                                         Rcpp::Named("tau", tau),
+                                         Rcpp::Named("tau_eta", tau_eta),
+                                         Rcpp::Named("eta", eta),
+                                         Rcpp::Named("gamma", gamma),
+                                         Rcpp::Named("Phi", Phi),
+                                         Rcpp::Named("Z", Z),
+                                         Rcpp::Named("loglik", loglik));
+  return params;
+}
+
+
+// Conducts a mixture of untempered sampling and termpered sampling to get
+// posterior draws from the covariate adjusted (mean and covariance) mixed membership model
+//
+// @name BFMMM_MTT_warm_startMV_Mean_CovAdj
+// @param y_obs Matrix of observed vectors
+// @param X Matrix of covariates of interest
+// @param thinning_num Int containing how often we save an MCMC iteration
+// @param K Int containing the number of clusters
+// @param M Int containing the number of eigenfunctions
+// @param tot_mcmc_iters Int containing total number of MCMC iterations
+// @param r_stored_iters Int constaining number of iterations performed for each batch
+// @param t_star Field (list) of vectors containing time points of interest that are not observed (optional)
+// @param rho Double containing hyperparmater for sampling from Z
+// @param alpha_3 Double hyperparameter for sampling from pi
+// @param a_12 Vec containing hyperparameters for sampling from delta
+// @param alpha1l Double containing hyperparameters for sampling from A
+// @param alpha2l Double containing hyperparameters for sampling from A
+// @param beta1l Double containing hyperparameters for sampling from A
+// @param beta2l Double containing hyperparameters for sampling from A
+// @param a_Z_PM Double containing hyperparameter used to sample from the posterior of Z
+// @param a_pi_PM Double containing hyperparameter used to sample from the posterior of pi
+// @param var_alpha3 Doubel containing hyperparameter for sampling from alpha_3
+// @param var_epslion1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param var_epslion2 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
+// @param alpha_nu Double containing hyperparameters for sampling from tau_nu
+// @param beta_nu Double containing hyperparameters for sampling from tau_nu
+// @param alpha_eta Double containing hyperparameters for sampling from tau_eta
+// @param beta_eta Double containing hyperparameters for sampling from tau_eta
+// @param alpha_0 Double containing hyperparameters for sampling from sigma
+// @param beta_0 Double containing hyperparameters for sampling from sigma
+// @param directory String containing path to store batches of MCMC samples
+// @returns params List of objects containing the MCMC samples from the last batch
+inline Rcpp::List BFMMM_MTT_warm_startMV_Mean_CovAdj(const arma::mat& y_obs,
+                                                     const arma::mat& X,
+                                                     const int& thinning_num,
+                                                     const int& K,
+                                                     const int& M,
+                                                     const int& tot_mcmc_iters,
+                                                     const int& r_stored_iters,
+                                                     const int& n_temp_trans,
+                                                     const arma::vec& c,
+                                                     const double& b,
+                                                     const double& nu_1,
+                                                     const double& alpha1l,
+                                                     const double& alpha2l,
+                                                     const double& beta1l,
+                                                     const double& beta2l,
+                                                     const double& a_Z_PM,
+                                                     const double& a_pi_PM,
+                                                     const double& var_alpha3,
+                                                     const double& var_epsilon1,
+                                                     const double& var_epsilon2,
+                                                     const double& alpha_nu,
+                                                     const double& beta_nu,
+                                                     const double& alpha_eta,
+                                                     const double& beta_eta,
+                                                     const double& alpha_0,
+                                                     const double& beta_0,
+                                                     const std::string directory,
+                                                     const double& beta_N_t,
+                                                     const int& N_t,
+                                                     const arma::mat& Z_est,
+                                                     const arma::vec& pi_est,
+                                                     const double& alpha_3_est,
+                                                     const arma::mat& delta_est,
+                                                     const arma::cube& delta_xi_est,
+                                                     const arma::cube& gamma_est,
+                                                     const arma::field<arma::cube>& gamma_xi_est,
+                                                     const arma::cube& Phi_est,
+                                                     const arma::field<arma::cube>& xi_est,
+                                                     const arma::mat& A_est,
+                                                     const arma::cube& A_xi_est,
+                                                     const arma::mat& nu_est,
+                                                     const arma::cube& eta_est,
+                                                     const arma::vec& tau_est,
+                                                     const arma::mat& tau_eta_est,
+                                                     const double& sigma_est,
+                                                     const arma::mat& chi_est){
+  int n_obs = y_obs.n_rows;
+  int P = y_obs.n_cols;
+  int D = X.n_cols;
+
+  arma::cube nu(K, P, r_stored_iters, arma::fill::randn);
+  arma::mat tau(r_stored_iters, K, arma::fill::ones);
+  arma::cube chi(n_obs, M, r_stored_iters, arma::fill::randn);
+  arma::mat pi(K, r_stored_iters, arma::fill::zeros);
+  arma::vec pi_ph = arma::zeros(K);
+  pi.col(0) = rdirichlet(c);
+  arma::vec sigma(r_stored_iters, arma::fill::ones);
+  arma::vec Z_ph = arma::zeros(K);
+  arma::vec alpha_3 = arma::ones(r_stored_iters);
+  arma::cube Z = arma::randi<arma::cube>(n_obs, K, r_stored_iters,
+                                         arma::distr_param(0,1));
+
+  for(int i = 0; i < n_obs; i++){
+    Z.slice(0).row(i) = rdirichlet(pi.col(0) * 100).t();
+  }
+
+  arma::cube delta(K, M, r_stored_iters, arma::fill::ones);
+  arma::field<arma::cube> gamma(r_stored_iters,1);
+  arma::field<arma::cube> Phi(r_stored_iters, 1);
+  arma::mat tilde_tau_phi(K, M, arma::fill::ones);
+  arma::cube tilde_tau_xi(K, M, D, arma::fill::ones);
+  arma::cube A = arma::ones(K, 2, r_stored_iters);
+  arma::vec loglik = arma::zeros(r_stored_iters);
+
+  //parameters for covariate adjusted
+  arma::field<arma::cube> eta(r_stored_iters, 1);
+  arma::field<arma::cube> xi(r_stored_iters, K);
+  arma::cube tau_eta = arma::ones(K, D, r_stored_iters);
+  arma::field<arma::cube> gamma_xi(r_stored_iters, K);
+  arma::field<arma::cube> delta_xi(r_stored_iters, 1);
+  arma::field<arma::cube> A_xi(r_stored_iters, 1);
+
+
+  // start numbering for output files
+  int q = 0;
+
+  for(int i = 0; i < r_stored_iters; i++){
+    gamma(i,0) = arma::cube(K, P, M, arma::fill::ones);
+    Phi(i,0) = arma::randn(K, P, M);
+    eta(i,0) = arma::zeros(P, D, K);
+    delta_xi(i,0) = arma::ones(K, M, D);
+    A_xi(i,0) = arma::ones(K, 2, D);
+    for(int k = 0; k < K; k++){
+      xi(i,k) = arma::zeros(P, D, M);
+      gamma_xi(i,k) = arma::ones(P, D, M);
+    }
+  }
+
+  arma::vec m_1(P, arma::fill::zeros);
+  arma::mat M_1(P, P, arma::fill::zeros);
+
+  arma::vec b_1(P, arma::fill::zeros);
+  arma::mat B_1(P, P, arma::fill::zeros);
+
+  // Create parameters for tempered transitions using geometric scheme
+  arma::vec beta_ladder(N_t, arma::fill::ones);
+  beta_ladder(N_t - 1) = beta_N_t;
+  double geom_mult = std::pow(beta_N_t, 1.0/N_t);
+  Rcpp::Rcout << "geom_mult: " << geom_mult << "\n";
+  for(int i = 1; i < N_t; i++){
+    beta_ladder(i) = beta_ladder(i-1) * geom_mult;
+    // beta_ladder(i) = 1 - ((1- beta_N_t) *(std::pow(i/ (N_t - 1.0), 2.0)));
+    Rcpp::Rcout << "beta_i: " << beta_ladder(i) << "\n";
+  }
+  // Create storage for tempered transitions
+  arma::cube nu_TT(K, P, (2 * N_t) + 1, arma::fill::randn);
+  arma::cube chi_TT(n_obs, M, (2 * N_t) + 1, arma::fill::randn);
+  arma::mat pi_TT(K, (2 * N_t) + 1, arma::fill::zeros);
+  arma::vec sigma_TT((2 * N_t) + 1, arma::fill::ones);
+  arma::cube Z_TT = arma::randi<arma::cube>(n_obs, K, (2 * N_t) + 1,
+                                            arma::distr_param(0,1));
+  arma::cube delta_TT(K, M, (2 * N_t) + 1, arma::fill::ones);
+  arma::field<arma::cube> gamma_TT((2 * N_t) + 1, 1);
+  arma::field<arma::cube> Phi_TT((2 * N_t) + 1, 1);
+  arma::cube A_TT = arma::ones(K, 2, (2 * N_t) + 1);
+  arma::vec alpha_3_TT = arma::ones((2 * N_t) + 1);
+
+  //parameters for covariate adjusted
+  arma::field<arma::cube> eta_TT((2 * N_t) + 1, 1);
+  arma::field<arma::cube> xi_TT((2 * N_t) + 1, K);
+  arma::cube tau_eta_TT = arma::ones(K, D, (2 * N_t) + 1);
+  arma::field<arma::cube> gamma_xi_TT((2 * N_t) + 1, K);
+  arma::field<arma::cube> delta_xi_TT((2 * N_t) + 1, 1);
+  arma::field<arma::cube> A_xi_TT((2 * N_t) + 1, 1);
+
+  for(int i = 0; i < ((2 * N_t) + 1); i++){
+    gamma_TT(i,0) = arma::cube(K, P, M, arma::fill::ones);
+    Phi_TT(i,0) = arma::randn(K, P, M);
+    eta_TT(i,0) = arma::zeros(P, D, K);
+    delta_xi_TT(i,0) = arma::ones(K, M, D);
+    A_xi_TT(i,0) = arma::ones(K, 2, D);
+    for(int k = 0; k < K; k++){
+      xi_TT(i,k) = arma::zeros(P, D, M);
+      gamma_xi_TT(i,k) = arma::ones(P, D, M);
+    }
+  }
+
+  arma::mat tau_TT((2 * N_t) + 1, K, arma::fill::ones);
+
+  int temp_ind = 0;
+  double logA = 0;
+  double logu = 0;
+  int accept_num = 0;
+
+  Z.slice(0) = Z_est;
+  pi.col(0) = pi_est;
+
+  alpha_3(0) = alpha_3_est;
+  delta.slice(0) = delta_est;
+  gamma(0,0) = gamma_est;
+  Phi(0,0) = Phi_est;
+  A.slice(0) = A_est;
+  nu.slice(0) = nu_est;
+  tau.row(0) = tau_est.t();
+  tau_eta.slice(0) = tau_eta_est;
+  sigma(0) = sigma_est;
+
+  chi.slice(0) = chi_est;
+
+  // covariate adjusted parameters
+  for(int k = 0; k < K; k++){
+    xi(0,k) = xi_est(0,k);
+    gamma_xi(0,k) = gamma_xi_est(0,k);
+  }
+  delta_xi(0,0) = delta_xi_est;
+  eta(0,0) = eta_est;
+  A_xi(0,0) = A_xi_est;
+  tau_eta.slice(0) = tau_eta_est;
+
+  for(int i=0; i < tot_mcmc_iters; i++){
+    if(((i % n_temp_trans) != 0) || (i == 0)){
+      updateZ_MMMVCovariateAdj(y_obs, Phi((i % r_stored_iters),0), xi,
+                               nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                               chi.slice((i % r_stored_iters)), pi.col((i % r_stored_iters)),
+                               sigma((i % r_stored_iters)), (i % r_stored_iters),
+                               r_stored_iters, alpha_3(i % r_stored_iters), a_Z_PM, X, Z_ph, Z);
+
+      updatePi_PM(alpha_3(i % r_stored_iters) ,Z.slice(i% r_stored_iters), c,
+                  (i % r_stored_iters), r_stored_iters, a_pi_PM, pi_ph, pi);
+
+      updateAlpha3(pi.col(i % r_stored_iters), b, Z.slice(i % r_stored_iters),
+                   (i % r_stored_iters), r_stored_iters, var_alpha3, alpha_3);
+
+      for(int k = 0; k < K; k++){
+        tilde_tau_phi(k, 0) = delta(k, 0, (i % r_stored_iters));
+        for(int j = 1; j < M; j++){
+          tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta(k, j,(i % r_stored_iters));
+        }
+      }
+
+      updatePhiMVCovariateAdj(y_obs, nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                              gamma((i % r_stored_iters),0), tilde_tau_phi, xi,
+                              Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
+                              sigma((i % r_stored_iters)), X, (i % r_stored_iters),
+                              r_stored_iters, m_1, M_1, Phi);
+
+      updateDelta(Phi((i % r_stored_iters),0), gamma((i % r_stored_iters),0),
+                  A.slice(i % r_stored_iters), (i % r_stored_iters),
+                  r_stored_iters, delta);
+
+      updateA(alpha1l, beta1l, alpha2l, beta2l, delta.slice((i % r_stored_iters)),
+              var_epsilon1, var_epsilon2, (i % r_stored_iters), r_stored_iters, A);
+
+      updateGamma(nu_1, delta.slice((i % r_stored_iters)), Phi((i % r_stored_iters),0),
+                  (i % r_stored_iters), r_stored_iters, gamma);
+
+      updateNuMVCovariateAdj(y_obs, tau.row((i % r_stored_iters)).t(),
+                             Phi((i % r_stored_iters),0), xi, eta((i % r_stored_iters),0),
+                             Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
+                             sigma((i % r_stored_iters)), (i % r_stored_iters), r_stored_iters,
+                             X, b_1, B_1, nu);
+
+      updateTauMV(alpha_nu, beta_nu, nu.slice((i % r_stored_iters)),
+                  (i % r_stored_iters), r_stored_iters, tau);
+
+      updateSigmaMVCovariateAdj(y_obs, alpha_0, beta_0,
+                                nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                                Phi((i % r_stored_iters),0), xi, Z.slice((i % r_stored_iters)),
+                                chi.slice((i % r_stored_iters)), (i % r_stored_iters),
+                                r_stored_iters, X, sigma);
+
+      updateChiMVCovariateAdj(y_obs, Phi((i % r_stored_iters),0), xi,
+                              nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                              Z.slice((i % r_stored_iters)), sigma((i % r_stored_iters)),
+                              (i % r_stored_iters), r_stored_iters, X, chi);
+
+      updateEtaMV(y_obs, tau_eta.slice(i % r_stored_iters), Phi((i % r_stored_iters),0),
+                  xi, nu.slice((i % r_stored_iters)), Z.slice((i % r_stored_iters)),
+                  chi.slice((i % r_stored_iters)), sigma((i % r_stored_iters)),
+                  (i % r_stored_iters), r_stored_iters, X, b_1, B_1, eta);
+
+      updateTauEtaMV(alpha_eta, beta_eta, eta((i % r_stored_iters),0),
+                     (i % r_stored_iters), r_stored_iters, tau_eta);
+
+      for(int k = 0; k < K; k++){
+        for(int m = 0; m < D; m++){
+          tilde_tau_xi(k,0,m) = delta_xi((i % r_stored_iters),0)(k,0,m);
+          for(int j = 1; j < M; j++){
+            tilde_tau_xi(k,j,m) = tilde_tau_xi(k,j-1,m) * delta_xi((i % r_stored_iters),0)(k,j,m);
+          }
+        }
+      }
+
+      updateXiMVCovariateAdj(y_obs, nu.slice((i % r_stored_iters)), eta((i % r_stored_iters),0),
+                             gamma_xi, tilde_tau_xi, Phi((i % r_stored_iters),0),
+                             Z.slice((i % r_stored_iters)), chi.slice((i % r_stored_iters)),
+                             sigma((i % r_stored_iters)), X, (i % r_stored_iters), r_stored_iters,
+                             m_1, M_1, xi);
+      updateDeltaXi(xi, gamma_xi, A_xi(i % r_stored_iters,0), i % r_stored_iters,
+                    r_stored_iters, delta_xi);
+      updateAXi(alpha1l, beta1l, alpha2l, beta2l, delta_xi(i % r_stored_iters, 0),
+                var_epsilon1, var_epsilon2, (i % r_stored_iters), r_stored_iters,
+                A_xi);
+      updateGammaXi(nu_1, delta_xi(i % r_stored_iters, 0), xi, i % r_stored_iters,
+                    r_stored_iters, gamma_xi);
+
+    }
+
+    if((i % n_temp_trans) == 0 && (i > 0)){
+      // initialize placeholders
+      nu_TT.slice(0) = nu.slice (i % r_stored_iters);
+      chi_TT.slice(0) = chi.slice(i % r_stored_iters);
+      pi_TT.col(0) = pi.col(i % r_stored_iters);
+      sigma_TT(0) = sigma(i % r_stored_iters);
+      Z_TT.slice(0) = Z.slice(i % r_stored_iters);
+      delta_TT.slice(0) = delta.slice(i % r_stored_iters);
+      gamma_TT(0,0) = gamma(i % r_stored_iters,0);
+      Phi_TT(0,0) = Phi(i % r_stored_iters,0);
+      A_TT.slice(0) = A.slice(i % r_stored_iters);
+      tau_TT.row(0) = tau.row(i % r_stored_iters);
+      alpha_3_TT(0) = alpha_3(i % r_stored_iters);
+      eta_TT(0,0) = eta(i % r_stored_iters, 0);
+      tau_eta_TT.slice(0) = tau_eta.slice(i % r_stored_iters);
+      delta_xi_TT(0,0) = delta_xi(i % r_stored_iters, 0);
+      A_xi_TT(0,0) = A_xi(i % r_stored_iters, 0);
+
+      for(int k = 0; k < K; k++){
+        xi_TT(0,k) = xi(i % r_stored_iters,k);
+        gamma_xi_TT(0,k) = gamma_xi(i % r_stored_iters,k);
+        xi_TT(1,k) = xi(i % r_stored_iters,k);
+        gamma_xi_TT(1,k) = gamma_xi(i % r_stored_iters,k);
+      }
+
+
+      nu_TT.slice(1) = nu.slice(i % r_stored_iters);
+      chi_TT.slice(1) = chi.slice(i % r_stored_iters);
+      pi_TT.col(1) = pi.col(i % r_stored_iters);
+      sigma_TT(1) = sigma(i % r_stored_iters);
+      Z_TT.slice(1) = Z.slice(i % r_stored_iters);
+      delta_TT.slice(1) = delta.slice(i % r_stored_iters);
+      gamma_TT(1,0) = gamma(i % r_stored_iters,0);
+      Phi_TT(1,0) = Phi(i % r_stored_iters,0);
+      A_TT.slice(1) = A.slice(i % r_stored_iters);
+      tau_TT.row(1) = tau.row(i % r_stored_iters);
+      alpha_3_TT(1) = alpha_3(i % r_stored_iters);
+      eta_TT(1,0) = eta(i % r_stored_iters, 0);
+      tau_eta_TT.slice(1) = tau_eta.slice(i % r_stored_iters);
+      delta_xi_TT(1,0) = delta_xi(i % r_stored_iters, 0);
+      A_xi_TT(1,0) = A_xi(i % r_stored_iters, 0);
+
+      temp_ind = 0;
+
+      // Perform tempered transitions
+      for(int l = 1; l < ((2 * N_t) + 1); l++){
+        updateZTempered_MMMVCovariateAdj(beta_ladder(temp_ind), y_obs,
+                                         Phi_TT(l,0), xi_TT, nu_TT.slice(l),
+                                         eta_TT(l,0), chi_TT.slice(l), pi_TT.col(l),
+                                         sigma_TT(l), l, (2 * N_t) + 1,
+                                         alpha_3_TT(l), a_Z_PM, X, Z_ph, Z_TT);
+        updatePi_PM(alpha_3_TT(l), Z_TT.slice(l), c, l, (2 * N_t) + 1, a_pi_PM, pi_ph, pi_TT);
+        updateAlpha3(pi_TT.col(l), b, Z_TT.slice(l), l, (2 * N_t) + 1, var_alpha3, alpha_3_TT);
+
+        for(int k = 0; k < K; k++){
+          tilde_tau_phi(k, 0) = delta_TT(k, 0, l);
+          for(int j = 1; j < M; j++){
+            tilde_tau_phi(k, j) = tilde_tau_phi(k, j-1) * delta_TT(k, j, l);
+          }
+        }
+
+        updatePhiTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs, nu_TT.slice(l),
+                                        eta_TT(l,0), gamma_TT(l,0), tilde_tau_phi,
+                                        xi_TT, Z_TT.slice(l), chi_TT.slice(l), sigma_TT(l),
+                                        X, l, (2 * N_t) + 1, m_1, M_1, Phi_TT);
+
+        updateDelta(Phi_TT(l,0), gamma_TT(l,0), A_TT.slice(l), l, (2 * N_t) + 1,
+                    delta_TT);
+
+        updateA(alpha1l, beta1l, alpha2l, beta2l, delta_TT.slice(l), var_epsilon1,
+                var_epsilon2, l, (2 * N_t) + 1, A_TT);
+        updateGamma(nu_1, delta_TT.slice(l), Phi_TT(l,0), l, (2 * N_t) + 1,
+                    gamma_TT);
+        updateNuTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs,
+                                       tau_TT.row(l).t(), Phi_TT(l,0), xi_TT,
+                                       eta_TT(l,0), Z_TT.slice(l),
+                                       chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1,
+                                       X, b_1, B_1, nu_TT);
+        updateTauMV(alpha_nu, beta_nu, nu_TT.slice(l), l, (2 * N_t) + 1, tau_TT);
+        updateSigmaTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs,
+                                          alpha_0, beta_0, nu_TT.slice(l),
+                                          eta_TT(l,0), Phi_TT(l,0), xi_TT,
+                                          Z_TT.slice(l), chi_TT.slice(l), l,
+                                          (2 * N_t) + 1, X, sigma_TT);
+        updateChiTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs, Phi_TT(l,0),
+                                        xi_TT, nu_TT.slice(l), eta_TT(l,0),
+                                        Z_TT.slice(l), sigma_TT(l), l,
+                                        (2 * N_t) + 1, X, chi_TT);
+        updateEtaTemperedMV(beta_ladder(temp_ind), y_obs, tau_eta_TT.slice(l),
+                            Phi_TT(l,0), xi_TT, nu_TT.slice(l), Z_TT.slice(l),
+                            chi_TT.slice(l), sigma_TT(l), l, (2 * N_t) + 1, X,
+                            b_1, B_1, eta_TT);
+        updateTauEtaMV(alpha_eta, beta_eta, eta_TT(l,0), l, (2 * N_t) + 1,
+                       tau_eta_TT);
+
+        for(int k = 0; k < K; k++){
+          for(int m = 0; m < D; m++){
+            tilde_tau_xi(k,0,m) = delta_xi_TT(l,0)(k,0,m);
+            for(int j = 1; j < M; j++){
+              tilde_tau_xi(k,j,m) = tilde_tau_xi(k,j-1,m) * delta_xi_TT(l,0)(k,j,m);
+            }
+          }
+        }
+
+        updateXiTemperedMVCovariateAdj(beta_ladder(temp_ind), y_obs,
+                                       nu_TT.slice(l), eta_TT(l,0),
+                                       gamma_xi_TT, tilde_tau_xi, Phi_TT(l,0),
+                                       Z_TT.slice(l), chi_TT.slice(l),
+                                       sigma_TT(l), X, l, (2 * N_t) + 1,
+                                       m_1, M_1, xi_TT);
+        updateDeltaXi(xi_TT, gamma_xi_TT, A_xi_TT(l,0), l,
+                      (2 * N_t) + 1, delta_xi_TT);
+        updateAXi(alpha1l, beta1l, alpha2l, beta2l, delta_xi_TT(l,0),
+                  var_epsilon1, var_epsilon2, l, (2 * N_t) + 1, A_xi_TT);
+        updateGammaXi(nu_1, delta_xi_TT(l,0), xi_TT, l, (2 * N_t) + 1,
+                      gamma_xi_TT);
+
+        // update temp_ind
+        if(l < N_t){
+          temp_ind = temp_ind + 1;
+        }
+        if(l > N_t){
+          temp_ind = temp_ind - 1;
+        }
+      }
+      logA = CalculateTTAcceptanceMVCovariateAdj(beta_ladder, y_obs, nu_TT, eta_TT,
+                                                 Phi_TT, xi_TT, Z_TT, chi_TT, X,
+                                                 sigma_TT);
+      logu = std::log(R::runif(0,1));
+
+      Rcpp::Rcout << "prob_accept: " << logA<< "\n";
+      Rcpp::Rcout << "logu: " << logu<< "\n";
+
+      if(logu < logA){
+        Rcpp::Rcout << "Accept \n";
+        nu.slice(i % r_stored_iters) = nu_TT.slice(2 * N_t);
+        chi.slice(i % r_stored_iters) = chi_TT.slice(2 * N_t);
+        pi.col(i % r_stored_iters) = pi_TT.col(2 * N_t);
+        sigma(i % r_stored_iters) = sigma_TT(2 * N_t);
+        Z.slice(i % r_stored_iters) = Z_TT.slice(2 * N_t);
+        delta.slice(i % r_stored_iters) = delta_TT.slice(2 * N_t);
+        gamma(i % r_stored_iters,0) = gamma_TT(2 * N_t,0);
+        Phi(i % r_stored_iters,0) = Phi_TT(2 * N_t,0);
+        A.slice(i % r_stored_iters) = A_TT.slice(2 * N_t);
+        tau.row(i % r_stored_iters) = tau_TT.row(2 * N_t);
+        alpha_3(i % r_stored_iters) = alpha_3_TT(2 * N_t);
+        eta(i % r_stored_iters,0) = eta_TT(2 * N_t, 0);
+        tau_eta.slice(i % r_stored_iters) = tau_eta_TT.slice(2 * N_t);
+        delta_xi(i % r_stored_iters, 0) = delta_xi_TT(2 * N_t,0);
+        A_xi(i % r_stored_iters, 0) = A_xi_TT(2 * N_t,0);
+
+        for(int k = 0; k < K; k++){
+          xi(i % r_stored_iters,k) = xi_TT(2 * N_t,k);
+          gamma_xi(i % r_stored_iters,k) = gamma_xi_TT(2 * N_t,k);
+        }
+
+        //update accept number
+        accept_num = accept_num + 1;
+      }
+
+      //initialize next state
+      if(((i+1) % r_stored_iters) != 0){
+        nu.slice((i+1) % r_stored_iters) = nu.slice(i % r_stored_iters);
+        chi.slice((i+1) % r_stored_iters) = chi.slice(i % r_stored_iters);
+        pi.col((i+1) % r_stored_iters) = pi.col(i % r_stored_iters);
+        sigma((i+1) % r_stored_iters) = sigma(i % r_stored_iters);
+        Z.slice((i+1) % r_stored_iters) = Z.slice(i % r_stored_iters);
+        delta.slice((i+1) % r_stored_iters) = delta.slice(i % r_stored_iters);
+        A.slice((i+1) % r_stored_iters) = A.slice(i % r_stored_iters);
+        tau.row((i+1) % r_stored_iters) = tau.row(i % r_stored_iters);
+        Phi((i+1) % r_stored_iters,0) = Phi(i % r_stored_iters, 0);
+        alpha_3((i+1) % r_stored_iters) =  alpha_3(i % r_stored_iters);
+        eta((i+1) % r_stored_iters,0) = eta(i % r_stored_iters,0);
+        tau_eta.slice((i+1) % r_stored_iters) = tau_eta.slice(i % r_stored_iters);
+        delta_xi((i+1) % r_stored_iters, 0) = delta_xi(i % r_stored_iters, 0);
+        A_xi((i+1) % r_stored_iters, 0) = A_xi(i % r_stored_iters, 0);
+
+        for(int k = 0; k < K; k++){
+          xi((i+1) % r_stored_iters,k) = xi(i % r_stored_iters,k);
+          gamma_xi((i+1) % r_stored_iters,k) = gamma_xi(i % r_stored_iters,k);
+        }
+      }
+    }
+    loglik((i % r_stored_iters)) =  calcLikelihoodMVCovariateAdj(y_obs,
+           nu.slice((i % r_stored_iters)), eta(i % r_stored_iters, 0),
+           Phi((i % r_stored_iters),0), xi, Z.slice((i % r_stored_iters)),
+           chi.slice((i % r_stored_iters)), i % r_stored_iters, X,
+           sigma((i % r_stored_iters)));
+    if(((i+1) % 100) == 0){
+      Rcpp::Rcout << "Iteration: " << i+1 << "\n";
+      Rcpp::Rcout << "Accpetance Probability: " << accept_num / (std::round(i / n_temp_trans)) << "\n";
+      Rcpp::Rcout << "Log-likelihood: " << arma::mean(loglik.subvec((i % r_stored_iters)-4, (i % r_stored_iters))) << "\n";
+      Rcpp::checkUserInterrupt();
+    }
+    if(((i+1) % r_stored_iters) == 0 && i > 1){
+      // Save parameters
+      arma::cube nu1(K, P, r_stored_iters/thinning_num, arma::fill::randn);
+      arma::cube chi1(n_obs, M, r_stored_iters/thinning_num, arma::fill::randn);
+      arma::mat pi1(K, r_stored_iters/thinning_num, arma::fill::zeros);
+      arma::vec alpha_31(r_stored_iters/thinning_num, arma::fill::zeros);
+      arma::vec sigma1(r_stored_iters/thinning_num, arma::fill::ones);
+      arma::cube A1 = arma::ones(K, 2, r_stored_iters/thinning_num);
+      arma::cube Z1 = arma::randi<arma::cube>(n_obs, K, r_stored_iters/thinning_num,
+                                              arma::distr_param(0,1));
+      arma::cube delta1(K, M, r_stored_iters/thinning_num, arma::fill::ones);
+      arma::field<arma::cube> gamma1(r_stored_iters/thinning_num,1);
+      arma::field<arma::cube> Phi1(r_stored_iters/thinning_num, 1);
+      arma::mat tau1(r_stored_iters/thinning_num, K, arma::fill::ones);
+
+      //parameters for covariate adjusted
+      arma::field<arma::cube> eta1(r_stored_iters, 1);
+      arma::field<arma::cube> xi1(r_stored_iters, K);
+      arma::cube tau_eta1 = arma::ones(K, D, r_stored_iters);
+      arma::field<arma::cube> gamma_xi1(r_stored_iters, K);
+      arma::field<arma::cube> delta_xi1(r_stored_iters, 1);
+      arma::field<arma::cube> A_xi1(r_stored_iters, 1);
+
+
+      nu1.slice(0) = nu.slice(0);
+      chi1.slice(0) = chi.slice(0);
+      pi1.col(0) = pi.col(0);
+      sigma1(0) = sigma(0);
+      A1.slice(0) = A.slice(0);
+      Z1.slice(0) = Z.slice(0);
+      delta1.slice(0) = delta.slice(0);
+      gamma1(0,0) = gamma(0,0);
+      Phi1(0,0) = Phi(0,0);
+      tau1.row(0) = tau.row(0);
+      eta1(0,0) = eta(0,0);
+      tau_eta1.slice(0) = tau_eta.slice(0);
+      delta_xi1(0,0) = delta_xi(0,0);
+      A_xi1(0,0) = A_xi(0,0);
+
+      for(int k = 0; k < K; k++){
+        xi1(0,k) = xi(0,k);
+        gamma_xi1(0,k) = gamma_xi(0,k);
+      }
+
+      for(int p=1; p < r_stored_iters / thinning_num; p++){
+        nu1.slice(p) = nu.slice(thinning_num*p - 1);
+        chi1.slice(p) = chi.slice(thinning_num*p - 1);
+        pi1.col(p) = pi.col(thinning_num*p - 1);
+        alpha_31(p) = alpha_3(thinning_num*p - 1);
+        sigma1(p) = sigma(thinning_num*p - 1);
+        A1.slice(p) = A.slice(thinning_num*p - 1);
+        Z1.slice(p) = Z.slice(thinning_num*p - 1);
+        delta1.slice(p) = delta.slice(thinning_num*p - 1);
+        gamma1(p,0) = gamma(thinning_num*p - 1,0);
+        Phi1(p,0) = Phi(thinning_num*p - 1,0);
+        tau1.row(p) = tau.row(thinning_num*p - 1);
+        eta1(p,0) = eta(thinning_num*p - 1,0);
+        tau_eta1.slice(p) = tau_eta.slice(thinning_num*p - 1);
+        delta_xi1(p,0) = delta_xi(thinning_num*p - 1,0);
+        A_xi1(p,0) = A_xi(thinning_num*p - 1,0);
+
+        for(int k = 0; k < K; k++){
+          xi1(p,k) = xi(thinning_num*p - 1,k);
+          gamma_xi1(p,k) = gamma_xi(thinning_num*p - 1,k);
+        }
+      }
+
+      nu1.save(directory + "Nu" + std::to_string(q) + ".txt", arma::arma_ascii);
+      chi1.save(directory + "Chi" + std::to_string(q) +".txt", arma::arma_ascii);
+      pi1.save(directory + "Pi" + std::to_string(q) +".txt", arma::arma_ascii);
+      alpha_31.save(directory + "alpha_3" + std::to_string(q) + ".txt", arma::arma_ascii);
+      A1.save(directory + "A" + std::to_string(q) +".txt", arma::arma_ascii);
+      delta1.save(directory + "Delta" + std::to_string(q) +".txt", arma::arma_ascii);
+      sigma1.save(directory + "Sigma" + std::to_string(q) +".txt", arma::arma_ascii);
+      tau1.save(directory + "Tau" + std::to_string(q) +".txt", arma::arma_ascii);
+      gamma1.save(directory + "Gamma" + std::to_string(q) +".txt");
+      Phi1.save(directory + "Phi" + std::to_string(q) +".txt");
+      Z1.save(directory + "Z" + std::to_string(q) +".txt", arma::arma_ascii);
+      xi1.save(directory + "Xi" + std::to_string(q) +".txt");
+      gamma_xi1.save(directory + "Gamma_Xi" + std::to_string(q) +".txt");
+      delta_xi1.save(directory + "Delta_Xi" + std::to_string(q) +".txt");
+      A_xi1.save(directory + "A_Xi" + std::to_string(q) +".txt");
+      eta1.save(directory + "Eta" + std::to_string(q) +".txt");
+      tau_eta1.save(directory + "Tau_Eta" + std::to_string(q) +".txt", arma::arma_ascii);
+
+
+      //reset all parameters
+      nu.slice(0) = nu.slice(i % r_stored_iters);
+      chi.slice(0) = chi.slice(i % r_stored_iters);
+      pi.col(0) = pi.col(i % r_stored_iters);
+      alpha_3(0) = alpha_3(i % r_stored_iters);
+      A.slice(0) = A.slice(i % r_stored_iters);
+      delta.slice(0) = delta.slice(i % r_stored_iters);
+      sigma(0) = sigma(i % r_stored_iters);
+      tau.row(0) = tau.row(i % r_stored_iters);
+      gamma(0,0) = gamma(i % r_stored_iters, 0);
+      Phi(0,0) = Phi(i % r_stored_iters, 0);
+      Z.slice(0) = Z.slice(i % r_stored_iters);
+      eta(0,0) = eta(i % r_stored_iters,0);
+      tau_eta.slice(0) = tau_eta.slice(i % r_stored_iters);
+      delta_xi(0,0) = delta_xi(i % r_stored_iters,0);
+      A_xi(0,0) = A_xi(i % r_stored_iters,0);
+
+      for(int k = 0; k < K; k++){
+        xi(0,k) = xi(i % r_stored_iters,k);
+        gamma_xi(0,k) = gamma_xi(i % r_stored_iters,k);
+      }
+
+      q = q + 1;
+    }
+  }
+
+  Rcpp::List params = Rcpp::List::create(Rcpp::Named("nu", nu),
+                                         Rcpp::Named("alpha_3", alpha_3),
+                                         Rcpp::Named("chi", chi),
+                                         Rcpp::Named("pi", pi),
+                                         Rcpp::Named("A", A),
+                                         Rcpp::Named("delta", delta),
+                                         Rcpp::Named("sigma", sigma),
+                                         Rcpp::Named("tau", tau),
+                                         Rcpp::Named("tau_eta", tau_eta),
+                                         Rcpp::Named("xi", xi),
+                                         Rcpp::Named("delta_xi", delta_xi),
+                                         Rcpp::Named("gamma_xi", gamma_xi),
+                                         Rcpp::Named("A_xi", A_xi),
+                                         Rcpp::Named("eta", eta),
+                                         Rcpp::Named("gamma", gamma),
+                                         Rcpp::Named("Phi", Phi),
+                                         Rcpp::Named("Z", Z),
+                                         Rcpp::Named("loglik", loglik));
+  return params;
+}
+
 // Conducts a mixture of untempered sampling and termpered sampling to get posterior
 // draws from the covariate adjusted (mean only) mixed membership model for high dimensional functional data
 //
@@ -6405,7 +6787,9 @@ inline Rcpp::List BHDFMMM_MTT_warm_start_MeanAdj(const arma::field<arma::vec>& y
                                                  const arma::cube& Phi_est,
                                                  const arma::mat& A_est,
                                                  const arma::mat& nu_est,
+                                                 const arma::cube& eta_est,
                                                  const arma::vec& tau_est,
+                                                 const arma::mat& tau_eta_est,
                                                  const double& sigma_est,
                                                  const arma::mat& chi_est){
   // Make B_obs
@@ -6517,8 +6901,11 @@ inline Rcpp::List BHDFMMM_MTT_warm_start_MeanAdj(const arma::field<arma::vec>& y
   nu.slice(0) = nu_est;
   tau.row(0) = tau_est.t();
   sigma(0) = sigma_est;
-
   chi.slice(0) = chi_est;
+
+  eta(0,0) = eta_est;
+  tau_eta.slice(0) = tau_eta_est;
+
 
   for(int i=0; i < tot_mcmc_iters; i++){
     if(((i % n_temp_trans) != 0) || (i == 0)){
@@ -6838,6 +7225,7 @@ inline Rcpp::List BHDFMMM_MTT_warm_start_MeanAdj(const arma::field<arma::vec>& y
   return params;
 }
 
+
 // Conducts a mixture of untempered sampling and termpered sampling to get posterior
 // draws from the covariate adjusted (mean and covariance) mixed membership model
 //
@@ -6913,11 +7301,17 @@ inline Rcpp::List BHDFMMM_MTT_warm_start_Mean_CovAdj(const arma::field<arma::vec
                                                      const arma::vec& pi_est,
                                                      const double& alpha_3_est,
                                                      const arma::mat& delta_est,
+                                                     const arma::cube& delta_xi_est,
                                                      const arma::cube& gamma_est,
+                                                     const arma::field<arma::cube>& gamma_xi_est,
                                                      const arma::cube& Phi_est,
+                                                     const arma::field<arma::cube>& xi_est,
                                                      const arma::mat& A_est,
+                                                     const arma::cube& A_xi_est,
                                                      const arma::mat& nu_est,
+                                                     const arma::cube& eta_est,
                                                      const arma::vec& tau_est,
+                                                     const arma::mat& tau_eta_est,
                                                      const double& sigma_est,
                                                      const arma::mat& chi_est){
 
@@ -7044,8 +7438,17 @@ inline Rcpp::List BHDFMMM_MTT_warm_start_Mean_CovAdj(const arma::field<arma::vec
   nu.slice(0) = nu_est;
   tau.row(0) = tau_est.t();
   sigma(0) = sigma_est;
-
   chi.slice(0) = chi_est;
+
+  // covariate adjusted parameters
+  for(int k = 0; k < K; k++){
+    xi(0,k) = xi_est(0,k);
+    gamma_xi(0,k) = gamma_xi_est(0,k);
+  }
+  delta_xi(0,0) = delta_xi_est;
+  eta(0,0) = eta_est;
+  A_xi(0,0) = A_xi_est;
+  tau_eta.slice(0) = tau_eta_est;
 
   for(int i=0; i < tot_mcmc_iters; i++){
     if(((i % n_temp_trans) != 0) || (i == 0)){

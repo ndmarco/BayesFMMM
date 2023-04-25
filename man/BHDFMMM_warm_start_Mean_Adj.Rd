@@ -6,26 +6,17 @@
 \usage{
 BHDFMMM_warm_start_Mean_Adj(
   tot_mcmc_iters,
-  k,
+  K,
   Y,
-  X,
   time,
   n_funct,
   basis_degree,
   n_eigen,
   boundary_knots,
   internal_knots,
-  Z_samp,
-  pi_samp,
-  alpha_3_samp,
-  delta_samp,
-  gamma_samp,
-  Phi_samp,
-  A_samp,
-  nu_samp,
-  tau_samp,
-  sigma_samp,
-  chi_samp,
+  multiple_try,
+  theta_est,
+  X = NULL,
   burnin_prop = 0.8,
   dir = NULL,
   thinning_num = 1,
@@ -50,17 +41,16 @@ BHDFMMM_warm_start_Mean_Adj(
   alpha_eta = 10,
   beta_eta = 1,
   alpha_0 = 1,
-  beta_0 = 1
+  beta_0 = 1,
+  covariance_adj = FALSE
 )
 }
 \arguments{
 \item{tot_mcmc_iters}{Int containing the total number of MCMC iterations}
 
-\item{k}{Int containing the number of clusters}
+\item{K}{Int containing the number of clusters}
 
 \item{Y}{List of vectors containing the observed values}
-
-\item{X}{Matrix of covariates (each row corresponds to an observation)}
 
 \item{time}{List of matrices that contain the observed time points (each column is a dimension)}
 
@@ -74,27 +64,11 @@ BHDFMMM_warm_start_Mean_Adj(
 
 \item{internal_knots}{List of vectors containing the internal knots for each dimension}
 
-\item{Z_samp}{Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})}
+\item{multiple_try}{List containing results from \code{BFMMM_Nu_Z_multiple_try}}
 
-\item{pi_samp}{Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})}
+\item{theta_est}{List containing results from \code{BFMMM_Theta_est}}
 
-\item{alpha_3_samp}{Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})}
-
-\item{delta_samp}{Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})}
-
-\item{gamma_samp}{List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})}
-
-\item{Phi_samp}{List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})}
-
-\item{A_samp}{Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})}
-
-\item{nu_samp}{Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})}
-
-\item{tau_samp}{Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})}
-
-\item{sigma_samp}{Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})}
-
-\item{chi_samp}{Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})}
+\item{X}{Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)}
 
 \item{burnin_prop}{Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters}
 
@@ -145,6 +119,8 @@ BHDFMMM_warm_start_Mean_Adj(
 \item{alpha_0}{Double containing hyperparameter for sampling from sigma}
 
 \item{beta_0}{Double containing hyperparameter for sampling from sigma (scale)}
+
+\item{covariance_adj}{Boolean containing whether or not the covariance structure should depend on the covariates}
 }
 \value{
 a List containing:
@@ -193,7 +169,7 @@ The following must be true:
   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
   \item{\code{X}}{ must have n_funct number of rows}
   \item{\code{burnin_prop}}{must be between 0 and 1}
-  \item{\code{k}}{must be an integer larger than or equal to 2}
+  \item{\code{K}}{must be an integer larger than or equal to 2}
   \item{\code{n_funct}}{must be an integer larger than 1}
   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
@@ -204,7 +180,7 @@ The following must be true:
   \item{\code{N_t}}{must be a positive integer}
   \item{\code{n_temp_trans}}{must be a non-negative integer}
   \item{\code{r_stored_iters}}{must be a non-negative integer}
-  \item{\code{c}}{must be greater than 0 and have k elements}
+  \item{\code{c}}{must be greater than 0 and have K elements}
   \item{\code{b}}{must be positive}
   \item{\code{nu_1}}{must be positive}
   \item{\code{alpha1l}}{must be positive}
@@ -233,7 +209,7 @@ time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 ## Set Hyperparameters
 tot_mcmc_iters <- 150
 n_try <- 1
-k <- 2
+K <- 2
 n_funct <- 20
 basis_degree <- c(2,2)
 n_eigen <- 2
@@ -241,17 +217,17 @@ boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
 internal_knots <- rep(list(c(250, 500, 750)), 2)
 
 ## Run function
-est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                   basis_degree, n_eigen, boundary_knots,
                                   internal_knots)
 
 ## Run function
-est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
                         internal_knots, est1$Z, est1$nu)
 
 X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
-MCMC.chain <-BHDFMMM_warm_start_Mean_Adj(tot_mcmc_iters, k, Y, X, time, n_funct,
+MCMC.chain <-BHDFMMM_warm_start_Mean_Adj(tot_mcmc_iters, K, Y, X, time, n_funct,
                                         basis_degree, n_eigen, boundary_knots,
                                         internal_knots, est1$Z, est1$pi, est1$alpha_3,
                                         est2$delta, est2$gamma, est2$Phi, est2$A,

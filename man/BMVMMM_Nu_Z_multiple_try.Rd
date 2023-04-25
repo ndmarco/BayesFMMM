@@ -7,7 +7,7 @@
 BMVMMM_Nu_Z_multiple_try(
   tot_mcmc_iters,
   n_try,
-  k,
+  K,
   Y,
   n_eigen,
   c = NULL,
@@ -32,7 +32,7 @@ BMVMMM_Nu_Z_multiple_try(
 
 \item{n_try}{Int containing how many different chains are tried}
 
-\item{k}{Int containing the number of clusters}
+\item{K}{Int containing the number of clusters}
 
 \item{Y}{Matrix of observed vectors (each row is an observation)}
 
@@ -95,9 +95,9 @@ The following must be true:
 \describe{
   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
   \item{\code{n_try}}{must be an integer larger than or equal to 1}
-  \item{\code{k}}{must be an integer larger than or equal to 2}
+  \item{\code{K}}{must be an integer larger than or equal to 2}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
-  \item{\code{c}}{must be greater than 0 and have k elements}
+  \item{\code{c}}{must be greater than 0 and have K elements}
   \item{\code{b}}{must be positive}
   \item{\code{alpha1l}}{must be positive}
   \item{\code{beta1l}}{must be positive}
@@ -122,10 +122,10 @@ Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 ## Set Hyperparameters
 tot_mcmc_iters <- 150
 n_try <- 1
-k <- 2
+K <- 2
 n_eigen <- 2
 
 ## Run function
-est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 
 }

@@ -7,7 +7,7 @@
 \usage{
 BMVMMM_warm_start(
   tot_mcmc_iters,
-  k,
+  K,
   Y,
   n_eigen,
   Z_samp,
@@ -48,22 +48,12 @@ BMVMMM_warm_start(
 
 BMVMMM_warm_start_Cov_Adj(
   tot_mcmc_iters,
-  k,
+  K,
   Y,
-  X,
   n_eigen,
-  Z_samp,
-  pi_samp,
-  alpha_3_samp,
-  delta_samp,
-  gamma_samp,
-  Phi_samp,
-  A_samp,
-  nu_samp,
-  tau_samp,
-  tau_eta_samp,
-  sigma_samp,
-  chi_samp,
+  multiple_try,
+  theta_est,
+  X = NULL,
   burnin_prop = 0.8,
   dir = NULL,
   thinning_num = 1,
@@ -95,33 +85,33 @@ BMVMMM_warm_start_Cov_Adj(
 \arguments{
 \item{tot_mcmc_iters}{Int containing the total number of MCMC iterations}
 
-\item{k}{Int containing the number of clusters}
+\item{K}{Int containing the number of clusters}
 
 \item{Y}{Matrix of observed vectors (each row is an observation)}
 
 \item{n_eigen}{Int containing the number of eigenfunctions}
 
-\item{Z_samp}{Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})}
+\item{Z_samp}{Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})}
 
-\item{pi_samp}{Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})}
+\item{pi_samp}{Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})}
 
-\item{alpha_3_samp}{Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})}
+\item{alpha_3_samp}{Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})}
 
-\item{delta_samp}{Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est_Cov_Adj})}
+\item{delta_samp}{Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})}
 
-\item{gamma_samp}{List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est_Cov_Adj})}
+\item{gamma_samp}{List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})}
 
-\item{Phi_samp}{List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est_Cov_Adj})}
+\item{Phi_samp}{List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})}
 
-\item{A_samp}{Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est_Cov_Adj})}
+\item{A_samp}{Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})}
 
-\item{nu_samp}{Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})}
+\item{nu_samp}{Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})}
 
-\item{tau_samp}{Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})}
+\item{tau_samp}{Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})}
 
-\item{sigma_samp}{Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est_Cov_Adj})}
+\item{sigma_samp}{Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})}
 
-\item{chi_samp}{Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est_Cov_Adj})}
+\item{chi_samp}{Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})}
 
 \item{burnin_prop}{Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters}
 
@@ -169,9 +159,11 @@ BMVMMM_warm_start_Cov_Adj(
 
 \item{beta_0}{Double containing hyperparameter for sampling from sigma (scale)}
 
-\item{X}{Matrix of covariates (each row corresponds to an observation)}
+\item{multiple_try}{List containing results from \code{BMVMMM_Nu_Z_multiple_try}}
 
-\item{tau_eta_samp}{Cube containing initial chain of tau_eta parameters (from \code{BFMMM_NU_Z_multiple_try_Cov_Adj})}
+\item{theta_est}{List containing results from \code{BMVMMM_Theta_est}}
+
+\item{X}{Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)}
 
 \item{alpha_nu}{Double containing hyperparameter for sampling from tau_nu}
 
@@ -261,7 +253,7 @@ The following must be true:
 \describe{
   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
   \item{\code{burnin_prop}}{must be between 0 and 1}
-  \item{\code{k}}{must be an integer larger than or equal to 2}
+  \item{\code{K}}{must be an integer larger than or equal to 2}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
   \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
   \item{\code{n_thinning}}{must be a positive integer}
@@ -269,7 +261,7 @@ The following must be true:
   \item{\code{N_t}}{must be a positive integer}
   \item{\code{n_temp_trans}}{must be a non-negative integer}
   \item{\code{r_stored_iters}}{must be a non-negative integer}
-  \item{\code{c}}{must be greater than 0 and have k elements}
+  \item{\code{c}}{must be greater than 0 and have K elements}
   \item{\code{b}}{must be positive}
   \item{\code{nu_1}}{must be positive}
   \item{\code{alpha1l}}{must be positive}
@@ -293,7 +285,7 @@ The following must be true:
   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
   \item{\code{X}}{must have the same number of rows as Y}
   \item{\code{burnin_prop}}{must be between 0 and 1}
-  \item{\code{k}}{must be an integer larger than or equal to 2}
+  \item{\code{K}}{must be an integer larger than or equal to 2}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
   \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
   \item{\code{n_thinning}}{must be a positive integer}
@@ -301,7 +293,7 @@ The following must be true:
   \item{\code{N_t}}{must be a positive integer}
   \item{\code{n_temp_trans}}{must be a non-negative integer}
   \item{\code{r_stored_iters}}{must be a non-negative integer}
-  \item{\code{c}}{must be greater than 0 and have k elements}
+  \item{\code{c}}{must be greater than 0 and have K elements}
   \item{\code{b}}{must be positive}
   \item{\code{nu_1}}{must be positive}
   \item{\code{alpha1l}}{must be positive}
@@ -329,16 +321,16 @@ Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 ## Set Hyperparameters
 tot_mcmc_iters <- 150
 n_try <- 1
-k <- 2
+K <- 2
 n_eigen <- 2
 
 ## Run function
-est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 
 ## Run function
-est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
+est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, n_eigen, est1$Z, est1$nu)
 
-MCMC.chain <-BMVMMM_warm_start(tot_mcmc_iters, k, Y, n_eigen,
+MCMC.chain <-BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen,
                                est1$Z, est1$pi, est1$alpha_3,
                                est2$delta, est2$gamma, est2$Phi, est2$A,
                                est1$nu, est1$tau, est2$sigma, est2$chi)
@@ -349,17 +341,17 @@ Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 ## Set Hyperparameters
 tot_mcmc_iters <- 150
 n_try <- 1
-k <- 2
+K <- 2
 n_eigen <- 2
 
 ## Run function
-est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 
 ## Run function
-est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, n_eigen, est1$Z, est1$nu)
+est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, n_eigen, est1$Z, est1$nu)
 
 X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
-MCMC.chain <-BMVMMM_warm_start_Cov_Adj(tot_mcmc_iters, k, Y, X, n_eigen,
+MCMC.chain <-BMVMMM_warm_start_Cov_Adj(tot_mcmc_iters, K, Y, X, n_eigen,
                                         est1$Z, est1$pi, est1$alpha_3,
                                         est2$delta, est2$gamma, est2$Phi, est2$A,
                                         est1$nu, est1$tau, est2$sigma, est2$chi)

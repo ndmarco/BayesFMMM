@@ -6,7 +6,7 @@
 \usage{
 BHDFMMM_warm_start(
   tot_mcmc_iters,
-  k,
+  K,
   Y,
   time,
   n_funct,
@@ -53,7 +53,7 @@ BHDFMMM_warm_start(
 \arguments{
 \item{tot_mcmc_iters}{Int containing the total number of MCMC iterations}
 
-\item{k}{Int containing the number of clusters}
+\item{K}{Int containing the number of clusters}
 
 \item{Y}{List of vectors containing the observed values}
 
@@ -177,7 +177,7 @@ The following must be true:
 \describe{
   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
   \item{\code{burnin_prop}}{must be between 0 and 1}
-  \item{\code{k}}{must be an integer larger than or equal to 2}
+  \item{\code{K}}{must be an integer larger than or equal to 2}
   \item{\code{n_funct}}{must be an integer larger than 1}
   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
@@ -188,7 +188,7 @@ The following must be true:
   \item{\code{N_t}}{must be a positive integer}
   \item{\code{n_temp_trans}}{must be a non-negative integer}
   \item{\code{r_stored_iters}}{must be a non-negative integer}
-  \item{\code{c}}{must be greater than 0 and have k elements}
+  \item{\code{c}}{must be greater than 0 and have K elements}
   \item{\code{b}}{must be positive}
   \item{\code{nu_1}}{must be positive}
   \item{\code{alpha1l}}{must be positive}
@@ -215,7 +215,7 @@ time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 ## Set Hyperparameters
 tot_mcmc_iters <- 150
 n_try <- 1
-k <- 2
+K <- 2
 n_funct <- 20
 basis_degree <- c(2,2)
 n_eigen <- 2
@@ -223,16 +223,16 @@ boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
 internal_knots <- rep(list(c(250, 500, 750)), 2)
 
 ## Run function
-est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                   basis_degree, n_eigen, boundary_knots,
                                   internal_knots)
 
 ## Run function
-est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
                         internal_knots, est1$Z, est1$nu)
 
-MCMC.chain <-BHDFMMM_warm_start(tot_mcmc_iters, k, Y, time, n_funct,
+MCMC.chain <-BHDFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
                                 basis_degree, n_eigen, boundary_knots,
                                 internal_knots, est1$Z, est1$pi, est1$alpha_3,
                                 est2$delta, est2$gamma, est2$Phi, est2$A,
