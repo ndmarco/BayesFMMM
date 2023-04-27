@@ -197,6 +197,6 @@ X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 ## Get Estimates of Z and nu
 est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                 basis_degree, n_eigen, boundary_knots,
-                                internal_knots, X)
+                                internal_knots, X = X)
 
 }

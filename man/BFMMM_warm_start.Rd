@@ -175,6 +175,7 @@ The following must be true:
   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+  \item{\code{X}}{must have n_funct number of rows (if specified)}
   \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
   \item{\code{n_thinning}}{must be a positive integer}
   \item{\code{beta_N_t}}{must be between 1 and 0}
@@ -259,17 +260,17 @@ X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 ## Get Estimates of Z and nu
 est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                 basis_degree, n_eigen, boundary_knots,
-                                internal_knots, X)
+                                internal_knots, X = X)
 
 ## Run function
 est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
-                        internal_knots, est1, X)
+                        internal_knots, est1, X = X)
 
 ## Run MCMC sampler
 MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
                                basis_degree, n_eigen, boundary_knots,
-                               internal_knots, est1, est2, X)
+                               internal_knots, est1, est2, X = X)
 
 #####################################################################
 ### Covariate Adj  (with Covariate-depenent covariance structure) ###
@@ -294,15 +295,15 @@ X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 ## Get Estimates of Z and nu
 est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                 basis_degree, n_eigen, boundary_knots,
-                                internal_knots, X)
+                                internal_knots, X = X)
 
 ## Run function
 est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
-                        internal_knots, est1, X, covariance_adj = T)
+                        internal_knots, est1, X = X, covariance_adj = T)
 
 ## Run MCMC sampler
 MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
                                basis_degree, n_eigen, boundary_knots,
-                               internal_knots, est1, est2, X, covariance_adj = T)
+                               internal_knots, est1, est2, X = X, covariance_adj = T)
 }

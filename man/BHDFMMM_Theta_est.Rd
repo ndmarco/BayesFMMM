@@ -33,7 +33,8 @@ BHDFMMM_Theta_est(
   alpha = 10,
   beta = 1,
   alpha_0 = 1,
-  beta_0 = 1
+  beta_0 = 1,
+  covariance_adj = FALSE
 )
 }
 \arguments{

@@ -2,51 +2,9 @@
 % Please edit documentation in R/RcppExports.R
 \name{BMVMMM_warm_start}
 \alias{BMVMMM_warm_start}
-\alias{BMVMMM_warm_start_Cov_Adj}
 \title{Performs MCMC for multivariate models given an informed set of starting points}
 \usage{
 BMVMMM_warm_start(
-  tot_mcmc_iters,
-  K,
-  Y,
-  n_eigen,
-  Z_samp,
-  pi_samp,
-  alpha_3_samp,
-  delta_samp,
-  gamma_samp,
-  Phi_samp,
-  A_samp,
-  nu_samp,
-  tau_samp,
-  sigma_samp,
-  chi_samp,
-  burnin_prop = 0.8,
-  dir = NULL,
-  thinning_num = 1,
-  beta_N_t = 1,
-  N_t = 1L,
-  n_temp_trans = 0L,
-  r_stored_iters = 0L,
-  c = NULL,
-  b = 10,
-  nu_1 = 3,
-  alpha1l = 1,
-  alpha2l = 2,
-  beta1l = 1,
-  beta2l = 1,
-  a_Z_PM = 10000,
-  a_pi_PM = 1000,
-  var_alpha3 = 0.05,
-  var_epsilon1 = 1,
-  var_epsilon2 = 1,
-  alpha = 10,
-  beta = 1,
-  alpha_0 = 1,
-  beta_0 = 1
-)
-
-BMVMMM_warm_start_Cov_Adj(
   tot_mcmc_iters,
   K,
   Y,
@@ -91,27 +49,11 @@ BMVMMM_warm_start_Cov_Adj(
 
 \item{n_eigen}{Int containing the number of eigenfunctions}
 
-\item{Z_samp}{Cube containing initial chain of Z parameters (from \code{BFMMM_NU_Z_multiple_try})}
+\item{multiple_try}{List containing results from \code{BMVMMM_Nu_Z_multiple_try}}
 
-\item{pi_samp}{Matrix containing initial chain of pi parameters (from \code{BFMMM_NU_Z_multiple_try})}
+\item{theta_est}{List containing results from \code{BMVMMM_Theta_est}}
 
-\item{alpha_3_samp}{Vector containing initial chain of alpha_3 parameters (from \code{BFMMM_NU_Z_multiple_try})}
-
-\item{delta_samp}{Matrix containing initial chain of delta parameters (from \code{BFMMM_Theta_est})}
-
-\item{gamma_samp}{List of cubes containing initial chain of gamma parameters (from \code{BFMMM_Theta_est})}
-
-\item{Phi_samp}{List of cubes containing initial chain of phi parameters (from \code{BFMMM_Theta_est})}
-
-\item{A_samp}{Matrix containing initial chain of A parameters (from \code{BFMMM_Theta_est})}
-
-\item{nu_samp}{Cube containing initial chain of nu parameters (from \code{BFMMM_NU_Z_multiple_try})}
-
-\item{tau_samp}{Matrix containing initial chain of tau parameters (from \code{BFMMM_NU_Z_multiple_try})}
-
-\item{sigma_samp}{Vector containing initial chain of sigma parameters (from \code{BFMMM_Theta_est})}
-
-\item{chi_samp}{Cube containing initial chain of chi parameters (from \code{BFMMM_Theta_est})}
+\item{X}{Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)}
 
 \item{burnin_prop}{Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters}
 
@@ -151,20 +93,6 @@ BMVMMM_warm_start_Cov_Adj(
 
 \item{var_epsilon2}{Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm}
 
-\item{alpha}{Double containing hyperparameter for sampling from tau}
-
-\item{beta}{Double containing hyperparameter for sampling from tau (scale)}
-
-\item{alpha_0}{Double containing hyperparameter for sampling from sigma}
-
-\item{beta_0}{Double containing hyperparameter for sampling from sigma (scale)}
-
-\item{multiple_try}{List containing results from \code{BMVMMM_Nu_Z_multiple_try}}
-
-\item{theta_est}{List containing results from \code{BMVMMM_Theta_est}}
-
-\item{X}{Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)}
-
 \item{alpha_nu}{Double containing hyperparameter for sampling from tau_nu}
 
 \item{beta_nu}{Double containing hyperparameter for sampling from tau_nu (scale)}
@@ -173,25 +101,13 @@ BMVMMM_warm_start_Cov_Adj(
 
 \item{beta_eta}{Double containing hyperparameter for sampling from tau_eta (scale)}
 
+\item{alpha_0}{Double containing hyperparameter for sampling from sigma}
+
+\item{beta_0}{Double containing hyperparameter for sampling from sigma (scale)}
+
 \item{covariance_adj}{Boolean containing whether or not the covariance structure should depend on the covariates}
 }
 \value{
-a List containing:
-\describe{
-  \item{\code{nu}}{Nu samples from the MCMC chain}
-  \item{\code{chi}}{chi samples from the MCMC chain}
-  \item{\code{pi}}{pi samples from the MCMC chain}
-  \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
-  \item{\code{A}}{A samples from MCMC chain}
-  \item{\code{delta}}{delta samples from the MCMC chain}
-  \item{\code{sigma}}{sigma samples from the MCMC chain}
-  \item{\code{tau}}{tau samples from the MCMC chain}
-  \item{\code{gamma}}{gamma samples from the MCMC chain}
-  \item{\code{Phi}}{Phi samples from the MCMC chain}
-  \item{\code{Z}}{Z samples from the MCMC chain}
-  \item{\code{loglik}}{Log-likelihood plot of best performing chain}
-}
-
 a List containing:
 \describe{
   \item{\code{nu}}{Nu samples from the MCMC chain}
@@ -227,58 +143,9 @@ If \code{r_stored_iters} is less than \code{tot_mcmc_iters}, then a thinned vers
 of the chain is stored in the user specified directory (\code{dir}). The samples from each
 parameter can be viewed using the following functions: \code{ReadFieldCube},
 \code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
-\code{ReadVec}.
-
-This function performs MCMC for a covariate adjusted mixed membership model
-for multivariate data. This function can handle covariate dependent mean models,
-as well as covariate dependent mean and covariance models through the parameter \code{covariance_adj}.
-This function is meant to be used after using \code{BMVMMM_Nu_Z_multiple_try_Cov_Adj}
-and \code{BMVMMM_Theta_est_Cov_Adj}. This function will use the outputs of these two
-functions to start the MCMC chain in a good location. Since the posterior distribution
-can often be multimodal, it is important to have a good starting position.
-To help move across modes, this function allows users to use tempered transitions
-every \code{n_temp_trans} iterations. By using a mixture of tempered transitions
-and un-tempered transitions, we can allow the chain to explore multiple modes without
-while keeping sampling relatively computationally efficient. To save on RAM usage, we
-allow users to specify how many samples are kept in memory using \code{r_stored_iters}.
-If \code{r_stored_iters} is less than \code{tot_mcmc_iters}, then a thinned version
-of the chain is stored in the user specified directory (\code{dir}). The samples from each
-parameter can be viewed using the following functions: \code{ReadFieldCube},
-\code{ReadFieldMat}, \code{ReadFieldVec}, \code{ReadCube}, \code{ReadMat},
-\code{ReadVec}.
+\code{ReadVec}. To specify a covariate adjusted model, please provide the design matrix X.
 }
 \section{Warning}{
-
-The following must be true:
-\describe{
-  \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
-  \item{\code{burnin_prop}}{must be between 0 and 1}
-  \item{\code{K}}{must be an integer larger than or equal to 2}
-  \item{\code{n_eigen}}{must be greater than or equal to 1}
-  \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
-  \item{\code{n_thinning}}{must be a positive integer}
-  \item{\code{beta_N_t}}{must be between 1 and 0}
-  \item{\code{N_t}}{must be a positive integer}
-  \item{\code{n_temp_trans}}{must be a non-negative integer}
-  \item{\code{r_stored_iters}}{must be a non-negative integer}
-  \item{\code{c}}{must be greater than 0 and have K elements}
-  \item{\code{b}}{must be positive}
-  \item{\code{nu_1}}{must be positive}
-  \item{\code{alpha1l}}{must be positive}
-  \item{\code{beta1l}}{must be positive}
-  \item{\code{alpha2l}}{must be positive}
-  \item{\code{beta1l}}{must be positive}
-  \item{\code{a_Z_PM}}{must be positive}
-  \item{\code{a_pi_PM}}{must be positive}
-  \item{\code{var_alpha3}}{must be positive}
-  \item{\code{var_epsilon1}}{must be positive}
-  \item{\code{var_epsilon2}}{must be positive}
-  \item{\code{alpha}}{must be positive}
-  \item{\code{beta}}{must be positive}
-  \item{\code{alpha_0}}{must be positive}
-  \item{\code{beta_0}}{must be positive}
-}
-
 
 The following must be true:
 \describe{
@@ -305,35 +172,17 @@ The following must be true:
   \item{\code{var_alpha3}}{must be positive}
   \item{\code{var_epsilon1}}{must be positive}
   \item{\code{var_epsilon2}}{must be positive}
-  \item{\code{alpha_nu}}{must be positive}
-  \item{\code{beta_nu}}{must be positive}
-  \item{\code{alpha_eta}}{must be positive}
-  \item{\code{beta_eta}}{must be positive}
+  \item{\code{alpha}}{must be positive}
+  \item{\code{beta}}{must be positive}
   \item{\code{alpha_0}}{must be positive}
   \item{\code{beta_0}}{must be positive}
 }
 }
 
 \examples{
-## Load sample data
-Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
-
-## Set Hyperparameters
-tot_mcmc_iters <- 150
-n_try <- 1
-K <- 2
-n_eigen <- 2
-
-## Run function
-est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
-
-## Run function
-est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, n_eigen, est1$Z, est1$nu)
-
-MCMC.chain <-BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen,
-                               est1$Z, est1$pi, est1$alpha_3,
-                               est2$delta, est2$gamma, est2$Phi, est2$A,
-                               est1$nu, est1$tau, est2$sigma, est2$chi)
+#########################
+### Not Covariate Adj ###
+#########################
 
 ## Load sample data
 Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
@@ -344,16 +193,65 @@ n_try <- 1
 K <- 2
 n_eigen <- 2
 
-## Run function
-est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
+## Get Estimates of Z and nu
+est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 
 ## Run function
-est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, n_eigen, est1$Z, est1$nu)
+est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+                        n_eigen, est1)
 
-X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
-MCMC.chain <-BMVMMM_warm_start_Cov_Adj(tot_mcmc_iters, K, Y, X, n_eigen,
-                                        est1$Z, est1$pi, est1$alpha_3,
-                                        est2$delta, est2$gamma, est2$Phi, est2$A,
-                                        est1$nu, est1$tau, est2$sigma, est2$chi)
+## Run MCMC sampler
+MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2)
+
+#####################
+### Covariate Adj ###
+#####################
+
+## Load sample data
+Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+
+## Set Hyperparameters
+tot_mcmc_iters <- 150
+n_try <- 1
+K <- 2
+n_eigen <- 2
+
+X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+
+## Get Estimates of Z and nu
+est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+
+## Run function
+est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+                        n_eigen, est1, X = X)
+
+## Run MCMC sampler
+MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X)
+
+#####################################################################
+### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#####################################################################
+
+## Load sample data
+Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+
+## Set Hyperparameters
+tot_mcmc_iters <- 150
+n_try <- 1
+K <- 2
+n_eigen <- 2
+
+X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+
+## Get Estimates of Z and nu
+est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+
+## Run function
+est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+                        n_eigen, est1, X = X, covariance_adj = T)
+
+## Run MCMC sampler
+MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X,
+                               covariance_adj = T)
 
 }

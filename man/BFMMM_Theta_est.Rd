@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BFMMM_Theta_est}
 \alias{BFMMM_Theta_est}
-\title{Find initial starting points for covariate parameters given mean and allocation structure for functional data}
+\title{Find initial starting points for covariance parameters given mean and allocation structure for functional data}
 \usage{
 BFMMM_Theta_est(
   tot_mcmc_iters,
@@ -110,11 +110,16 @@ a List containing:
   \item{\code{B}}{The basis functions evaluated at the observed time points}
   \item{\code{Z}}{estimates of Z}
   \item{\code{nu}}{estimates of nu}
+  \item{\code{eta}}{estimated value from \code{BFMMM_Nu_Z_multiple_try} (if covariate adjusted)}
   \item{\code{chi}}{chi samples from MCMC chain}
   \item{\code{A}}{A samples from MCMC chain}
+  \item{\code{A_xi}}{A_xi samples from MCMC chain (if covariate adjusted)}
   \item{\code{delta}}{delta samples from MCMC chain}
+  \item{\code{delta_xi}}{delta_xi samples from MCMC chain (if covariate adjusted)}
+  \item{\code{gamma_xi}}{gamma_xi samples from MCMC chain (if covariate adjusted)}
   \item{\code{sigma}}{sigma samples from MCMC chain}
   \item{\code{tau}}{tau samples from MCMC chain}
+  \item{\code{tau_eta}}{tau_eta samples from MCMC chain (if covariate adjusted)}
   \item{\code{gamma}}{gamma samples from the MCMC chain}
   \item{\code{Phi}}{Phi samples from MCMC chain}
   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
@@ -214,12 +219,12 @@ X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 ## Get Estimates of Z and nu
 est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                 basis_degree, n_eigen, boundary_knots,
-                                internal_knots, X)
+                                internal_knots, X = X)
 
 ## Run function
 est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
-                        internal_knots, est1, X)
+                        internal_knots, est1, X = X)
 
 #####################################################################
 ### Covariate Adj  (with Covariate-depenent covariance structure) ###
@@ -244,11 +249,11 @@ X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 ## Get Estimates of Z and nu
 est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                 basis_degree, n_eigen, boundary_knots,
-                                internal_knots, X)
+                                internal_knots, X = X)
 
 ## Run function
 est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
-                        internal_knots, est1, X, covariance_adj = T)
+                        internal_knots, est1, X = X, covariance_adj = T)
 
 }
