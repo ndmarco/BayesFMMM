@@ -473,7 +473,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
   return BestChain;
 }
 
-//' Find initial starting points for covariate parameters given mean and allocation structure for functional data
+//' Find initial starting points for covariance parameters given mean and allocation structure for functional data
 //'
 //' This function is meant to be used after using \code{BFMMM_NU_Z_multiple_try}.
 //' This function samples from the rest of the model parameters given a fixed value of
@@ -520,11 +520,16 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'   \item{\code{B}}{The basis functions evaluated at the observed time points}
 //'   \item{\code{Z}}{estimates of Z}
 //'   \item{\code{nu}}{estimates of nu}
+//'   \item{\code{eta}}{estimated value from \code{BFMMM_Nu_Z_multiple_try} (if covariate adjusted)}
 //'   \item{\code{chi}}{chi samples from MCMC chain}
 //'   \item{\code{A}}{A samples from MCMC chain}
+//'   \item{\code{A_xi}}{A_xi samples from MCMC chain (if covariate adjusted)}
 //'   \item{\code{delta}}{delta samples from MCMC chain}
+//'   \item{\code{delta_xi}}{delta_xi samples from MCMC chain (if covariate adjusted)}
+//'   \item{\code{gamma_xi}}{gamma_xi samples from MCMC chain (if covariate adjusted)}
 //'   \item{\code{sigma}}{sigma samples from MCMC chain}
 //'   \item{\code{tau}}{tau samples from MCMC chain}
+//'   \item{\code{tau_eta}}{tau_eta samples from MCMC chain (if covariate adjusted)}
 //'   \item{\code{gamma}}{gamma samples from the MCMC chain}
 //'   \item{\code{Phi}}{Phi samples from MCMC chain}
 //'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
@@ -1177,6 +1182,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 //'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
 //'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+//'   \item{\code{X}}{must have n_funct number of rows (if specified)}
 //'   \item{\code{dir}}{must be specified if \code{r_stored_iters} <= \code{tot_mcmc_iters} (other than if \code{r_stored_iters} = 0)}
 //'   \item{\code{n_thinning}}{must be a positive integer}
 //'   \item{\code{beta_N_t}}{must be between 1 and 0}
@@ -3361,13 +3367,14 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
   return mod2;
 }
 
-//' Find initial starting position for nu and Z parameters for multivariate data
+//' Find initial starting position for mean and allocation structure for multivariate data
 //'
-//' Function for finding a good initial starting point for nu parameters and Z
-//' parameters for multivariate data, with option for tempered transitions.This
+//' Function for finding a good initial starting point for nu parameters, Z, and eta parameters (if covariate adjusted)
+//' for multivariate data, with option for tempered transitions.This
 //' function tries running multiple different MCMC chains to find the optimal
 //' starting position. This function will return the chain that has the highest
-//' log-likelihood average in the last 100 MCMC iterations.
+//' log-likelihood average in the last 100 MCMC iterations. To specify a covariate
+//' adjusted model, please provide the design matrix X.
 //'
 //' @name BMVMMM_Nu_Z_multiple_try
 //' @param tot_mcmc_iters Int containing the number of MCMC iterations per try
@@ -3375,6 +3382,7 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 //' @param K Int containing the number of clusters
 //' @param Y Matrix of observed vectors (each row is an observation)
 //' @param n_eigen Int containing the number of eigenfunctions
+//' @param X Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)
 //' @param c Vector containing hyperparmeters for sampling from pi (If left NULL, the one vector will be used)
 //' @param b Double containing hyperparameter for sampling from alpha_3
 //' @param alpha1l Double containing hyperparameter for sampling from A
@@ -3386,19 +3394,23 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 //' @param var_alpha3 Double containing variance parameter of the random walk MH for alpha_3 parameter
 //' @param var_epsilon1 Double containing hyperparameters for sampling from A having to do with variance for Metropolis-Hastings algorithm
 //' @param var_epsilon2 Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm
-//' @param alpha Double containing hyperparameter for sampling from tau
-//' @param beta Double containing hyperparameter for sampling from tau (scale)
+//' @param alpha_nu Double containing hyperparameter for sampling from tau_nu
+//' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
+//' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
+//' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
 //' @param alpha_0 Double containing hyperparameter for sampling from sigma
 //' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
 //' @returns a List containing:
 //' \describe{
 //'   \item{\code{nu}}{Nu samples from the chain with the highest average log-likelihood}
+//'   \item{\code{eta}}{Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
 //'   \item{\code{pi}}{Pi samples from the chain with the highest average log-likelihood}
 //'   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
 //'   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
 //'   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
 //'   \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
 //'   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
+//'   \item{\code{tau_eta}}{Tau_Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
 //'   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
 //'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
 //' }
@@ -3410,6 +3422,7 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 //'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
 //'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
+//'   \item{\code{X}}{must have the same number of rows as Y (if specified)}
 //'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
 //'   \item{\code{alpha1l}}{must be positive}
@@ -3421,13 +3434,19 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 //'   \item{\code{var_alpha3}}{must be positive}
 //'   \item{\code{var_epsilon1}}{must be positive}
 //'   \item{\code{var_epsilon2}}{must be positive}
-//'   \item{\code{alpha}}{must be positive}
-//'   \item{\code{beta}}{must be positive}
+//'   \item{\code{alpha_nu}}{must be positive}
+//'   \item{\code{beta_nu}}{must be positive}
+//'   \item{\code{alpha_eta}}{must be positive}
+//'   \item{\code{beta_eta}}{must be positive}
 //'   \item{\code{alpha_0}}{must be positive}
 //'   \item{\code{beta_0}}{must be positive}
 //' }
 //'
 //' @examples
+//' #########################
+//' ### Not Covariate Adj ###
+//' #########################
+//'
 //' ## Load sample data
 //' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //'
@@ -3440,6 +3459,24 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 //' ## Run function
 //' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 //'
+//' #####################
+//' ### Covariate Adj ###
+//' #####################
+//'
+//' ## Load sample data
+//' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+//'
+//' ## Set Hyperparameters
+//' tot_mcmc_iters <- 150
+//' n_try <- 1
+//' K <- 2
+//' n_eigen <- 2
+//'
+//' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+//'
+//' ## Run function
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X)
+//'
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
@@ -3447,6 +3484,7 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                     const int K,
                                     const arma::mat Y,
                                     const int n_eigen,
+                                    Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
                                     Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
                                     const double b = 10,
                                     const double alpha1l = 2,
@@ -3458,131 +3496,262 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                     const double var_alpha3 = 0.05,
                                     const double var_epsilon1 = 1,
                                     const double var_epsilon2 = 1,
-                                    const double alpha = 10,
-                                    const double beta = 1,
+                                    const double alpha_nu = 10,
+                                    const double beta_nu = 1,
+                                    const double alpha_eta = 10,
+                                    const double beta_eta = 1,
                                     const double alpha_0 = 1,
                                     const double beta_0 = 1){
+  Rcpp::List BestChain;
 
-  // generate warnings
-  if(tot_mcmc_iters <  100){
-    Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
-  }
-  if(n_try <  1){
-    Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
-  }
-  if(K <  2){
-    Rcpp::stop("'K' must be an integer greater than or equal to 2");
-  }
-
-
-  if(n_eigen <  1){
-    Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
-  }
-
-  if(b <= 0){
-    Rcpp::stop("'b' must be positive");
-  }
-  if(alpha1l <= 0){
-    Rcpp::stop("'alpha1l' must be positive");
-  }
-  if(beta1l <= 0){
-    Rcpp::stop("'beta1l' must be positive");
-  }
-  if(alpha2l <= 0){
-    Rcpp::stop("'alpha2l' must be positive");
-  }
-  if(beta2l <= 0){
-    Rcpp::stop("'beta2l' must be positive");
-  }
-  if(a_Z_PM <= 0){
-    Rcpp::stop("'a_Z_PM' must be positive");
-  }
-  if(a_pi_PM <= 0){
-    Rcpp::stop("'a_pi_PM' must be positive");
-  }
-  if(var_alpha3 <= 0){
-    Rcpp::stop("'var_alpha3' must be positive");
-  }
-  if(var_epsilon1 <= 0){
-    Rcpp::stop("'var_epsilon1' must be positive");
-  }
-  if(var_epsilon2 <= 0){
-    Rcpp::stop("'var_epsilon2' must be positive");
-  }
-  if(alpha <= 0){
-    Rcpp::stop("'alpha' must be positive");
-  }
-  if(beta <= 0){
-    Rcpp::stop("'beta' must be positive");
-  }
-  if(alpha_0 <= 0){
-    Rcpp::stop("'alpha_0' must be positive");
-  }
-  if(beta_0 <= 0){
-    Rcpp::stop("'beta_0' must be positive");
-  }
-
-  // initialize hyperparameter c
-  arma::vec c1 = arma::ones(K) * 10;
-  if(c.isNotNull()) {
-    Rcpp::NumericVector c_(c);
-    c1 = Rcpp::as<arma::vec>(c_);
-  }
-
-  // generate warning for c
-  if(c1.n_elem != K){
-    Rcpp::stop("number of elements of the vector 'c' must be equal to K");
-  }
-  for(int i = 0; i < K; i++){
-    if(c1(i) <= 0){
-      Rcpp::stop("all elements of 'c' must be positive");
+  if(X.isNull()){
+    // generate warnings
+    if(tot_mcmc_iters <  100){
+      Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
     }
-  }
+    if(n_try <  1){
+      Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
+    }
+    if(K <  2){
+      Rcpp::stop("'K' must be an integer greater than or equal to 2");
+    }
 
-  // start MCMC sampling
-  Rcpp::List mod1 = BayesFMMM::BFMMM_Nu_ZMV(Y, K, n_eigen,
-                                            tot_mcmc_iters, c1, b, alpha1l,
-                                            alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
-                                            var_alpha3, var_epsilon1, var_epsilon2,
-                                            alpha, beta, alpha_0, beta_0);
-  arma::vec ph = mod1["loglik"];
-  double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+    if(n_eigen <  1){
+      Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
+    }
 
-  for(int i = 0; i < n_try; i++){
-    Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-    Rcpp::List modi = BayesFMMM::BFMMM_Nu_ZMV(Y, K, n_eigen,
+    if(b <= 0){
+      Rcpp::stop("'b' must be positive");
+    }
+    if(alpha1l <= 0){
+      Rcpp::stop("'alpha1l' must be positive");
+    }
+    if(beta1l <= 0){
+      Rcpp::stop("'beta1l' must be positive");
+    }
+    if(alpha2l <= 0){
+      Rcpp::stop("'alpha2l' must be positive");
+    }
+    if(beta2l <= 0){
+      Rcpp::stop("'beta2l' must be positive");
+    }
+    if(a_Z_PM <= 0){
+      Rcpp::stop("'a_Z_PM' must be positive");
+    }
+    if(a_pi_PM <= 0){
+      Rcpp::stop("'a_pi_PM' must be positive");
+    }
+    if(var_alpha3 <= 0){
+      Rcpp::stop("'var_alpha3' must be positive");
+    }
+    if(var_epsilon1 <= 0){
+      Rcpp::stop("'var_epsilon1' must be positive");
+    }
+    if(var_epsilon2 <= 0){
+      Rcpp::stop("'var_epsilon2' must be positive");
+    }
+    if(alpha_nu <= 0){
+      Rcpp::stop("'alpha' must be positive");
+    }
+    if(beta_nu <= 0){
+      Rcpp::stop("'beta' must be positive");
+    }
+    if(alpha_0 <= 0){
+      Rcpp::stop("'alpha_0' must be positive");
+    }
+    if(beta_0 <= 0){
+      Rcpp::stop("'beta_0' must be positive");
+    }
+
+    // initialize hyperparameter c
+    arma::vec c1 = arma::ones(K) * 10;
+    if(c.isNotNull()) {
+      Rcpp::NumericVector c_(c);
+      c1 = Rcpp::as<arma::vec>(c_);
+    }
+
+    // generate warning for c
+    if(c1.n_elem != K){
+      Rcpp::stop("number of elements of the vector 'c' must be equal to K");
+    }
+    for(int i = 0; i < K; i++){
+      if(c1(i) <= 0){
+        Rcpp::stop("all elements of 'c' must be positive");
+      }
+    }
+
+    // start MCMC sampling
+    Rcpp::List mod1 = BayesFMMM::BFMMM_Nu_ZMV(Y, K, n_eigen,
                                               tot_mcmc_iters, c1, b, alpha1l,
                                               alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
                                               var_alpha3, var_epsilon1, var_epsilon2,
-                                              alpha, beta, alpha_0, beta_0);
-    arma::vec ph1 = modi["loglik"];
-    if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
-      mod1 = modi;
-      min_likelihood = arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+                                              alpha_nu, beta_nu, alpha_0, beta_0);
+    arma::vec ph = mod1["loglik"];
+    double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+
+    for(int i = 0; i < n_try; i++){
+      Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
+      Rcpp::List modi = BayesFMMM::BFMMM_Nu_ZMV(Y, K, n_eigen,
+                                                tot_mcmc_iters, c1, b, alpha1l,
+                                                alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
+                                                var_alpha3, var_epsilon1, var_epsilon2,
+                                                alpha_nu, beta_nu, alpha_0, beta_0);
+      arma::vec ph1 = modi["loglik"];
+      if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
+        mod1 = modi;
+        min_likelihood = arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+      }
+
     }
 
-  }
+    BestChain =  Rcpp::List::create(Rcpp::Named("nu", mod1["nu"]),
+                                    Rcpp::Named("pi", mod1["pi"]),
+                                    Rcpp::Named("alpha_3", mod1["alpha_3"]),
+                                    Rcpp::Named("A", mod1["A"]),
+                                    Rcpp::Named("delta", mod1["delta"]),
+                                    Rcpp::Named("sigma", mod1["sigma"]),
+                                    Rcpp::Named("tau", mod1["tau"]),
+                                    Rcpp::Named("Z", mod1["Z"]),
+                                    Rcpp::Named("loglik", mod1["loglik"]));
+  }else{
+    Rcpp::NumericMatrix X_(X);
+    arma::mat X1 = Rcpp::as<arma::mat>(X_);
 
-  Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("nu", mod1["nu"]),
-                                             Rcpp::Named("pi", mod1["pi"]),
-                                             Rcpp::Named("alpha_3", mod1["alpha_3"]),
-                                             Rcpp::Named("A", mod1["A"]),
-                                             Rcpp::Named("delta", mod1["delta"]),
-                                             Rcpp::Named("sigma", mod1["sigma"]),
-                                             Rcpp::Named("tau", mod1["tau"]),
-                                             Rcpp::Named("Z", mod1["Z"]),
-                                             Rcpp::Named("loglik", mod1["loglik"]));
+    if(X1.n_rows != Y.n_rows){
+      Rcpp::stop("'X' must be have the same number of rows as Y");
+    }
+
+    if(tot_mcmc_iters <  100){
+      Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
+    }
+    if(n_try <  1){
+      Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
+    }
+    if(K <  2){
+      Rcpp::stop("'K' must be an integer greater than or equal to 2");
+    }
+
+    if(n_eigen <  1){
+      Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
+    }
+
+    if(b <= 0){
+      Rcpp::stop("'b' must be positive");
+    }
+    if(alpha1l <= 0){
+      Rcpp::stop("'alpha1l' must be positive");
+    }
+    if(beta1l <= 0){
+      Rcpp::stop("'beta1l' must be positive");
+    }
+    if(alpha2l <= 0){
+      Rcpp::stop("'alpha2l' must be positive");
+    }
+    if(beta2l <= 0){
+      Rcpp::stop("'beta2l' must be positive");
+    }
+    if(a_Z_PM <= 0){
+      Rcpp::stop("'a_Z_PM' must be positive");
+    }
+    if(a_pi_PM <= 0){
+      Rcpp::stop("'a_pi_PM' must be positive");
+    }
+    if(var_alpha3 <= 0){
+      Rcpp::stop("'var_alpha3' must be positive");
+    }
+    if(var_epsilon1 <= 0){
+      Rcpp::stop("'var_epsilon1' must be positive");
+    }
+    if(var_epsilon2 <= 0){
+      Rcpp::stop("'var_epsilon2' must be positive");
+    }
+    if(alpha_nu <= 0){
+      Rcpp::stop("'alpha' must be positive");
+    }
+    if(beta_nu <= 0){
+      Rcpp::stop("'beta' must be positive");
+    }
+    if(alpha_eta <= 0){
+      Rcpp::stop("'alpha' must be positive");
+    }
+    if(beta_eta <= 0){
+      Rcpp::stop("'beta' must be positive");
+    }
+    if(alpha_0 <= 0){
+      Rcpp::stop("'alpha_0' must be positive");
+    }
+    if(beta_0 <= 0){
+      Rcpp::stop("'beta_0' must be positive");
+    }
+
+    // initialize hyperparameter c
+    arma::vec c1 = arma::ones(K) * 10;
+    if(c.isNotNull()) {
+      Rcpp::NumericVector c_(c);
+      c1 = Rcpp::as<arma::vec>(c_);
+    }
+
+    // generate warning for c
+    if(c1.n_elem != K){
+      Rcpp::stop("number of elements of the vector 'c' must be equal to K");
+    }
+    for(int i = 0; i < K; i++){
+      if(c1(i) <= 0){
+        Rcpp::stop("all elements of 'c' must be positive");
+      }
+    }
+
+    // start MCMC sampling
+    Rcpp::List mod1 = BayesFMMM::BFMMM_Nu_ZMV_Cov_Adj(Y, X1, K, n_eigen,
+                                                      tot_mcmc_iters, c1, b, alpha1l,
+                                                      alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
+                                                      var_alpha3, var_epsilon1, var_epsilon2,
+                                                      alpha_nu, beta_nu, alpha_eta, beta_eta,
+                                                      alpha_0, beta_0);
+    arma::vec ph = mod1["loglik"];
+    double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+
+    for(int i = 0; i < n_try; i++){
+      Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
+      Rcpp::List modi = BayesFMMM::BFMMM_Nu_ZMV_Cov_Adj(Y, X1, K, n_eigen,
+                                                        tot_mcmc_iters, c1, b, alpha1l,
+                                                        alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM,
+                                                        var_alpha3, var_epsilon1, var_epsilon2,
+                                                        alpha_nu, beta_nu, alpha_eta, beta_eta,
+                                                        alpha_0, beta_0);
+      arma::vec ph1 = modi["loglik"];
+      if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
+        mod1 = modi;
+        min_likelihood = arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+      }
+
+    }
+
+    BestChain =  Rcpp::List::create(Rcpp::Named("nu", mod1["nu"]),
+                                    Rcpp::Named("eta", mod1["eta"]),
+                                    Rcpp::Named("pi", mod1["pi"]),
+                                    Rcpp::Named("alpha_3", mod1["alpha_3"]),
+                                    Rcpp::Named("A", mod1["A"]),
+                                    Rcpp::Named("delta", mod1["delta"]),
+                                    Rcpp::Named("sigma", mod1["sigma"]),
+                                    Rcpp::Named("tau", mod1["tau"]),
+                                    Rcpp::Named("tau_eta", mod1["tau_eta"]),
+                                    Rcpp::Named("Z", mod1["Z"]),
+                                    Rcpp::Named("loglik", mod1["loglik"]));
+  }
 
   return BestChain;
 }
 
-//' Find initial starting points for parameters given nu and Z parameters for multivariate data
+//' Find initial starting points for covariance parameters given mean and allocation structure
+//' for multivariate data
 //'
 //' This function is meant to be used after using \code{BMVMMM_NU_Z_multiple_try}.
 //' This function samples from the rest of the model parameters given a fixed value of
 //' nu and Z. The fixed value of nu and Z are found by using the best markov chain
 //' found in \code{BMVMMM_NU_Z_multiple_try}. Once this function is ran, the results
-//' can be used in \code{BMVMMM_warm_start}.
+//' can be used in \code{BMVMMM_warm_start}.To specify a covariate
+//' adjusted model, please provide the design matrix X.
 //'
 //' @name BMVMMM_Theta_est
 //' @param tot_mcmc_iters Int containing the total number of MCMC iterations
@@ -3590,8 +3759,8 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @param K Int containing the number of clusters
 //' @param Y Matrix of observed vectors (each row is an observation)
 //' @param n_eigen Int containing the number of eigenfunctions
-//' @param Z_samp Cube containing initial chain of Z parameters from \code{BFMMM_Nu_Z_multiple_try}
-//' @param nu_samp Cube containing initial chain of nu parameters from \code{BFMMM_Nu_Z_multiple_try}
+//' @param multiple_try List containing results from \code{BFMMM_Nu_Z_multiple_try}
+//' @param X Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)
 //' @param burnin_prop Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters
 //' @param c Vector containing hyperparmeter for sampling from pi (If left NULL, the one vector will be used)
 //' @param b double containing hyperparamete for sampling from alpha_3
@@ -3613,11 +3782,16 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' \describe{
 //'   \item{\code{Z}}{estimates of Z}
 //'   \item{\code{nu}}{estimates of nu}
+//'   \item{\code{eta}}{estimated value from \code{BFMMM_Nu_Z_multiple_try} (if covariate adjusted)}
 //'   \item{\code{chi}}{chi samples from MCMC chain}
 //'   \item{\code{A}}{A samples from MCMC chain}
+//'   \item{\code{A_xi}}{A_xi samples from MCMC chain (if covariate adjusted)}
 //'   \item{\code{delta}}{delta samples from MCMC chain}
+//'   \item{\code{delta_xi}}{delta_xi samples from MCMC chain (if covariate adjusted)}
+//'   \item{\code{gamma_xi}}{gamma_xi samples from MCMC chain (if covariate adjusted)}
 //'   \item{\code{sigma}}{sigma samples from MCMC chain}
 //'   \item{\code{tau}}{tau samples from MCMC chain}
+//'   \item{\code{tau_eta}}{tau_eta samples from MCMC chain (if covariate adjusted)}
 //'   \item{\code{gamma}}{gamma samples from the MCMC chain}
 //'   \item{\code{Phi}}{Phi samples from MCMC chain}
 //'   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
@@ -3629,6 +3803,7 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'   \item{\code{n_try}}{must be an integer larger than or equal to 1}
 //'   \item{\code{K}}{must be an integer larger than or equal to 2}
 //'   \item{\code{n_eigen}}{must be greater than or equal to 1}
+//'   \item{\code{X}}{must have the same number of rows as Y (if specified)}
 //'   \item{\code{burnin_prop}}{must be between 0 and 1}
 //'   \item{\code{c}}{must be greater than 0 and have K elements}
 //'   \item{\code{b}}{must be positive}
@@ -3671,8 +3846,8 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
                             const int K,
                             const arma::mat Y,
                             const int n_eigen,
-                            const arma::cube Z_samp,
-                            const arma::cube nu_samp,
+                            const Rcpp::List multiple_try,
+                            Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
                             const double burnin_prop = 0.8,
                             Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
                             const double b = 10,
@@ -3686,154 +3861,318 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
                             const double var_alpha3 = 0.05,
                             const double var_epsilon1 = 1,
                             const double var_epsilon2 = 1,
-                            const double alpha = 10,
-                            const double beta = 1,
+                            const double alpha_nu = 10,
+                            const double beta_nu = 1,
+                            const double alpha_eta = 10,
+                            const double beta_eta = 1,
                             const double alpha_0 = 1,
                             const double beta_0 = 1){
-  // generate warnings
-  if(tot_mcmc_iters <  100){
-    Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
-  }
-  if(n_try <  1){
-    Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
-  }
-  if(burnin_prop < 0){
-    Rcpp::stop("'burnin_prop' must be between 0 and 1");
-  }
-  if(burnin_prop >= 1){
-    Rcpp::stop("'burnin_prop' must be between 0 and 1");
-  }
-  if(K <  2){
-    Rcpp::stop("'K' must be an integer greater than or equal to 2");
-  }
-  if(n_eigen <  1){
-    Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
-  }
-  if(b <= 0){
-    Rcpp::stop("'b' must be positive");
-  }
-  if(nu_1 <= 0){
-    Rcpp::stop("'nu_1' must be positive");
-  }
-  if(alpha1l <= 0){
-    Rcpp::stop("'alpha1l' must be positive");
-  }
-  if(beta1l <= 0){
-    Rcpp::stop("'beta1l' must be positive");
-  }
-  if(alpha2l <= 0){
-    Rcpp::stop("'alpha2l' must be positive");
-  }
-  if(beta2l <= 0){
-    Rcpp::stop("'beta2l' must be positive");
-  }
-  if(a_Z_PM <= 0){
-    Rcpp::stop("'a_Z_PM' must be positive");
-  }
-  if(a_pi_PM <= 0){
-    Rcpp::stop("'a_pi_PM' must be positive");
-  }
-  if(var_alpha3 <= 0){
-    Rcpp::stop("'var_alpha3' must be positive");
-  }
-  if(var_epsilon1 <= 0){
-    Rcpp::stop("'var_epsilon1' must be positive");
-  }
-  if(var_epsilon2 <= 0){
-    Rcpp::stop("'var_epsilon2' must be positive");
-  }
-  if(alpha <= 0){
-    Rcpp::stop("'alpha' must be positive");
-  }
-  if(beta <= 0){
-    Rcpp::stop("'beta' must be positive");
-  }
-  if(alpha_0 <= 0){
-    Rcpp::stop("'alpha_0' must be positive");
-  }
-  if(beta_0 <= 0){
-    Rcpp::stop("'beta_0' must be positive");
-  }
+  Rcpp::List BestChain;
 
-  // initialize hyperparameter c
-  arma::vec c1 = arma::ones(K) * 10;
-  if(c.isNotNull()) {
-    Rcpp::NumericVector c_(c);
-    c1 = Rcpp::as<arma::vec>(c_);
-  }
+  if(X.isNull()){
+    arma::cube Z_samp = multiple_try["Z"];
+    arma::cube nu_samp = multiple_try["nu"];
 
-  // generate warning for c
-  if(c1.n_elem != K){
-    Rcpp::stop("number of elements of the vector 'c' must be equal to K");
-  }
-  for(int i = 0; i < K; i++){
-    if(c1(i) <= 0){
-      Rcpp::stop("all elements of 'c' must be positive");
+    // generate warnings
+    if(tot_mcmc_iters <  100){
+      Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
     }
-  }
+    if(n_try <  1){
+      Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
+    }
+    if(burnin_prop < 0){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+    if(burnin_prop >= 1){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+    if(K <  2){
+      Rcpp::stop("'K' must be an integer greater than or equal to 2");
+    }
+    if(n_eigen <  1){
+      Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
+    }
+    if(b <= 0){
+      Rcpp::stop("'b' must be positive");
+    }
+    if(nu_1 <= 0){
+      Rcpp::stop("'nu_1' must be positive");
+    }
+    if(alpha1l <= 0){
+      Rcpp::stop("'alpha1l' must be positive");
+    }
+    if(beta1l <= 0){
+      Rcpp::stop("'beta1l' must be positive");
+    }
+    if(alpha2l <= 0){
+      Rcpp::stop("'alpha2l' must be positive");
+    }
+    if(beta2l <= 0){
+      Rcpp::stop("'beta2l' must be positive");
+    }
+    if(a_Z_PM <= 0){
+      Rcpp::stop("'a_Z_PM' must be positive");
+    }
+    if(a_pi_PM <= 0){
+      Rcpp::stop("'a_pi_PM' must be positive");
+    }
+    if(var_alpha3 <= 0){
+      Rcpp::stop("'var_alpha3' must be positive");
+    }
+    if(var_epsilon1 <= 0){
+      Rcpp::stop("'var_epsilon1' must be positive");
+    }
+    if(var_epsilon2 <= 0){
+      Rcpp::stop("'var_epsilon2' must be positive");
+    }
+    if(alpha_nu <= 0){
+      Rcpp::stop("'alpha' must be positive");
+    }
+    if(beta_nu <= 0){
+      Rcpp::stop("'beta' must be positive");
+    }
+    if(alpha_0 <= 0){
+      Rcpp::stop("'alpha_0' must be positive");
+    }
+    if(beta_0 <= 0){
+      Rcpp::stop("'beta_0' must be positive");
+    }
 
-  int n_nu = nu_samp.n_slices;
-  arma::mat Z_est = arma::zeros(Y.n_rows, Z_samp.n_cols);
-  arma::mat nu_est = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
-  arma::vec ph_Z = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
-  arma::vec ph_nu = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
-  for(int i = 0; i < Z_est.n_cols; i++){
-    for(int j = 0; j < Z_est.n_rows; j++){
-      for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
-        ph_Z(l - std::round(n_nu * burnin_prop)) = Z_samp(j,i,l);
+    // initialize hyperparameter c
+    arma::vec c1 = arma::ones(K) * 10;
+    if(c.isNotNull()) {
+      Rcpp::NumericVector c_(c);
+      c1 = Rcpp::as<arma::vec>(c_);
+    }
+
+    // generate warning for c
+    if(c1.n_elem != K){
+      Rcpp::stop("number of elements of the vector 'c' must be equal to K");
+    }
+    for(int i = 0; i < K; i++){
+      if(c1(i) <= 0){
+        Rcpp::stop("all elements of 'c' must be positive");
       }
-      Z_est(j,i) = arma::median(ph_Z);
     }
-    for(int j = 0; j < nu_samp.n_cols; j++){
-      for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
-        ph_nu(l - std::round(n_nu * burnin_prop)) = nu_samp(i,j,l);
+
+    int n_nu = nu_samp.n_slices;
+    arma::mat Z_est = arma::zeros(Y.n_rows, Z_samp.n_cols);
+    arma::mat nu_est = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+    arma::vec ph_Z = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    arma::vec ph_nu = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    for(int i = 0; i < Z_est.n_cols; i++){
+      for(int j = 0; j < Z_est.n_rows; j++){
+        for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+          ph_Z(l - std::round(n_nu * burnin_prop)) = Z_samp(j,i,l);
+        }
+        Z_est(j,i) = arma::median(ph_Z);
       }
-      nu_est(i,j) = arma::median(ph_nu);
+      for(int j = 0; j < nu_samp.n_cols; j++){
+        for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+          ph_nu(l - std::round(n_nu * burnin_prop)) = nu_samp(i,j,l);
+        }
+        nu_est(i,j) = arma::median(ph_nu);
+      }
     }
-  }
 
-  // normalize
-  for(int i = 0; i < Z_est.n_rows; i++){
-    for(int j = 0; j < Z_est.n_cols; j++){
-      Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
+    // normalize
+    for(int i = 0; i < Z_est.n_rows; i++){
+      for(int j = 0; j < Z_est.n_cols; j++){
+        Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
+      }
     }
-  }
 
-  // start MCMC sampling
-  Rcpp::List mod1 = BayesFMMM::BFMMM_ThetaMV(Y, K, n_eigen, tot_mcmc_iters,
-                                             c1, b, nu_1, alpha1l, alpha2l, beta1l,
-                                             beta2l, a_Z_PM, a_pi_PM, var_alpha3,
-                                             var_epsilon1, var_epsilon2, alpha, beta,
-                                             alpha_0, beta_0, Z_est, nu_est);
-
-  arma::vec ph = mod1["loglik"];
-  double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
-
-  for(int i = 0; i < n_try; i++){
-    Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
-    Rcpp::List modi = BayesFMMM::BFMMM_ThetaMV(Y, K, n_eigen, tot_mcmc_iters,
+    // start MCMC sampling
+    Rcpp::List mod1 = BayesFMMM::BFMMM_ThetaMV(Y, K, n_eigen, tot_mcmc_iters,
                                                c1, b, nu_1, alpha1l, alpha2l, beta1l,
                                                beta2l, a_Z_PM, a_pi_PM, var_alpha3,
-                                               var_epsilon1, var_epsilon2, alpha, beta,
+                                               var_epsilon1, var_epsilon2, alpha_nu, beta_nu,
                                                alpha_0, beta_0, Z_est, nu_est);
-    arma::vec ph1 = modi["loglik"];
-    if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
-      mod1 = modi;
-      min_likelihood = arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+
+    arma::vec ph = mod1["loglik"];
+    double min_likelihood = arma::mean(ph.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+
+    for(int i = 0; i < n_try; i++){
+      Rcpp::Rcout << "Try: " << i+1 << " out of " << n_try << "\n";
+      Rcpp::List modi = BayesFMMM::BFMMM_ThetaMV(Y, K, n_eigen, tot_mcmc_iters,
+                                                 c1, b, nu_1, alpha1l, alpha2l, beta1l,
+                                                 beta2l, a_Z_PM, a_pi_PM, var_alpha3,
+                                                 var_epsilon1, var_epsilon2, alpha_nu, beta_nu,
+                                                 alpha_0, beta_0, Z_est, nu_est);
+      arma::vec ph1 = modi["loglik"];
+      if(min_likelihood < arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1))){
+        mod1 = modi;
+        min_likelihood = arma::mean(ph1.subvec((tot_mcmc_iters)-99, (tot_mcmc_iters)-1));
+      }
+
+    }
+
+    Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("Z", mod1["Z"]),
+                                               Rcpp::Named("nu", mod1["nu"]),
+                                               Rcpp::Named("chi", mod1["chi"]),
+                                               Rcpp::Named("A", mod1["A"]),
+                                               Rcpp::Named("delta", mod1["delta"]),
+                                               Rcpp::Named("sigma", mod1["sigma"]),
+                                               Rcpp::Named("tau", mod1["tau"]),
+                                               Rcpp::Named("gamma", mod1["gamma"]),
+                                               Rcpp::Named("Phi", mod1["Phi"]),
+                                               Rcpp::Named("loglik", mod1["loglik"]));
+  }else{
+    Rcpp::NumericMatrix X_(X);
+    arma::mat X1 = Rcpp::as<arma::mat>(X_);
+
+    arma::cube Z_samp = multiple_try["Z"];
+    arma::cube nu_samp = multiple_try["nu"];
+    arma::field<arma::cube> eta_samp = multiple_try["eta"];
+
+    if(eta_samp(0,0).n_rows != nu_samp.n_cols){
+      Rcpp::stop("The specified 'Eta' is of the wrong dimension");
+    }
+    if(X1.n_rows != Y.n_rows){
+      Rcpp::stop("'X' must be have the same number of rows as Y");
+    }
+    if(tot_mcmc_iters <  100){
+      Rcpp::stop("'tot_mcmc_iters' must be an integer greater than or equal to 100");
+    }
+    if(n_try <  1){
+      Rcpp::stop("'n_try' must be an integer greater than or equal to 1");
+    }
+    if(burnin_prop < 0){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+    if(burnin_prop >= 1){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+    if(K <  2){
+      Rcpp::stop("'K' must be an integer greater than or equal to 2");
+    }
+    if(n_funct <  1){
+      Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
+    }
+    if(basis_degree <  1){
+      Rcpp::stop("'basis_degree' must be an integer greater than or equal to 1");
+    }
+    if(n_eigen <  1){
+      Rcpp::stop("'n_eigen' must be an integer greater than or equal to 1");
+    }
+    if(n_funct <  1){
+      Rcpp::stop("'n_funct' must be an integer greater than or equal to 1");
+    }
+    for(int i = 0; i < internal_knots.n_elem; i++){
+      if(boundary_knots(0) >= internal_knots(i)){
+        Rcpp::stop("at least one element in 'internal_knots' is less than or equal to first boundary knot");
+      }
+      if(boundary_knots(1) <= internal_knots(i)){
+        Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
+      }
+    }
+    if(b <= 0){
+      Rcpp::stop("'b' must be positive");
+    }
+    if(nu_1 <= 0){
+      Rcpp::stop("'nu_1' must be positive");
+    }
+    if(alpha1l <= 0){
+      Rcpp::stop("'alpha1l' must be positive");
+    }
+    if(beta1l <= 0){
+      Rcpp::stop("'beta1l' must be positive");
+    }
+    if(alpha2l <= 0){
+      Rcpp::stop("'alpha2l' must be positive");
+    }
+    if(beta2l <= 0){
+      Rcpp::stop("'beta2l' must be positive");
+    }
+    if(a_Z_PM <= 0){
+      Rcpp::stop("'a_Z_PM' must be positive");
+    }
+    if(a_pi_PM <= 0){
+      Rcpp::stop("'a_pi_PM' must be positive");
+    }
+    if(var_alpha3 <= 0){
+      Rcpp::stop("'var_alpha3' must be positive");
+    }
+    if(var_epsilon1 <= 0){
+      Rcpp::stop("'var_epsilon1' must be positive");
+    }
+    if(var_epsilon2 <= 0){
+      Rcpp::stop("'var_epsilon2' must be positive");
+    }
+    if(alpha_nu <= 0){
+      Rcpp::stop("'alpha_nu' must be positive");
+    }
+    if(beta_nu <= 0){
+      Rcpp::stop("'beta_nu' must be positive");
+    }
+    if(alpha_eta <= 0){
+      Rcpp::stop("'alpha_eta' must be positive");
+    }
+    if(beta_eta <= 0){
+      Rcpp::stop("'beta_eta' must be positive");
+    }
+    if(alpha_0 <= 0){
+      Rcpp::stop("'alpha_0' must be positive");
+    }
+    if(beta_0 <= 0){
+      Rcpp::stop("'beta_0' must be positive");
+    }
+
+    // initialize hyperparameter c
+    arma::vec c1 = arma::ones(K) * 10;
+    if(c.isNotNull()) {
+      Rcpp::NumericVector c_(c);
+      c1 = Rcpp::as<arma::vec>(c_);
+    }
+
+    // generate warning for c
+    if(c1.n_elem != K){
+      Rcpp::stop("number of elements of the vector 'c' must be equal to K");
+    }
+    for(int i = 0; i < K; i++){
+      if(c1(i) <= 0){
+        Rcpp::stop("all elements of 'c' must be positive");
+      }
+    }
+
+    int n_nu = nu_samp.n_slices;
+    arma::mat Z_est = arma::zeros(Y.n_rows, Z_samp.n_cols);
+    arma::mat nu_est = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+    arma::cube eta_est = arma::zeros(eta_samp(0,0).n_rows, eta_samp(0,0).n_cols, eta_samp(0,0).n_slices);
+    arma::vec ph_Z = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    arma::vec ph_nu = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+    arma::vec ph_eta = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
+
+    for(int i = 0; i < Z_est.n_cols; i++){
+      for(int j = 0; j < Z_est.n_rows; j++){
+        for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+          ph_Z(l - std::round(n_nu * burnin_prop)) = Z_samp(j,i,l);
+        }
+        Z_est(j,i) = arma::median(ph_Z);
+      }
+      for(int j = 0; j < nu_samp.n_cols; j++){
+        for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+          ph_nu(l - std::round(n_nu * burnin_prop)) = nu_samp(i,j,l);
+        }
+        nu_est(i,j) = arma::median(ph_nu);
+        for(int d = 0; d < X1.n_cols; d++){
+          for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
+            ph_eta(l - std::round(n_nu * burnin_prop)) = eta_samp(l,0)(j,d,i);
+          }
+          eta_est(j,d,i) = arma::median(ph_eta);
+        }
+      }
+    }
+
+    // normalize
+    for(int i = 0; i < Z_est.n_rows; i++){
+      for(int j = 0; j < Z_est.n_cols; j++){
+        Z_est.row(i) = Z_est.row(i) / arma::accu(Z_est.row(i));
+      }
     }
 
   }
 
-  Rcpp::List BestChain =  Rcpp::List::create(Rcpp::Named("Z", mod1["Z"]),
-                                             Rcpp::Named("nu", mod1["nu"]),
-                                             Rcpp::Named("chi", mod1["chi"]),
-                                             Rcpp::Named("A", mod1["A"]),
-                                             Rcpp::Named("delta", mod1["delta"]),
-                                             Rcpp::Named("sigma", mod1["sigma"]),
-                                             Rcpp::Named("tau", mod1["tau"]),
-                                             Rcpp::Named("gamma", mod1["gamma"]),
-                                             Rcpp::Named("Phi", mod1["Phi"]),
-                                             Rcpp::Named("loglik", mod1["loglik"]));
 
   return BestChain;
 }
