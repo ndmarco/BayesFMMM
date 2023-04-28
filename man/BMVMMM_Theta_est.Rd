@@ -46,7 +46,7 @@ BMVMMM_Theta_est(
 
 \item{n_eigen}{Int containing the number of eigenfunctions}
 
-\item{multiple_try}{List containing results from \code{BFMMM_Nu_Z_multiple_try}}
+\item{multiple_try}{List containing results from \code{BMVMMM_Nu_Z_multiple_try}}
 
 \item{X}{Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)}
 

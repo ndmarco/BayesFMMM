@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{BHDFMMM_Theta_est}
 \alias{BHDFMMM_Theta_est}
-\title{Find initial starting points for parameters given nu and Z parameters for high dimensional functional data (Domain dimension > 1)}
+\title{Find initial starting points for the covariance structure for high dimensional functional data (Domain dimension > 1)}
 \usage{
 BHDFMMM_Theta_est(
   tot_mcmc_iters,
@@ -15,23 +15,25 @@ BHDFMMM_Theta_est(
   n_eigen,
   boundary_knots,
   internal_knots,
-  Z_samp,
-  nu_samp,
+  multiple_try,
+  X = NULL,
   burnin_prop = 0.8,
   c = NULL,
   b = 10,
   nu_1 = 3,
-  alpha1l = 1,
-  alpha2l = 2,
-  beta1l = 1,
-  beta2l = 1,
+  alpha1l = 2,
+  alpha2l = 3,
+  beta1l = 2,
+  beta2l = 2,
   a_Z_PM = 10000,
   a_pi_PM = 1000,
   var_alpha3 = 0.05,
   var_epsilon1 = 1,
   var_epsilon2 = 1,
-  alpha = 10,
-  beta = 1,
+  alpha_nu = 10,
+  beta_nu = 1,
+  alpha_eta = 10,
+  beta_eta = 1,
   alpha_0 = 1,
   beta_0 = 1,
   covariance_adj = FALSE
@@ -58,9 +60,9 @@ BHDFMMM_Theta_est(
 
 \item{internal_knots}{List of vectors containing the internal knots for each dimension}
 
-\item{Z_samp}{Cube containing initial chain of Z parameters from \code{BHDFMMM_Nu_Z_multiple_try}}
+\item{multiple_try}{List containing results from \code{BHDFMMM_Nu_Z_multiple_try}}
 
-\item{nu_samp}{Cube containing initial chain of nu parameters from \code{BHDFMMM_Nu_Z_multiple_try}}
+\item{X}{Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)}
 
 \item{burnin_prop}{Double containing proportion of chain used to estimate the starting point of nu parameters and Z parameters}
 
@@ -88,25 +90,36 @@ BHDFMMM_Theta_est(
 
 \item{var_epsilon2}{Double containing hyperparameter for sampling from A having to do with variance for Metropolis-Hastings algorithm}
 
-\item{alpha}{Double containing hyperparameter for sampling from tau}
+\item{alpha_nu}{Double containing hyperparameter for sampling from tau_nu}
 
-\item{beta}{Double containing hyperparameter for sampling from tau (scale)}
+\item{beta_nu}{Double containing hyperparameter for sampling from tau_nu (scale)}
+
+\item{alpha_eta}{Double containing hyperparameter for sampling from tau_eta}
+
+\item{beta_eta}{Double containing hyperparameter for sampling from tau_eta (scale)}
 
 \item{alpha_0}{Double containing hyperparameter for sampling from sigma}
 
 \item{beta_0}{Double containing hyperparameter for sampling from sigma (scale)}
+
+\item{covariance_adj}{Boolean containing whether or not covariates should affect the covariance}
 }
 \value{
 a List containing:
 \describe{
   \item{\code{B}}{The basis functions evaluated at the observed time points}
-  \item{\code{Z}}{Z estimates}
-  \item{\code{nu}}{nu estimates}
+  \item{\code{Z}}{estimates of Z}
+  \item{\code{nu}}{estimates of nu}
+  \item{\code{eta}}{estimated value from \code{BHDFMMM_Nu_Z_multiple_try} (if covariate adjusted)}
   \item{\code{chi}}{chi samples from MCMC chain}
   \item{\code{A}}{A samples from MCMC chain}
+  \item{\code{A_xi}}{A_xi samples from MCMC chain (if covariate adjusted)}
   \item{\code{delta}}{delta samples from MCMC chain}
+  \item{\code{delta_xi}}{delta_xi samples from MCMC chain (if covariate adjusted)}
+  \item{\code{gamma_xi}}{gamma_xi samples from MCMC chain (if covariate adjusted)}
   \item{\code{sigma}}{sigma samples from MCMC chain}
   \item{\code{tau}}{tau samples from MCMC chain}
+  \item{\code{tau_eta}}{tau_eta samples from MCMC chain (if covariate adjusted)}
   \item{\code{gamma}}{gamma samples from the MCMC chain}
   \item{\code{Phi}}{Phi samples from MCMC chain}
   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
@@ -117,7 +130,8 @@ This function is meant to be used after using \code{BHDFMMM_NU_Z_multiple_try}.
 This function samples from the rest of the model parameters given a fixed value of
 nu and Z. The fixed value of nu and Z are found by using the best markov chain
 found in \code{BHDFMMM_NU_Z_multiple_try}. Once this function is ran, the results
-can be used in \code{BHDFMMM_warm_start}.
+can be used in \code{BHDFMMM_warm_start}. To specify a covariate
+adjusted model, please provide the design matrix X.
 }
 \section{Warning}{
 
@@ -131,6 +145,7 @@ The following must be true:
   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+  \item{\code{X}}{must have n_funct number of rows (if specified)}
   \item{\code{c}}{must be greater than 0 and have K elements}
   \item{\code{b}}{must be positive}
   \item{\code{nu_1}}{must be positive}
@@ -143,14 +158,20 @@ The following must be true:
   \item{\code{var_alpha3}}{must be positive}
   \item{\code{var_epsilon1}}{must be positive}
   \item{\code{var_epsilon2}}{must be positive}
-  \item{\code{alpha}}{must be positive}
-  \item{\code{beta}}{must be positive}
+  \item{\code{alpha_nu}}{must be positive}
+  \item{\code{beta_nu}}{must be positive}
+  \item{\code{alpha_eta}}{must be positive}
+  \item{\code{beta_eta}}{must be positive}
   \item{\code{alpha_0}}{must be positive}
   \item{\code{beta_0}}{must be positive}
 }
 }
 
 \examples{
+#########################
+### Not Covariate Adj ###
+#########################
+
 ## Load sample data
 Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
 time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
@@ -166,13 +187,71 @@ boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
 internal_knots <- rep(list(c(250, 500, 750)), 2)
 
 ## Run function
-est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
-                                  basis_degree, n_eigen, boundary_knots,
-                                  internal_knots)
+x <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+                               basis_degree, n_eigen, boundary_knots,
+                               internal_knots)
 
 ## Run function
 est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
-                        basis_degree, n_eigen, boundary_knots,
-                        internal_knots, est1$Z, est1$nu)
+                          basis_degree, n_eigen, boundary_knots,
+                          internal_knots, est1)
+#####################
+### Covariate Adj ###
+#####################
 
+## Load sample data
+Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+
+## Set Hyperparameters
+tot_mcmc_iters <- 150
+n_try <- 1
+K <- 2
+n_funct <- 20
+basis_degree <- c(2,2)
+n_eigen <- 2
+boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+internal_knots <- rep(list(c(250, 500, 750)), 2)
+
+X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+
+## Get Estimates of Z and nu
+est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+                                  basis_degree, n_eigen, boundary_knots,
+                                  internal_knots, X = X)
+
+## Run function
+est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+                        basis_degree, n_eigen, boundary_knots,
+                        internal_knots, est1, X = X)
+
+#####################################################################
+### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#####################################################################
+
+## Load sample data
+Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+
+## Set Hyperparameters
+tot_mcmc_iters <- 150
+n_try <- 1
+K <- 2
+n_funct <- 20
+basis_degree <- c(2,2)
+n_eigen <- 2
+boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+internal_knots <- rep(list(c(250, 500, 750)), 2)
+
+X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+
+## Get Estimates of Z and nu
+est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+                                  basis_degree, n_eigen, boundary_knots,
+                                  internal_knots, X = X)
+
+## Run function
+est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+                          basis_degree, n_eigen, boundary_knots,
+                          internal_knots, est1, X = X, covariance_adj = T)
 }
