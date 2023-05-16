@@ -213,7 +213,7 @@ n_eigen <- 2
 boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
 internal_knots <- rep(list(c(250, 500, 750)), 2)
 
-X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 
 ## Get Estimates of Z and nu
 est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
@@ -243,7 +243,7 @@ n_eigen <- 2
 boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
 internal_knots <- rep(list(c(250, 500, 750)), 2)
 
-X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 
 ## Get Estimates of Z and nu
 est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
