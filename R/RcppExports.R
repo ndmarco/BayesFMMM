@@ -27,6 +27,7 @@
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
+#' @param X Matrix containing covariates at points of interest (of dimension N x D (number of points of interest x number of covariates))
 #' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior samples fo the mean function are also returned.
 #'
 #' @section Warning:
@@ -38,24 +39,62 @@
 #'   \item{\code{k}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
 #'   \item{\code{alpha}}{must be between 0 and 1}
 #'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+#'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
 #' }
 #'
 #' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
 #' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFMMM")
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
 #' n_files <- 1
 #' time <- seq(0, 990, 10)
 #' k <- 2
 #' basis_degree <- 3
 #' boundary_knots <- c(0, 1000)
-#' internal_knots <- c(200, 400, 600, 800)
+#' internal_knots <- c(250, 500, 750)
 #'
 #' ## Get CI for mean function
 #' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k)
 #'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' time <- seq(0, 990, 10)
+#' k <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#'
+#' ## Get CI for mean function
+#' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' time <- seq(0, 990, 10)
+#' k <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#'
+#' ## Get CI for mean function
+#' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
+#'
+#'
 #' @export
-FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1) {
-    .Call('_BayesFMMM_FMeanCI', PACKAGE = 'BayesFMMM', dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop)
+FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1, X = NULL) {
+    .Call('_BayesFMMM_FMeanCI', PACKAGE = 'BayesFMMM', dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop, X)
 }
 
 #' Calculates the credible interval for the mean (High Dimensional Functional Data)
@@ -640,8 +679,8 @@ Conditional_Predictive_Ordinates <- function(dir, n_files, n_MCMC, basis_degree,
 #' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 #' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 #' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-#' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+#' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{B}}{The basis functions evaluated at the observed time points}
@@ -651,7 +690,7 @@ Conditional_Predictive_Ordinates <- function(dir, n_files, n_MCMC, basis_degree,
 #'   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
 #'   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
 #'   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
-#'   \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
+#'   \item{\code{sigma_sq}}{sigma_sq samples from the chain with the highest average log-likelihood}
 #'   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
 #'   \item{\code{tau_eta}}{Tau_Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
 #'   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
@@ -780,8 +819,8 @@ BFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, 
 #' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 #' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 #' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-#' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+#' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 #' @param covariance_adj Boolean containing whether or not covariates should affect the covariance
 #' @returns a List containing:
 #' \describe{
@@ -795,7 +834,7 @@ BFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, 
 #'   \item{\code{delta}}{delta samples from MCMC chain}
 #'   \item{\code{delta_xi}}{delta_xi samples from MCMC chain (if covariate adjusted)}
 #'   \item{\code{gamma_xi}}{gamma_xi samples from MCMC chain (if covariate adjusted)}
-#'   \item{\code{sigma}}{sigma samples from MCMC chain}
+#'   \item{\code{sigma_sq}}{sigma_sq samples from MCMC chain}
 #'   \item{\code{tau}}{tau samples from MCMC chain}
 #'   \item{\code{tau_eta}}{tau_eta samples from MCMC chain (if covariate adjusted)}
 #'   \item{\code{gamma}}{gamma samples from the MCMC chain}
@@ -982,8 +1021,8 @@ BFMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_de
 #' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 #' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 #' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-#' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+#' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 #' @param covariance_adj Boolean containing whether or not the covariance structure should depend on the covariates
 #'
 #' @returns a List containing:
@@ -995,7 +1034,7 @@ BFMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_de
 #'   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
 #'   \item{\code{A}}{A samples from MCMC chain}
 #'   \item{\code{delta}}{delta samples from the MCMC chain}
-#'   \item{\code{sigma}}{sigma samples from the MCMC chain}
+#'   \item{\code{sigma_sq}}{sigma_sq samples from the MCMC chain}
 #'   \item{\code{tau}}{tau samples from the MCMC chain}
 #'   \item{\code{tau_eta}}{tau_eta samples from the MCMC chain (if covariate adjusted)}
 #'   \item{\code{eta}}{eta samples from the MCMC chain (if covariate adjusted)}
@@ -1155,10 +1194,10 @@ BFMMM_warm_start <- function(tot_mcmc_iters, K, Y, time, n_funct, basis_degree, 
     .Call('_BayesFMMM_BFMMM_warm_start', PACKAGE = 'BayesFMMM', tot_mcmc_iters, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, multiple_try, theta_est, X, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0, covariance_adj)
 }
 
-#' Reads saved parameter data (sigma, alpha_3)
+#' Reads saved parameter data (sigma_sq, alpha_3)
 #'
 #' Reads armadillo vector type data and returns it as a vector in R. The following
-#' parameters can be read in using this function: sigma and alpha_3.
+#' parameters can be read in using this function: sigma_sq and alpha_3.
 #'
 #' @name ReadVec
 #' @param file String containing location where armadillo vector is stored
@@ -1169,7 +1208,7 @@ BFMMM_warm_start <- function(tot_mcmc_iters, K, Y, time, n_funct, basis_degree, 
 #' file <- system.file("test-data", "sigma.txt", package = "BayesFMMM")
 #'
 #' ## Read in file
-#' sigma <- ReadVec(file)
+#' sigma_sq <- ReadVec(file)
 #'
 #' #############################################################
 #' ## For reading in a group of files you can use the following:
@@ -1184,10 +1223,10 @@ BFMMM_warm_start <- function(tot_mcmc_iters, K, Y, time, n_funct, basis_degree, 
 #' # dir <- "~/sigma"
 #' #
 #' ## initialize placeholder
-#' # sigma <- rep(0, n_files * n_samp)
+#' # sigma_sq <- rep(0, n_files * n_samp)
 #' # for(i in 0:(n_files - 1)){
 #' #   sigma_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
-#' #   sigma[((n_samp * i) + 1):(n_samp * (i+1))] <- sigma_i
+#' #   sigma_sq[((n_samp * i) + 1):(n_samp * (i+1))] <- sigma_i
 #' #}
 #' #############################################################
 #'
@@ -1413,8 +1452,8 @@ ReadFieldVec <- function(file) {
 #' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 #' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 #' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-#' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+#' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{B}}{The basis functions evaluated at the observed time points}
@@ -1424,7 +1463,7 @@ ReadFieldVec <- function(file) {
 #'   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
 #'   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
 #'   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
-#'   \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
+#'   \item{\code{sigma_sq}}{sigma_sq samples from the chain with the highest average log-likelihood}
 #'   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
 #'   \item{\code{tau_eta}}{Tau_Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
 #'   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
@@ -1553,8 +1592,8 @@ BHDFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct
 #' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 #' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 #' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-#' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+#' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 #' @param covariance_adj Boolean containing whether or not covariates should affect the covariance
 #' @returns a List containing:
 #' \describe{
@@ -1568,7 +1607,7 @@ BHDFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct
 #'   \item{\code{delta}}{delta samples from MCMC chain}
 #'   \item{\code{delta_xi}}{delta_xi samples from MCMC chain (if covariate adjusted)}
 #'   \item{\code{gamma_xi}}{gamma_xi samples from MCMC chain (if covariate adjusted)}
-#'   \item{\code{sigma}}{sigma samples from MCMC chain}
+#'   \item{\code{sigma_sq}}{sigma_sq samples from MCMC chain}
 #'   \item{\code{tau}}{tau samples from MCMC chain}
 #'   \item{\code{tau_eta}}{tau_eta samples from MCMC chain (if covariate adjusted)}
 #'   \item{\code{gamma}}{gamma samples from the MCMC chain}
@@ -1753,8 +1792,8 @@ BHDFMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_
 #' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 #' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 #' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-#' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+#' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 #' @param covariance_adj Boolean containing whether or not the covariance structure should depend on the covariates
 #'
 #' @returns a List containing:
@@ -1766,7 +1805,7 @@ BHDFMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_
 #'   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
 #'   \item{\code{A}}{A samples from MCMC chain}
 #'   \item{\code{delta}}{delta samples from the MCMC chain}
-#'   \item{\code{sigma}}{sigma samples from the MCMC chain}
+#'   \item{\code{sigma_sq}}{sigma_sq samples from the MCMC chain}
 #'   \item{\code{tau}}{tau samples from the MCMC chain}
 #'   \item{\code{tau_eta}}{tau_eta samples from the MCMC chain (if covariate adjusted)}
 #'   \item{\code{eta}}{eta samples from the MCMC chain (if covariate adjusted)}
@@ -1957,8 +1996,8 @@ BHDFMMM_warm_start <- function(tot_mcmc_iters, K, Y, time, n_funct, basis_degree
 #' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 #' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 #' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-#' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+#' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 #' @returns a List containing:
 #' \describe{
 #'   \item{\code{nu}}{Nu samples from the chain with the highest average log-likelihood}
@@ -1967,7 +2006,7 @@ BHDFMMM_warm_start <- function(tot_mcmc_iters, K, Y, time, n_funct, basis_degree
 #'   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
 #'   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
 #'   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
-#'   \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
+#'   \item{\code{sigma_sq}}{sigma_sq samples from the chain with the highest average log-likelihood}
 #'   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
 #'   \item{\code{tau_eta}}{Tau_Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
 #'   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
@@ -2076,8 +2115,8 @@ BMVMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, X = N
 #' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 #' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 #' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-#' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+#' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 #' @param covariance_adj Boolean containing whether or not covariates should affect the covariance
 #' @returns a List containing:
 #' \describe{
@@ -2090,7 +2129,7 @@ BMVMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, X = N
 #'   \item{\code{delta}}{delta samples from MCMC chain}
 #'   \item{\code{delta_xi}}{delta_xi samples from MCMC chain (if covariate adjusted)}
 #'   \item{\code{gamma_xi}}{gamma_xi samples from MCMC chain (if covariate adjusted)}
-#'   \item{\code{sigma}}{sigma samples from MCMC chain}
+#'   \item{\code{sigma_sq}}{sigma_sq samples from MCMC chain}
 #'   \item{\code{tau}}{tau samples from MCMC chain}
 #'   \item{\code{tau_eta}}{tau_eta samples from MCMC chain (if covariate adjusted)}
 #'   \item{\code{gamma}}{gamma samples from the MCMC chain}
@@ -2244,8 +2283,8 @@ BMVMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, multiple_try,
 #' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 #' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 #' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-#' @param alpha_0 Double containing hyperparameter for sampling from sigma
-#' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+#' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+#' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 #' @param covariance_adj Boolean containing whether or not the covariance structure should depend on the covariates
 #'
 #' @returns a List containing:
@@ -2256,7 +2295,7 @@ BMVMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, multiple_try,
 #'   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
 #'   \item{\code{A}}{A samples from MCMC chain}
 #'   \item{\code{delta}}{delta samples from the MCMC chain}
-#'   \item{\code{sigma}}{sigma samples from the MCMC chain}
+#'   \item{\code{sigma_sq}}{sigma_sq samples from the MCMC chain}
 #'   \item{\code{tau}}{tau samples from the MCMC chain}
 #'   \item{\code{tau_eta}}{tau_eta samples from the MCMC chain}
 #'   \item{\code{eta}}{eta samples from the MCMC chain}

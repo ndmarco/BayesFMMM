@@ -13,8 +13,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // FMeanCI
-Rcpp::List FMeanCI(const std::string dir, const int n_files, const arma::vec time, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const int k, const double alpha, bool rescale, const bool simultaneous, const double burnin_prop);
-RcppExport SEXP _BayesFMMM_FMeanCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP timeSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP kSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP simultaneousSEXP, SEXP burnin_propSEXP) {
+Rcpp::List FMeanCI(const std::string dir, const int n_files, const arma::vec time, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const int k, const double alpha, bool rescale, const bool simultaneous, const double burnin_prop, Rcpp::Nullable<Rcpp::NumericMatrix> X);
+RcppExport SEXP _BayesFMMM_FMeanCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP timeSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP kSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP simultaneousSEXP, SEXP burnin_propSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -29,7 +29,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type rescale(rescaleSEXP);
     Rcpp::traits::input_parameter< const bool >::type simultaneous(simultaneousSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
-    rcpp_result_gen = Rcpp::wrap(FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop));
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericMatrix> >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop, X));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -788,7 +789,7 @@ END_RCPP
 RcppExport SEXP run_testthat_tests(SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BayesFMMM_FMeanCI", (DL_FUNC) &_BayesFMMM_FMeanCI, 11},
+    {"_BayesFMMM_FMeanCI", (DL_FUNC) &_BayesFMMM_FMeanCI, 12},
     {"_BayesFMMM_HDFMeanCI", (DL_FUNC) &_BayesFMMM_HDFMeanCI, 11},
     {"_BayesFMMM_MVMeanCI", (DL_FUNC) &_BayesFMMM_MVMeanCI, 5},
     {"_BayesFMMM_FCovCI", (DL_FUNC) &_BayesFMMM_FCovCI, 14},

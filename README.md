@@ -47,7 +47,7 @@ $\delta$ | (K, M, MCMC_iters) | Parameters used in the prior on the $\Phi$ param
 $A$ | (K, 2, MCMC_iters) | Parameters used in the prior on $\delta$ paramaters
 ${\color{blue}\Xi (\xi_{km})}$ | [MCMC_iters, K] (P, D, M) | Parameters controlling the covariate dependence of the pseudo-eigenfunctions
 ${\color{blue}\gamma_\Xi}$ | [MCMC_iters, K] (P, D, M) | Parameters used in the prior on the ${\color{blue}\Xi}$ parameters
-${\color{blue}\delta_\Xi}$ | [MCMC_iters] (K, D, M) | Parameters used in the prior on the ${\color{blue}\Xi}$ parameters
+${\color{blue}\delta_\Xi}$ | [MCMC_iters] (K, M, D) | Parameters used in the prior on the ${\color{blue}\Xi}$ parameters
 ${\color{blue}A_\Xi}$ | [MCMC_iters] (K, 2, D) | Parameters used in the prior on the ${\color{blue}\delta_\Xi}$ paramaters
 
 ***
@@ -94,7 +94,7 @@ $\delta$ | (K, M, MCMC_iters) | Parameters used in the prior on the $\Phi$ param
 $A$ | (K, 2, MCMC_iters) | Parameters used in the prior on $\delta$ paramaters
 ${\color{blue}\Xi (\xi_{km})}$ | [MCMC_iters, K] (P, D, M) | Parameters controlling the covariate dependence of the pseudo-eigenfunctions
 ${\color{blue}\gamma_\Xi}$ | [MCMC_iters, K] (P, D, M) | Parameters used in the prior on the ${\color{blue}\Xi}$ parameters
-${\color{blue}\delta_\Xi}$ | [MCMC_iters] (K, D, M) | Parameters used in the prior on the ${\color{blue}\Xi}$ parameters
+${\color{blue}\delta_\Xi}$ | [MCMC_iters] (K, M, D) | Parameters used in the prior on the ${\color{blue}\Xi}$ parameters
 ${\color{blue}A_\Xi}$ | [MCMC_iters] (K, 2, D) | Parameters used in the prior on the ${\color{blue}\delta_\Xi}$ paramaters
 
 ***

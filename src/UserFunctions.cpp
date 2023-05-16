@@ -40,8 +40,8 @@
 //' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 //' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 //' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-//' @param alpha_0 Double containing hyperparameter for sampling from sigma
-//' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+//' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+//' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 //' @returns a List containing:
 //' \describe{
 //'   \item{\code{B}}{The basis functions evaluated at the observed time points}
@@ -51,7 +51,7 @@
 //'   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
 //'   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
 //'   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
-//'   \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
+//'   \item{\code{sigma_sq}}{sigma_sq samples from the chain with the highest average log-likelihood}
 //'   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
 //'   \item{\code{tau_eta}}{Tau_Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
 //'   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
@@ -306,7 +306,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                     Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                     Rcpp::Named("A", mod1["A"]),
                                     Rcpp::Named("delta", mod1["delta"]),
-                                    Rcpp::Named("sigma", mod1["sigma"]),
+                                    Rcpp::Named("sigma_sq", mod1["sigma"]),
                                     Rcpp::Named("tau", mod1["tau"]),
                                     Rcpp::Named("Z", mod1["Z"]),
                                     Rcpp::Named("loglik", mod1["loglik"]));
@@ -462,7 +462,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                     Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                     Rcpp::Named("A", mod1["A"]),
                                     Rcpp::Named("delta", mod1["delta"]),
-                                    Rcpp::Named("sigma", mod1["sigma"]),
+                                    Rcpp::Named("sigma_sq", mod1["sigma"]),
                                     Rcpp::Named("tau", mod1["tau"]),
                                     Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                     Rcpp::Named("Z", mod1["Z"]),
@@ -512,8 +512,8 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 //' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 //' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-//' @param alpha_0 Double containing hyperparameter for sampling from sigma
-//' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+//' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+//' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 //' @param covariance_adj Boolean containing whether or not covariates should affect the covariance
 //' @returns a List containing:
 //' \describe{
@@ -527,7 +527,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'   \item{\code{delta}}{delta samples from MCMC chain}
 //'   \item{\code{delta_xi}}{delta_xi samples from MCMC chain (if covariate adjusted)}
 //'   \item{\code{gamma_xi}}{gamma_xi samples from MCMC chain (if covariate adjusted)}
-//'   \item{\code{sigma}}{sigma samples from MCMC chain}
+//'   \item{\code{sigma_sq}}{sigma_sq samples from MCMC chain}
 //'   \item{\code{tau}}{tau samples from MCMC chain}
 //'   \item{\code{tau_eta}}{tau_eta samples from MCMC chain (if covariate adjusted)}
 //'   \item{\code{gamma}}{gamma samples from the MCMC chain}
@@ -866,7 +866,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
                                     Rcpp::Named("chi", mod1["chi"]),
                                     Rcpp::Named("A", mod1["A"]),
                                     Rcpp::Named("delta", mod1["delta"]),
-                                    Rcpp::Named("sigma", mod1["sigma"]),
+                                    Rcpp::Named("sigma_sq", mod1["sigma"]),
                                     Rcpp::Named("tau", mod1["tau"]),
                                     Rcpp::Named("gamma", mod1["gamma"]),
                                     Rcpp::Named("Phi", mod1["Phi"]),
@@ -1077,7 +1077,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
                                    Rcpp::Named("delta", mod1["delta"]),
                                    Rcpp::Named("delta_xi", mod1["delta_xi"]),
                                    Rcpp::Named("gamma_xi", mod1["gamma_xi"]),
-                                   Rcpp::Named("sigma", mod1["sigma"]),
+                                   Rcpp::Named("sigma_sq", mod1["sigma"]),
                                    Rcpp::Named("tau", mod1["tau"]),
                                    Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                    Rcpp::Named("gamma", mod1["gamma"]),
@@ -1087,7 +1087,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 
   }
 
- return BestChain;
+  return BestChain;
 }
 
 //' Performs MCMC for functional models given an informed set of starting points
@@ -1144,8 +1144,8 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 //' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 //' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 //' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-//' @param alpha_0 Double containing hyperparameter for sampling from sigma
-//' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+//' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+//' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 //' @param covariance_adj Boolean containing whether or not the covariance structure should depend on the covariates
 //'
 //' @returns a List containing:
@@ -1157,7 +1157,7 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 //'   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
 //'   \item{\code{A}}{A samples from MCMC chain}
 //'   \item{\code{delta}}{delta samples from the MCMC chain}
-//'   \item{\code{sigma}}{sigma samples from the MCMC chain}
+//'   \item{\code{sigma_sq}}{sigma_sq samples from the MCMC chain}
 //'   \item{\code{tau}}{tau samples from the MCMC chain}
 //'   \item{\code{tau_eta}}{tau_eta samples from the MCMC chain (if covariate adjusted)}
 //'   \item{\code{eta}}{eta samples from the MCMC chain (if covariate adjusted)}
@@ -1364,7 +1364,7 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
     arma::field<arma::cube> Phi_samp = theta_est["Phi"];
     arma::cube A_samp = theta_est["A"];
     arma::mat tau_samp = multiple_try["tau"];
-    arma::vec sigma_samp = theta_est["sigma"];
+    arma::vec sigma_samp = theta_est["sigma_sq"];
     arma::cube chi_samp = theta_est["chi"];
 
     // generate warnings
@@ -1645,7 +1645,7 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
                                Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                Rcpp::Named("A", mod1["A"]),
                                Rcpp::Named("delta", mod1["delta"]),
-                               Rcpp::Named("sigma", mod1["sigma"]),
+                               Rcpp::Named("sigma_sq", mod1["sigma"]),
                                Rcpp::Named("tau", mod1["tau"]),
                                Rcpp::Named("gamma", mod1["gamma"]),
                                Rcpp::Named("Phi", mod1["Phi"]),
@@ -1664,7 +1664,7 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
     arma::field<arma::cube> Phi_samp = theta_est["Phi"];
     arma::cube A_samp = theta_est["A"];
     arma::mat tau_samp = multiple_try["tau"];
-    arma::vec sigma_samp = theta_est["sigma"];
+    arma::vec sigma_samp = theta_est["sigma_sq"];
     arma::cube chi_samp = theta_est["chi"];
     arma::field<arma::cube> eta_samp = multiple_try["eta"];
     arma::cube tau_eta_samp = multiple_try["tau_eta"];
@@ -1977,7 +1977,7 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
                                  Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                  Rcpp::Named("A", mod1["A"]),
                                  Rcpp::Named("delta", mod1["delta"]),
-                                 Rcpp::Named("sigma", mod1["sigma"]),
+                                 Rcpp::Named("sigma_sq", mod1["sigma"]),
                                  Rcpp::Named("tau", mod1["tau"]),
                                  Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                  Rcpp::Named("eta", mod1["eta"]),
@@ -1988,8 +1988,20 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
     }else{
       arma::field<arma::cube> delta_xi_samp = theta_est["delta_xi"];
       arma::field<arma::cube> A_xi_samp = theta_est["A_xi"];
-      arma::field<arma::cube> xi_samp = theta_est["xi"];
-      arma::field<arma::cube> gamma_xi_samp; theta_est["gamma_xi"];
+      arma::field<arma::cube> xi_samp1 = theta_est["xi"];
+      arma::field<arma::cube> xi_samp(n_nu, K);
+      for(int k = 0; k < K; k++){
+        for(int n = 0; n < n_nu; n++){
+          xi_samp(n,k) = xi_samp1(((k * n_nu) + n), 0);
+        }
+      }
+      arma::field<arma::cube> gamma_xi_samp1 = theta_est["gamma_xi"];
+      arma::field<arma::cube> gamma_xi_samp(n_nu, K);
+      for(int k = 0; k < K; k++){
+        for(int n = 0; n < n_nu; n++){
+          gamma_xi_samp(n,k) = gamma_xi_samp1(((k * n_nu) + n), 0);
+        }
+      }
 
       arma::cube delta_xi_est = arma::zeros(delta_xi_samp(0,0).n_rows,
                                             delta_xi_samp(0,0).n_cols,
@@ -2000,7 +2012,9 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
 
       arma::field<arma::cube> xi_est(1,K);
       arma::field<arma::cube> gamma_xi_est(1,K);
+
       for(int j = 0; j < K; j++){
+        Rcpp::Rcout << "j =" << K;
         xi_est(0,j) = arma::zeros(xi_samp(0,j).n_rows, xi_samp(0,j).n_cols,
                xi_samp(0,j).n_slices);
         gamma_xi_est(0,j) = arma::zeros(gamma_xi_samp(0,j).n_rows,
@@ -2013,7 +2027,7 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
       arma::vec gamma_xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
 
       for(int j = 0; j < K; j++){
-        for(int d = 0; X1.n_cols; d++){
+        for(int d = 0; d < X1.n_cols; d++){
           for(int i = 0; i < 2; i++){
             for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
               A_xi_ph(l - std::round(n_nu * burnin_prop)) = A_xi_samp(l,0)(j, i, d);
@@ -2027,11 +2041,12 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
             delta_xi_est(j, m, d) = arma::median(delta_xi_ph);
             for(int p = 0; p < xi_samp(0,j).n_rows; p++){
               for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
-                xi_ph(l - std::round(n_nu * burnin_prop)) = xi_samp(l,j)(p, m, d);
-                gamma_xi_ph(l - std::round(n_nu * burnin_prop)) = gamma_xi_samp(l,j)(p, m, d);
+                xi_ph(l - std::round(n_nu * burnin_prop)) = xi_samp(l,j)(p, d, m);
+                gamma_xi_ph(l - std::round(n_nu * burnin_prop)) = gamma_xi_samp(l,j)(p, d, m);
               }
-              xi_est(0,j)(p, m, d) = arma::median(xi_ph);
-              gamma_xi_est(0,j)(p, m, d) = arma::median(gamma_xi_ph);
+
+              xi_est(0,j)(p, d, m) = arma::median(xi_ph);
+              gamma_xi_est(0,j)(p, d, m) = arma::median(gamma_xi_ph);
             }
           }
         }
@@ -2060,7 +2075,7 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
                                  Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                  Rcpp::Named("A", mod1["A"]),
                                  Rcpp::Named("delta", mod1["delta"]),
-                                 Rcpp::Named("sigma", mod1["sigma"]),
+                                 Rcpp::Named("sigma_sq", mod1["sigma"]),
                                  Rcpp::Named("tau", mod1["tau"]),
                                  Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                  Rcpp::Named("xi", mod1["xi"]),
@@ -2079,10 +2094,10 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
 }
 
 
-//' Reads saved parameter data (sigma, alpha_3)
+//' Reads saved parameter data (sigma_sq, alpha_3)
 //'
 //' Reads armadillo vector type data and returns it as a vector in R. The following
-//' parameters can be read in using this function: sigma and alpha_3.
+//' parameters can be read in using this function: sigma_sq and alpha_3.
 //'
 //' @name ReadVec
 //' @param file String containing location where armadillo vector is stored
@@ -2093,7 +2108,7 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
 //' file <- system.file("test-data", "sigma.txt", package = "BayesFMMM")
 //'
 //' ## Read in file
-//' sigma <- ReadVec(file)
+//' sigma_sq <- ReadVec(file)
 //'
 //' #############################################################
 //' ## For reading in a group of files you can use the following:
@@ -2108,10 +2123,10 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
 //' # dir <- "~/sigma"
 //' #
 //' ## initialize placeholder
-//' # sigma <- rep(0, n_files * n_samp)
+//' # sigma_sq <- rep(0, n_files * n_samp)
 //' # for(i in 0:(n_files - 1)){
 //' #   sigma_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
-//' #   sigma[((n_samp * i) + 1):(n_samp * (i+1))] <- sigma_i
+//' #   sigma_sq[((n_samp * i) + 1):(n_samp * (i+1))] <- sigma_i
 //' #}
 //' #############################################################
 //'
@@ -2355,8 +2370,8 @@ arma::field<arma::vec> ReadFieldVec(std::string file){
 //' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 //' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 //' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-//' @param alpha_0 Double containing hyperparameter for sampling from sigma
-//' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+//' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+//' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 //' @returns a List containing:
 //' \describe{
 //'   \item{\code{B}}{The basis functions evaluated at the observed time points}
@@ -2366,7 +2381,7 @@ arma::field<arma::vec> ReadFieldVec(std::string file){
 //'   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
 //'   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
 //'   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
-//'   \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
+//'   \item{\code{sigma_sq}}{sigma_sq samples from the chain with the highest average log-likelihood}
 //'   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
 //'   \item{\code{tau_eta}}{Tau_Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
 //'   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
@@ -2618,7 +2633,7 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                     Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                     Rcpp::Named("A", mod1["A"]),
                                     Rcpp::Named("delta", mod1["delta"]),
-                                    Rcpp::Named("sigma", mod1["sigma"]),
+                                    Rcpp::Named("sigma_sq", mod1["sigma"]),
                                     Rcpp::Named("tau", mod1["tau"]),
                                     Rcpp::Named("Z", mod1["Z"]),
                                     Rcpp::Named("loglik", mod1["loglik"]));
@@ -2772,7 +2787,7 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                     Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                     Rcpp::Named("A", mod1["A"]),
                                     Rcpp::Named("delta", mod1["delta"]),
-                                    Rcpp::Named("sigma", mod1["sigma"]),
+                                    Rcpp::Named("sigma_sq", mod1["sigma"]),
                                     Rcpp::Named("tau", mod1["tau"]),
                                     Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                     Rcpp::Named("Z", mod1["Z"]),
@@ -2822,8 +2837,8 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 //' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 //' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-//' @param alpha_0 Double containing hyperparameter for sampling from sigma
-//' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+//' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+//' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 //' @param covariance_adj Boolean containing whether or not covariates should affect the covariance
 //' @returns a List containing:
 //' \describe{
@@ -2837,7 +2852,7 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'   \item{\code{delta}}{delta samples from MCMC chain}
 //'   \item{\code{delta_xi}}{delta_xi samples from MCMC chain (if covariate adjusted)}
 //'   \item{\code{gamma_xi}}{gamma_xi samples from MCMC chain (if covariate adjusted)}
-//'   \item{\code{sigma}}{sigma samples from MCMC chain}
+//'   \item{\code{sigma_sq}}{sigma_sq samples from MCMC chain}
 //'   \item{\code{tau}}{tau samples from MCMC chain}
 //'   \item{\code{tau_eta}}{tau_eta samples from MCMC chain (if covariate adjusted)}
 //'   \item{\code{gamma}}{gamma samples from the MCMC chain}
@@ -3164,7 +3179,7 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
                                     Rcpp::Named("chi", mod1["chi"]),
                                     Rcpp::Named("A", mod1["A"]),
                                     Rcpp::Named("delta", mod1["delta"]),
-                                    Rcpp::Named("sigma", mod1["sigma"]),
+                                    Rcpp::Named("sigma_sq", mod1["sigma"]),
                                     Rcpp::Named("tau", mod1["tau"]),
                                     Rcpp::Named("gamma", mod1["gamma"]),
                                     Rcpp::Named("Phi", mod1["Phi"]),
@@ -3372,7 +3387,7 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
                                    Rcpp::Named("delta", mod1["delta"]),
                                    Rcpp::Named("delta_xi", mod1["delta_xi"]),
                                    Rcpp::Named("gamma_xi", mod1["gamma_xi"]),
-                                   Rcpp::Named("sigma", mod1["sigma"]),
+                                   Rcpp::Named("sigma_sq", mod1["sigma"]),
                                    Rcpp::Named("tau", mod1["tau"]),
                                    Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                    Rcpp::Named("gamma", mod1["gamma"]),
@@ -3441,8 +3456,8 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
 //' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 //' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 //' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-//' @param alpha_0 Double containing hyperparameter for sampling from sigma
-//' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+//' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+//' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 //' @param covariance_adj Boolean containing whether or not the covariance structure should depend on the covariates
 //'
 //' @returns a List containing:
@@ -3454,7 +3469,7 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
 //'   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
 //'   \item{\code{A}}{A samples from MCMC chain}
 //'   \item{\code{delta}}{delta samples from the MCMC chain}
-//'   \item{\code{sigma}}{sigma samples from the MCMC chain}
+//'   \item{\code{sigma_sq}}{sigma_sq samples from the MCMC chain}
 //'   \item{\code{tau}}{tau samples from the MCMC chain}
 //'   \item{\code{tau_eta}}{tau_eta samples from the MCMC chain (if covariate adjusted)}
 //'   \item{\code{eta}}{eta samples from the MCMC chain (if covariate adjusted)}
@@ -3661,7 +3676,7 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
     arma::field<arma::cube> Phi_samp = theta_est["Phi"];
     arma::cube A_samp = theta_est["A"];
     arma::mat tau_samp = multiple_try["tau"];
-    arma::vec sigma_samp = theta_est["sigma"];
+    arma::vec sigma_samp = theta_est["sigma_sq"];
     arma::cube chi_samp = theta_est["chi"];
 
     // generate warnings
@@ -3938,7 +3953,7 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
                                Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                Rcpp::Named("A", mod1["A"]),
                                Rcpp::Named("delta", mod1["delta"]),
-                               Rcpp::Named("sigma", mod1["sigma"]),
+                               Rcpp::Named("sigma_sq", mod1["sigma"]),
                                Rcpp::Named("tau", mod1["tau"]),
                                Rcpp::Named("gamma", mod1["gamma"]),
                                Rcpp::Named("Phi", mod1["Phi"]),
@@ -3957,7 +3972,7 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
     arma::field<arma::cube> Phi_samp = theta_est["Phi"];
     arma::cube A_samp = theta_est["A"];
     arma::mat tau_samp = multiple_try["tau"];
-    arma::vec sigma_samp = theta_est["sigma"];
+    arma::vec sigma_samp = theta_est["sigma_sq"];
     arma::cube chi_samp = theta_est["chi"];
     arma::field<arma::cube> eta_samp = multiple_try["eta"];
     arma::cube tau_eta_samp = multiple_try["tau_eta"];
@@ -4270,7 +4285,7 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
                                             Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                             Rcpp::Named("A", mod1["A"]),
                                             Rcpp::Named("delta", mod1["delta"]),
-                                            Rcpp::Named("sigma", mod1["sigma"]),
+                                            Rcpp::Named("sigma_sq", mod1["sigma"]),
                                             Rcpp::Named("tau", mod1["tau"]),
                                             Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                             Rcpp::Named("eta", mod1["eta"]),
@@ -4281,8 +4296,20 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
     }else{
       arma::field<arma::cube> delta_xi_samp = theta_est["delta_xi"];
       arma::field<arma::cube> A_xi_samp = theta_est["A_xi"];
-      arma::field<arma::cube> xi_samp = theta_est["xi"];
-      arma::field<arma::cube> gamma_xi_samp; theta_est["gamma_xi"];
+      arma::field<arma::cube> xi_samp1 = theta_est["xi"];
+      arma::field<arma::cube> xi_samp(n_nu, K);
+      for(int k = 0; k < K; k++){
+        for(int n = 0; n < n_nu; n++){
+          xi_samp(n,k) = xi_samp1(((k * n_nu) + n), 0);
+        }
+      }
+      arma::field<arma::cube> gamma_xi_samp1 = theta_est["gamma_xi"];
+      arma::field<arma::cube> gamma_xi_samp(n_nu, K);
+      for(int k = 0; k < K; k++){
+        for(int n = 0; n < n_nu; n++){
+          gamma_xi_samp(n,k) = gamma_xi_samp1(((k * n_nu) + n), 0);
+        }
+      }
 
       arma::cube delta_xi_est = arma::zeros(delta_xi_samp(0,0).n_rows,
                                             delta_xi_samp(0,0).n_cols,
@@ -4306,7 +4333,7 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
       arma::vec gamma_xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
 
       for(int j = 0; j < K; j++){
-        for(int d = 0; X1.n_cols; d++){
+        for(int d = 0; d < X1.n_cols; d++){
           for(int i = 0; i < 2; i++){
             for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
               A_xi_ph(l - std::round(n_nu * burnin_prop)) = A_xi_samp(l,0)(j, i, d);
@@ -4320,11 +4347,11 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
             delta_xi_est(j, m, d) = arma::median(delta_xi_ph);
             for(int p = 0; p < xi_samp(0,j).n_rows; p++){
               for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
-                xi_ph(l - std::round(n_nu * burnin_prop)) = xi_samp(l,j)(p, m, d);
-                gamma_xi_ph(l - std::round(n_nu * burnin_prop)) = gamma_xi_samp(l,j)(p, m, d);
+                xi_ph(l - std::round(n_nu * burnin_prop)) = xi_samp(l,j)(p, d, m);
+                gamma_xi_ph(l - std::round(n_nu * burnin_prop)) = gamma_xi_samp(l,j)(p, d, m);
               }
-              xi_est(0,j)(p, m, d) = arma::median(xi_ph);
-              gamma_xi_est(0,j)(p, m, d) = arma::median(gamma_xi_ph);
+              xi_est(0,j)(p, d, m) = arma::median(xi_ph);
+              gamma_xi_est(0,j)(p, d, m) = arma::median(gamma_xi_ph);
             }
           }
         }
@@ -4353,7 +4380,7 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
                                  Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                  Rcpp::Named("A", mod1["A"]),
                                  Rcpp::Named("delta", mod1["delta"]),
-                                 Rcpp::Named("sigma", mod1["sigma"]),
+                                 Rcpp::Named("sigma_sq", mod1["sigma"]),
                                  Rcpp::Named("tau", mod1["tau"]),
                                  Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                  Rcpp::Named("xi", mod1["xi"]),
@@ -4403,8 +4430,8 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 //' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 //' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 //' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-//' @param alpha_0 Double containing hyperparameter for sampling from sigma
-//' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+//' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+//' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 //' @returns a List containing:
 //' \describe{
 //'   \item{\code{nu}}{Nu samples from the chain with the highest average log-likelihood}
@@ -4413,7 +4440,7 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 //'   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
 //'   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
 //'   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
-//'   \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
+//'   \item{\code{sigma_sq}}{sigma_sq samples from the chain with the highest average log-likelihood}
 //'   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
 //'   \item{\code{tau_eta}}{Tau_Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
 //'   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
@@ -4614,7 +4641,7 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                     Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                     Rcpp::Named("A", mod1["A"]),
                                     Rcpp::Named("delta", mod1["delta"]),
-                                    Rcpp::Named("sigma", mod1["sigma"]),
+                                    Rcpp::Named("sigma_sq", mod1["sigma"]),
                                     Rcpp::Named("tau", mod1["tau"]),
                                     Rcpp::Named("Z", mod1["Z"]),
                                     Rcpp::Named("loglik", mod1["loglik"]));
@@ -4738,7 +4765,7 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                     Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                     Rcpp::Named("A", mod1["A"]),
                                     Rcpp::Named("delta", mod1["delta"]),
-                                    Rcpp::Named("sigma", mod1["sigma"]),
+                                    Rcpp::Named("sigma_sq", mod1["sigma"]),
                                     Rcpp::Named("tau", mod1["tau"]),
                                     Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                     Rcpp::Named("Z", mod1["Z"]),
@@ -4783,8 +4810,8 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 //' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 //' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-//' @param alpha_0 Double containing hyperparameter for sampling from sigma
-//' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+//' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+//' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 //' @param covariance_adj Boolean containing whether or not covariates should affect the covariance
 //' @returns a List containing:
 //' \describe{
@@ -4797,7 +4824,7 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'   \item{\code{delta}}{delta samples from MCMC chain}
 //'   \item{\code{delta_xi}}{delta_xi samples from MCMC chain (if covariate adjusted)}
 //'   \item{\code{gamma_xi}}{gamma_xi samples from MCMC chain (if covariate adjusted)}
-//'   \item{\code{sigma}}{sigma samples from MCMC chain}
+//'   \item{\code{sigma_sq}}{sigma_sq samples from MCMC chain}
 //'   \item{\code{tau}}{tau samples from MCMC chain}
 //'   \item{\code{tau_eta}}{tau_eta samples from MCMC chain (if covariate adjusted)}
 //'   \item{\code{gamma}}{gamma samples from the MCMC chain}
@@ -5072,7 +5099,7 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
                                     Rcpp::Named("chi", mod1["chi"]),
                                     Rcpp::Named("A", mod1["A"]),
                                     Rcpp::Named("delta", mod1["delta"]),
-                                    Rcpp::Named("sigma", mod1["sigma"]),
+                                    Rcpp::Named("sigma_sq", mod1["sigma"]),
                                     Rcpp::Named("tau", mod1["tau"]),
                                     Rcpp::Named("gamma", mod1["gamma"]),
                                     Rcpp::Named("Phi", mod1["Phi"]),
@@ -5251,7 +5278,7 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
                                    Rcpp::Named("delta", mod1["delta"]),
                                    Rcpp::Named("delta_xi", mod1["delta_xi"]),
                                    Rcpp::Named("gamma_xi", mod1["gamma_xi"]),
-                                   Rcpp::Named("sigma", mod1["sigma"]),
+                                   Rcpp::Named("sigma_sq", mod1["sigma"]),
                                    Rcpp::Named("tau", mod1["tau"]),
                                    Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                    Rcpp::Named("gamma", mod1["gamma"]),
@@ -5311,8 +5338,8 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
 //' @param beta_nu Double containing hyperparameter for sampling from tau_nu (scale)
 //' @param alpha_eta Double containing hyperparameter for sampling from tau_eta
 //' @param beta_eta Double containing hyperparameter for sampling from tau_eta (scale)
-//' @param alpha_0 Double containing hyperparameter for sampling from sigma
-//' @param beta_0 Double containing hyperparameter for sampling from sigma (scale)
+//' @param alpha_0 Double containing hyperparameter for sampling from sigma_sq
+//' @param beta_0 Double containing hyperparameter for sampling from sigma_sq (scale)
 //' @param covariance_adj Boolean containing whether or not the covariance structure should depend on the covariates
 //'
 //' @returns a List containing:
@@ -5323,7 +5350,7 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
 //'   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
 //'   \item{\code{A}}{A samples from MCMC chain}
 //'   \item{\code{delta}}{delta samples from the MCMC chain}
-//'   \item{\code{sigma}}{sigma samples from the MCMC chain}
+//'   \item{\code{sigma_sq}}{sigma_sq samples from the MCMC chain}
 //'   \item{\code{tau}}{tau samples from the MCMC chain}
 //'   \item{\code{tau_eta}}{tau_eta samples from the MCMC chain}
 //'   \item{\code{eta}}{eta samples from the MCMC chain}
@@ -5490,7 +5517,7 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
     arma::field<arma::cube> Phi_samp = theta_est["Phi"];
     arma::cube A_samp = theta_est["A"];
     arma::mat tau_samp = multiple_try["tau"];
-    arma::vec sigma_samp = theta_est["sigma"];
+    arma::vec sigma_samp = theta_est["sigma_sq"];
     arma::cube chi_samp = theta_est["chi"];
 
     // generate warnings
@@ -5739,7 +5766,7 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
                                Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                Rcpp::Named("A", mod1["A"]),
                                Rcpp::Named("delta", mod1["delta"]),
-                               Rcpp::Named("sigma", mod1["sigma"]),
+                               Rcpp::Named("sigma_sq", mod1["sigma_sq"]),
                                Rcpp::Named("tau", mod1["tau"]),
                                Rcpp::Named("gamma", mod1["gamma"]),
                                Rcpp::Named("Phi", mod1["Phi"]),
@@ -5758,7 +5785,7 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
     arma::field<arma::cube> Phi_samp = theta_est["Phi"];
     arma::cube A_samp = theta_est["A"];
     arma::mat tau_samp = multiple_try["tau"];
-    arma::vec sigma_samp = theta_est["sigma"];
+    arma::vec sigma_samp = theta_est["sigma_sq"];
     arma::cube chi_samp = theta_est["chi"];
     arma::field<arma::cube> eta_samp = multiple_try["eta"];
     arma::cube tau_eta_samp = multiple_try["tau_eta"];
@@ -6040,7 +6067,7 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
                                  Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                  Rcpp::Named("A", mod1["A"]),
                                  Rcpp::Named("delta", mod1["delta"]),
-                                 Rcpp::Named("sigma", mod1["sigma"]),
+                                 Rcpp::Named("sigma_sq", mod1["sigma_sq"]),
                                  Rcpp::Named("tau", mod1["tau"]),
                                  Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                  Rcpp::Named("eta", mod1["eta"]),
@@ -6051,8 +6078,20 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
     }else{
       arma::field<arma::cube> delta_xi_samp = theta_est["delta_xi"];
       arma::field<arma::cube> A_xi_samp = theta_est["A_xi"];
-      arma::field<arma::cube> xi_samp = theta_est["xi"];
-      arma::field<arma::cube> gamma_xi_samp; theta_est["gamma_xi"];
+      arma::field<arma::cube> xi_samp1 = theta_est["xi"];
+      arma::field<arma::cube> xi_samp(n_nu, K);
+      for(int k = 0; k < K; k++){
+        for(int n = 0; n < n_nu; n++){
+          xi_samp(n,k) = xi_samp1(((k * n_nu) + n), 0);
+        }
+      }
+      arma::field<arma::cube> gamma_xi_samp1 = theta_est["gamma_xi"];
+      arma::field<arma::cube> gamma_xi_samp(n_nu, K);
+      for(int k = 0; k < K; k++){
+        for(int n = 0; n < n_nu; n++){
+          gamma_xi_samp(n,k) = gamma_xi_samp1(((k * n_nu) + n), 0);
+        }
+      }
 
       arma::cube delta_xi_est = arma::zeros(delta_xi_samp(0,0).n_rows,
                                             delta_xi_samp(0,0).n_cols,
@@ -6076,7 +6115,7 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
       arma::vec gamma_xi_ph = arma::zeros(n_nu - std::round(n_nu * burnin_prop));
 
       for(int j = 0; j < K; j++){
-        for(int d = 0; X1.n_cols; d++){
+        for(int d = 0; d < X1.n_cols; d++){
           for(int i = 0; i < 2; i++){
             for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
               A_xi_ph(l - std::round(n_nu * burnin_prop)) = A_xi_samp(l,0)(j, i, d);
@@ -6090,11 +6129,11 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
             delta_xi_est(j, m, d) = arma::median(delta_xi_ph);
             for(int p = 0; p < xi_samp(0,j).n_rows; p++){
               for(int l = std::round(n_nu * burnin_prop); l < n_nu; l++){
-                xi_ph(l - std::round(n_nu * burnin_prop)) = xi_samp(l,j)(p, m, d);
-                gamma_xi_ph(l - std::round(n_nu * burnin_prop)) = gamma_xi_samp(l,j)(p, m, d);
+                xi_ph(l - std::round(n_nu * burnin_prop)) = xi_samp(l,j)(p, d, m);
+                gamma_xi_ph(l - std::round(n_nu * burnin_prop)) = gamma_xi_samp(l,j)(p, d, m);
               }
-              xi_est(0,j)(p, m, d) = arma::median(xi_ph);
-              gamma_xi_est(0,j)(p, m, d) = arma::median(gamma_xi_ph);
+              xi_est(0,j)(p, d, m) = arma::median(xi_ph);
+              gamma_xi_est(0,j)(p, d, m) = arma::median(gamma_xi_ph);
             }
           }
         }
@@ -6121,7 +6160,7 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
                                  Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                  Rcpp::Named("A", mod1["A"]),
                                  Rcpp::Named("delta", mod1["delta"]),
-                                 Rcpp::Named("sigma", mod1["sigma"]),
+                                 Rcpp::Named("sigma_sq", mod1["sigma_sq"]),
                                  Rcpp::Named("tau", mod1["tau"]),
                                  Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                  Rcpp::Named("xi", mod1["xi"]),

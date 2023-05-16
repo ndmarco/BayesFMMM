@@ -89,9 +89,9 @@ BHDFMMM_Nu_Z_multiple_try(
 
 \item{beta_eta}{Double containing hyperparameter for sampling from tau_eta (scale)}
 
-\item{alpha_0}{Double containing hyperparameter for sampling from sigma}
+\item{alpha_0}{Double containing hyperparameter for sampling from sigma_sq}
 
-\item{beta_0}{Double containing hyperparameter for sampling from sigma (scale)}
+\item{beta_0}{Double containing hyperparameter for sampling from sigma_sq (scale)}
 }
 \value{
 a List containing:
@@ -103,7 +103,7 @@ a List containing:
   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
-  \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
+  \item{\code{sigma_sq}}{sigma_sq samples from the chain with the highest average log-likelihood}
   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
   \item{\code{tau_eta}}{Tau_Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}

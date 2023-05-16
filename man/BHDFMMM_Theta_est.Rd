@@ -98,9 +98,9 @@ BHDFMMM_Theta_est(
 
 \item{beta_eta}{Double containing hyperparameter for sampling from tau_eta (scale)}
 
-\item{alpha_0}{Double containing hyperparameter for sampling from sigma}
+\item{alpha_0}{Double containing hyperparameter for sampling from sigma_sq}
 
-\item{beta_0}{Double containing hyperparameter for sampling from sigma (scale)}
+\item{beta_0}{Double containing hyperparameter for sampling from sigma_sq (scale)}
 
 \item{covariance_adj}{Boolean containing whether or not covariates should affect the covariance}
 }
@@ -117,7 +117,7 @@ a List containing:
   \item{\code{delta}}{delta samples from MCMC chain}
   \item{\code{delta_xi}}{delta_xi samples from MCMC chain (if covariate adjusted)}
   \item{\code{gamma_xi}}{gamma_xi samples from MCMC chain (if covariate adjusted)}
-  \item{\code{sigma}}{sigma samples from MCMC chain}
+  \item{\code{sigma_sq}}{sigma_sq samples from MCMC chain}
   \item{\code{tau}}{tau samples from MCMC chain}
   \item{\code{tau_eta}}{tau_eta samples from MCMC chain (if covariate adjusted)}
   \item{\code{gamma}}{gamma samples from the MCMC chain}

@@ -101,9 +101,9 @@ BMVMMM_warm_start(
 
 \item{beta_eta}{Double containing hyperparameter for sampling from tau_eta (scale)}
 
-\item{alpha_0}{Double containing hyperparameter for sampling from sigma}
+\item{alpha_0}{Double containing hyperparameter for sampling from sigma_sq}
 
-\item{beta_0}{Double containing hyperparameter for sampling from sigma (scale)}
+\item{beta_0}{Double containing hyperparameter for sampling from sigma_sq (scale)}
 
 \item{covariance_adj}{Boolean containing whether or not the covariance structure should depend on the covariates}
 }
@@ -116,7 +116,7 @@ a List containing:
   \item{\code{alpha_3}}{alpha_3 samples from the MCMC chain}
   \item{\code{A}}{A samples from MCMC chain}
   \item{\code{delta}}{delta samples from the MCMC chain}
-  \item{\code{sigma}}{sigma samples from the MCMC chain}
+  \item{\code{sigma_sq}}{sigma_sq samples from the MCMC chain}
   \item{\code{tau}}{tau samples from the MCMC chain}
   \item{\code{tau_eta}}{tau_eta samples from the MCMC chain}
   \item{\code{eta}}{eta samples from the MCMC chain}
