@@ -4,7 +4,14 @@
 \alias{MVMeanCI}
 \title{Calculates the credible interval for the mean (Multivariate Data)}
 \usage{
-MVMeanCI(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1)
+MVMeanCI(
+  dir,
+  n_files,
+  alpha = 0.05,
+  rescale = TRUE,
+  burnin_prop = 0.1,
+  X = NULL
+)
 }
 \arguments{
 \item{dir}{String containing the directory where the MCMC files are located}
@@ -16,9 +23,11 @@ MVMeanCI(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1)
 \item{rescale}{Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group}
 
 \item{burnin_prop}{Double containing proportion of MCMC samples to discard}
+
+\item{X}{Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))}
 }
 \value{
-CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior draws of the mean structure are also returned.
+CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior draws of the mean structure are also returned. If covariate adjusted, the third index corresponds number of points of interest
 }
 \description{
 This function calculates a credible interval with the user specified coverage.
@@ -36,15 +45,42 @@ The following must be true:
   \item{\code{n_files}}{must be an integer larger than or equal to 1}
   \item{\code{alpha}}{must be between 0 and 1}
   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+  \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
 }
 }
 
 \examples{
+#########################
+### Not Covariate Adj ###
+#########################
+
 ## Set Hyperparameters
-dir <- system.file("test-data","", package = "BayesFMMM")
+dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 n_files <- 1
 
 ## Get CI for mean function
 CI <- MVMeanCI(dir, n_files)
+
+#####################
+### Covariate Adj ###
+#####################
+
+dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+n_files <- 1
+X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+
+## Get CI for mean function
+CI <- MVMeanCI(dir, n_files, X = X)
+
+#####################################################################
+### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#####################################################################
+
+dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+n_files <- 1
+X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+
+## Get CI for mean function
+CI <- MVMeanCI(dir, n_files, X = X)
 
 }

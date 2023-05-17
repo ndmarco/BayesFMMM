@@ -29,7 +29,7 @@
 //' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 //' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
-//' @param X Matrix containing covariates at points of interest (of dimension N x D (number of points of interest x number of covariates))
+//' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
 //' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior samples fo the mean function are also returned.
 //'
 //' @section Warning:
@@ -92,7 +92,6 @@
 //'
 //' ## Get CI for mean function
 //' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
-//'
 //'
 //' @export
 // [[Rcpp::export]]
@@ -656,7 +655,7 @@ Rcpp::List FMeanCI(const std::string dir,
 //' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 //' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
-//' @param X Matrix containing covariates at points of interest (of dimension N x D (number of points of interest x number of covariates))
+//' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
 //' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Also returns posterior samples of the mean function.
 //'
 //' @section Warning:
@@ -1287,7 +1286,8 @@ Rcpp::List HDFMeanCI(const std::string dir,
 //' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 //' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
-//' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior draws of the mean structure are also returned.
+//' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
+//' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior draws of the mean structure are also returned. If covariate adjusted, the third index corresponds number of points of interest
 //'
 //' @section Warning:
 //' The following must be true:
@@ -1295,15 +1295,42 @@ Rcpp::List HDFMeanCI(const std::string dir,
 //'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
 //'   \item{\code{alpha}}{must be between 0 and 1}
 //'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+//'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
 //' }
 //'
 //' @examples
+//' #########################
+//' ### Not Covariate Adj ###
+//' #########################
+//'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data","", package = "BayesFMMM")
+//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 //' n_files <- 1
 //'
 //' ## Get CI for mean function
 //' CI <- MVMeanCI(dir, n_files)
+//'
+//' #####################
+//' ### Covariate Adj ###
+//' #####################
+//'
+//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+//'
+//' ## Get CI for mean function
+//' CI <- MVMeanCI(dir, n_files, X = X)
+//'
+//' #####################################################################
+//' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+//' #####################################################################
+//'
+//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+//'
+//' ## Get CI for mean function
+//' CI <- MVMeanCI(dir, n_files, X = X)
 //'
 //' @export
 // [[Rcpp::export]]
@@ -1311,104 +1338,257 @@ Rcpp::List MVMeanCI(const std::string dir,
                     const int n_files,
                     const double alpha = 0.05,
                     bool rescale = true,
-                    const double burnin_prop = 0.1){
+                    const double burnin_prop = 0.1,
+                    Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue){
+  Rcpp::List CI;
 
-  if(n_files <= 0){
-    Rcpp::stop("'n_files' must be greater than 0");
-  }
-  if(alpha < 0){
-    Rcpp::stop("'alpha' must be between 0 and 1");
-  }
-  if(alpha >= 1){
-    Rcpp::stop("'alpha' must be between 0 and 1");
-  }
-
-  if(burnin_prop < 0){
-    Rcpp::stop("'burnin_prop' must be between 0 and 1");
-  }
-  if(burnin_prop >= 1){
-    Rcpp::stop("'burnin_prop' must be between 0 and 1");
-  }
-
-  arma::cube nu_i;
-  nu_i.load(dir + "Nu0.txt");
-  arma::cube nu_samp1 = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
-  nu_samp1.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
-  for(int i = 1; i < n_files; i++){
-    nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
-    nu_samp1.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
-                     (nu_i.n_slices)*(i+1) - 1) = nu_i;
-  }
-
-  arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols,
-                                   std::ceil((nu_i.n_slices * n_files)* (1 - burnin_prop)));
-  nu_samp = nu_samp1.subcube(0, 0, std::floor(nu_i.n_slices * n_files * burnin_prop),
-                             nu_samp1.n_rows-1, nu_samp1.n_cols-1, nu_samp1.n_slices-1);
-
-  if(rescale == true){
-    if(nu_i.n_rows > 2){
-      rescale = false;
-      Rcpp::Rcout << "Rescale property cannot be used for K > 2";
+  if(X.isNull()){
+    if(n_files <= 0){
+      Rcpp::stop("'n_files' must be greater than 0");
     }
-  }
+    if(alpha < 0){
+      Rcpp::stop("'alpha' must be between 0 and 1");
+    }
+    if(alpha >= 1){
+      Rcpp::stop("'alpha' must be between 0 and 1");
+    }
 
-  // Initialize placeholders
-  arma::mat CI_Upper = arma::zeros(nu_i.n_rows, nu_i.n_cols);
-  arma::mat CI_50 = arma::zeros(nu_i.n_rows, nu_i.n_cols);
-  arma::mat CI_Lower = arma::zeros(nu_i.n_rows, nu_i.n_cols);
+    if(burnin_prop < 0){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+    if(burnin_prop >= 1){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
 
-  if(rescale == true){
-    // Get Z matrix
-    arma::cube Z_i;
-    Z_i.load(dir + "Z0.txt");
-    arma::cube Z_samp1 = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
-    Z_samp1.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+    arma::cube nu_i;
+    nu_i.load(dir + "Nu0.txt");
+    arma::cube nu_samp1 = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
+    nu_samp1.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
     for(int i = 1; i < n_files; i++){
-      Z_i.load(dir + "Z" + std::to_string(i) +".txt");
-      Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+      nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
+      nu_samp1.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
+                       (nu_i.n_slices)*(i+1) - 1) = nu_i;
     }
-    arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                    std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-    Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
-                             Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
 
-    // rescale Z and nu
-    arma::mat transform_mat;
-    arma::vec ph = arma::zeros(Z_samp.n_rows);
-    for(int j = 0; j < Z_samp.n_slices; j++){
-      transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
-      int max_ind = 0;
-      for(int i = 0; i < Z_samp.n_cols; i++){
-        for(int l = 0; l < Z_samp.n_rows; l++){
-          ph(l) = Z_samp(l,i,j);
+    arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols,
+                                     std::ceil((nu_i.n_slices * n_files)* (1 - burnin_prop)));
+    nu_samp = nu_samp1.subcube(0, 0, std::floor(nu_i.n_slices * n_files * burnin_prop),
+                               nu_samp1.n_rows-1, nu_samp1.n_cols-1, nu_samp1.n_slices-1);
+
+    if(rescale == true){
+      if(nu_i.n_rows > 2){
+        rescale = false;
+        Rcpp::Rcout << "Rescale property cannot be used for K > 2";
+      }
+    }
+
+    // Initialize placeholders
+    arma::mat CI_Upper = arma::zeros(nu_i.n_rows, nu_i.n_cols);
+    arma::mat CI_50 = arma::zeros(nu_i.n_rows, nu_i.n_cols);
+    arma::mat CI_Lower = arma::zeros(nu_i.n_rows, nu_i.n_cols);
+
+    if(rescale == true){
+      // Get Z matrix
+      arma::cube Z_i;
+      Z_i.load(dir + "Z0.txt");
+      arma::cube Z_samp1 = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+      Z_samp1.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+      for(int i = 1; i < n_files; i++){
+        Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+        Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+      }
+      arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
+                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
+                               Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
+
+      // rescale Z and nu
+      arma::mat transform_mat;
+      arma::vec ph = arma::zeros(Z_samp.n_rows);
+      for(int j = 0; j < Z_samp.n_slices; j++){
+        transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+        int max_ind = 0;
+        for(int i = 0; i < Z_samp.n_cols; i++){
+          for(int l = 0; l < Z_samp.n_rows; l++){
+            ph(l) = Z_samp(l,i,j);
+          }
+          max_ind = arma::index_max(ph);
+          transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
         }
-        max_ind = arma::index_max(ph);
-        transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
+        nu_samp.slice(j) = transform_mat * nu_samp.slice(j);
       }
-      nu_samp.slice(j) = transform_mat * nu_samp.slice(j);
     }
+
+    arma::vec p = {alpha/2, 0.5, 1 - (alpha/2)};
+    arma::vec q = arma::zeros(3);
+    arma::vec ph = arma::zeros(nu_samp.n_slices);
+
+    for(int i = 0; i < nu_i.n_cols; i++){
+      for(int k = 0; k < nu_i.n_rows; k++){
+        for(int n = 0; n < nu_samp.n_slices; n++){
+          ph(n) = nu_samp(k,i,n);
+        }
+        q = arma::quantile(ph, p);
+        CI_Lower(k, i) = q(0);
+        CI_50(k,i) = q(1);
+        CI_Upper(k,i) = q(2);
+      }
+    }
+
+    CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
+                             Rcpp::Named("CI_50", CI_50),
+                             Rcpp::Named("CI_Lower", CI_Lower),
+                             Rcpp::Named("mean_trace", nu_samp));
+  }else{
+    Rcpp::NumericMatrix X_(X);
+    arma::mat X1 = Rcpp::as<arma::mat>(X_);
+
+    if(n_files <= 0){
+      Rcpp::stop("'n_files' must be greater than 0");
+    }
+    if(alpha < 0){
+      Rcpp::stop("'alpha' must be between 0 and 1");
+    }
+    if(alpha >= 1){
+      Rcpp::stop("'alpha' must be between 0 and 1");
+    }
+
+    if(burnin_prop < 0){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+    if(burnin_prop >= 1){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+
+    arma::cube nu_i;
+    nu_i.load(dir + "Nu0.txt");
+    arma::cube nu_samp1 = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
+    nu_samp1.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
+    for(int i = 1; i < n_files; i++){
+      nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
+      nu_samp1.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
+                       (nu_i.n_slices)*(i+1) - 1) = nu_i;
+    }
+
+    arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols,
+                                     std::ceil((nu_i.n_slices * n_files)* (1 - burnin_prop)));
+    nu_samp = nu_samp1.subcube(0, 0, std::floor(nu_i.n_slices * n_files * burnin_prop),
+                               nu_samp1.n_rows-1, nu_samp1.n_cols-1, nu_samp1.n_slices-1);
+
+    if(rescale == true){
+      if(nu_i.n_rows > 2){
+        rescale = false;
+        Rcpp::Rcout << "Rescale property cannot be used for K > 2";
+      }
+    }
+
+    arma::field<arma::cube> eta_i;
+    eta_i.load(dir + "Eta0.txt");
+    if(X1.n_cols != eta_i(0,0).n_cols){
+      Rcpp::stop("The number of columns in 'X' must be equal to the number of covariates in the model");
+    }
+
+    arma::field<arma::cube> eta_samp1(nu_samp1.n_slices, 1);
+    for(int l = 0; l < nu_i.n_slices; l++){
+      eta_samp1(l,0) = eta_i(l,0);
+    }
+
+    for(int i = 1; i < n_files; i++){
+      eta_i.load(dir + "Eta" + std::to_string(i) +".txt");
+      for(int l = 0; l < nu_i.n_slices; l++){
+        eta_samp1((i * nu_i.n_slices) + l, 0) = eta_i(l,0);
+      }
+    }
+
+    arma::field<arma::cube> eta_samp(nu_samp.n_slices, 1);
+    for(int i = 0; i < std::round(nu_samp.n_slices); i++){
+      eta_samp(i,0) = eta_samp1(i + std::floor(nu_samp1.n_slices * burnin_prop), 0);
+    }
+
+    // Initialize placeholders
+    arma::cube CI_Upper = arma::zeros(nu_i.n_rows, nu_i.n_cols, X1.n_rows);
+    arma::cube CI_50 = arma::zeros(nu_i.n_rows, nu_i.n_cols, X1.n_rows);
+    arma::cube CI_Lower = arma::zeros(nu_i.n_rows, nu_i.n_cols, X1.n_rows);
+    arma::field<arma::cube> mean_samp(X1.n_rows, 1);
+    arma::vec p = {alpha/2, 0.5, 1 - (alpha/2)};
+    arma::vec q = arma::zeros(3);
+    arma::vec ph = arma::zeros(nu_samp.n_slices);
+
+    if(rescale == true){
+      // Get Z matrix
+      arma::cube Z_i;
+      Z_i.load(dir + "Z0.txt");
+      arma::cube Z_samp1 = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+      Z_samp1.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+      for(int i = 1; i < n_files; i++){
+        Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+        Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+      }
+      arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
+                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
+                               Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
+
+      // rescale Z and nu
+      arma::mat eta_ph = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+      arma::mat transform_mat;
+      arma::vec ph = arma::zeros(Z_samp.n_rows);
+      for(int j = 0; j < Z_samp.n_slices; j++){
+        transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+        int max_ind = 0;
+        for(int i = 0; i < Z_samp.n_cols; i++){
+          for(int l = 0; l < Z_samp.n_rows; l++){
+            ph(l) = Z_samp(l,i,j);
+          }
+          max_ind = arma::index_max(ph);
+          transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
+        }
+        nu_samp.slice(j) = transform_mat * nu_samp.slice(j);
+        // transform eta parameters
+        for(int d = 0; d < X1.n_cols; d++){
+          for(int r = 0; r < nu_samp.n_rows; r++){
+            for(int p = 0; p < nu_samp.n_cols; p++){
+              eta_ph(r,p) = eta_samp(j,0)(p,d,r);
+            }
+          }
+          eta_ph = transform_mat * eta_ph;
+          for(int r = 0; r < nu_samp.n_rows; r++){
+            for(int p = 0; p < nu_samp.n_cols; p++){
+              eta_samp(j,0)(p,d,r) = eta_ph(r,p);
+            }
+          }
+        }
+      }
+    }
+    for(int j = 0; j < X1.n_rows; j++){
+      mean_samp(j,0) = arma::zeros(nu_samp.n_rows, nu_samp.n_cols, nu_samp.n_slices);
+      for(int i = 0; i < nu_samp.n_slices; i++){
+        for(int k= 0; k < eta_samp(j,0).n_slices; k++){
+          mean_samp(j,0).slice(i).row(k) = nu_samp.slice(i).row(k) + (eta_samp(i,0).slice(k) * X1.row(j).t()).t();
+        }
+      }
+
+      for(int i = 0; i < nu_i.n_cols; i++){
+        for(int k = 0; k < nu_i.n_rows; k++){
+          for(int n = 0; n < nu_samp.n_slices; n++){
+            ph(n) = mean_samp(j,0)(k,i,n);
+          }
+          q = arma::quantile(ph, p);
+          CI_Lower(k, i, j) = q(0);
+          CI_50(k, i, j) = q(1);
+          CI_Upper(k, i, j) = q(2);
+        }
+      }
+    }
+
+    CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
+                             Rcpp::Named("CI_50", CI_50),
+                             Rcpp::Named("CI_Lower", CI_Lower),
+                             Rcpp::Named("mean_trace", mean_samp));
+
   }
 
-  arma::vec p = {alpha/2, 0.5, 1 - (alpha/2)};
-  arma::vec q = arma::zeros(3);
-  arma::vec ph = arma::zeros(nu_samp.n_slices);
 
-  for(int i = 0; i < nu_i.n_cols; i++){
-    for(int k = 0; k < nu_i.n_rows; k++){
-      for(int n = 0; n < nu_samp.n_slices; n++){
-        ph(n) = nu_samp(k,i,n);
-      }
-      q = arma::quantile(ph, p);
-      CI_Lower(k, i) = q(0);
-      CI_50(k,i) = q(1);
-      CI_Upper(k,i) = q(2);
-    }
-  }
-
-  Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
-                                      Rcpp::Named("CI_50", CI_50),
-                                      Rcpp::Named("CI_Lower", CI_Lower),
-                                      Rcpp::Named("mean_trace", nu_samp));
   return(CI);
 }
 

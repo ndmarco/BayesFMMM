@@ -42,7 +42,7 @@ HDFMeanCI(
 
 \item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 
-\item{X}{Matrix containing covariates at points of interest (of dimension N x D (number of points of interest x number of covariates))}
+\item{X}{Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))}
 }
 \value{
 CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Also returns posterior samples of the mean function.

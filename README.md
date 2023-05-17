@@ -35,7 +35,7 @@ Parameter | Size | Description
 $\nu$ | (K, P, MCMC_iters) | Parameters controlling the mean function for each covariate
 $\tau$ | (MCMC_iters, K) | Paramaters used in the prior on $\nu$ which control the smoothing of the mean function
 ${\color{red}\eta}$ | [MCMC_iters] (P, D, K) | Parameters controlling the covariate dependence of the mean functions
-${\color{red}\tau_\eta}$ | (K, D, MCMC_iters) | Paramaters used in the prior on $\eta$ which control the smoothing of the mean function
+${\color{red}\tau_\eta}$ | (K, D, MCMC_iters) | Paramaters used in the prior on ${\color{red}\eta}$ which control the smoothing of the mean function
 $\chi$ |(n_funct, M, MCMC_iters) | Parameters controling the amount of variation from the mean in the directions of the pseudo eigenfunctions
 $Z$ | (n_funct, K, MCMC_iters) | Parameters indicating an observation's proportion of membership to each cluster
 $\pi$ | (K, MCMC_iters) |  Paramaters used in the prior on the $Z$ parameters
@@ -82,7 +82,7 @@ Parameter | Size | Description
 $\nu$ | (K, P, MCMC_iters) | Parameters controlling the mean function for each covariate
 $\tau$ | (MCMC_iters, K) | Paramaters used in the prior on $\nu$ which control the smoothing of the mean function
 ${\color{red}\eta}$ | [MCMC_iters] (P, D, K) | Parameters controlling the covariate dependence of the mean functions
-${\color{red}\tau_\eta}$ | (K, D, MCMC_iters) | Paramaters used in the prior on $\eta$ which control the smoothing of the mean function
+${\color{red}\tau_\eta}$ | (K, D, MCMC_iters) | Paramaters used in the prior on ${\color{red}\eta}$ which control the smoothing of the mean function
 $\chi$ |(N, M, MCMC_iters) | Parameters controling the amount of variation from the mean in the directions of the pseudo eigenfunctions
 $Z$ | (N, K, MCMC_iters) | Parameters indicating an observation's proportion of membership to each cluster
 $\pi$ | (K, MCMC_iters) |  Paramaters used in the prior on the $Z$ parameters

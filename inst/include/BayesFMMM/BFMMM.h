@@ -5562,13 +5562,19 @@ inline Rcpp::List BFMMM_ThetaMV_Cov_Adj(const arma::mat& y_obs,
   }
   Rcpp::List params = Rcpp::List::create(Rcpp::Named("Z", Z),
                                          Rcpp::Named("nu", nu),
+                                         Rcpp::Named("eta", eta),
                                          Rcpp::Named("chi", chi),
                                          Rcpp::Named("A", A),
+                                         Rcpp::Named("A_xi", A_xi),
                                          Rcpp::Named("delta", delta),
+                                         Rcpp::Named("delta_xi", delta_xi),
+                                         Rcpp::Named("gamma_xi", gamma_xi),
                                          Rcpp::Named("sigma", sigma),
                                          Rcpp::Named("tau", tau),
+                                         Rcpp::Named("tau_eta", tau_eta),
                                          Rcpp::Named("gamma", gamma),
                                          Rcpp::Named("Phi", Phi),
+                                         Rcpp::Named("xi", xi),
                                          Rcpp::Named("loglik", loglik));
   return params;
 }

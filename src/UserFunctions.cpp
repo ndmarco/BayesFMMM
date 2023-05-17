@@ -4504,7 +4504,7 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 //' K <- 2
 //' n_eigen <- 2
 //'
-//' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+//' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
 //' ## Run function
 //' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
@@ -4875,10 +4875,10 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' n_eigen <- 2
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 //'
 //' ## Run function
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
 //'                         n_eigen, est1)
 //'
 //' #####################
@@ -4894,13 +4894,13 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' K <- 2
 //' n_eigen <- 2
 //'
-//' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+//' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 //'
 //' ## Run function
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
 //'                         n_eigen, est1, X = X)
 //'
 //' #####################################################################
@@ -4916,13 +4916,13 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' K <- 2
 //' n_eigen <- 2
 //'
-//' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+//' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 //'
 //' ## Run function
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
 //'                         n_eigen, est1, X = X, covariance_adj = T)
 //'
 //' @export
@@ -5432,17 +5432,17 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
 //' K <- 2
 //' n_eigen <- 2
 //'
-//' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+//' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 //'
 //' ## Run function
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
 //'                         n_eigen, est1, X = X)
 //'
 //' ## Run MCMC sampler
-//' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X)
+//' MCMC.chain <- BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X)
 //'
 //' #####################################################################
 //' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
@@ -5457,17 +5457,17 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
 //' K <- 2
 //' n_eigen <- 2
 //'
-//' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+//' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 //'
 //' ## Run function
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
 //'                         n_eigen, est1, X = X, covariance_adj = T)
 //'
 //' ## Run MCMC sampler
-//' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X,
+//' MCMC.chain <- BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X,
 //'                                covariance_adj = T)
 //'
 //' @export
@@ -5766,7 +5766,7 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
                                Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                Rcpp::Named("A", mod1["A"]),
                                Rcpp::Named("delta", mod1["delta"]),
-                               Rcpp::Named("sigma_sq", mod1["sigma_sq"]),
+                               Rcpp::Named("sigma_sq", mod1["sigma"]),
                                Rcpp::Named("tau", mod1["tau"]),
                                Rcpp::Named("gamma", mod1["gamma"]),
                                Rcpp::Named("Phi", mod1["Phi"]),
@@ -6067,7 +6067,7 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
                                  Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                  Rcpp::Named("A", mod1["A"]),
                                  Rcpp::Named("delta", mod1["delta"]),
-                                 Rcpp::Named("sigma_sq", mod1["sigma_sq"]),
+                                 Rcpp::Named("sigma_sq", mod1["sigma"]),
                                  Rcpp::Named("tau", mod1["tau"]),
                                  Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                  Rcpp::Named("eta", mod1["eta"]),
@@ -6160,7 +6160,7 @@ Rcpp::List BMVMMM_warm_start(const int tot_mcmc_iters,
                                  Rcpp::Named("alpha_3", mod1["alpha_3"]),
                                  Rcpp::Named("A", mod1["A"]),
                                  Rcpp::Named("delta", mod1["delta"]),
-                                 Rcpp::Named("sigma_sq", mod1["sigma_sq"]),
+                                 Rcpp::Named("sigma_sq", mod1["sigma"]),
                                  Rcpp::Named("tau", mod1["tau"]),
                                  Rcpp::Named("tau_eta", mod1["tau_eta"]),
                                  Rcpp::Named("xi", mod1["xi"]),

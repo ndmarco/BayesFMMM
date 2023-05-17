@@ -57,8 +57,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // MVMeanCI
-Rcpp::List MVMeanCI(const std::string dir, const int n_files, const double alpha, bool rescale, const double burnin_prop);
-RcppExport SEXP _BayesFMMM_MVMeanCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP burnin_propSEXP) {
+Rcpp::List MVMeanCI(const std::string dir, const int n_files, const double alpha, bool rescale, const double burnin_prop, Rcpp::Nullable<Rcpp::NumericMatrix> X);
+RcppExport SEXP _BayesFMMM_MVMeanCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP burnin_propSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -67,7 +67,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< bool >::type rescale(rescaleSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
-    rcpp_result_gen = Rcpp::wrap(MVMeanCI(dir, n_files, alpha, rescale, burnin_prop));
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericMatrix> >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(MVMeanCI(dir, n_files, alpha, rescale, burnin_prop, X));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -792,7 +793,7 @@ RcppExport SEXP run_testthat_tests(SEXP);
 static const R_CallMethodDef CallEntries[] = {
     {"_BayesFMMM_FMeanCI", (DL_FUNC) &_BayesFMMM_FMeanCI, 12},
     {"_BayesFMMM_HDFMeanCI", (DL_FUNC) &_BayesFMMM_HDFMeanCI, 12},
-    {"_BayesFMMM_MVMeanCI", (DL_FUNC) &_BayesFMMM_MVMeanCI, 5},
+    {"_BayesFMMM_MVMeanCI", (DL_FUNC) &_BayesFMMM_MVMeanCI, 6},
     {"_BayesFMMM_FCovCI", (DL_FUNC) &_BayesFMMM_FCovCI, 14},
     {"_BayesFMMM_HDFCovCI", (DL_FUNC) &_BayesFMMM_HDFCovCI, 14},
     {"_BayesFMMM_MVCovCI", (DL_FUNC) &_BayesFMMM_MVCovCI, 8},

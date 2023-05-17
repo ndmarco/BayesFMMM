@@ -42,7 +42,7 @@ FMeanCI(
 
 \item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 
-\item{X}{Matrix containing covariates at points of interest (of dimension N x D (number of points of interest x number of covariates))}
+\item{X}{Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))}
 }
 \value{
 CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior samples fo the mean function are also returned.
@@ -122,6 +122,5 @@ X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 
 ## Get CI for mean function
 CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
-
 
 }

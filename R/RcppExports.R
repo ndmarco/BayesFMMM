@@ -27,7 +27,7 @@
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
-#' @param X Matrix containing covariates at points of interest (of dimension N x D (number of points of interest x number of covariates))
+#' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
 #' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior samples fo the mean function are also returned.
 #'
 #' @section Warning:
@@ -91,7 +91,6 @@
 #' ## Get CI for mean function
 #' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
 #'
-#'
 #' @export
 FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1, X = NULL) {
     .Call('_BayesFMMM_FMeanCI', PACKAGE = 'BayesFMMM', dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop, X)
@@ -123,7 +122,7 @@ FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_k
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
-#' @param X Matrix containing covariates at points of interest (of dimension N x D (number of points of interest x number of covariates))
+#' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
 #' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Also returns posterior samples of the mean function.
 #'
 #' @section Warning:
@@ -217,7 +216,8 @@ HDFMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
-#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior draws of the mean structure are also returned.
+#' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
+#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior draws of the mean structure are also returned. If covariate adjusted, the third index corresponds number of points of interest
 #'
 #' @section Warning:
 #' The following must be true:
@@ -225,19 +225,46 @@ HDFMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal
 #'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
 #'   \item{\code{alpha}}{must be between 0 and 1}
 #'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+#'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
 #' }
 #'
 #' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
 #' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFMMM")
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 #' n_files <- 1
 #'
 #' ## Get CI for mean function
 #' CI <- MVMeanCI(dir, n_files)
 #'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#'
+#' ## Get CI for mean function
+#' CI <- MVMeanCI(dir, n_files, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#'
+#' ## Get CI for mean function
+#' CI <- MVMeanCI(dir, n_files, X = X)
+#'
 #' @export
-MVMeanCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
-    .Call('_BayesFMMM_MVMeanCI', PACKAGE = 'BayesFMMM', dir, n_files, alpha, rescale, burnin_prop)
+MVMeanCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1, X = NULL) {
+    .Call('_BayesFMMM_MVMeanCI', PACKAGE = 'BayesFMMM', dir, n_files, alpha, rescale, burnin_prop, X)
 }
 
 #' Calculates the credible interval for the covariance (Functional Data)
@@ -2117,7 +2144,7 @@ BHDFMMM_warm_start <- function(tot_mcmc_iters, K, Y, time, n_funct, basis_degree
 #' K <- 2
 #' n_eigen <- 2
 #'
-#' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 #'
 #' ## Run function
 #' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
@@ -2227,10 +2254,10 @@ BMVMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, X = N
 #' n_eigen <- 2
 #'
 #' ## Get Estimates of Z and nu
-#' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
+#' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 #'
 #' ## Run function
-#' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+#' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
 #'                         n_eigen, est1)
 #'
 #' #####################
@@ -2246,13 +2273,13 @@ BMVMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, X = N
 #' K <- 2
 #' n_eigen <- 2
 #'
-#' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 #'
 #' ## Get Estimates of Z and nu
-#' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+#' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 #'
 #' ## Run function
-#' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+#' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
 #'                         n_eigen, est1, X = X)
 #'
 #' #####################################################################
@@ -2268,13 +2295,13 @@ BMVMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, X = N
 #' K <- 2
 #' n_eigen <- 2
 #'
-#' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 #'
 #' ## Get Estimates of Z and nu
-#' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+#' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 #'
 #' ## Run function
-#' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+#' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
 #'                         n_eigen, est1, X = X, covariance_adj = T)
 #'
 #' @export
@@ -2424,17 +2451,17 @@ BMVMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, multiple_try,
 #' K <- 2
 #' n_eigen <- 2
 #'
-#' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 #'
 #' ## Get Estimates of Z and nu
-#' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+#' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 #'
 #' ## Run function
-#' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+#' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
 #'                         n_eigen, est1, X = X)
 #'
 #' ## Run MCMC sampler
-#' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X)
+#' MCMC.chain <- BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X)
 #'
 #' #####################################################################
 #' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
@@ -2449,17 +2476,17 @@ BMVMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, multiple_try,
 #' K <- 2
 #' n_eigen <- 2
 #'
-#' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 #'
 #' ## Get Estimates of Z and nu
-#' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+#' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 #'
 #' ## Run function
-#' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+#' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
 #'                         n_eigen, est1, X = X, covariance_adj = T)
 #'
 #' ## Run MCMC sampler
-#' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X,
+#' MCMC.chain <- BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X,
 #'                                covariance_adj = T)
 #'
 #' @export

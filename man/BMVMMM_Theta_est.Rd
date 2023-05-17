@@ -164,10 +164,10 @@ K <- 2
 n_eigen <- 2
 
 ## Get Estimates of Z and nu
-est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
+est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 
 ## Run function
-est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
                         n_eigen, est1)
 
 #####################
@@ -183,13 +183,13 @@ n_try <- 1
 K <- 2
 n_eigen <- 2
 
-X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 
 ## Get Estimates of Z and nu
-est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 
 ## Run function
-est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
                         n_eigen, est1, X = X)
 
 #####################################################################
@@ -205,13 +205,13 @@ n_try <- 1
 K <- 2
 n_eigen <- 2
 
-X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 
 ## Get Estimates of Z and nu
-est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 
 ## Run function
-est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
                         n_eigen, est1, X = X, covariance_adj = T)
 
 }
