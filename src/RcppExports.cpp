@@ -121,20 +121,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // MVCovCI
-Rcpp::List MVCovCI(const std::string dir, const int n_files, const int n_MCMC, const int l, const int m, const double alpha, bool rescale, const double burnin_prop);
-RcppExport SEXP _BayesFMMM_MVCovCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP lSEXP, SEXP mSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP burnin_propSEXP) {
+Rcpp::List MVCovCI(const std::string dir, const int n_files, const int l, const int m, const double alpha, bool rescale, const double burnin_prop, Rcpp::Nullable<Rcpp::NumericMatrix> X);
+RcppExport SEXP _BayesFMMM_MVCovCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP lSEXP, SEXP mSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP burnin_propSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
-    Rcpp::traits::input_parameter< const int >::type n_MCMC(n_MCMCSEXP);
     Rcpp::traits::input_parameter< const int >::type l(lSEXP);
     Rcpp::traits::input_parameter< const int >::type m(mSEXP);
     Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< bool >::type rescale(rescaleSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
-    rcpp_result_gen = Rcpp::wrap(MVCovCI(dir, n_files, n_MCMC, l, m, alpha, rescale, burnin_prop));
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericMatrix> >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(MVCovCI(dir, n_files, l, m, alpha, rescale, burnin_prop, X));
     return rcpp_result_gen;
 END_RCPP
 }

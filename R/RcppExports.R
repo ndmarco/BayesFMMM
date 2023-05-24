@@ -505,7 +505,11 @@ HDFCovCI <- function(dir, n_files, time1, time2, basis_degree, boundary_knots, i
 #' Calculates the credible interval for the covariance (Multivariate Data)
 #'
 #' This function calculates a credible interval for the covariance matrix
-#' between the l-th and m-th clusters, with the user specified coverage.
+#' between the l-th and m-th clusters, with the user specified coverage. This
+#' function can handle covariate adjusted models, where the mean and covariance
+#' functions depend on the covariates of interest. If not covariate adjusted, or
+#' if the covariates only influence the mean structure, DO NOT specify \code{X} in
+#' this function.
 #' In order to run this function, the directory of the posterior samples needs
 #' to be specified. The function will return the credible intervals and the median
 #' posterior estimate of the mean. The user can specify if they would like the
@@ -516,12 +520,12 @@ HDFCovCI <- function(dir, n_files, time1, time2, basis_degree, boundary_knots, i
 #' @name MVCovCI
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
-#' @param n_MCMC Int containing the number of saved MCMC iterations per file
 #' @param l Int containing the 1st cluster group of which you want to get the credible interval for
 #' @param m Int containing the 2nd cluster group of which you want to get the credible interval for
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
+#' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
 #' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior estimates of the covariance function are also returned.
 #'
 #' @section Warning:
@@ -533,21 +537,51 @@ HDFCovCI <- function(dir, n_files, time1, time2, basis_degree, boundary_knots, i
 #'   \item{\code{m}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
 #'   \item{\code{alpha}}{must be between 0 and 1}
 #'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+#'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
 #' }
 #'
 #' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
 #' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFMMM")
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 #' n_files <- 1
-#' n_MCMC <- 200
 #' l <- 1
 #' m <- 1
-#' ## Get CI for mean function
-#' CI <- MVCovCI(dir, n_files, n_MCMC, l, m)
+#'
+#' ## Get CI for cov function
+#' CI <- MVCovCI(dir, n_files, l, m)
+#'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' l <- 1
+#' m <- 1
+#'
+#' ## Get CI for cov function
+#' CI <- MVCovCI(dir, n_files, l, m)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' l <- 1
+#' m <- 1
+#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#'
+#' ## Get CI for cov function
+#' CI <- MVCovCI(dir, n_files, l, m, X = X)
 #'
 #' @export
-MVCovCI <- function(dir, n_files, n_MCMC, l, m, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
-    .Call('_BayesFMMM_MVCovCI', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, l, m, alpha, rescale, burnin_prop)
+MVCovCI <- function(dir, n_files, l, m, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1, X = NULL) {
+    .Call('_BayesFMMM_MVCovCI', PACKAGE = 'BayesFMMM', dir, n_files, l, m, alpha, rescale, burnin_prop, X)
 }
 
 #' Calculates the credible interval for sigma squared for all types of data
