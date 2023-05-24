@@ -73,14 +73,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // FCovCI
-Rcpp::List FCovCI(const std::string dir, const int n_files, const int n_MCMC, const arma::vec time1, const arma::vec time2, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const int l, const int m, const double alpha, bool rescale, const bool simultaneous, const double burnin_prop);
-RcppExport SEXP _BayesFMMM_FCovCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP time1SEXP, SEXP time2SEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP lSEXP, SEXP mSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP simultaneousSEXP, SEXP burnin_propSEXP) {
+Rcpp::List FCovCI(const std::string dir, const int n_files, const arma::vec time1, const arma::vec time2, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const int l, const int m, const double alpha, bool rescale, const bool simultaneous, const double burnin_prop, Rcpp::Nullable<Rcpp::NumericMatrix> X);
+RcppExport SEXP _BayesFMMM_FCovCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP time1SEXP, SEXP time2SEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP lSEXP, SEXP mSEXP, SEXP alphaSEXP, SEXP rescaleSEXP, SEXP simultaneousSEXP, SEXP burnin_propSEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
-    Rcpp::traits::input_parameter< const int >::type n_MCMC(n_MCMCSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type time1(time1SEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type time2(time2SEXP);
     Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
@@ -92,7 +91,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type rescale(rescaleSEXP);
     Rcpp::traits::input_parameter< const bool >::type simultaneous(simultaneousSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
-    rcpp_result_gen = Rcpp::wrap(FCovCI(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop));
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericMatrix> >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(FCovCI(dir, n_files, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop, X));
     return rcpp_result_gen;
 END_RCPP
 }

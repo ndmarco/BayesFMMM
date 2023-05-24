@@ -1595,7 +1595,11 @@ Rcpp::List MVMeanCI(const std::string dir,
 //' Calculates the credible interval for the covariance (Functional Data)
 //'
 //' This function calculates a credible interval for the covariance function
-//' between the l-th and m-th clusters, with the user specified coverage.
+//' between the l-th and m-th clusters, with the user specified coverage. This
+//' function can handle covariate adjusted models, where the mean and covariance
+//' functions depend on the covariates of intererst. If not covariate adjusted, or
+//' if the covariates only influence the mean structure, DO NOT specify \code{X} in
+//' this function.
 //' In order to run this function, the directory of the posterior samples needs
 //' to be specified. The function will return the credible intervals and the median
 //' posterior estimate of the covariance function at the time points specified by the
@@ -1622,6 +1626,7 @@ Rcpp::List MVMeanCI(const std::string dir,
 //' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 //' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
+//' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
 //' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function. Posterior estimates of the covariance function are also returned.
 //'
 //' @section Warning:
@@ -1635,30 +1640,73 @@ Rcpp::List MVMeanCI(const std::string dir,
 //'   \item{\code{m}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
 //'   \item{\code{alpha}}{must be between 0 and 1}
 //'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+//'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
 //' }
 //'
 //' @examples
+//' #########################
+//' ### Not Covariate Adj ###
+//' #########################
+//'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data","", package = "BayesFMMM")
+//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
 //' n_files <- 1
-//' n_MCMC <- 200
 //' time1 <- seq(0, 990, 10)
 //' time2 <- seq(0, 990, 10)
 //' l <- 1
 //' m <- 1
 //' basis_degree <- 3
 //' boundary_knots <- c(0, 1000)
-//' internal_knots <- c(200, 400, 600, 800)
+//' internal_knots <- c(250, 500, 750)
 //'
 //' ## Get CI for Covaraince function
-//' CI <- FCovCI(dir, n_files, n_MCMC, time1, time2, basis_degree,
+//' CI <- FCovCI(dir, n_files, time1, time2, basis_degree,
 //'              boundary_knots, internal_knots, l, m)
+//'
+//' #####################
+//' ### Covariate Adj ###
+//' #####################
+//'
+//' ## Set Hyperparameters
+//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//' time1 <- seq(0, 990, 10)
+//' time2 <- seq(0, 990, 10)
+//' l <- 1
+//' m <- 1
+//' basis_degree <- 3
+//' boundary_knots <- c(0, 1000)
+//' internal_knots <- c(250, 500, 750)
+//'
+//' ## Get CI for Covaraince function
+//' CI <- FCovCI(dir, n_files, time1, time2, basis_degree,
+//'              boundary_knots, internal_knots, l, m)
+//'
+//' #####################################################################
+//' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+//' #####################################################################
+//'
+//' ## Set Hyperparameters
+//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//' time1 <- seq(0, 990, 10)
+//' time2 <- seq(0, 990, 10)
+//' l <- 1
+//' m <- 1
+//' basis_degree <- 3
+//' boundary_knots <- c(0, 1000)
+//' internal_knots <- c(250, 500, 750)
+//' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+//'
+//' ## Get CI for Covaraince function
+//' CI <- FCovCI(dir, n_files, time1, time2, basis_degree,
+//'              boundary_knots, internal_knots, l, m, X = X)
+//'
 //'
 //' @export
 // [[Rcpp::export]]
 Rcpp::List FCovCI(const std::string dir,
                   const int n_files,
-                  const int n_MCMC,
                   const arma::vec time1,
                   const arma::vec time2,
                   const int basis_degree,
@@ -1669,233 +1717,540 @@ Rcpp::List FCovCI(const std::string dir,
                   const double alpha = 0.05,
                   bool rescale = true,
                   const bool simultaneous = false,
-                  const double burnin_prop = 0.1){
-  if(n_files <= 0){
-    Rcpp::stop("'n_files' must be greater than 0");
-  }
-  if(n_MCMC < 1){
-    Rcpp::stop("'n_MCMC' must be greater than 0");
-  }
-  if(alpha < 0){
-    Rcpp::stop("'alpha' must be between 0 and 1");
-  }
-  if(alpha >= 1){
-    Rcpp::stop("'alpha' must be between 0 and 1");
-  }
+                  const double burnin_prop = 0.1,
+                  Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue){
+  Rcpp::List CI;
+  arma::vec sigma_i;
+  sigma_i.load(dir + "Sigma0.txt");
+  int n_MCMC = sigma_i.n_elem;
 
-  if(burnin_prop < 0){
-    Rcpp::stop("'burnin_prop' must be between 0 and 1");
-  }
-  if(burnin_prop >= 1){
-    Rcpp::stop("'burnin_prop' must be between 0 and 1");
-  }
-  if(basis_degree <  1){
-    Rcpp::stop("'basis_degree' must be an integer greater than or equal to 1");
-  }
-  for(int i = 0; i < internal_knots.n_elem; i++){
-    if(boundary_knots(0) >= internal_knots(i)){
-      Rcpp::stop("at least one element in 'internal_knots' is less than or equal to first boundary knot");
+  if(X.isNull()){
+    if(n_files <= 0){
+      Rcpp::stop("'n_files' must be greater than 0");
     }
-    if(boundary_knots(1) <= internal_knots(i)){
-      Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
+    if(n_MCMC < 1){
+      Rcpp::stop("'n_MCMC' must be greater than 0");
     }
-  }
-
-  // Get Phi Paramters
-  arma::field<arma::cube> phi_i;
-  phi_i.load(dir + "Phi0.txt");
-  if(l <= 0){
-    Rcpp::stop("'l' must be positive");
-  }
-  if(l > phi_i(0,0).n_rows){
-    Rcpp::stop("'l' must be less than or equal to the number of clusters in the model");
-  }
-  if(m <= 0){
-    Rcpp::stop("'m' must be positive");
-  }
-  if(m > phi_i(0,0).n_rows){
-    Rcpp::stop("'m' must be less than or equal to the number of clusters in the model");
-  }
-
-  if(rescale == true){
-    if(phi_i(0,0).n_rows > 2){
-      rescale = false;
-      Rcpp::Rcout << "Rescale property cannot be used for K > 2";
+    if(alpha < 0){
+      Rcpp::stop("'alpha' must be between 0 and 1");
     }
-  }
-  arma::field<arma::cube> phi_samp1(n_MCMC * n_files, 1);
-  for(int i = 0; i < n_MCMC; i++){
-    phi_samp1(i,0) = phi_i(i,0);
-  }
-
-  for(int i = 1; i < n_files; i++){
-    phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
-    for(int j = 0; j < n_MCMC; j++){
-      phi_samp1((i * n_MCMC) + j, 0) = phi_i(j,0);
+    if(alpha >= 1){
+      Rcpp::stop("'alpha' must be between 0 and 1");
     }
-  }
 
-  arma::field<arma::cube> phi_samp(std::ceil((n_MCMC * n_files) * (1 - burnin_prop)), 1);
-  for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
-    phi_samp(i,0) = phi_samp1(i + (n_MCMC * n_files) - std::ceil((n_MCMC * n_files) * burnin_prop), 0);
-  }
+    if(burnin_prop < 0){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+    if(burnin_prop >= 1){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+    if(basis_degree <  1){
+      Rcpp::stop("'basis_degree' must be an integer greater than or equal to 1");
+    }
+    for(int i = 0; i < internal_knots.n_elem; i++){
+      if(boundary_knots(0) >= internal_knots(i)){
+        Rcpp::stop("at least one element in 'internal_knots' is less than or equal to first boundary knot");
+      }
+      if(boundary_knots(1) <= internal_knots(i)){
+        Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
+      }
+    }
 
-  // Make spline basis 1
-  splines2::BSpline bspline1;
-  bspline1 = splines2::BSpline(time1, internal_knots, basis_degree,
-                               boundary_knots);
-  // Get Basis matrix (time1 x Phi.n_cols)
-  arma::mat bspline_mat1{bspline1.basis(true)};
-  // Make B_obs
-  arma::mat B1 = bspline_mat1;
+    // Get Phi Paramters
+    arma::field<arma::cube> phi_i;
+    phi_i.load(dir + "Phi0.txt");
+    if(l <= 0){
+      Rcpp::stop("'l' must be positive");
+    }
+    if(l > phi_i(0,0).n_rows){
+      Rcpp::stop("'l' must be less than or equal to the number of clusters in the model");
+    }
+    if(m <= 0){
+      Rcpp::stop("'m' must be positive");
+    }
+    if(m > phi_i(0,0).n_rows){
+      Rcpp::stop("'m' must be less than or equal to the number of clusters in the model");
+    }
 
-  // Make spline basis 2
-  splines2::BSpline bspline2;
-  bspline2 = splines2::BSpline(time2, internal_knots, basis_degree,
-                               boundary_knots);
-  // Get Basis matrix (time2 x Phi.n_cols)
-  arma::mat bspline_mat2{bspline2.basis(true)};
-  // Make B_obs
-  arma::mat B2 = bspline_mat2;
-
-  // Initialize placeholders
-  arma::mat CI_Upper = arma::zeros(time1.n_elem, time2.n_elem);
-  arma::mat CI_50 = arma::zeros(time1.n_elem, time2.n_elem);
-  arma::mat CI_Lower = arma::zeros(time2.n_elem, time2.n_elem);
-  arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, std::ceil((n_MCMC * n_files) * (1 - burnin_prop)));
-
-  if(simultaneous == false){
     if(rescale == true){
-      // Get Z matrix
-      arma::cube Z_i;
-      Z_i.load(dir + "Z0.txt");
-      arma::cube Z_samp1 = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
-      Z_samp1.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
-      for(int i = 1; i < n_files; i++){
-        Z_i.load(dir + "Z" + std::to_string(i) +".txt");
-        Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
-      }
-
-      arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
-                               Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
-      // rescale Z and Phi
-      arma::mat transform_mat;
-      arma::vec ph = arma::zeros(Z_samp.n_rows);
-      for(int j = 0; j < Z_samp.n_slices; j++){
-        transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
-        int max_ind = 0;
-        for(int i = 0; i < Z_samp.n_cols; i++){
-          for(int a = 0; a < Z_samp.n_rows; a++){
-            ph(a) = Z_samp(a,i,j);
-          }
-          max_ind = arma::index_max(ph);
-          transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
-        }
-        for(int b = 0; b < phi_samp(j,0).n_slices; b++){
-          phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
-        }
+      if(phi_i(0,0).n_rows > 2){
+        rescale = false;
+        Rcpp::Rcout << "Rescale property cannot be used for K > 2";
       }
     }
+
+    arma::field<arma::cube> phi_samp1(n_MCMC * n_files, 1);
+    for(int i = 0; i < n_MCMC; i++){
+      phi_samp1(i,0) = phi_i(i,0);
+    }
+
+    for(int i = 1; i < n_files; i++){
+      phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
+      for(int j = 0; j < n_MCMC; j++){
+        phi_samp1((i * n_MCMC) + j, 0) = phi_i(j,0);
+      }
+    }
+
+    arma::field<arma::cube> phi_samp(std::ceil((n_MCMC * n_files) * (1 - burnin_prop)), 1);
     for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
-      for(int j = 0; j < phi_samp(i,0).n_slices; j++){
-        cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
-          (B2 * phi_samp(i,0).slice(j).row(m-1).t()).t());
-      }
+      phi_samp(i,0) = phi_samp1(i + std::floor((n_MCMC * n_files) * burnin_prop), 0);
     }
 
-    arma::vec p = {alpha/2, 0.5, 1 - (alpha/2)};
-    arma::vec q = arma::zeros(3);
+    // Make spline basis 1
+    splines2::BSpline bspline1;
+    bspline1 = splines2::BSpline(time1, internal_knots, basis_degree,
+                                 boundary_knots);
+    // Get Basis matrix (time1 x Phi.n_cols)
+    arma::mat bspline_mat1{bspline1.basis(true)};
+    // Make B_obs
+    arma::mat B1 = bspline_mat1;
 
-    arma::vec ph1 = arma::zeros(cov_samp.n_slices);
-    for(int i = 0; i < time1.n_elem; i++){
-      for(int j = 0; j < time2.n_elem; j++){
-        ph1 = cov_samp(arma::span(i), arma::span(j), arma::span::all);
-        q = arma::quantile(ph1, p);
-        CI_Upper(i,j) = q(2);
-        CI_50(i,j) = q(1);
-        CI_Lower(i,j) = q(0);
+    // Make spline basis 2
+    splines2::BSpline bspline2;
+    bspline2 = splines2::BSpline(time2, internal_knots, basis_degree,
+                                 boundary_knots);
+    // Get Basis matrix (time2 x Phi.n_cols)
+    arma::mat bspline_mat2{bspline2.basis(true)};
+    // Make B_obs
+    arma::mat B2 = bspline_mat2;
+
+    // Initialize placeholders
+    arma::mat CI_Upper = arma::zeros(time1.n_elem, time2.n_elem);
+    arma::mat CI_50 = arma::zeros(time1.n_elem, time2.n_elem);
+    arma::mat CI_Lower = arma::zeros(time2.n_elem, time2.n_elem);
+    arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, std::ceil((n_MCMC * n_files) * (1 - burnin_prop)));
+
+    if(simultaneous == false){
+      if(rescale == true){
+        // Get Z matrix
+        arma::cube Z_i;
+        Z_i.load(dir + "Z0.txt");
+        arma::cube Z_samp1 = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+        Z_samp1.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+        for(int i = 1; i < n_files; i++){
+          Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+          Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+        }
+
+        arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
+                                        std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+        Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
+                                 Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
+        // rescale Z and Phi
+        arma::mat transform_mat;
+        arma::vec ph = arma::zeros(Z_samp.n_rows);
+        for(int j = 0; j < Z_samp.n_slices; j++){
+          transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+          int max_ind = 0;
+          for(int i = 0; i < Z_samp.n_cols; i++){
+            for(int a = 0; a < Z_samp.n_rows; a++){
+              ph(a) = Z_samp(a,i,j);
+            }
+            max_ind = arma::index_max(ph);
+            transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
+          }
+          for(int b = 0; b < phi_samp(j,0).n_slices; b++){
+            phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
+          }
+        }
+      }
+      for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+        for(int j = 0; j < phi_samp(i,0).n_slices; j++){
+          cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
+            (B2 * phi_samp(i,0).slice(j).row(m-1).t()).t());
+        }
+      }
+
+      arma::vec p = {alpha/2, 0.5, 1 - (alpha/2)};
+      arma::vec q = arma::zeros(3);
+
+      arma::vec ph1 = arma::zeros(cov_samp.n_slices);
+      for(int i = 0; i < time1.n_elem; i++){
+        for(int j = 0; j < time2.n_elem; j++){
+          ph1 = cov_samp(arma::span(i), arma::span(j), arma::span::all);
+          q = arma::quantile(ph1, p);
+          CI_Upper(i,j) = q(2);
+          CI_50(i,j) = q(1);
+          CI_Lower(i,j) = q(0);
+        }
+      }
+    }else{
+      if(rescale == true){
+        // Get Z matrix
+        arma::cube Z_i;
+        Z_i.load(dir + "Z0.txt");
+        arma::cube Z_samp1 = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+        Z_samp1.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+        for(int i = 1; i < n_files; i++){
+          Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+          Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+        }
+
+        arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
+                                        std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+        Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
+                                 Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
+        // rescale Z and Phi
+        arma::mat transform_mat;
+        arma::vec ph = arma::zeros(Z_samp.n_rows);
+        for(int j = 0; j < Z_samp.n_slices; j++){
+          transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+          int max_ind = 0;
+          for(int i = 0; i < Z_samp.n_cols; i++){
+            for(int a = 0; a < Z_samp.n_rows; a++){
+              ph(a) = Z_samp(a,i,j);
+            }
+            max_ind = arma::index_max(ph);
+            transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
+          }
+          for(int b = 0; b < phi_samp(j,0).n_slices; b++){
+            phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
+          }
+        }
+      }
+      for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+        for(int j = 0; j < phi_samp(i,0).n_slices; j++){
+          cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
+            (B2 * (phi_samp(i,0).slice(j).row(m-1)).t()).t());
+        }
+      }
+
+      arma::mat cov_mean = arma::mean(cov_samp, 2);
+      arma::mat cov_sd = arma::zeros(time1.n_elem, time2.n_elem);
+      arma::vec ph2 = arma::zeros(cov_samp.n_slices);
+      for(int i = 0; i < time1.n_elem; i++){
+        for(int j = 0; j < time2.n_elem; j++){
+          ph2 = cov_samp(arma::span(i), arma::span(j), arma::span::all);
+          cov_sd(i,j) = arma::stddev(ph2);
+        }
+      }
+
+      arma::vec C = arma::zeros(cov_samp.n_slices);
+      arma::mat ph1 = arma::zeros(time1.n_elem, time2.n_elem);
+      for(int i = 0; i < cov_samp.n_slices; i++){
+        for(int j = 0; j < time1.n_elem; j++){
+          for(int k = 0; k < time2.n_elem; k++){
+            ph1(j,k) = std::abs((cov_samp(j,k,i) - cov_mean(j,k)) / cov_sd(j,k));
+          }
+        }
+        C(i) = ph1.max();
+      }
+
+      arma::vec p = {1- alpha};
+      arma::vec q = arma::zeros(1);
+      q = arma::quantile(C, p);
+
+      for(int i = 0; i < time1.n_elem; i++){
+        for(int j = 0; j < time2.n_elem; j++){
+          CI_Lower(i,j) = cov_mean(i,j) - q(0) * cov_sd(i,j);
+          CI_50(i,j) = cov_mean(i,j);
+          CI_Upper(i,j) =  cov_mean(i,j) + q(0) * cov_sd(i,j);
+        }
       }
     }
+    CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
+                             Rcpp::Named("CI_50", CI_50),
+                             Rcpp::Named("CI_Lower", CI_Lower),
+                             Rcpp::Named("cov_trace", cov_samp));
   }else{
+    Rcpp::NumericMatrix X_(X);
+    arma::mat X1 = Rcpp::as<arma::mat>(X_);
+
+    if(n_files <= 0){
+      Rcpp::stop("'n_files' must be greater than 0");
+    }
+    if(n_MCMC < 1){
+      Rcpp::stop("'n_MCMC' must be greater than 0");
+    }
+    if(alpha < 0){
+      Rcpp::stop("'alpha' must be between 0 and 1");
+    }
+    if(alpha >= 1){
+      Rcpp::stop("'alpha' must be between 0 and 1");
+    }
+
+    if(burnin_prop < 0){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+    if(burnin_prop >= 1){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+    if(basis_degree <  1){
+      Rcpp::stop("'basis_degree' must be an integer greater than or equal to 1");
+    }
+    for(int i = 0; i < internal_knots.n_elem; i++){
+      if(boundary_knots(0) >= internal_knots(i)){
+        Rcpp::stop("at least one element in 'internal_knots' is less than or equal to first boundary knot");
+      }
+      if(boundary_knots(1) <= internal_knots(i)){
+        Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
+      }
+    }
+
+    // Get Phi Paramters
+    arma::field<arma::cube> phi_i;
+    phi_i.load(dir + "Phi0.txt");
+    if(l <= 0){
+      Rcpp::stop("'l' must be positive");
+    }
+    if(l > phi_i(0,0).n_rows){
+      Rcpp::stop("'l' must be less than or equal to the number of clusters in the model");
+    }
+    if(m <= 0){
+      Rcpp::stop("'m' must be positive");
+    }
+    if(m > phi_i(0,0).n_rows){
+      Rcpp::stop("'m' must be less than or equal to the number of clusters in the model");
+    }
+
     if(rescale == true){
-      // Get Z matrix
-      arma::cube Z_i;
-      Z_i.load(dir + "Z0.txt");
-      arma::cube Z_samp1 = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
-      Z_samp1.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
-      for(int i = 1; i < n_files; i++){
-        Z_i.load(dir + "Z" + std::to_string(i) +".txt");
-        Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
-      }
-
-      arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
-                                      std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
-      Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
-                               Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
-      // rescale Z and Phi
-      arma::mat transform_mat;
-      arma::vec ph = arma::zeros(Z_samp.n_rows);
-      for(int j = 0; j < Z_samp.n_slices; j++){
-        transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
-        int max_ind = 0;
-        for(int i = 0; i < Z_samp.n_cols; i++){
-          for(int a = 0; a < Z_samp.n_rows; a++){
-            ph(a) = Z_samp(a,i,j);
-          }
-          max_ind = arma::index_max(ph);
-          transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
-        }
-        for(int b = 0; b < phi_samp(j,0).n_slices; b++){
-          phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
-        }
+      if(phi_i(0,0).n_rows > 2){
+        rescale = false;
+        Rcpp::Rcout << "Rescale property cannot be used for K > 2";
       }
     }
+    arma::field<arma::cube> phi_samp1(n_MCMC * n_files, 1);
+    for(int i = 0; i < n_MCMC; i++){
+      phi_samp1(i,0) = phi_i(i,0);
+    }
+
+    for(int i = 1; i < n_files; i++){
+      phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
+      for(int j = 0; j < n_MCMC; j++){
+        phi_samp1((i * n_MCMC) + j, 0) = phi_i(j,0);
+      }
+    }
+
+    arma::field<arma::cube> phi_samp(std::ceil((n_MCMC * n_files) * (1 - burnin_prop)), 1);
     for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
-      for(int j = 0; j < phi_samp(i,0).n_slices; j++){
-        cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
-          (B2 * (phi_samp(i,0).slice(j).row(m-1)).t()).t());
+      phi_samp(i,0) = phi_samp1(i + std::floor((n_MCMC * n_files) * burnin_prop), 0);
+    }
+
+    // Read in Xi parameters
+    arma::field<arma::cube> xi_samp(std::ceil((n_MCMC * n_files) * (1 - burnin_prop)), phi_samp(0,0).n_rows);
+    arma::field<arma::cube> xi_samp1(n_MCMC * n_files, phi_samp(0,0).n_rows);
+    arma::field<arma::cube> xi_i;
+    xi_i.load(dir + "Xi0.txt");
+    for(int k = 0; k < phi_samp(0,0).n_rows; k++){
+      for(int i = 0; i < n_MCMC; i++){
+        xi_samp1(i,k) = xi_i(i,k);
       }
     }
 
-    arma::mat cov_mean = arma::mean(cov_samp, 2);
-    arma::mat cov_sd = arma::zeros(time1.n_elem, time2.n_elem);
-    arma::vec ph2 = arma::zeros(cov_samp.n_slices);
-    for(int i = 0; i < time1.n_elem; i++){
-      for(int j = 0; j < time2.n_elem; j++){
-        ph2 = cov_samp(arma::span(i), arma::span(j), arma::span::all);
-        cov_sd(i,j) = arma::stddev(ph2);
-      }
-    }
-
-    arma::vec C = arma::zeros(cov_samp.n_slices);
-    arma::mat ph1 = arma::zeros(time1.n_elem, time2.n_elem);
-    for(int i = 0; i < cov_samp.n_slices; i++){
-      for(int j = 0; j < time1.n_elem; j++){
-        for(int k = 0; k < time2.n_elem; k++){
-          ph1(j,k) = std::abs((cov_samp(j,k,i) - cov_mean(j,k)) / cov_sd(j,k));
+    for(int i = 1; i < n_files; i++){
+      xi_i.load(dir + "Xi" + std::to_string(i) +".txt");
+      for(int k = 0; k < phi_samp(0,0).n_rows; k++){
+        for(int j = 0; j < n_MCMC; j++){
+          xi_samp1((i * n_MCMC) + j, k) = xi_i(j,k);
         }
       }
-      C(i) = ph1.max();
     }
 
-    arma::vec p = {1- alpha};
-    arma::vec q = arma::zeros(1);
-    q = arma::quantile(C, p);
-
-    for(int i = 0; i < time1.n_elem; i++){
-      for(int j = 0; j < time2.n_elem; j++){
-        CI_Lower(i,j) = cov_mean(i,j) - q(0) * cov_sd(i,j);
-        CI_50(i,j) = cov_mean(i,j);
-        CI_Upper(i,j) =  cov_mean(i,j) + q(0) * cov_sd(i,j);
+    for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+      for(int k = 0; k < phi_samp(0,0).n_rows; k++){
+        xi_samp(i,k) = xi_samp1(i + std::floor((n_MCMC * n_files) * burnin_prop), k);
       }
     }
+
+    // Make spline basis 1
+    splines2::BSpline bspline1;
+    bspline1 = splines2::BSpline(time1, internal_knots, basis_degree,
+                                 boundary_knots);
+    // Get Basis matrix (time1 x Phi.n_cols)
+    arma::mat bspline_mat1{bspline1.basis(true)};
+    // Make B_obs
+    arma::mat B1 = bspline_mat1;
+
+    // Make spline basis 2
+    splines2::BSpline bspline2;
+    bspline2 = splines2::BSpline(time2, internal_knots, basis_degree,
+                                 boundary_knots);
+    // Get Basis matrix (time2 x Phi.n_cols)
+    arma::mat bspline_mat2{bspline2.basis(true)};
+    // Make B_obs
+    arma::mat B2 = bspline_mat2;
+
+    // Initialize placeholders
+    arma::cube CI_Upper = arma::zeros(time1.n_elem, time2.n_elem, X1.n_rows);
+    arma::cube CI_50 = arma::zeros(time1.n_elem, time2.n_elem, X1.n_rows);
+    arma::cube CI_Lower = arma::zeros(time2.n_elem, time2.n_elem, X1.n_rows);
+    arma::field<arma::cube> cov_samp(X1.n_rows, 1);
+    for(int i = 0; i < X1.n_rows; i++){
+      cov_samp(i, 0) = arma::zeros(time1.n_elem, time2.n_elem, std::ceil((n_MCMC * n_files) * (1 - burnin_prop)));
+    }
+
+    if(simultaneous == false){
+      if(rescale == true){
+        // Get Z matrix
+        arma::cube Z_i;
+        Z_i.load(dir + "Z0.txt");
+        arma::cube Z_samp1 = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+        Z_samp1.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+        for(int i = 1; i < n_files; i++){
+          Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+          Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+        }
+
+        arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
+                                        std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+        Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
+                                 Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
+        // rescale Z and Phi
+        arma::mat transform_mat;
+        arma::vec ph = arma::zeros(Z_samp.n_rows);
+        arma::field<arma::cube> xi_ph(Z_samp.n_cols, 1);
+        for(int j = 0; j < Z_samp.n_slices; j++){
+          transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+          int max_ind = 0;
+          for(int i = 0; i < Z_samp.n_cols; i++){
+            for(int a = 0; a < Z_samp.n_rows; a++){
+              ph(a) = Z_samp(a,i,j);
+            }
+            max_ind = arma::index_max(ph);
+            transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
+          }
+          for(int b = 0; b < phi_samp(j,0).n_slices; b++){
+            phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
+          }
+
+          // rescale xi parameters
+          for(int k = 0; k < Z_samp.n_cols; k++){
+            xi_ph(k,0) = xi_samp(j,k);
+          }
+
+          for(int k = 0; k < Z_samp.n_cols; k++){
+            xi_samp(j,k) = xi_ph(0,0) * transform_mat(k,0);
+            for(int b = 1; b < Z_samp.n_cols; b++){
+              xi_samp(j,k) = xi_samp(j,k) + (xi_ph(b,0) * transform_mat(k,b));
+            }
+          }
+        }
+      }
+      for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+        for(int j = 0; j < phi_samp(i,0).n_slices; j++){
+          for(int b = 0; b < X1.n_rows; b++){
+            cov_samp(b,0).slice(i) = cov_samp(b,0).slice(i) + (B1 * ((phi_samp(i,0).slice(j).row(l-1)).t()+ xi_samp(i,l-1).slice(j) * X1.row(b).t()) *
+              (B2 * ((phi_samp(i,0).slice(j).row(m-1)).t()+ xi_samp(i,m-1).slice(j) * X1.row(b).t())).t());
+          }
+        }
+      }
+
+      arma::vec p = {alpha/2, 0.5, 1 - (alpha/2)};
+      arma::vec q = arma::zeros(3);
+
+      arma::vec ph1 = arma::zeros(cov_samp.n_slices);
+      for(int b = 0; b < X1.n_rows; b++){
+        for(int i = 0; i < time1.n_elem; i++){
+          for(int j = 0; j < time2.n_elem; j++){
+            ph1 = cov_samp(b,0)(arma::span(i), arma::span(j), arma::span::all);
+            q = arma::quantile(ph1, p);
+            CI_Upper(i,j,b) = q(2);
+            CI_50(i,j,b) = q(1);
+            CI_Lower(i,j,b) = q(0);
+          }
+        }
+      }
+
+    }else{
+      if(rescale == true){
+        // Get Z matrix
+        arma::cube Z_i;
+        Z_i.load(dir + "Z0.txt");
+        arma::cube Z_samp1 = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+        Z_samp1.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+        for(int i = 1; i < n_files; i++){
+          Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+          Z_samp1.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+        }
+
+        arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols,
+                                        std::ceil((Z_i.n_slices * n_files)* (1 - burnin_prop)));
+        Z_samp = Z_samp1.subcube(0, 0, std::floor(Z_i.n_slices * n_files * burnin_prop),
+                                 Z_samp1.n_rows-1, Z_samp1.n_cols-1, Z_samp1.n_slices-1);
+        // rescale Z and Phi
+        arma::mat transform_mat;
+        arma::vec ph = arma::zeros(Z_samp.n_rows);
+        arma::field<arma::cube> xi_ph(Z_samp.n_cols, 1);
+        for(int j = 0; j < Z_samp.n_slices; j++){
+          transform_mat = arma::zeros(Z_samp.n_cols, Z_samp.n_cols);
+          int max_ind = 0;
+          for(int i = 0; i < Z_samp.n_cols; i++){
+            for(int a = 0; a < Z_samp.n_rows; a++){
+              ph(a) = Z_samp(a,i,j);
+            }
+            max_ind = arma::index_max(ph);
+            transform_mat.row(i) = Z_samp.slice(j).row(max_ind);
+          }
+          for(int b = 0; b < phi_samp(j,0).n_slices; b++){
+            phi_samp(j,0).slice(b) = transform_mat * phi_samp(j,0).slice(b);
+          }
+
+          // rescale xi parameters
+          for(int k = 0; k < Z_samp.n_cols; k++){
+            xi_ph(k,0) = xi_samp(j,k);
+          }
+
+          for(int k = 0; k < Z_samp.n_cols; k++){
+            xi_samp(j,k) = xi_ph(0,0) * transform_mat(k,0);
+            for(int b = 1; b < Z_samp.n_cols; b++){
+              xi_samp(j,k) = xi_samp(j,k) + (xi_ph(b,0) * transform_mat(k,b));
+            }
+          }
+
+        }
+      }
+      for(int i = 0; i < std::ceil((n_MCMC * n_files) * (1 - burnin_prop)); i++){
+        for(int j = 0; j < phi_samp(i,0).n_slices; j++){
+          for(int b = 0; b < X1.n_rows; b++){
+            cov_samp(b,0).slice(i) = cov_samp(b,0).slice(i) + (B1 * ((phi_samp(i,0).slice(j).row(l-1)).t()+ xi_samp(i,l-1).slice(j) * X1.row(b).t()) *
+              (B2 * ((phi_samp(i,0).slice(j).row(m-1)).t()+ xi_samp(i,m-1).slice(j) * X1.row(b).t())).t());
+          }
+        }
+      }
+
+      for(int b = 0; b < X1.n_rows; b++){
+        arma::mat cov_mean = arma::mean(cov_samp(b,0), 2);
+        arma::mat cov_sd = arma::zeros(time1.n_elem, time2.n_elem);
+        arma::vec ph2 = arma::zeros(cov_samp.n_slices);
+        for(int i = 0; i < time1.n_elem; i++){
+          for(int j = 0; j < time2.n_elem; j++){
+            ph2 = cov_samp(b,0)(arma::span(i), arma::span(j), arma::span::all);
+            cov_sd(i,j) = arma::stddev(ph2);
+          }
+        }
+
+        arma::vec C = arma::zeros(cov_samp.n_slices);
+        arma::mat ph1 = arma::zeros(time1.n_elem, time2.n_elem);
+        for(int i = 0; i < cov_samp.n_slices; i++){
+          for(int j = 0; j < time1.n_elem; j++){
+            for(int k = 0; k < time2.n_elem; k++){
+              ph1(j,k) = std::abs((cov_samp(b,0)(j,k,i) - cov_mean(j,k)) / cov_sd(j,k));
+            }
+          }
+          C(i) = ph1.max();
+        }
+
+        arma::vec p = {1- alpha};
+        arma::vec q = arma::zeros(1);
+        q = arma::quantile(C, p);
+
+        for(int i = 0; i < time1.n_elem; i++){
+          for(int j = 0; j < time2.n_elem; j++){
+            CI_Lower(i,j,b) = cov_mean(i,j) - q(0) * cov_sd(i,j);
+            CI_50(i,j,b) = cov_mean(i,j);
+            CI_Upper(i,j,b) =  cov_mean(i,j) + q(0) * cov_sd(i,j);
+          }
+        }
+      }
+
+    }
+    CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
+                             Rcpp::Named("CI_50", CI_50),
+                             Rcpp::Named("CI_Lower", CI_Lower),
+                             Rcpp::Named("cov_trace", cov_samp));
+
   }
-  Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
-                                      Rcpp::Named("CI_50", CI_50),
-                                      Rcpp::Named("CI_Lower", CI_Lower),
-                                      Rcpp::Named("cov_trace", cov_samp));
+
   return(CI);
 }
 
@@ -3109,15 +3464,15 @@ arma::vec Model_LLik(const std::string dir,
   }else{
     arma::field<arma::cube> xi_i;
     xi_i.load(dir + "Xi0.txt");
-    for(int k = 0; k < nu_samp.n_rows;){
+    for(int k = 0; k < nu_samp.n_rows; k++){
       for(int i = 0; i < n_MCMC; i++){
-        xi_samp(i,0) = xi_i(i,0);
+        xi_samp(i,k) = xi_i(i,k);
       }
     }
 
     for(int i = 1; i < n_files; i++){
       xi_i.load(dir + "Xi" + std::to_string(i) +".txt");
-      for(int k = 0; k < nu_samp.n_rows;){
+      for(int k = 0; k < nu_samp.n_rows; k++){
         for(int j = 0; j < n_MCMC; j++){
           xi_samp((i * n_MCMC) + j, k) = xi_i(j,k);
         }
