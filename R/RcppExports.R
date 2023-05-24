@@ -272,7 +272,7 @@ MVMeanCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0
 #' This function calculates a credible interval for the covariance function
 #' between the l-th and m-th clusters, with the user specified coverage. This
 #' function can handle covariate adjusted models, where the mean and covariance
-#' functions depend on the covariates of intererst. If not covariate adjusted, or
+#' functions depend on the covariates of interest. If not covariate adjusted, or
 #' if the covariates only influence the mean structure, DO NOT specify \code{X} in
 #' this function.
 #' In order to run this function, the directory of the posterior samples needs
@@ -289,7 +289,6 @@ MVMeanCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0
 #' @name FCovCI
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
-#' @param n_MCMC Int containing the number of saved MCMC iterations per file
 #' @param time1 Vector containing time points of interest for first cluster
 #' @param time2 Vector containing time points of interest for second cluster
 #' @param basis_degree Int containing the degree of B-splines used
@@ -386,7 +385,11 @@ FCovCI <- function(dir, n_files, time1, time2, basis_degree, boundary_knots, int
 #' Calculates the credible interval for the covariance (High Dimensional Functional Data)
 #'
 #' This function calculates a credible interval for the covariance function
-#' between the l-th and m-th clusters, with the user specified coverage.
+#' between the l-th and m-th clusters, with the user specified coverage. This
+#' function can handle covariate adjusted models, where the mean and covariance
+#' functions depend on the covariates of interest. If not covariate adjusted, or
+#' if the covariates only influence the mean structure, DO NOT specify \code{X} in
+#' this function.
 #' In order to run this function, the directory of the posterior samples needs
 #' to be specified. The function will return the credible intervals and the median
 #' posterior estimate of the covariance function at the time points specified by the
@@ -401,7 +404,6 @@ FCovCI <- function(dir, n_files, time1, time2, basis_degree, boundary_knots, int
 #' @name HDFCovCI
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
-#' @param n_MCMC Int containing the number of saved MCMC iterations per file
 #' @param time1 Vector containing time points of interest for first cluster
 #' @param time2 Vector containing time points of interest for second cluster
 #' @param basis_degree Int containing the degree of B-splines used
@@ -413,6 +415,7 @@ FCovCI <- function(dir, n_files, time1, time2, basis_degree, boundary_knots, int
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
+#' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
 #' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function. Posterior estimates of the covariance function are also returned.
 #'
 #' @section Warning:
@@ -426,28 +429,77 @@ FCovCI <- function(dir, n_files, time1, time2, basis_degree, boundary_knots, int
 #'   \item{\code{m}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
 #'   \item{\code{alpha}}{must be between 0 and 1}
 #'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+#'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
 #' }
 #'
 #' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
 #' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFMMM")
+#' dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
 #' n_files <- 1
 #' n_MCMC <- 200
-#' time1 <- seq(0, 990, 10)
-#' time2 <- seq(0, 990, 10)
+#' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+#' time <- time[[1]]
+#' time1 <- time
+#' time2 <- time
 #' l <- 1
 #' m <- 1
-#' basis_degree <- 3
-#' boundary_knots <- c(0, 1000)
-#' internal_knots <- c(200, 400, 600, 800)
+#' basis_degree <- c(2,2)
+#' boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+#' internal_knots <- rep(list(c(250, 500, 750)), 2)
 #'
 #' ## Get CI for Covaraince function
-#' CI <- FCovCI(dir, n_files, n_MCMC, time1, time2, basis_degree,
+#' CI <- HDFCovCI(dir, n_files, time1, time2, basis_degree,
 #'              boundary_knots, internal_knots, l, m)
 #'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' n_MCMC <- 200
+#' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+#' time <- time[[1]]
+#' time1 <- time
+#' time2 <- time
+#' l <- 1
+#' m <- 1
+#' basis_degree <- c(2,2)
+#' boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+#' internal_knots <- rep(list(c(250, 500, 750)), 2)
+#'
+#' ## Get CI for Covaraince function
+#' CI <- HDFCovCI(dir, n_files, time1, time2, basis_degree,
+#'              boundary_knots, internal_knots, l, m)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' n_MCMC <- 200
+#' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+#' time <- time[[1]]
+#' time1 <- time
+#' time2 <- time
+#' l <- 1
+#' m <- 1
+#' basis_degree <- c(2,2)
+#' boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+#' internal_knots <- rep(list(c(250, 500, 750)), 2)
+#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#'
+#' ## Get CI for Covaraince function
+#' CI <- HDFCovCI(dir, n_files, time1, time2, basis_degree,
+#'              boundary_knots, internal_knots, l, m, X = X)
+#'
 #' @export
-HDFCovCI <- function(dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1) {
-    .Call('_BayesFMMM_HDFCovCI', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop)
+HDFCovCI <- function(dir, n_files, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1, X = NULL) {
+    .Call('_BayesFMMM_HDFCovCI', PACKAGE = 'BayesFMMM', dir, n_files, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop, X)
 }
 
 #' Calculates the credible interval for the covariance (Multivariate Data)
@@ -677,68 +729,6 @@ MV_Model_DIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
 #' @export
 MV_Model_LLik <- function(dir, n_files, n_MCMC, Y, X = NULL, mean_adj = FALSE, cov_adj = FALSE) {
     .Call('_BayesFMMM_MV_Model_LLik', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, Y, X, mean_adj, cov_adj)
-}
-
-#' Calculates the credible interval for the mean (Functional covariate adjusted model)
-#'
-#' This function calculates a credible interval with the user specified coverage
-#' in a covariate adjusted model. The function returns the estimated mean functions
-#' at the specified value of covariates (specified in 'X').
-#' In order to run this function, the directory of the posterior samples needs
-#' to be specified. The function will return the credible intervals and the median
-#' posterior estimate of the mean function at the time points specified by the
-#' user (\code{time} variable) and the covariate value specified (\code{x_i} variable).
-#' The user can specify if they would like the algorithm
-#' to automatically rescale the parameters for interpretability (suggested). If
-#' the user chooses to rescale, then all class memberships will be rescaled so
-#' that at least one observation is in only one class. The user can also specify
-#' if they want pointwise credible intervals or simultaneous credible intervals.
-#' The simultaneous intervals will likely be wider than the pointwise credible
-#' intervals.
-#'
-#' @name FMeanCI_Adj
-#' @param dir String containing the directory where the MCMC files are located
-#' @param n_files Int containing the number of files per parameter
-#' @param time Vector containing time points of interest
-#' @param X Matrix containing covariates at points of interest (of dimension N x D (number of points of interest x number of covariates))
-#' @param basis_degree Int containing the degree of B-splines used
-#' @param boundary_knots Vector containing the boundary points of our index domain of interest
-#' @param internal_knots Vector location of internal knots for B-splines
-#' @param k Int containing the cluster group of which you want to get the credible interval for
-#' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
-#' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
-#' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
-#' @param burnin_prop Double containing proportion of MCMC samples to discard
-#' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior samples fo the mean function are also returned.
-#'
-#' @section Warning:
-#' The following must be true:
-#' \describe{
-#'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
-#'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
-#'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
-#'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
-#'   \item{\code{k}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
-#'   \item{\code{alpha}}{must be between 0 and 1}
-#'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
-#' }
-#'
-#' @examples
-#' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFMMM")
-#' n_files <- 1
-#' time <- seq(0, 990, 10)
-#' k <- 2
-#' basis_degree <- 3
-#' boundary_knots <- c(0, 1000)
-#' internal_knots <- c(200, 400, 600, 800)
-#'
-#' ## Get CI for mean function
-#' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k)
-#'
-#' @export
-FMeanCI_Adj <- function(dir, n_files, time, X, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1) {
-    .Call('_BayesFMMM_FMeanCI_Adj', PACKAGE = 'BayesFMMM', dir, n_files, time, X, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop)
 }
 
 #' Conditional Predictive Ordinates

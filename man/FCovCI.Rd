@@ -49,8 +49,6 @@ FCovCI(
 \item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 
 \item{X}{Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))}
-
-\item{n_MCMC}{Int containing the number of saved MCMC iterations per file}
 }
 \value{
 CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function. Posterior estimates of the covariance function are also returned.
@@ -59,7 +57,7 @@ CI list containing the credible interval for the covariance function, as well as
 This function calculates a credible interval for the covariance function
 between the l-th and m-th clusters, with the user specified coverage. This
 function can handle covariate adjusted models, where the mean and covariance
-functions depend on the covariates of intererst. If not covariate adjusted, or
+functions depend on the covariates of interest. If not covariate adjusted, or
 if the covariates only influence the mean structure, DO NOT specify \code{X} in
 this function.
 In order to run this function, the directory of the posterior samples needs
