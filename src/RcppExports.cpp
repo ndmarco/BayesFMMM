@@ -223,24 +223,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Model_LLik
-arma::vec Model_LLik(const std::string dir, const int n_files, const int n_MCMC, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::field<arma::vec> time, const arma::field<arma::vec> Y, Rcpp::Nullable<Rcpp::NumericMatrix> X, const bool mean_adj, const bool cov_adj);
-RcppExport SEXP _BayesFMMM_Model_LLik(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP timeSEXP, SEXP YSEXP, SEXP XSEXP, SEXP mean_adjSEXP, SEXP cov_adjSEXP) {
+// FLLik
+arma::vec FLLik(const std::string dir, const int n_files, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::field<arma::vec> time, const arma::field<arma::vec> Y, Rcpp::Nullable<Rcpp::NumericMatrix> X, const bool cov_adj);
+RcppExport SEXP _BayesFMMM_FLLik(SEXP dirSEXP, SEXP n_filesSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP timeSEXP, SEXP YSEXP, SEXP XSEXP, SEXP cov_adjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
-    Rcpp::traits::input_parameter< const int >::type n_MCMC(n_MCMCSEXP);
     Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type boundary_knots(boundary_knotsSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type time(timeSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type Y(YSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericMatrix> >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const bool >::type mean_adj(mean_adjSEXP);
     Rcpp::traits::input_parameter< const bool >::type cov_adj(cov_adjSEXP);
-    rcpp_result_gen = Rcpp::wrap(Model_LLik(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, X, mean_adj, cov_adj));
+    rcpp_result_gen = Rcpp::wrap(FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, X, cov_adj));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -289,20 +287,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// MV_Model_LLik
-arma::vec MV_Model_LLik(const std::string dir, const int n_files, const int n_MCMC, const arma::mat Y, Rcpp::Nullable<Rcpp::NumericMatrix> X, const bool mean_adj, const bool cov_adj);
-RcppExport SEXP _BayesFMMM_MV_Model_LLik(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP YSEXP, SEXP XSEXP, SEXP mean_adjSEXP, SEXP cov_adjSEXP) {
+// MVLLik
+arma::vec MVLLik(const std::string dir, const int n_files, const arma::mat Y, Rcpp::Nullable<Rcpp::NumericMatrix> X, const bool cov_adj);
+RcppExport SEXP _BayesFMMM_MVLLik(SEXP dirSEXP, SEXP n_filesSEXP, SEXP YSEXP, SEXP XSEXP, SEXP cov_adjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
-    Rcpp::traits::input_parameter< const int >::type n_MCMC(n_MCMCSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type Y(YSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericMatrix> >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const bool >::type mean_adj(mean_adjSEXP);
     Rcpp::traits::input_parameter< const bool >::type cov_adj(cov_adjSEXP);
-    rcpp_result_gen = Rcpp::wrap(MV_Model_LLik(dir, n_files, n_MCMC, Y, X, mean_adj, cov_adj));
+    rcpp_result_gen = Rcpp::wrap(MVLLik(dir, n_files, Y, X, cov_adj));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -780,11 +776,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFMMM_Model_DIC", (DL_FUNC) &_BayesFMMM_Model_DIC, 9},
     {"_BayesFMMM_Model_AIC", (DL_FUNC) &_BayesFMMM_Model_AIC, 9},
     {"_BayesFMMM_Model_BIC", (DL_FUNC) &_BayesFMMM_Model_BIC, 9},
-    {"_BayesFMMM_Model_LLik", (DL_FUNC) &_BayesFMMM_Model_LLik, 11},
+    {"_BayesFMMM_FLLik", (DL_FUNC) &_BayesFMMM_FLLik, 9},
     {"_BayesFMMM_MV_Model_AIC", (DL_FUNC) &_BayesFMMM_MV_Model_AIC, 5},
     {"_BayesFMMM_MV_Model_BIC", (DL_FUNC) &_BayesFMMM_MV_Model_BIC, 5},
     {"_BayesFMMM_MV_Model_DIC", (DL_FUNC) &_BayesFMMM_MV_Model_DIC, 5},
-    {"_BayesFMMM_MV_Model_LLik", (DL_FUNC) &_BayesFMMM_MV_Model_LLik, 7},
+    {"_BayesFMMM_MVLLik", (DL_FUNC) &_BayesFMMM_MVLLik, 5},
     {"_BayesFMMM_Conditional_Predictive_Ordinates", (DL_FUNC) &_BayesFMMM_Conditional_Predictive_Ordinates, 12},
     {"_BayesFMMM_BFMMM_Nu_Z_multiple_try", (DL_FUNC) &_BayesFMMM_BFMMM_Nu_Z_multiple_try, 29},
     {"_BayesFMMM_BFMMM_Theta_est", (DL_FUNC) &_BayesFMMM_BFMMM_Theta_est, 32},

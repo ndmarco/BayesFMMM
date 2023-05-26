@@ -3897,35 +3897,96 @@ double Model_BIC(const std::string dir,
   return(BIC);
 }
 
+//' Calculates the Log-Likelihood of a Functional Model
+//'
 //' Calculates the log-likelihood of the parameters for each iteration for functional models.
 //' This function can handle covariate adjusted models as well as non-adjusted models.
 //'
-//' @name Model_LLik
+//' @name FLLik
 //' @param dir String containing the directory where the MCMC files are located
 //' @param n_files Int containing the number of files per parameter
-//' @param n_MCMC Int containing the number of saved MCMC iterations per file
 //' @param basis_degree Int containing the degree of B-splines used
 //' @param boundary_knots Vector containing the boundary points of our index domain of interest
 //' @param internal_knots Vector location of internal knots for B-splines
 //' @param time Field of vectors containing time points at which the function was observed
 //' @param Y Field of vectors containing observed values of the function
 //' @param X Matrix of covariates (each row contains the covariates for a single observation) (optional arugment)
-//' @param mean_adj Boolean containing whether the model fit had a mean structure that is covariate-dependent (optional argument)
 //' @param cov_adj Boolean containing whether the model fit had a covariance structure that is covariate-dependent (optional argument)
 //' @returns LLik Vector containing the log-likelihood evaluated at each iteration
+//'
+//' @section Warning:
+//' The following must be true:
+//' \describe{
+//'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+//'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+//'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+//'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
+//' }
+//'
+//' @examples
+//' #########################
+//' ### Not Covariate Adj ###
+//' #########################
+//'
+//' ## Set Hyperparameters
+//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//' basis_degree <- 3
+//' boundary_knots <- c(0, 1000)
+//' internal_knots <- c(250, 500, 750)
+//'
+//' ## Get CI for mean function
+//' LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
+//'             time, Y)
+//'
+//' #####################
+//' ### Covariate Adj ###
+//' #####################
+//'
+//' ## Set Hyperparameters
+//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//' basis_degree <- 3
+//' boundary_knots <- c(0, 1000)
+//' internal_knots <- c(250, 500, 750)
+//' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+//'
+//' ## Get CI for mean function
+//' LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
+//'             time, Y, X = X)
+//'
+//' #####################################################################
+//' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+//' #####################################################################
+//'
+//' ## Set Hyperparameters
+//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//' basis_degree <- 3
+//' boundary_knots <- c(0, 1000)
+//' internal_knots <- c(250, 500, 750)
+//' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+//'
+//' ## Get CI for mean function
+//' LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
+//'             time, Y, X = X, cov_adj = T)
 //' @export
 // [[Rcpp::export]]
-arma::vec Model_LLik(const std::string dir,
-                     const int n_files,
-                     const int n_MCMC,
-                     const int basis_degree,
-                     const arma::vec boundary_knots,
-                     const arma::vec internal_knots,
-                     const arma::field<arma::vec> time,
-                     const arma::field<arma::vec> Y,
-                     Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
-                     const bool mean_adj = false,
-                     const bool cov_adj = false){
+arma::vec FLLik(const std::string dir,
+                const int n_files,
+                const int basis_degree,
+                const arma::vec boundary_knots,
+                const arma::vec internal_knots,
+                const arma::field<arma::vec> time,
+                const arma::field<arma::vec> Y,
+                Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
+                const bool cov_adj = false){
 
   if(basis_degree <  1){
     Rcpp::stop("'basis_degree' must be an integer greater than or equal to 1");
@@ -3938,10 +3999,14 @@ arma::vec Model_LLik(const std::string dir,
       Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
     }
   }
+  if(n_files <= 0){
+    Rcpp::stop("'n_files' must be greater than 0");
+  }
 
   // Get Nu parameters
   arma::cube nu_i;
   nu_i.load(dir + "Nu0.txt");
+  int n_MCMC = nu_i.n_slices;
   arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
   nu_samp.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
   for(int i = 1; i < n_files; i++){
@@ -3998,7 +4063,7 @@ arma::vec Model_LLik(const std::string dir,
 
   // Get eta parameters
   arma::field<arma::cube> eta_samp(n_MCMC * n_files, 1);
-  if(mean_adj == false){
+  if(X.isNull()){
     for(int i = 0; i < n_MCMC * n_files; i ++){
       eta_samp(i,0) = arma::zeros(nu_samp.n_cols, 1, nu_samp.n_rows);
     }
@@ -4019,7 +4084,7 @@ arma::vec Model_LLik(const std::string dir,
 
   arma::field<arma::cube> xi_samp(n_MCMC * n_files, nu_samp.n_rows);
   if(cov_adj == false){
-    for(int k = 0; k < nu_samp.n_rows;){
+    for(int k = 0; k < nu_samp.n_rows; k++){
       for(int i = 0; i < n_MCMC * n_files; i ++){
         xi_samp(i,k) = arma::zeros(nu_samp.n_cols, 1, phi_samp(0,0).n_slices);
       }
@@ -4048,6 +4113,10 @@ arma::vec Model_LLik(const std::string dir,
   if(X.isNotNull()) {
     Rcpp::NumericMatrix X_(X);
     X1 = Rcpp::as<arma::mat>(X_);
+    if(X1.n_cols != eta_samp(0,0).n_cols){
+      Rcpp::stop("The number of columns in 'X' must be equal to the number of covariates in the model");
+    }
+
   }else{
     X1 = arma::zeros(Y.n_rows, 1);
   }
@@ -4425,32 +4494,81 @@ double MV_Model_DIC(const std::string dir,
   return(DIC);
 }
 
+//' Calculates the Log-Likelihood of a Multivariate Model
+//'
 //' Calculates the log-likelihood of the parameters for each iteration of a multivariate model.
 //' This function can handle covariate adjusted models as well as non-adjusted models.
 //'
 //'
-//' @name MV_Model_LLik
+//' @name MVLLik
 //' @param dir String containing the directory where the MCMC files are located
 //' @param n_files Int containing the number of files per parameter
-//' @param n_MCMC Int containing the number of saved MCMC iterations per file
 //' @param Y Matrix of observed vectors (each row is an observation)
 //' @param X Matrix of covariates (each row contains the covariates for a single observation) (optional arugment)
-//' @param mean_adj Boolean containing whether the model fit had a mean structure that is covariate-dependent (optional argument)
 //' @param cov_adj Boolean containing whether the model fit had a covariance structure that is covariate-dependent (optional argument)
 //' @returns LLik Vector containing the log-likelihood evaluated at each iteration
+//'
+//' @section Warning:
+//' The following must be true:
+//' \describe{
+//'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+//'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
+//' }
+//'
+//' @examples
+//' #########################
+//' ### Not Covariate Adj ###
+//' #########################
+//'
+//' ## Set Hyperparameters
+//' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//'
+//' ## Get CI for mean function
+//' LL <- MVLLik(dir, n_files, Y)
+//'
+//' #####################
+//' ### Covariate Adj ###
+//' #####################
+//'
+//' ## Set Hyperparameters
+//' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+//'
+//' ## Get CI for mean function
+//' LL <- MVLLik(dir, n_files, Y, X = X)
+//'
+//' #####################################################################
+//' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+//' #####################################################################
+//'
+//' ## Set Hyperparameters
+//' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+//'
+//' ## Get CI for mean function
+//' LL <- MVLLik(dir, n_files, Y, X = X, cov_adj = T)
 //' @export
 // [[Rcpp::export]]
-arma::vec MV_Model_LLik(const std::string dir,
-                        const int n_files,
-                        const int n_MCMC,
-                        const arma::mat Y,
-                        Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
-                        const bool mean_adj = false,
-                        const bool cov_adj = false){
+arma::vec MVLLik(const std::string dir,
+                 const int n_files,
+                 const arma::mat Y,
+                 Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
+                 const bool cov_adj = false){
+
+  if(n_files <= 0){
+    Rcpp::stop("'n_files' must be greater than 0");
+  }
 
   // Get Nu parameters
   arma::cube nu_i;
   nu_i.load(dir + "Nu0.txt");
+  int n_MCMC = nu_i.n_slices;
   arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
   nu_samp.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
   for(int i = 1; i < n_files; i++){
@@ -4507,7 +4625,7 @@ arma::vec MV_Model_LLik(const std::string dir,
 
   // Get eta parameters
   arma::field<arma::cube> eta_samp(n_MCMC * n_files, 1);
-  if(mean_adj == false){
+  if(X.isNull()){
     for(int i = 0; i < n_MCMC * n_files; i ++){
       eta_samp(i,0) = arma::zeros(nu_samp.n_cols, 1, nu_samp.n_rows);
     }
@@ -4528,23 +4646,23 @@ arma::vec MV_Model_LLik(const std::string dir,
 
   arma::field<arma::cube> xi_samp(n_MCMC * n_files, nu_samp.n_rows);
   if(cov_adj == false){
-    for(int k = 0; k < nu_samp.n_rows;){
-      for(int i = 0; i < n_MCMC * n_files; i ++){
+    for(int k = 0; k < nu_samp.n_rows; k++){
+      for(int i = 0; i < n_MCMC * n_files; i++){
         xi_samp(i,k) = arma::zeros(nu_samp.n_cols, 1, phi_samp(0,0).n_slices);
       }
     }
   }else{
     arma::field<arma::cube> xi_i;
     xi_i.load(dir + "Xi0.txt");
-    for(int k = 0; k < nu_samp.n_rows;){
+    for(int k = 0; k < nu_samp.n_rows; k++){
       for(int i = 0; i < n_MCMC; i++){
-        xi_samp(i,0) = xi_i(i,0);
+        xi_samp(i,k) = xi_i(i,k);
       }
     }
 
     for(int i = 1; i < n_files; i++){
       xi_i.load(dir + "Xi" + std::to_string(i) +".txt");
-      for(int k = 0; k < nu_samp.n_rows;){
+      for(int k = 0; k < nu_samp.n_rows; k++){
         for(int j = 0; j < n_MCMC; j++){
           xi_samp((i * n_MCMC) + j, k) = xi_i(j,k);
         }
@@ -4557,6 +4675,9 @@ arma::vec MV_Model_LLik(const std::string dir,
   if(X.isNotNull()) {
     Rcpp::NumericMatrix X_(X);
     X1 = Rcpp::as<arma::mat>(X_);
+    if(X1.n_cols != eta_samp(0,0).n_cols){
+      Rcpp::stop("The number of columns in 'X' must be equal to the number of covariates in the model");
+    }
   }else{
     X1 = arma::zeros(Y.n_rows, 1);
   }

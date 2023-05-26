@@ -684,25 +684,88 @@ Model_BIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, intern
     .Call('_BayesFMMM_Model_BIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
 }
 
+#' Calculates the Log-Likelihood of a Functional Model
+#'
 #' Calculates the log-likelihood of the parameters for each iteration for functional models.
 #' This function can handle covariate adjusted models as well as non-adjusted models.
 #'
-#' @name Model_LLik
+#' @name FLLik
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
-#' @param n_MCMC Int containing the number of saved MCMC iterations per file
 #' @param basis_degree Int containing the degree of B-splines used
 #' @param boundary_knots Vector containing the boundary points of our index domain of interest
 #' @param internal_knots Vector location of internal knots for B-splines
 #' @param time Field of vectors containing time points at which the function was observed
 #' @param Y Field of vectors containing observed values of the function
 #' @param X Matrix of covariates (each row contains the covariates for a single observation) (optional arugment)
-#' @param mean_adj Boolean containing whether the model fit had a mean structure that is covariate-dependent (optional argument)
 #' @param cov_adj Boolean containing whether the model fit had a covariance structure that is covariate-dependent (optional argument)
 #' @returns LLik Vector containing the log-likelihood evaluated at each iteration
+#'
+#' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+#'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+#'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+#'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
+#' }
+#'
+#' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
+#' ## Set Hyperparameters
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#' ## Get CI for mean function
+#' LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
+#'             time, Y)
+#'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' ## Set Hyperparameters
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#'
+#' ## Get CI for mean function
+#' LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
+#'             time, Y, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' ## Set Hyperparameters
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#'
+#' ## Get CI for mean function
+#' LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
+#'             time, Y, X = X, cov_adj = T)
 #' @export
-Model_LLik <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, X = NULL, mean_adj = FALSE, cov_adj = FALSE) {
-    .Call('_BayesFMMM_Model_LLik', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, X, mean_adj, cov_adj)
+FLLik <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, X = NULL, cov_adj = FALSE) {
+    .Call('_BayesFMMM_FLLik', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, X, cov_adj)
 }
 
 #' Calculates the AIC of a multivariate model
@@ -747,22 +810,68 @@ MV_Model_DIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
     .Call('_BayesFMMM_MV_Model_DIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, Y, burnin_prop)
 }
 
+#' Calculates the Log-Likelihood of a Multivariate Model
+#'
 #' Calculates the log-likelihood of the parameters for each iteration of a multivariate model.
 #' This function can handle covariate adjusted models as well as non-adjusted models.
 #'
 #'
-#' @name MV_Model_LLik
+#' @name MVLLik
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
-#' @param n_MCMC Int containing the number of saved MCMC iterations per file
 #' @param Y Matrix of observed vectors (each row is an observation)
 #' @param X Matrix of covariates (each row contains the covariates for a single observation) (optional arugment)
-#' @param mean_adj Boolean containing whether the model fit had a mean structure that is covariate-dependent (optional argument)
 #' @param cov_adj Boolean containing whether the model fit had a covariance structure that is covariate-dependent (optional argument)
 #' @returns LLik Vector containing the log-likelihood evaluated at each iteration
+#'
+#' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+#'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
+#' }
+#'
+#' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
+#' ## Set Hyperparameters
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#'
+#' ## Get CI for mean function
+#' LL <- MVLLik(dir, n_files, Y)
+#'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' ## Set Hyperparameters
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#'
+#' ## Get CI for mean function
+#' LL <- MVLLik(dir, n_files, Y, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' ## Set Hyperparameters
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#'
+#' ## Get CI for mean function
+#' LL <- MVLLik(dir, n_files, Y, X = X, cov_adj = T)
 #' @export
-MV_Model_LLik <- function(dir, n_files, n_MCMC, Y, X = NULL, mean_adj = FALSE, cov_adj = FALSE) {
-    .Call('_BayesFMMM_MV_Model_LLik', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, Y, X, mean_adj, cov_adj)
+MVLLik <- function(dir, n_files, Y, X = NULL, cov_adj = FALSE) {
+    .Call('_BayesFMMM_MVLLik', PACKAGE = 'BayesFMMM', dir, n_files, Y, X, cov_adj)
 }
 
 #' Conditional Predictive Ordinates
