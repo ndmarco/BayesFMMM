@@ -632,20 +632,22 @@ ZCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
 
 #' Calculates the DIC of a functional model
 #'
-#' @name Model_DIC
+#' @name FDIC
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
-#' @param n_MCMC Int containing the number of saved MCMC iterations per file
 #' @param basis_degree Int containing the degree of B-splines used
 #' @param boundary_knots Vector containing the boundary points of our index domain of interest
 #' @param internal_knots Vector location of internal knots for B-splines
 #' @param time Field of vectors containing time points at which the function was observed
 #' @param Y Field of vectors containing observed values of the function
+#' @param X Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)
+#' @param cov_adj Boolean containing whether or not the covariance structure depends on the covariates of interest
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
+#'
 #' @returns DIC Double containing DIC value
 #' @export
-Model_DIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
-    .Call('_BayesFMMM_Model_DIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
+FDIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
+    .Call('_BayesFMMM_FDIC', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj)
 }
 
 #' Calculates the AIC of a functional model
@@ -879,7 +881,7 @@ MVLLik <- function(dir, n_files, Y, X = NULL, cov_adj = FALSE) {
 #' Calculates the Conditional Predictive Ordinates for functional models.
 #' This function can handle covariate adjusted models as well as non-adjusted models.
 #'
-#' @name Conditional_Predictive_Ordinates
+#' @name ConditionalPredictiveOrdinates
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
 #' @param n_MCMC Int containing the number of saved MCMC iterations per file
@@ -894,8 +896,8 @@ MVLLik <- function(dir, n_files, Y, X = NULL, cov_adj = FALSE) {
 #' @param log_CPO Boolean conatining whether or not CPO is returned on the log scale (optional argument)
 #' @returns CPO Vector containing the CPO for each observation
 #' @export
-Conditional_Predictive_Ordinates <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE, log_CPO = TRUE) {
-    .Call('_BayesFMMM_Conditional_Predictive_Ordinates', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj, log_CPO)
+ConditionalPredictiveOrdinates <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE, log_CPO = TRUE) {
+    .Call('_BayesFMMM_ConditionalPredictiveOrdinates', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj, log_CPO)
 }
 
 #' Find initial starting position for mean and allocation structure for functional data

@@ -79,6 +79,51 @@ inline double calcDIC2(const arma::vec& y_obs,
   return lik;
 }
 
+
+// Calculates the second term of the DIC expression for covariate adjusted model
+//
+// @name calcDIC2CovariateAdj
+// @param y_obs Field of vectors containing observed time points
+// @param X Matrix containing the covariates of interest
+// @param B_obs Field of matrices containing basis functions evaluated at observed time points
+// @param nu Matrix containing current nu parameters
+// @param eta Cube containing current eta parameters
+// @param Phi Cube containing current Phi parameters
+// @param xi Field of cubes containing xi parameters
+// @param Z Matrix containing current Z parameters
+// @param chi Matrix containing current chi parameters
+// @param iter Int containing the MCMC iteration of interest for xi parameters
+// @param i Int containing function number of interest
+// @param j Int containing the time point of the ith function of interest
+// @param sigma Double containing current sigma parameter
+// @return lik Double containing likelihood
+inline double calcDIC2CovariateAdj(const arma::vec& y_obs,
+                                   const arma::mat& X,
+                                   const arma::mat& B_obs,
+                                   const arma::mat& nu,
+                                   const arma::cube& eta,
+                                   const arma::cube& Phi,
+                                   const arma::field<arma::cube>& xi,
+                                   const arma::mat& Z,
+                                   const arma::mat& chi,
+                                   const int iter,
+                                   const int i,
+                                   const int j,
+                                   const double& sigma){
+  double mean = 0;
+  for(int k = 0; k < Z.n_cols; k++){
+    if(Z(i,k) != 0){
+      mean = mean + Z(i,k) * arma::dot(nu.row(k) + (eta.slice(k) * X.row(i).t()).t(), B_obs.row(j));
+      for(int n = 0; n < Phi.n_slices; n++){
+        mean = mean + Z(i,k) * chi(i,n) * arma::dot(Phi.slice(n).row(k) + (xi(iter,k).slice(n) * X.row(i).t()).t(),
+                        B_obs.row(j));
+      }
+    }
+  }
+  double lik = R::dnorm(y_obs(j), mean, std::sqrt(sigma), false);
+  return lik;
+}
+
 // Calculates the log likelihood of the multivariate model
 //
 // @name calcLikelihoodMV
