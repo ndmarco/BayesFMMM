@@ -652,20 +652,22 @@ FDIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, tim
 
 #' Calculates the AIC of a functional model
 #'
-#' @name Model_AIC
+#' @name FAIC
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
-#' @param n_MCMC Int containing the number of saved MCMC iterations per file
 #' @param basis_degree Int containing the degree of B-splines used
 #' @param boundary_knots Vector containing the boundary points of our index domain of interest
 #' @param internal_knots Vector location of internal knots for B-splines
 #' @param time Field of vectors containing time points at which the function was observed
 #' @param Y Field of vectors containing observed values of the function
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
+#' @param X Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)
+#' @param cov_adj Boolean containing whether or not the covariance structure depends on the covariates of interest
+#'
 #' @returns AIC Double containing AIC value
 #' @export
-Model_AIC <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2) {
-    .Call('_BayesFMMM_Model_AIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop)
+FAIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
+    .Call('_BayesFMMM_FAIC', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj)
 }
 
 #' Calculates the BIC of a functional model

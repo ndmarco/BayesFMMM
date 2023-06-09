@@ -186,22 +186,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Model_AIC
-double Model_AIC(const std::string dir, const int n_files, const int n_MCMC, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::field<arma::vec> time, const arma::field<arma::vec> Y, const double burnin_prop);
-RcppExport SEXP _BayesFMMM_Model_AIC(SEXP dirSEXP, SEXP n_filesSEXP, SEXP n_MCMCSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP timeSEXP, SEXP YSEXP, SEXP burnin_propSEXP) {
+// FAIC
+double FAIC(const std::string dir, const int n_files, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::field<arma::vec> time, const arma::field<arma::vec> Y, const double burnin_prop, Rcpp::Nullable<Rcpp::NumericMatrix> X, const bool cov_adj);
+RcppExport SEXP _BayesFMMM_FAIC(SEXP dirSEXP, SEXP n_filesSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP timeSEXP, SEXP YSEXP, SEXP burnin_propSEXP, SEXP XSEXP, SEXP cov_adjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
-    Rcpp::traits::input_parameter< const int >::type n_MCMC(n_MCMCSEXP);
     Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type boundary_knots(boundary_knotsSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type time(timeSEXP);
     Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type Y(YSEXP);
     Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
-    rcpp_result_gen = Rcpp::wrap(Model_AIC(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop));
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericMatrix> >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const bool >::type cov_adj(cov_adjSEXP);
+    rcpp_result_gen = Rcpp::wrap(FAIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -775,7 +776,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFMMM_SigmaCI", (DL_FUNC) &_BayesFMMM_SigmaCI, 3},
     {"_BayesFMMM_ZCI", (DL_FUNC) &_BayesFMMM_ZCI, 5},
     {"_BayesFMMM_FDIC", (DL_FUNC) &_BayesFMMM_FDIC, 10},
-    {"_BayesFMMM_Model_AIC", (DL_FUNC) &_BayesFMMM_Model_AIC, 9},
+    {"_BayesFMMM_FAIC", (DL_FUNC) &_BayesFMMM_FAIC, 10},
     {"_BayesFMMM_Model_BIC", (DL_FUNC) &_BayesFMMM_Model_BIC, 9},
     {"_BayesFMMM_FLLik", (DL_FUNC) &_BayesFMMM_FLLik, 9},
     {"_BayesFMMM_MV_Model_AIC", (DL_FUNC) &_BayesFMMM_MV_Model_AIC, 5},
