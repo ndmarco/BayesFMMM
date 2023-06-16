@@ -5,18 +5,6 @@
 \alias{MV_Model_DIC}
 \title{Calculates the DIC of a functional model}
 \usage{
-Model_DIC(
-  dir,
-  n_files,
-  n_MCMC,
-  basis_degree,
-  boundary_knots,
-  internal_knots,
-  time,
-  Y,
-  burnin_prop = 0.2
-)
-
 MV_Model_DIC(dir, n_files, n_MCMC, Y, burnin_prop = 0.2)
 }
 \arguments{
@@ -26,25 +14,13 @@ MV_Model_DIC(dir, n_files, n_MCMC, Y, burnin_prop = 0.2)
 
 \item{n_MCMC}{Int containing the number of saved MCMC iterations per file}
 
-\item{basis_degree}{Int containing the degree of B-splines used}
-
-\item{boundary_knots}{Vector containing the boundary points of our index domain of interest}
-
-\item{internal_knots}{Vector location of internal knots for B-splines}
-
-\item{time}{Field of vectors containing time points at which the function was observed}
-
 \item{Y}{Matrix of observed vectors (each row is an observation)}
 
 \item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 }
 \value{
 DIC Double containing DIC value
-
-DIC Double containing DIC value
 }
 \description{
-Calculates the DIC of a functional model
-
 Calculates the DIC of a functional model
 }

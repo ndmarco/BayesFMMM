@@ -59,9 +59,9 @@ The following must be true:
 #########################
 
 ## Set Hyperparameters
-Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
 n_files <- 1
 basis_degree <- 3
 boundary_knots <- c(0, 1000)
@@ -76,9 +76,9 @@ LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
 #####################
 
 ## Set Hyperparameters
-Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
 n_files <- 1
 basis_degree <- 3
 boundary_knots <- c(0, 1000)
@@ -94,9 +94,9 @@ LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
 #####################################################################
 
 ## Set Hyperparameters
-Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
 n_files <- 1
 basis_degree <- 3
 boundary_knots <- c(0, 1000)

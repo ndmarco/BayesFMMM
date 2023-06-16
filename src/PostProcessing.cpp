@@ -3501,8 +3501,8 @@ double FDIC(const std::string dir,
 
     // Get sigma parameters
     arma::vec sigma_i;
-    int n_MCMC = sigma_i.n_elem;
     sigma_i.load(dir + "Sigma0.txt");
+    int n_MCMC = sigma_i.n_elem;
     arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
     sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
     for(int i = 1; i < n_files; i++){
@@ -3617,8 +3617,8 @@ double FDIC(const std::string dir,
 
     // Get sigma parameters
     arma::vec sigma_i;
-    int n_MCMC = sigma_i.n_elem;
     sigma_i.load(dir + "Sigma0.txt");
+    int n_MCMC = sigma_i.n_elem;
     arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
     sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
     for(int i = 1; i < n_files; i++){
@@ -3696,7 +3696,7 @@ double FDIC(const std::string dir,
     if(cov_adj == false){
       for(int k = 0; k < nu_samp.n_rows; k++){
         for(int i = 0; i < n_MCMC * n_files; i ++){
-          xi_samp(i,k) = arma::zeros(nu_samp.n_cols, 1, phi_samp(0,0).n_slices);
+          xi_samp(i,k) = arma::zeros(nu_samp.n_cols, X1.n_cols, phi_samp(0,0).n_slices);
         }
       }
     }else{
@@ -3809,8 +3809,8 @@ double FAIC(const std::string dir,
 
     // Get sigma parameters
     arma::vec sigma_i;
-    int n_MCMC = sigma_i.n_elem;
     sigma_i.load(dir + "Sigma0.txt");
+    int n_MCMC = sigma_i.n_elem;
     arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
     sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
     for(int i = 1; i < n_files; i++){
@@ -3938,8 +3938,8 @@ double FAIC(const std::string dir,
 
     // Get sigma parameters
     arma::vec sigma_i;
-    int n_MCMC = sigma_i.n_elem;
     sigma_i.load(dir + "Sigma0.txt");
+    int n_MCMC = sigma_i.n_elem;
     arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
     sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
     for(int i = 1; i < n_files; i++){
@@ -4017,7 +4017,356 @@ double FAIC(const std::string dir,
     if(cov_adj == false){
       for(int k = 0; k < nu_samp.n_rows; k++){
         for(int i = 0; i < n_MCMC * n_files; i ++){
-          xi_samp(i,k) = arma::zeros(nu_samp.n_cols, 1, phi_samp(0,0).n_slices);
+          xi_samp(i,k) = arma::zeros(nu_samp.n_cols, X1.n_cols, phi_samp(0,0).n_slices);
+        }
+      }
+    }else{
+      arma::field<arma::cube> xi_i;
+      xi_i.load(dir + "Xi0.txt");
+      for(int k = 0; k < nu_samp.n_rows; k++){
+        for(int i = 0; i < n_MCMC; i++){
+          xi_samp(i,k) = xi_i(i,k);
+        }
+      }
+
+      for(int i = 1; i < n_files; i++){
+        xi_i.load(dir + "Xi" + std::to_string(i) +".txt");
+        for(int k = 0; k < nu_samp.n_rows; k++){
+          for(int j = 0; j < n_MCMC; j++){
+            xi_samp((i * n_MCMC) + j, k) = xi_i(j,k);
+          }
+        }
+      }
+    }
+
+    // Make spline basis
+    arma::field<arma::mat> B_obs(Z_samp.n_rows, 1);
+    splines2::BSpline bspline2;
+    for(int i = 0; i < Z_samp.n_rows; i++){
+      bspline2 = splines2::BSpline(time(i,0),  internal_knots, basis_degree,
+                                   boundary_knots);
+      // Get Basis matrix (time2 x Phi.n_cols)
+      arma::mat bspline_mat2{bspline2.basis(true)};
+      // Make B_obs
+      B_obs(i,0) = bspline_mat2;
+    }
+
+    // Estimate individual curve fit
+    arma::field<arma::mat> curve_fit(Z_i.n_rows, 1);
+    for(int i = 0; i < Z_i.n_rows; i++){
+      curve_fit(i,0) = arma::zeros(std::ceil((1 - burnin_prop) * sigma_i.n_elem * n_files), Y(i,0).n_elem);
+      for(int j = std::ceil(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
+        for(int l = 0; l < Y(i,0).n_elem; l++){
+          for(int k = 0; k < Z_samp.n_cols; k++){
+            curve_fit(i,0)(j - std::floor(burnin_prop * sigma_i.n_elem * n_files), l) = curve_fit(i,0)(j - std::floor(burnin_prop * sigma_i.n_elem * n_files), l) + (Z_samp(i,k,j) * arma::dot(nu_samp.slice(j).row(k).t() +
+              (eta_samp(j,0).slice(k) * X1.row(i).t()), B_obs(i,0).row(l)));
+            for(int m = 0; m < chi_samp.n_cols; m++){
+              curve_fit(i,0)(j - std::floor(burnin_prop * sigma_i.n_elem * n_files),l) = curve_fit(i,0)(j - std::floor(burnin_prop * sigma_i.n_elem * n_files), l) + (Z_samp(i,k,j) * chi_samp(i,m,j) * arma::dot(phi_samp(j,0).slice(m).row(k).t() +
+                (xi_samp(j,k).slice(m) * X1.row(i).t()), B_obs(i,0).row(l)));
+            }
+          }
+        }
+      }
+    }
+
+    arma::field<arma::rowvec> mean_curve_fit(Z_samp.n_rows, 1);
+    // Get mean curve fit
+    for(int i = 0; i < Z_i.n_rows; i++){
+      mean_curve_fit(i,0) = arma::mean(curve_fit(i,0), 0);
+    }
+
+    // Get posterior mean of sigma^2
+    double mean_sigma = arma::mean(sigma_samp);
+
+    // Calculate Log likelihood
+    double log_lik = 0;
+    for(int i = 0; i < Z_samp.n_rows; i++){
+      for(int j = 0; j < Y(i,0).n_elem; j++){
+        log_lik = log_lik + R::dnorm(Y(i,0)(j), mean_curve_fit(i,0)(j),
+                                     std::sqrt(mean_sigma), true);
+      }
+    }
+
+    // Calculate AIC
+    AIC =  2*((Z_samp.n_rows + phi_samp(0,0).n_cols) * Z_samp.n_cols +
+      2 * phi_samp(0,0).n_cols * phi_samp(0,0).n_slices * phi_samp(0,0).n_rows +
+      2 + 4 * Z_samp.n_cols + chi_samp.n_rows * chi_samp.n_cols + (phi_samp(0,0).n_slices * Z_samp.n_cols) +
+      eta_samp(0,0).n_rows * eta_samp(0,0).n_cols * eta_samp(0,0).n_slices +
+      eta_samp(0,0).n_cols * eta_samp(0,0).n_slices) - (2 * log_lik);
+    if(cov_adj == true){
+      AIC = AIC + 2*(2 * eta_samp(0,0).n_rows * eta_samp(0,0).n_cols * eta_samp(0,0).n_slices * phi_samp(0,0).n_slices +
+        eta_samp(0,0).n_cols * eta_samp(0,0).n_slices * phi_samp(0,0).n_slices + 2 * eta_samp(0,0).n_cols * eta_samp(0,0).n_slices);
+    }
+
+  }
+
+  return(AIC);
+}
+
+//' Calculates the BIC of a functional model
+//'
+//' @name FBIC
+//' @param dir String containing the directory where the MCMC files are located
+//' @param n_files Int containing the number of files per parameter
+//' @param basis_degree Int containing the degree of B-splines used
+//' @param boundary_knots Vector containing the boundary points of our index domain of interest
+//' @param internal_knots Vector location of internal knots for B-splines
+//' @param time Field of vectors containing time points at which the function was observed
+//' @param Y Field of vectors containing observed values of the function
+//' @param burnin_prop Double containing proportion of MCMC samples to discard
+//' @param X Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)
+//' @param cov_adj Boolean containing whether or not the covariance structure depends on the covariates of interest
+//'
+//' @returns BIC Double containing BIC value
+//' @export
+// [[Rcpp::export]]
+double FBIC(const std::string dir,
+            const int n_files,
+            const int basis_degree,
+            const arma::vec boundary_knots,
+            const arma::vec internal_knots,
+            const arma::field<arma::vec> time,
+            const arma::field<arma::vec> Y,
+            const double burnin_prop = 0.2,
+            Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
+            const bool cov_adj = false){
+  double BIC;
+
+  if(X.isNull()){
+    if(basis_degree <  1){
+      Rcpp::stop("'basis_degree' must be an integer greater than or equal to 1");
+    }
+    for(int i = 0; i < internal_knots.n_elem; i++){
+      if(boundary_knots(0) >= internal_knots(i)){
+        Rcpp::stop("at least one element in 'internal_knots' is less than or equal to first boundary knot");
+      }
+      if(boundary_knots(1) <= internal_knots(i)){
+        Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
+      }
+    }
+    if(burnin_prop < 0){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+    if(burnin_prop >= 1){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+
+    // Get sigma parameters
+    arma::vec sigma_i;
+    sigma_i.load(dir + "Sigma0.txt");
+    int n_MCMC = sigma_i.n_elem;
+    arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
+    sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
+    for(int i = 1; i < n_files; i++){
+      sigma_i.load(dir + "Sigma" + std::to_string(i) +".txt");
+      sigma_samp.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
+    }
+
+    // Get Nu parameters
+    arma::cube nu_i;
+    nu_i.load(dir + "Nu0.txt");
+    arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
+    nu_samp.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
+    for(int i = 1; i < n_files; i++){
+      nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
+      nu_samp.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
+                      (nu_i.n_slices)*(i+1) - 1) = nu_i;
+    }
+
+    // Get Phi parameters
+    arma::field<arma::cube> phi_i;
+    phi_i.load(dir + "Phi0.txt");
+    arma::field<arma::cube> phi_samp(n_MCMC * n_files, 1);
+    for(int i = 0; i < n_MCMC; i++){
+      phi_samp(i,0) = phi_i(i,0);
+    }
+
+    for(int i = 1; i < n_files; i++){
+      phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
+      for(int j = 0; j < n_MCMC; j++){
+        phi_samp((i * n_MCMC) + j, 0) = phi_i(j,0);
+      }
+    }
+
+    // Get Z parameters
+    arma::cube Z_i;
+    Z_i.load(dir + "Z0.txt");
+    arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+    Z_samp.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+    for(int i = 1; i < n_files; i++){
+      Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+      Z_samp.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+    }
+
+    // Get chi parameters
+    arma::cube chi_i;
+    chi_i.load(dir + "Chi0.txt");
+    arma::cube chi_samp = arma::zeros(chi_i.n_rows, chi_i.n_cols, chi_i.n_slices * n_files);
+    chi_samp.subcube(0, 0, 0, chi_i.n_rows-1, chi_i.n_cols-1, chi_i.n_slices-1) = chi_i;
+    for(int i = 1; i < n_files; i++){
+      chi_i.load(dir + "Chi" + std::to_string(i) +".txt");
+      chi_samp.subcube(0, 0,  chi_i.n_slices*i, chi_i.n_rows-1, chi_i.n_cols-1,
+                       (chi_i.n_slices)*(i+1) - 1) = chi_i;
+    }
+
+    // Make spline basis
+    arma::field<arma::mat> B_obs(Z_samp.n_rows, 1);
+    splines2::BSpline bspline2;
+    for(int i = 0; i < Z_samp.n_rows; i++){
+      bspline2 = splines2::BSpline(time(i,0),  internal_knots, basis_degree,
+                                   boundary_knots);
+      // Get Basis matrix (time2 x Phi.n_cols)
+      arma::mat bspline_mat2{bspline2.basis(true)};
+      // Make B_obs
+      B_obs(i,0) = bspline_mat2;
+    }
+
+    // Estimate individual curve fit
+    arma::field<arma::mat> curve_fit(Z_i.n_rows, 1);
+    arma::rowvec Z_ph(Z_i.n_cols, arma::fill::zeros);
+    for(int i = 0; i < Z_i.n_rows; i++){
+      curve_fit(i,0) = arma::zeros(std::ceil((1 - burnin_prop) * sigma_i.n_elem * n_files), Y(i,0).n_elem);
+      for(int j = std::floor(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
+        Z_ph = Z_samp(arma::span(i), arma::span::all, arma::span(j));
+        curve_fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) = Z_ph * nu_samp.slice(j) * B_obs(i,0).t();
+        for(int k = 0; k < chi_samp.n_cols; k++){
+          curve_fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) = curve_fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) + (chi_samp(i, k, j) *
+            Z_ph * phi_samp(j,0).slice(k) * B_obs(i,0).t());
+        }
+      }
+    }
+
+    // Get mean curve fit
+    arma::field<arma::rowvec> mean_curve_fit(Z_i.n_rows, 1);
+    for(int i = 0; i < Z_i.n_rows; i++){
+      mean_curve_fit(i,0) = arma::mean(curve_fit(i,0), 0);
+    }
+
+    // Get posterior mean of sigma^2
+    double mean_sigma = arma::mean(sigma_samp);
+
+    // Calculate Log likelihood
+    double log_lik = 0;
+    for(int i = 0; i < Z_samp.n_rows; i++){
+      for(int j = 0; j < Y(i,0).n_elem; j++){
+        log_lik = log_lik + R::dnorm(Y(i,0)(j), mean_curve_fit(i,0)(j),
+                                     std::sqrt(mean_sigma), true);
+      }
+    }
+    double tilde_N = 0;
+    for(int i = 0; i < Z_samp.n_rows; i++){
+      tilde_N = tilde_N + Y(i,0).n_elem;
+    }
+
+    // Calculate BIC
+    BIC = (2 * log_lik) - (std::log(tilde_N) *
+      ((Z_samp.n_rows + phi_samp(0,0).n_cols) * Z_samp.n_cols +
+      2 * phi_samp(0,0).n_cols * phi_samp(0,0).n_slices * phi_samp(0,0).n_rows +
+      2 + 4 * Z_samp.n_cols + chi_samp.n_rows * chi_samp.n_cols + (phi_samp(0,0).n_slices*Z_samp.n_cols)));
+  }else{
+    Rcpp::NumericMatrix X_(X);
+    arma::mat X1 = Rcpp::as<arma::mat>(X_);
+
+    if(basis_degree <  1){
+      Rcpp::stop("'basis_degree' must be an integer greater than or equal to 1");
+    }
+    for(int i = 0; i < internal_knots.n_elem; i++){
+      if(boundary_knots(0) >= internal_knots(i)){
+        Rcpp::stop("at least one element in 'internal_knots' is less than or equal to first boundary knot");
+      }
+      if(boundary_knots(1) <= internal_knots(i)){
+        Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
+      }
+    }
+    if(burnin_prop < 0){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+    if(burnin_prop >= 1){
+      Rcpp::stop("'burnin_prop' must be between 0 and 1");
+    }
+
+    // Get sigma parameters
+    arma::vec sigma_i;
+    sigma_i.load(dir + "Sigma0.txt");
+    int n_MCMC = sigma_i.n_elem;
+    arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
+    sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
+    for(int i = 1; i < n_files; i++){
+      sigma_i.load(dir + "Sigma" + std::to_string(i) +".txt");
+      sigma_samp.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
+    }
+
+    // Get Nu parameters
+    arma::cube nu_i;
+    nu_i.load(dir + "Nu0.txt");
+    arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
+    nu_samp.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
+    for(int i = 1; i < n_files; i++){
+      nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
+      nu_samp.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
+                      (nu_i.n_slices)*(i+1) - 1) = nu_i;
+    }
+
+    // Get Phi parameters
+    arma::field<arma::cube> phi_i;
+    phi_i.load(dir + "Phi0.txt");
+    arma::field<arma::cube> phi_samp(n_MCMC * n_files, 1);
+    for(int i = 0; i < n_MCMC; i++){
+      phi_samp(i,0) = phi_i(i,0);
+    }
+
+    for(int i = 1; i < n_files; i++){
+      phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
+      for(int j = 0; j < n_MCMC; j++){
+        phi_samp((i * n_MCMC) + j, 0) = phi_i(j,0);
+      }
+    }
+
+    // Get Z parameters
+    arma::cube Z_i;
+    Z_i.load(dir + "Z0.txt");
+    arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+    Z_samp.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+    for(int i = 1; i < n_files; i++){
+      Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+      Z_samp.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+    }
+
+    // Get chi parameters
+    arma::cube chi_i;
+    chi_i.load(dir + "Chi0.txt");
+    arma::cube chi_samp = arma::zeros(chi_i.n_rows, chi_i.n_cols, chi_i.n_slices * n_files);
+    chi_samp.subcube(0, 0, 0, chi_i.n_rows-1, chi_i.n_cols-1, chi_i.n_slices-1) = chi_i;
+    for(int i = 1; i < n_files; i++){
+      chi_i.load(dir + "Chi" + std::to_string(i) +".txt");
+      chi_samp.subcube(0, 0,  chi_i.n_slices*i, chi_i.n_rows-1, chi_i.n_cols-1,
+                       (chi_i.n_slices)*(i+1) - 1) = chi_i;
+    }
+
+    // Get eta parameters
+    arma::field<arma::cube> eta_samp(n_MCMC * n_files, 1);
+    arma::field<arma::cube> eta_i;
+    eta_i.load(dir + "Eta0.txt");
+    for(int i = 0; i < n_MCMC; i++){
+      eta_samp(i,0) = eta_i(i,0);
+    }
+
+    if(X1.n_cols != eta_samp(0,0).n_cols){
+      Rcpp::stop("The number of columns in 'X' must be equal to the number of covariates in the model");
+    }
+
+    for(int i = 1; i < n_files; i++){
+      eta_i.load(dir + "Eta" + std::to_string(i) +".txt");
+      for(int j = 0; j < n_MCMC; j++){
+        eta_samp((i * n_MCMC) + j, 0) = eta_i(j,0);
+      }
+    }
+
+    arma::field<arma::cube> xi_samp(n_MCMC * n_files, nu_samp.n_rows);
+    if(cov_adj == false){
+      for(int k = 0; k < nu_samp.n_rows; k++){
+        for(int i = 0; i < n_MCMC * n_files; i ++){
+          xi_samp(i,k) = arma::zeros(nu_samp.n_cols, X1.n_cols, phi_samp(0,0).n_slices);
         }
       }
     }else{
@@ -4087,176 +4436,23 @@ double FAIC(const std::string dir,
       }
     }
 
-    // Calculate AIC
-    AIC =  2*((Z_samp.n_rows + phi_samp(0,0).n_cols) * Z_samp.n_cols +
+    double tilde_N = 0;
+    for(int i = 0; i < Z_samp.n_rows; i++){
+      tilde_N = tilde_N + Y(i,0).n_elem;
+    }
+
+    // Calculate BIC
+    BIC = (2 * log_lik) - (std::log(tilde_N) *((Z_samp.n_rows + phi_samp(0,0).n_cols) * Z_samp.n_cols +
       2 * phi_samp(0,0).n_cols * phi_samp(0,0).n_slices * phi_samp(0,0).n_rows +
       2 + 4 * Z_samp.n_cols + chi_samp.n_rows * chi_samp.n_cols + (phi_samp(0,0).n_slices * Z_samp.n_cols) +
       eta_samp(0,0).n_rows * eta_samp(0,0).n_cols * eta_samp(0,0).n_slices +
-      eta_samp(0,0).n_cols * eta_samp(0,0).n_slices) - (2 * log_lik);
+      eta_samp(0,0).n_cols * eta_samp(0,0).n_slices));
     if(cov_adj == true){
-      AIC = AIC + 2*(2 * eta_samp(0,0).n_rows * eta_samp(0,0).n_cols * eta_samp(0,0).n_slices * phi_samp(0,0).n_slices +
-        eta_samp(0,0).n_cols * eta_samp(0,0).n_slices * phi_samp(0,0).n_slices + 2 * eta_samp(0,0).n_cols * eta_samp(0,0).n_slices);
-    }
-
-  }
-
-  return(AIC);
-}
-
-//' Calculates the BIC of a functional model
-//'
-//' @name Model_BIC
-//' @param dir String containing the directory where the MCMC files are located
-//' @param n_files Int containing the number of files per parameter
-//' @param n_MCMC Int containing the number of saved MCMC iterations per file
-//' @param basis_degree Int containing the degree of B-splines used
-//' @param boundary_knots Vector containing the boundary points of our index domain of interest
-//' @param internal_knots Vector location of internal knots for B-splines
-//' @param time Field of vectors containing time points at which the function was observed
-//' @param Y Field of vectors containing observed values of the function
-//' @param burnin_prop Double containing proportion of MCMC samples to discard
-//' @returns BIC Double containing BIC value
-//' @export
-// [[Rcpp::export]]
-double Model_BIC(const std::string dir,
-                 const int n_files,
-                 const int n_MCMC,
-                 const int basis_degree,
-                 const arma::vec boundary_knots,
-                 const arma::vec internal_knots,
-                 const arma::field<arma::vec> time,
-                 const arma::field<arma::vec> Y,
-                 const double burnin_prop = 0.2){
-
-  if(basis_degree <  1){
-    Rcpp::stop("'basis_degree' must be an integer greater than or equal to 1");
-  }
-  for(int i = 0; i < internal_knots.n_elem; i++){
-    if(boundary_knots(0) >= internal_knots(i)){
-      Rcpp::stop("at least one element in 'internal_knots' is less than or equal to first boundary knot");
-    }
-    if(boundary_knots(1) <= internal_knots(i)){
-      Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
-    }
-  }
-  if(burnin_prop < 0){
-    Rcpp::stop("'burnin_prop' must be between 0 and 1");
-  }
-  if(burnin_prop >= 1){
-    Rcpp::stop("'burnin_prop' must be between 0 and 1");
-  }
-
-  // Get Nu parameters
-  arma::cube nu_i;
-  nu_i.load(dir + "Nu0.txt");
-  arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
-  nu_samp.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
-  for(int i = 1; i < n_files; i++){
-    nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
-    nu_samp.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
-                    (nu_i.n_slices)*(i+1) - 1) = nu_i;
-  }
-
-  // Get Phi parameters
-  arma::field<arma::cube> phi_i;
-  phi_i.load(dir + "Phi0.txt");
-  arma::field<arma::cube> phi_samp(n_MCMC * n_files, 1);
-  for(int i = 0; i < n_MCMC; i++){
-    phi_samp(i,0) = phi_i(i,0);
-  }
-
-  for(int i = 1; i < n_files; i++){
-    phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
-    for(int j = 0; j < n_MCMC; j++){
-      phi_samp((i * n_MCMC) + j, 0) = phi_i(j,0);
+      BIC = BIC - (std::log(tilde_N) * (2 * eta_samp(0,0).n_rows * eta_samp(0,0).n_cols * eta_samp(0,0).n_slices * phi_samp(0,0).n_slices +
+        eta_samp(0,0).n_cols * eta_samp(0,0).n_slices * phi_samp(0,0).n_slices + 2 * eta_samp(0,0).n_cols * eta_samp(0,0).n_slices));
     }
   }
 
-  // Get Z parameters
-  arma::cube Z_i;
-  Z_i.load(dir + "Z0.txt");
-  arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
-  Z_samp.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
-  for(int i = 1; i < n_files; i++){
-    Z_i.load(dir + "Z" + std::to_string(i) +".txt");
-    Z_samp.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
-  }
-
-  // Get sigma parameters
-  arma::vec sigma_i;
-  sigma_i.load(dir + "Sigma0.txt");
-  arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
-  sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
-  for(int i = 1; i < n_files; i++){
-    sigma_i.load(dir + "Sigma" + std::to_string(i) +".txt");
-    sigma_samp.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
-  }
-
-  // Get chi parameters
-  arma::cube chi_i;
-  chi_i.load(dir + "Chi0.txt");
-  arma::cube chi_samp = arma::zeros(chi_i.n_rows, chi_i.n_cols, chi_i.n_slices * n_files);
-  chi_samp.subcube(0, 0, 0, chi_i.n_rows-1, chi_i.n_cols-1, chi_i.n_slices-1) = chi_i;
-  for(int i = 1; i < n_files; i++){
-    chi_i.load(dir + "Chi" + std::to_string(i) +".txt");
-    chi_samp.subcube(0, 0,  chi_i.n_slices*i, chi_i.n_rows-1, chi_i.n_cols-1,
-                     (chi_i.n_slices)*(i+1) - 1) = chi_i;
-  }
-
-  // Make spline basis
-  arma::field<arma::mat> B_obs(Z_samp.n_rows, 1);
-  splines2::BSpline bspline2;
-  for(int i = 0; i < Z_samp.n_rows; i++){
-    bspline2 = splines2::BSpline(time(i,0),  internal_knots, basis_degree,
-                                 boundary_knots);
-    // Get Basis matrix (time2 x Phi.n_cols)
-    arma::mat bspline_mat2{bspline2.basis(true)};
-    // Make B_obs
-    B_obs(i,0) = bspline_mat2;
-  }
-
-  // Estimate individual curve fit
-  arma::field<arma::mat> curve_fit(Z_i.n_rows, 1);
-  arma::rowvec Z_ph(Z_i.n_cols, arma::fill::zeros);
-  for(int i = 0; i < Z_i.n_rows; i++){
-    curve_fit(i,0) = arma::zeros(std::ceil((1 - burnin_prop) * sigma_i.n_elem * n_files), Y(i,0).n_elem);
-    for(int j = std::floor(burnin_prop * sigma_i.n_elem * n_files); j < sigma_i.n_elem * n_files; j++){
-      Z_ph = Z_samp(arma::span(i), arma::span::all, arma::span(j));
-      curve_fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) = Z_ph * nu_samp.slice(j) * B_obs(i,0).t();
-      for(int k = 0; k < chi_samp.n_cols; k++){
-        curve_fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) = curve_fit(i,0).row(j - std::floor(burnin_prop * sigma_i.n_elem * n_files)) + (chi_samp(i, k, j) *
-          Z_ph * phi_samp(j,0).slice(k) * B_obs(i,0).t());
-      }
-    }
-  }
-
-  // Get mean curve fit
-  arma::field<arma::rowvec> mean_curve_fit(Z_i.n_rows, 1);
-  for(int i = 0; i < Z_i.n_rows; i++){
-    mean_curve_fit(i,0) = arma::mean(curve_fit(i,0), 0);
-  }
-
-  // Get posterior mean of sigma^2
-  double mean_sigma = arma::mean(sigma_samp);
-
-  // Calculate Log likelihood
-  double log_lik = 0;
-  for(int i = 0; i < Z_samp.n_rows; i++){
-    for(int j = 0; j < Y(i,0).n_elem; j++){
-      log_lik = log_lik + R::dnorm(Y(i,0)(j), mean_curve_fit(i,0)(j),
-                                   std::sqrt(mean_sigma), true);
-    }
-  }
-  double tilde_N = 0;
-  for(int i = 0; i < Z_samp.n_rows; i++){
-    tilde_N = tilde_N + Y(i,0).n_elem;
-  }
-
-  // Calculate BIC
-  double BIC = (2 * log_lik) - (std::log(tilde_N) *
-                ((Z_samp.n_rows + phi_samp(0,0).n_cols) * Z_samp.n_cols +
-                2 * phi_samp(0,0).n_cols * phi_samp(0,0).n_slices * phi_samp(0,0).n_rows +
-                2 + 4 * Z_samp.n_cols + chi_samp.n_rows * chi_samp.n_cols + (phi_samp(0,0).n_slices*Z_samp.n_cols)));
   return(BIC);
 }
 
@@ -4449,7 +4645,7 @@ arma::vec FLLik(const std::string dir,
   if(cov_adj == false){
     for(int k = 0; k < nu_samp.n_rows; k++){
       for(int i = 0; i < n_MCMC * n_files; i ++){
-        xi_samp(i,k) = arma::zeros(nu_samp.n_cols, 1, phi_samp(0,0).n_slices);
+        xi_samp(i,k) = arma::zeros(nu_samp.n_cols, eta_samp(0,0).n_cols, phi_samp(0,0).n_slices);
       }
     }
   }else{
