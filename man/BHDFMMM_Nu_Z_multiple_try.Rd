@@ -2,12 +2,12 @@
 % Please edit documentation in R/RcppExports.R
 \name{BHDFMMM_Nu_Z_multiple_try}
 \alias{BHDFMMM_Nu_Z_multiple_try}
-\title{Find initial starting position for nu and Z parameters for high dimensional functional data (Domain dimension > 1)}
+\title{Find initial starting position for mean and allocation parameters for high dimensional functional data (Domain dimension > 1)}
 \usage{
 BHDFMMM_Nu_Z_multiple_try(
   tot_mcmc_iters,
   n_try,
-  k,
+  K,
   Y,
   time,
   n_funct,
@@ -15,8 +15,10 @@ BHDFMMM_Nu_Z_multiple_try(
   n_eigen,
   boundary_knots,
   internal_knots,
+  X = NULL,
   c = NULL,
   b = 10,
+  nu_1 = 3,
   alpha1l = 1,
   alpha2l = 2,
   beta1l = 1,
@@ -26,8 +28,10 @@ BHDFMMM_Nu_Z_multiple_try(
   var_alpha3 = 0.05,
   var_epsilon1 = 1,
   var_epsilon2 = 1,
-  alpha = 1,
-  beta = 10,
+  alpha_nu = 10,
+  beta_nu = 1,
+  alpha_eta = 10,
+  beta_eta = 1,
   alpha_0 = 1,
   beta_0 = 1
 )
@@ -37,7 +41,7 @@ BHDFMMM_Nu_Z_multiple_try(
 
 \item{n_try}{Int containing how many different chains are tried}
 
-\item{k}{Int containing the number of clusters}
+\item{K}{Int containing the number of clusters}
 
 \item{Y}{List of vectors containing the observed values (flattened)}
 
@@ -52,6 +56,8 @@ BHDFMMM_Nu_Z_multiple_try(
 \item{boundary_knots}{Matrix containing the boundary knots for each dimension (each row is a dimension)}
 
 \item{internal_knots}{List of vectors containing the internal knots for each dimension}
+
+\item{X}{Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)}
 
 \item{c}{Vector containing hyperparmeters for sampling from pi (If left NULL, the one vector will be used)}
 
@@ -75,37 +81,45 @@ BHDFMMM_Nu_Z_multiple_try(
 
 \item{var_epsilon2}{Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm}
 
-\item{alpha}{Double containing hyperparameter for sampling from tau}
+\item{alpha_nu}{Double containing hyperparameter for sampling from tau_nu}
 
-\item{beta}{Double containing hyperparameter for sampling from tau (scale)}
+\item{beta_nu}{Double containing hyperparameter for sampling from tau_nu (scale)}
 
-\item{alpha_0}{Double containing hyperparameter for sampling from sigma}
+\item{alpha_eta}{Double containing hyperparameter for sampling from tau_eta}
 
-\item{beta_0}{Double containing hyperparameter for sampling from sigma (scale)}
+\item{beta_eta}{Double containing hyperparameter for sampling from tau_eta (scale)}
+
+\item{alpha_0}{Double containing hyperparameter for sampling from sigma_sq}
+
+\item{beta_0}{Double containing hyperparameter for sampling from sigma_sq (scale)}
 }
 \value{
 a List containing:
 \describe{
   \item{\code{B}}{The basis functions evaluated at the observed time points}
   \item{\code{nu}}{Nu samples from the chain with the highest average log-likelihood}
+  \item{\code{eta}}{Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
   \item{\code{pi}}{Pi samples from the chain with the highest average log-likelihood}
   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
-  \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
+  \item{\code{sigma_sq}}{sigma_sq samples from the chain with the highest average log-likelihood}
   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
+  \item{\code{tau_eta}}{Tau_Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
 }
 }
 \description{
-Function for finding a good initial starting point for nu parameters and Z
-parameters for functional data, with option for tempered transitions. This
+Function for finding a good initial starting point for nu parameters, Z
+parameters, and eta parameters (if covariates are included) for functional
+data, with option for tempered transitions. This
 function was constructed to handle data in which the domain has dimension
 greater than 1 (i.e. a surface or higher dimensional function). This
 function tries running multiple different MCMC chains to find the optimal
 starting position. This function will return the chain that has the highest
-log-likelihood average in the last 100 MCMC iterations.
+log-likelihood average in the last 100 MCMC iterations. To specify a covariate
+adjusted model, please provide the design matrix X.
 }
 \section{Warning}{
 
@@ -113,12 +127,13 @@ The following must be true:
 \describe{
   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
   \item{\code{n_try}}{must be an integer larger than or equal to 1}
-  \item{\code{k}}{must be an integer larger than or equal to 2}
+  \item{\code{K}}{must be an integer larger than or equal to 2}
   \item{\code{n_funct}}{must be an integer larger than 1}
   \item{\code{basis_degree}}{each element must be an integer larger than or equal to 1}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
   \item{\code{internal_knots}}{must lie in the range of corresponding \code{boundary_knots}}
-  \item{\code{c}}{must be greater than 0 and have k elements}
+  \item{\code{X}}{must have n_funct number of rows (if specified)}
+  \item{\code{c}}{must be greater than 0 and have K elements}
   \item{\code{b}}{must be positive}
   \item{\code{alpha1l}}{must be positive}
   \item{\code{beta1l}}{must be positive}
@@ -129,14 +144,20 @@ The following must be true:
   \item{\code{var_alpha3}}{must be positive}
   \item{\code{var_epsilon1}}{must be positive}
   \item{\code{var_epsilon2}}{must be positive}
-  \item{\code{alpha}}{must be positive}
-  \item{\code{beta}}{must be positive}
+  \item{\code{alpha_nu}}{must be positive}
+  \item{\code{beta_nu}}{must be positive}
+  \item{\code{alpha_eta}}{must be positive}
+  \item{\code{beta_eta}}{must be positive}
   \item{\code{alpha_0}}{must be positive}
   \item{\code{beta_0}}{must be positive}
 }
 }
 
 \examples{
+#########################
+### Not Covariate Adj ###
+#########################
+
 ## Load sample data
 Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
 time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
@@ -144,7 +165,7 @@ time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 ## Set Hyperparameters
 tot_mcmc_iters <- 150
 n_try <- 1
-k <- 2
+K <- 2
 n_funct <- 20
 basis_degree <- c(2,2)
 n_eigen <- 2
@@ -152,8 +173,32 @@ boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
 internal_knots <- rep(list(c(250, 500, 750)), 2)
 
 ## Run function
-est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, time, n_funct,
+x <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+                               basis_degree, n_eigen, boundary_knots,
+                               internal_knots)
+#####################
+### Covariate Adj ###
+#####################
+
+## Load sample data
+Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+
+## Set Hyperparameters
+tot_mcmc_iters <- 150
+n_try <- 1
+K <- 2
+n_funct <- 20
+basis_degree <- c(2,2)
+n_eigen <- 2
+boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+internal_knots <- rep(list(c(250, 500, 750)), 2)
+
+X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+
+## Get Estimates of Z and nu
+est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                   basis_degree, n_eigen, boundary_knots,
-                                  internal_knots)
+                                  internal_knots, X = X)
 
 }

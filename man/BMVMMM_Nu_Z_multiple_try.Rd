@@ -2,14 +2,15 @@
 % Please edit documentation in R/RcppExports.R
 \name{BMVMMM_Nu_Z_multiple_try}
 \alias{BMVMMM_Nu_Z_multiple_try}
-\title{Find initial starting position for nu and Z parameters for multivariate data}
+\title{Find initial starting position for mean and allocation structure for multivariate data}
 \usage{
 BMVMMM_Nu_Z_multiple_try(
   tot_mcmc_iters,
   n_try,
-  k,
+  K,
   Y,
   n_eigen,
+  X = NULL,
   c = NULL,
   b = 10,
   alpha1l = 2,
@@ -21,8 +22,10 @@ BMVMMM_Nu_Z_multiple_try(
   var_alpha3 = 0.05,
   var_epsilon1 = 1,
   var_epsilon2 = 1,
-  alpha = 1,
-  beta = 10,
+  alpha_nu = 10,
+  beta_nu = 1,
+  alpha_eta = 10,
+  beta_eta = 1,
   alpha_0 = 1,
   beta_0 = 1
 )
@@ -32,11 +35,13 @@ BMVMMM_Nu_Z_multiple_try(
 
 \item{n_try}{Int containing how many different chains are tried}
 
-\item{k}{Int containing the number of clusters}
+\item{K}{Int containing the number of clusters}
 
 \item{Y}{Matrix of observed vectors (each row is an observation)}
 
 \item{n_eigen}{Int containing the number of eigenfunctions}
+
+\item{X}{Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)}
 
 \item{c}{Vector containing hyperparmeters for sampling from pi (If left NULL, the one vector will be used)}
 
@@ -60,34 +65,41 @@ BMVMMM_Nu_Z_multiple_try(
 
 \item{var_epsilon2}{Double containing hyperparamete for sampling from A having to do with variance for Metropolis-Hastings algorithm}
 
-\item{alpha}{Double containing hyperparameter for sampling from tau}
+\item{alpha_nu}{Double containing hyperparameter for sampling from tau_nu}
 
-\item{beta}{Double containing hyperparameter for sampling from tau (scale)}
+\item{beta_nu}{Double containing hyperparameter for sampling from tau_nu (scale)}
 
-\item{alpha_0}{Double containing hyperparameter for sampling from sigma}
+\item{alpha_eta}{Double containing hyperparameter for sampling from tau_eta}
 
-\item{beta_0}{Double containing hyperparameter for sampling from sigma (scale)}
+\item{beta_eta}{Double containing hyperparameter for sampling from tau_eta (scale)}
+
+\item{alpha_0}{Double containing hyperparameter for sampling from sigma_sq}
+
+\item{beta_0}{Double containing hyperparameter for sampling from sigma_sq (scale)}
 }
 \value{
 a List containing:
 \describe{
   \item{\code{nu}}{Nu samples from the chain with the highest average log-likelihood}
+  \item{\code{eta}}{Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
   \item{\code{pi}}{Pi samples from the chain with the highest average log-likelihood}
   \item{\code{alpha_3}}{Alpha_3 samples from the chain with the highest average log-likelihood}
   \item{\code{A}}{A samples from the chain with the highest average log-likelihood}
   \item{\code{delta}}{Delta samples from the chain with the highest average log-likelihood}
-  \item{\code{sigma}}{Sigma samples from the chain with the highest average log-likelihood}
+  \item{\code{sigma_sq}}{sigma_sq samples from the chain with the highest average log-likelihood}
   \item{\code{tau}}{Tau samples from the chain with the highest average log-likelihood}
+  \item{\code{tau_eta}}{Tau_Eta samples from the chain with the highest average log-likelihood (if covariate adjusted)}
   \item{\code{Z}}{Z samples from the chain with the highest average log-likelihood}
   \item{\code{loglik}}{Log-likelihood plot of best performing chain}
 }
 }
 \description{
-Function for finding a good initial starting point for nu parameters and Z
-parameters for multivariate data, with option for tempered transitions.This
+Function for finding a good initial starting point for nu parameters, Z, and eta parameters (if covariate adjusted)
+for multivariate data, with option for tempered transitions.This
 function tries running multiple different MCMC chains to find the optimal
 starting position. This function will return the chain that has the highest
-log-likelihood average in the last 100 MCMC iterations.
+log-likelihood average in the last 100 MCMC iterations. To specify a covariate
+adjusted model, please provide the design matrix X.
 }
 \section{Warning}{
 
@@ -95,9 +107,10 @@ The following must be true:
 \describe{
   \item{\code{tot_mcmc_iters}}{must be an integer larger than or equal to 100}
   \item{\code{n_try}}{must be an integer larger than or equal to 1}
-  \item{\code{k}}{must be an integer larger than or equal to 2}
+  \item{\code{K}}{must be an integer larger than or equal to 2}
   \item{\code{n_eigen}}{must be greater than or equal to 1}
-  \item{\code{c}}{must be greater than 0 and have k elements}
+  \item{\code{X}}{must have the same number of rows as Y (if specified)}
+  \item{\code{c}}{must be greater than 0 and have K elements}
   \item{\code{b}}{must be positive}
   \item{\code{alpha1l}}{must be positive}
   \item{\code{beta1l}}{must be positive}
@@ -108,24 +121,48 @@ The following must be true:
   \item{\code{var_alpha3}}{must be positive}
   \item{\code{var_epsilon1}}{must be positive}
   \item{\code{var_epsilon2}}{must be positive}
-  \item{\code{alpha}}{must be positive}
-  \item{\code{beta}}{must be positive}
+  \item{\code{alpha_nu}}{must be positive}
+  \item{\code{beta_nu}}{must be positive}
+  \item{\code{alpha_eta}}{must be positive}
+  \item{\code{beta_eta}}{must be positive}
   \item{\code{alpha_0}}{must be positive}
   \item{\code{beta_0}}{must be positive}
 }
 }
 
 \examples{
+#########################
+### Not Covariate Adj ###
+#########################
+
 ## Load sample data
 Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 
 ## Set Hyperparameters
 tot_mcmc_iters <- 150
 n_try <- 1
-k <- 2
+K <- 2
 n_eigen <- 2
 
 ## Run function
-est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, k, Y, n_eigen)
+est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
+
+#####################
+### Covariate Adj ###
+#####################
+
+## Load sample data
+Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+
+## Set Hyperparameters
+tot_mcmc_iters <- 150
+n_try <- 1
+K <- 2
+n_eigen <- 2
+
+X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+
+## Run function
+est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 
 }

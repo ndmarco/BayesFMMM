@@ -199,20 +199,20 @@ inline void updateXiTemperedCovariateAdj(const double& beta_i,
 // @param M_1 Matrix acting as a placeholder for M in covariance
 // @param Phi Field of Cubes containing all mcmc samples of Phi
 inline void updateXiMVCovariateAdj(const arma::mat& y_obs,
-                                    const arma::mat& nu,
-                                    const arma::cube& eta,
-                                    const arma::field<arma::cube>& gamma_xi,
-                                    const arma::cube& tilde_tau_xi,
-                                    const arma::cube& Phi,
-                                    const arma::mat& Z,
-                                    const arma::mat& chi,
-                                    const double& sigma_sq,
-                                    const arma::mat& X,
-                                    const int& iter,
-                                    const int& tot_mcmc_iters,
-                                    arma::vec& m_1,
-                                    arma::mat& M_1,
-                                    arma::field<arma::cube>& xi){
+                                   const arma::mat& nu,
+                                   const arma::cube& eta,
+                                   const arma::field<arma::cube>& gamma_xi,
+                                   const arma::cube& tilde_tau_xi,
+                                   const arma::cube& Phi,
+                                   const arma::mat& Z,
+                                   const arma::mat& chi,
+                                   const double& sigma_sq,
+                                   const arma::mat& X,
+                                   const int& iter,
+                                   const int& tot_mcmc_iters,
+                                   arma::vec& m_1,
+                                   arma::mat& M_1,
+                                   arma::field<arma::cube>& xi){
   m_1.zeros();
   M_1.zeros();
 

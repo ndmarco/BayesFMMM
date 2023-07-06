@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{ReadVec}
 \alias{ReadVec}
-\title{Reads saved parameter data (sigma, alpha_3)}
+\title{Reads saved parameter data (sigma_sq, alpha_3)}
 \usage{
 ReadVec(file)
 }
@@ -14,14 +14,14 @@ Vec Vector containing the saved data
 }
 \description{
 Reads armadillo vector type data and returns it as a vector in R. The following
-parameters can be read in using this function: sigma and alpha_3.
+parameters can be read in using this function: sigma_sq and alpha_3.
 }
 \examples{
 ## set file path
 file <- system.file("test-data", "sigma.txt", package = "BayesFMMM")
 
 ## Read in file
-sigma <- ReadVec(file)
+sigma_sq <- ReadVec(file)
 
 #############################################################
 ## For reading in a group of files you can use the following:
@@ -36,10 +36,10 @@ sigma <- ReadVec(file)
 # dir <- "~/sigma"
 #
 ## initialize placeholder
-# sigma <- rep(0, n_files * n_samp)
+# sigma_sq <- rep(0, n_files * n_samp)
 # for(i in 0:(n_files - 1)){
 #   sigma_i <- ReadVec(paste(dir, as.character(i),".txt", sep = ""))
-#   sigma[((n_samp * i) + 1):(n_samp * (i+1))] <- sigma_i
+#   sigma_sq[((n_samp * i) + 1):(n_samp * (i+1))] <- sigma_i
 #}
 #############################################################
 

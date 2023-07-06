@@ -15,7 +15,8 @@ HDFMeanCI(
   alpha = 0.05,
   rescale = TRUE,
   simultaneous = FALSE,
-  burnin_prop = 0.1
+  burnin_prop = 0.1,
+  X = NULL
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ HDFMeanCI(
 \item{simultaneous}{Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals}
 
 \item{burnin_prop}{Double containing proportion of MCMC samples to discard}
+
+\item{X}{Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))}
 }
 \value{
 CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Also returns posterior samples of the mean function.
@@ -67,20 +70,66 @@ The following must be true:
   \item{\code{k}}{must be an integer larger than 1 and less than or equal to the number of clusters in the model}
   \item{\code{alpha}}{must be between 0 and 1}
   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+  \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
 }
 }
 
 \examples{
+#########################
+### Not Covariate Adj ###
+#########################
+
 ## Set Hyperparameters
-dir <- system.file("test-data","", package = "BayesFMMM")
+dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+time <- time[[1]]
 n_files <- 1
-time <- seq(0, 990, 10)
-k <- 2
-basis_degree <- 3
-boundary_knots <- c(0, 1000)
-internal_knots <- c(200, 400, 600, 800)
+K <- 2
+n_funct <- 20
+basis_degree <- c(2,2)
+n_eigen <- 2
+boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+internal_knots <- rep(list(c(250, 500, 750)), 2)
 
 ## Get CI for mean function
-CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k)
+CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k)
+
+#####################
+### Covariate Adj ###
+#####################
+
+dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+time <- time[[1]]
+n_files <- 1
+K <- 2
+n_funct <- 20
+basis_degree <- c(2,2)
+n_eigen <- 2
+boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+internal_knots <- rep(list(c(250, 500, 750)), 2)
+X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+
+## Get CI for mean function
+CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
+
+#####################################################################
+### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#####################################################################
+
+dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+time <- time[[1]]
+n_files <- 1
+K <- 2
+n_funct <- 20
+basis_degree <- c(2,2)
+n_eigen <- 2
+boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+internal_knots <- rep(list(c(250, 500, 750)), 2)
+X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+
+## Get CI for mean function
+CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
 
 }
