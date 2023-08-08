@@ -1791,7 +1791,7 @@ Rcpp::List FCovCI(const std::string dir,
     for(int i = 0; i < std::round((n_MCMC * n_files) * (1 - burnin_prop)); i++){
       phi_samp(i,0) = phi_samp1(i + ((n_MCMC * n_files) - std::round((n_MCMC * n_files) * (1 - burnin_prop))), 0);
     }
-    Rcpp::Rcout << "made it 1";
+
     // Make spline basis 1
     splines2::BSpline bspline1;
     bspline1 = splines2::BSpline(time1, internal_knots, basis_degree,
@@ -1815,7 +1815,6 @@ Rcpp::List FCovCI(const std::string dir,
     arma::mat CI_50 = arma::zeros(time1.n_elem, time2.n_elem);
     arma::mat CI_Lower = arma::zeros(time2.n_elem, time2.n_elem);
     arma::cube cov_samp = arma::zeros(time1.n_elem, time2.n_elem, std::round((n_MCMC * n_files) * (1 - burnin_prop)));
-    Rcpp::Rcout << "made it 2";
     if(simultaneous == false){
       if(rescale == true){
         // Get Z matrix
