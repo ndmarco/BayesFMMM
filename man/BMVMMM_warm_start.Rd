@@ -194,14 +194,14 @@ K <- 2
 n_eigen <- 2
 
 ## Get Estimates of Z and nu
-est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
+est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 
 ## Run function
-est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
-                        n_eigen, est1)
+est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+                         n_eigen, est1)
 
 ## Run MCMC sampler
-MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2)
+MCMC.chain <- BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2)
 
 #####################
 ### Covariate Adj ###
@@ -248,10 +248,10 @@ est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 
 ## Run function
 est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
-                        n_eigen, est1, X = X, covariance_adj = T)
+                        n_eigen, est1, X = X, covariance_adj = TRUE)
 
 ## Run MCMC sampler
 MCMC.chain <- BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X,
-                               covariance_adj = T)
+                               covariance_adj = TRUE)
 
 }

@@ -151,7 +151,6 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                    Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
                                    Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
                                    const double b = 10,
-                                   const double nu_1 = 3,
                                    const double alpha1l = 1,
                                    const double alpha2l= 2,
                                    const double beta1l = 1,
@@ -653,7 +652,7 @@ Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' ## Run function
 //' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
-//'                         internal_knots, est1, X = X, covariance_adj = T)
+//'                         internal_knots, est1, X = X, covariance_adj = TRUE)
 //'
 //' @export
 // [[Rcpp::export]]
@@ -1306,12 +1305,12 @@ Rcpp::List BFMMM_Theta_est(const int tot_mcmc_iters,
 //' ## Run function
 //' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
-//'                         internal_knots, est1, X = X, covariance_adj = T)
+//'                         internal_knots, est1, X = X, covariance_adj = TRUE)
 //'
 //' ## Run MCMC sampler
 //' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
 //'                                basis_degree, n_eigen, boundary_knots,
-//'                                internal_knots, est1, est2, X = X, covariance_adj = T)
+//'                                internal_knots, est1, est2, X = X, covariance_adj = TRUE)
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
@@ -2481,7 +2480,6 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
                                      Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
                                      Rcpp::Nullable<Rcpp::NumericVector> c  = R_NilValue,
                                      const double b = 10,
-                                     const double nu_1 = 3,
                                      const double alpha1l = 1,
                                      const double alpha2l= 2,
                                      const double beta1l = 1,
@@ -2911,9 +2909,9 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' internal_knots <- rep(list(c(250, 500, 750)), 2)
 //'
 //' ## Run function
-//' x <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
-//'                                basis_degree, n_eigen, boundary_knots,
-//'                                internal_knots)
+//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+//'                                   basis_degree, n_eigen, boundary_knots,
+//'                                   internal_knots)
 //'
 //' ## Run function
 //' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
@@ -2945,7 +2943,7 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'                                   internal_knots, X = X)
 //'
 //' ## Run function
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+//' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1, X = X)
 //'
@@ -2977,7 +2975,7 @@ Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //' ## Run function
 //' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                           basis_degree, n_eigen, boundary_knots,
-//'                           internal_knots, est1, X = X, covariance_adj = T)
+//'                           internal_knots, est1, X = X, covariance_adj = TRUE)
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
@@ -3540,9 +3538,9 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
 //' internal_knots <- rep(list(c(250, 500, 750)), 2)
 //'
 //' ## Run function
-//' x <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
-//'                                basis_degree, n_eigen, boundary_knots,
-//'                                internal_knots)
+//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+//'                                   basis_degree, n_eigen, boundary_knots,
+//'                                   internal_knots)
 //'
 //' ## Run function
 //' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
@@ -3580,7 +3578,7 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
 //'                                   internal_knots, X = X)
 //'
 //' ## Run function
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+//' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                         basis_degree, n_eigen, boundary_knots,
 //'                         internal_knots, est1, X = X)
 //'
@@ -3617,12 +3615,12 @@ Rcpp::List BHDFMMM_Theta_est(const int tot_mcmc_iters,
 //' ## Run function
 //' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 //'                           basis_degree, n_eigen, boundary_knots,
-//'                           internal_knots, est1, X = X, covariance_adj = T)
+//'                           internal_knots, est1, X = X, covariance_adj = TRUE)
 //'
 //' ## Run MCMC sampler
 //' MCMC.chain <- BHDFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
 //'                                  basis_degree, n_eigen, boundary_knots,
-//'                                  internal_knots, est1, est2, X = X, covariance_adj = T)
+//'                                  internal_knots, est1, est2, X = X, covariance_adj = TRUE)
 //'
 //' @export
 // [[Rcpp::export]]
@@ -4923,7 +4921,7 @@ Rcpp::List BMVMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
 //'
 //' ## Run function
 //' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
-//'                         n_eigen, est1, X = X, covariance_adj = T)
+//'                         n_eigen, est1, X = X, covariance_adj = TRUE)
 //'
 //' @export
 // [[Rcpp::export]]
@@ -5410,14 +5408,14 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
 //' n_eigen <- 2
 //'
 //' ## Get Estimates of Z and nu
-//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 //'
 //' ## Run function
-//' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
-//'                         n_eigen, est1)
+//' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+//'                          n_eigen, est1)
 //'
 //' ## Run MCMC sampler
-//' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2)
+//' MCMC.chain <- BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2)
 //'
 //' #####################
 //' ### Covariate Adj ###
@@ -5464,11 +5462,11 @@ Rcpp::List BMVMMM_Theta_est(const int tot_mcmc_iters,
 //'
 //' ## Run function
 //' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
-//'                         n_eigen, est1, X = X, covariance_adj = T)
+//'                         n_eigen, est1, X = X, covariance_adj = TRUE)
 //'
 //' ## Run MCMC sampler
 //' MCMC.chain <- BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X,
-//'                                covariance_adj = T)
+//'                                covariance_adj = TRUE)
 //'
 //' @export
 // [[Rcpp::export]]

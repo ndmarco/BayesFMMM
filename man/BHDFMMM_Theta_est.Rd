@@ -187,9 +187,9 @@ boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
 internal_knots <- rep(list(c(250, 500, 750)), 2)
 
 ## Run function
-x <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
-                               basis_degree, n_eigen, boundary_knots,
-                               internal_knots)
+est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+                                  basis_degree, n_eigen, boundary_knots,
+                                  internal_knots)
 
 ## Run function
 est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
@@ -221,7 +221,7 @@ est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                   internal_knots, X = X)
 
 ## Run function
-est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
                         internal_knots, est1, X = X)
 
@@ -253,5 +253,5 @@ est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 ## Run function
 est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                           basis_degree, n_eigen, boundary_knots,
-                          internal_knots, est1, X = X, covariance_adj = T)
+                          internal_knots, est1, X = X, covariance_adj = TRUE)
 }

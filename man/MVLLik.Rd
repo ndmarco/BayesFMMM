@@ -54,7 +54,7 @@ LL <- MVLLik(dir, n_files, Y)
 Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 n_files <- 1
-X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+X <- matrix(rnorm(20), ncol = 1)
 
 ## Get CI for mean function
 LL <- MVLLik(dir, n_files, Y, X = X)
@@ -67,8 +67,8 @@ LL <- MVLLik(dir, n_files, Y, X = X)
 Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 n_files <- 1
-X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+X <- matrix(rnorm(20), ncol = 1)
 
 ## Get CI for mean function
-LL <- MVLLik(dir, n_files, Y, X = X, cov_adj = T)
+LL <- MVLLik(dir, n_files, Y, X = X, cov_adj = TRUE)
 }

@@ -92,7 +92,7 @@ boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
 internal_knots <- rep(list(c(250, 500, 750)), 2)
 
 ## Get CI for mean function
-CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k)
+CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K)
 
 #####################
 ### Covariate Adj ###
@@ -111,7 +111,7 @@ internal_knots <- rep(list(c(250, 500, 750)), 2)
 X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 
 ## Get CI for mean function
-CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
+CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K, X = X)
 
 #####################################################################
 ### Covariate Adj  (with Covariate-depenent covariance structure) ###
@@ -130,6 +130,6 @@ internal_knots <- rep(list(c(250, 500, 750)), 2)
 X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 
 ## Get CI for mean function
-CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
+CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K, X = X)
 
 }

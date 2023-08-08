@@ -83,7 +83,7 @@ n_files <- 1
 basis_degree <- 3
 boundary_knots <- c(0, 1000)
 internal_knots <- c(250, 500, 750)
-X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+X <- matrix(rnorm(40), ncol = 1)
 
 ## Get CI for mean function
 LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
@@ -101,9 +101,9 @@ n_files <- 1
 basis_degree <- 3
 boundary_knots <- c(0, 1000)
 internal_knots <- c(250, 500, 750)
-X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+X <- matrix(rnorm(40), ncol = 1)
 
 ## Get CI for mean function
 LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
-            time, Y, X = X, cov_adj = T)
+            time, Y, X = X, cov_adj = TRUE)
 }

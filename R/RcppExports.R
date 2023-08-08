@@ -51,13 +51,13 @@
 #' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
 #' n_files <- 1
 #' time <- seq(0, 990, 10)
-#' k <- 2
+#' K <- 2
 #' basis_degree <- 3
 #' boundary_knots <- c(0, 1000)
 #' internal_knots <- c(250, 500, 750)
 #'
 #' ## Get CI for mean function
-#' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k)
+#' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K)
 #'
 #' #####################
 #' ### Covariate Adj ###
@@ -66,14 +66,14 @@
 #' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
 #' n_files <- 1
 #' time <- seq(0, 990, 10)
-#' k <- 2
+#' K <- 2
 #' basis_degree <- 3
 #' boundary_knots <- c(0, 1000)
 #' internal_knots <- c(250, 500, 750)
 #' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 #'
 #' ## Get CI for mean function
-#' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
+#' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K, X = X)
 #'
 #' #####################################################################
 #' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
@@ -82,14 +82,14 @@
 #' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
 #' n_files <- 1
 #' time <- seq(0, 990, 10)
-#' k <- 2
+#' K <- 2
 #' basis_degree <- 3
 #' boundary_knots <- c(0, 1000)
 #' internal_knots <- c(250, 500, 750)
 #' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 #'
 #' ## Get CI for mean function
-#' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
+#' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K, X = X)
 #'
 #' @export
 FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1, X = NULL) {
@@ -155,7 +155,7 @@ FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_k
 #' internal_knots <- rep(list(c(250, 500, 750)), 2)
 #'
 #' ## Get CI for mean function
-#' CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k)
+#' CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K)
 #'
 #' #####################
 #' ### Covariate Adj ###
@@ -174,7 +174,7 @@ FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_k
 #' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 #'
 #' ## Get CI for mean function
-#' CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
+#' CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K, X = X)
 #'
 #' #####################################################################
 #' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
@@ -193,7 +193,7 @@ FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_k
 #' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 #'
 #' ## Get CI for mean function
-#' CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
+#' CI <- HDFMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K, X = X)
 #'
 #' @export
 HDFMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1, X = NULL) {
@@ -601,7 +601,7 @@ MVCovCI <- function(dir, n_files, l, m, alpha = 0.05, rescale = TRUE, burnin_pro
 #'
 #' @examples
 #' ## Set Hyperparameters
-#' dir <- system.file("test-data","", package = "BayesFMMM")
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 #' n_files <- 1
 #'
 #' ## Get CI for Z
@@ -746,7 +746,7 @@ FBIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, tim
 #' basis_degree <- 3
 #' boundary_knots <- c(0, 1000)
 #' internal_knots <- c(250, 500, 750)
-#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#' X <- matrix(rnorm(40), ncol = 1)
 #'
 #' ## Get CI for mean function
 #' LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
@@ -764,11 +764,11 @@ FBIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, tim
 #' basis_degree <- 3
 #' boundary_knots <- c(0, 1000)
 #' internal_knots <- c(250, 500, 750)
-#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#' X <- matrix(rnorm(40), ncol = 1)
 #'
 #' ## Get CI for mean function
 #' LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
-#'             time, Y, X = X, cov_adj = T)
+#'             time, Y, X = X, cov_adj = TRUE)
 #' @export
 FLLik <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, X = NULL, cov_adj = FALSE) {
     .Call('_BayesFMMM_FLLik', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, X, cov_adj)
@@ -858,7 +858,7 @@ MV_Model_DIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
 #' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 #' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 #' n_files <- 1
-#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#' X <- matrix(rnorm(20), ncol = 1)
 #'
 #' ## Get CI for mean function
 #' LL <- MVLLik(dir, n_files, Y, X = X)
@@ -871,10 +871,10 @@ MV_Model_DIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
 #' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 #' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 #' n_files <- 1
-#' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
+#' X <- matrix(rnorm(20), ncol = 1)
 #'
 #' ## Get CI for mean function
-#' LL <- MVLLik(dir, n_files, Y, X = X, cov_adj = T)
+#' LL <- MVLLik(dir, n_files, Y, X = X, cov_adj = TRUE)
 #' @export
 MVLLik <- function(dir, n_files, Y, X = NULL, cov_adj = FALSE) {
     .Call('_BayesFMMM_MVLLik', PACKAGE = 'BayesFMMM', dir, n_files, Y, X, cov_adj)
@@ -1038,8 +1038,8 @@ ConditionalPredictiveOrdinates <- function(dir, n_files, n_MCMC, basis_degree, b
 #'                                 internal_knots, X = X)
 #'
 #' @export
-BFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, X = NULL, c = NULL, b = 10, nu_1 = 3, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 10, beta_nu = 1, alpha_eta = 10, beta_eta = 1, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFMMM_BFMMM_Nu_Z_multiple_try', PACKAGE = 'BayesFMMM', tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, X, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0)
+BFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, X = NULL, c = NULL, b = 10, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 10, beta_nu = 1, alpha_eta = 10, beta_eta = 1, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFMMM_BFMMM_Nu_Z_multiple_try', PACKAGE = 'BayesFMMM', tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, X, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0)
 }
 
 #' Find initial starting points for covariance parameters given mean and allocation structure for functional data
@@ -1222,7 +1222,7 @@ BFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, 
 #' ## Run function
 #' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 #'                         basis_degree, n_eigen, boundary_knots,
-#'                         internal_knots, est1, X = X, covariance_adj = T)
+#'                         internal_knots, est1, X = X, covariance_adj = TRUE)
 #'
 #' @export
 BFMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, multiple_try, X = NULL, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 2, beta2l = 2, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 10, beta_nu = 1, alpha_eta = 10, beta_eta = 1, alpha_0 = 1, beta_0 = 1, covariance_adj = FALSE) {
@@ -1445,12 +1445,12 @@ BFMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_de
 #' ## Run function
 #' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 #'                         basis_degree, n_eigen, boundary_knots,
-#'                         internal_knots, est1, X = X, covariance_adj = T)
+#'                         internal_knots, est1, X = X, covariance_adj = TRUE)
 #'
 #' ## Run MCMC sampler
 #' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
 #'                                basis_degree, n_eigen, boundary_knots,
-#'                                internal_knots, est1, est2, X = X, covariance_adj = T)
+#'                                internal_knots, est1, est2, X = X, covariance_adj = TRUE)
 #' @export
 BFMMM_warm_start <- function(tot_mcmc_iters, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, multiple_try, theta_est, X = NULL, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 2, beta2l = 2, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 10, beta_nu = 1, alpha_eta = 10, beta_eta = 1, alpha_0 = 1, beta_0 = 1, covariance_adj = FALSE) {
     .Call('_BayesFMMM_BFMMM_warm_start', PACKAGE = 'BayesFMMM', tot_mcmc_iters, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, multiple_try, theta_est, X, burnin_prop, dir, thinning_num, beta_N_t, N_t, n_temp_trans, r_stored_iters, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0, covariance_adj)
@@ -1811,8 +1811,8 @@ ReadFieldVec <- function(file) {
 #'                                   internal_knots, X = X)
 #'
 #' @export
-BHDFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, X = NULL, c = NULL, b = 10, nu_1 = 3, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 10, beta_nu = 1, alpha_eta = 10, beta_eta = 1, alpha_0 = 1, beta_0 = 1) {
-    .Call('_BayesFMMM_BHDFMMM_Nu_Z_multiple_try', PACKAGE = 'BayesFMMM', tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, X, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0)
+BHDFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, X = NULL, c = NULL, b = 10, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 10, beta_nu = 1, alpha_eta = 10, beta_eta = 1, alpha_0 = 1, beta_0 = 1) {
+    .Call('_BayesFMMM_BHDFMMM_Nu_Z_multiple_try', PACKAGE = 'BayesFMMM', tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, X, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0)
 }
 
 #' Find initial starting points for the covariance structure for high dimensional functional data (Domain dimension > 1)
@@ -1928,9 +1928,9 @@ BHDFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct
 #' internal_knots <- rep(list(c(250, 500, 750)), 2)
 #'
 #' ## Run function
-#' x <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
-#'                                basis_degree, n_eigen, boundary_knots,
-#'                                internal_knots)
+#' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+#'                                   basis_degree, n_eigen, boundary_knots,
+#'                                   internal_knots)
 #'
 #' ## Run function
 #' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
@@ -1962,7 +1962,7 @@ BHDFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct
 #'                                   internal_knots, X = X)
 #'
 #' ## Run function
-#' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+#' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 #'                         basis_degree, n_eigen, boundary_knots,
 #'                         internal_knots, est1, X = X)
 #'
@@ -1994,7 +1994,7 @@ BHDFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct
 #' ## Run function
 #' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 #'                           basis_degree, n_eigen, boundary_knots,
-#'                           internal_knots, est1, X = X, covariance_adj = T)
+#'                           internal_knots, est1, X = X, covariance_adj = TRUE)
 #' @export
 BHDFMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, multiple_try, X = NULL, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 2, beta2l = 2, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 10, beta_nu = 1, alpha_eta = 10, beta_eta = 1, alpha_0 = 1, beta_0 = 1, covariance_adj = FALSE) {
     .Call('_BayesFMMM_BHDFMMM_Theta_est', PACKAGE = 'BayesFMMM', tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, multiple_try, X, burnin_prop, c, b, nu_1, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0, covariance_adj)
@@ -2138,9 +2138,9 @@ BHDFMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_
 #' internal_knots <- rep(list(c(250, 500, 750)), 2)
 #'
 #' ## Run function
-#' x <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
-#'                                basis_degree, n_eigen, boundary_knots,
-#'                                internal_knots)
+#' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+#'                                   basis_degree, n_eigen, boundary_knots,
+#'                                   internal_knots)
 #'
 #' ## Run function
 #' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
@@ -2178,7 +2178,7 @@ BHDFMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_
 #'                                   internal_knots, X = X)
 #'
 #' ## Run function
-#' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+#' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 #'                         basis_degree, n_eigen, boundary_knots,
 #'                         internal_knots, est1, X = X)
 #'
@@ -2215,12 +2215,12 @@ BHDFMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_
 #' ## Run function
 #' est2 <- BHDFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 #'                           basis_degree, n_eigen, boundary_knots,
-#'                           internal_knots, est1, X = X, covariance_adj = T)
+#'                           internal_knots, est1, X = X, covariance_adj = TRUE)
 #'
 #' ## Run MCMC sampler
 #' MCMC.chain <- BHDFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
 #'                                  basis_degree, n_eigen, boundary_knots,
-#'                                  internal_knots, est1, est2, X = X, covariance_adj = T)
+#'                                  internal_knots, est1, est2, X = X, covariance_adj = TRUE)
 #'
 #' @export
 BHDFMMM_warm_start <- function(tot_mcmc_iters, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, multiple_try, theta_est, X = NULL, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 2, alpha2l = 3, beta1l = 2, beta2l = 2, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 10, beta_nu = 1, alpha_eta = 10, beta_eta = 1, alpha_0 = 1, beta_0 = 1, covariance_adj = FALSE) {
@@ -2490,7 +2490,7 @@ BMVMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, X = N
 #'
 #' ## Run function
 #' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
-#'                         n_eigen, est1, X = X, covariance_adj = T)
+#'                         n_eigen, est1, X = X, covariance_adj = TRUE)
 #'
 #' @export
 BMVMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, multiple_try, X = NULL, burnin_prop = 0.8, c = NULL, b = 10, nu_1 = 3, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 10, beta_nu = 1, alpha_eta = 10, beta_eta = 1, alpha_0 = 1, beta_0 = 1, covariance_adj = FALSE) {
@@ -2617,14 +2617,14 @@ BMVMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, multiple_try,
 #' n_eigen <- 2
 #'
 #' ## Get Estimates of Z and nu
-#' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
+#' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen)
 #'
 #' ## Run function
-#' est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
-#'                         n_eigen, est1)
+#' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
+#'                          n_eigen, est1)
 #'
 #' ## Run MCMC sampler
-#' MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2)
+#' MCMC.chain <- BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2)
 #'
 #' #####################
 #' ### Covariate Adj ###
@@ -2671,11 +2671,11 @@ BMVMMM_Theta_est <- function(tot_mcmc_iters, n_try, K, Y, n_eigen, multiple_try,
 #'
 #' ## Run function
 #' est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
-#'                         n_eigen, est1, X = X, covariance_adj = T)
+#'                         n_eigen, est1, X = X, covariance_adj = TRUE)
 #'
 #' ## Run MCMC sampler
 #' MCMC.chain <- BMVMMM_warm_start(tot_mcmc_iters, K, Y, n_eigen, est1, est2, X = X,
-#'                                covariance_adj = T)
+#'                                covariance_adj = TRUE)
 #'
 #' @export
 BMVMMM_warm_start <- function(tot_mcmc_iters, K, Y, n_eigen, multiple_try, theta_est, X = NULL, burnin_prop = 0.8, dir = NULL, thinning_num = 1, beta_N_t = 1, N_t = 1L, n_temp_trans = 0L, r_stored_iters = 0L, c = NULL, b = 10, nu_1 = 3, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 10, beta_nu = 1, alpha_eta = 10, beta_eta = 1, alpha_0 = 1, beta_0 = 1, covariance_adj = FALSE) {

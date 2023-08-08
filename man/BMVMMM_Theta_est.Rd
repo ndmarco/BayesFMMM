@@ -212,6 +212,6 @@ est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 
 ## Run function
 est2 <- BMVMMM_Theta_est(tot_mcmc_iters, n_try, K, Y,
-                        n_eigen, est1, X = X, covariance_adj = T)
+                        n_eigen, est1, X = X, covariance_adj = TRUE)
 
 }

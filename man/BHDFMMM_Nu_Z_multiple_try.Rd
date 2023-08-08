@@ -18,7 +18,6 @@ BHDFMMM_Nu_Z_multiple_try(
   X = NULL,
   c = NULL,
   b = 10,
-  nu_1 = 3,
   alpha1l = 1,
   alpha2l = 2,
   beta1l = 1,

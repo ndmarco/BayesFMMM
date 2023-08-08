@@ -300,10 +300,10 @@ est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
 ## Run function
 est2 <- BFMMM_Theta_est(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                         basis_degree, n_eigen, boundary_knots,
-                        internal_knots, est1, X = X, covariance_adj = T)
+                        internal_knots, est1, X = X, covariance_adj = TRUE)
 
 ## Run MCMC sampler
 MCMC.chain <- BFMMM_warm_start(tot_mcmc_iters, K, Y, time, n_funct,
                                basis_degree, n_eigen, boundary_knots,
-                               internal_knots, est1, est2, X = X, covariance_adj = T)
+                               internal_knots, est1, est2, X = X, covariance_adj = TRUE)
 }

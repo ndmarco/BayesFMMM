@@ -7,7 +7,6 @@
 FBIC(
   dir,
   n_files,
-  n_MCMC,
   basis_degree,
   boundary_knots,
   internal_knots,
@@ -22,8 +21,6 @@ FBIC(
 \item{dir}{String containing the directory where the MCMC files are located}
 
 \item{n_files}{Int containing the number of files per parameter}
-
-\item{n_MCMC}{Int containing the number of saved MCMC iterations per file}
 
 \item{basis_degree}{Int containing the degree of B-splines used}
 

@@ -83,13 +83,13 @@ The following must be true:
 dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
 n_files <- 1
 time <- seq(0, 990, 10)
-k <- 2
+K <- 2
 basis_degree <- 3
 boundary_knots <- c(0, 1000)
 internal_knots <- c(250, 500, 750)
 
 ## Get CI for mean function
-CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k)
+CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K)
 
 #####################
 ### Covariate Adj ###
@@ -98,14 +98,14 @@ CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, 
 dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
 n_files <- 1
 time <- seq(0, 990, 10)
-k <- 2
+K <- 2
 basis_degree <- 3
 boundary_knots <- c(0, 1000)
 internal_knots <- c(250, 500, 750)
 X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 
 ## Get CI for mean function
-CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
+CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K, X = X)
 
 #####################################################################
 ### Covariate Adj  (with Covariate-depenent covariance structure) ###
@@ -114,13 +114,13 @@ CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, 
 dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
 n_files <- 1
 time <- seq(0, 990, 10)
-k <- 2
+K <- 2
 basis_degree <- 3
 boundary_knots <- c(0, 1000)
 internal_knots <- c(250, 500, 750)
 X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 
 ## Get CI for mean function
-CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, X = X)
+CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K, X = X)
 
 }
