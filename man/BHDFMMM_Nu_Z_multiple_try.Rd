@@ -200,4 +200,29 @@ est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
                                   basis_degree, n_eigen, boundary_knots,
                                   internal_knots, X = X)
 
+#####################################################################
+### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#####################################################################
+
+## Load sample data
+Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+
+## Set Hyperparameters
+tot_mcmc_iters <- 150
+n_try <- 1
+K <- 2
+n_funct <- 20
+basis_degree <- c(2,2)
+n_eigen <- 2
+boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+internal_knots <- rep(list(c(250, 500, 750)), 2)
+
+X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+
+## Get Estimates of Z and nu
+est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+                                  basis_degree, n_eigen, boundary_knots,
+                                  internal_knots, X = X)
+
 }

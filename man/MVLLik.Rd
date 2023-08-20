@@ -38,37 +38,44 @@ The following must be true:
 ### Not Covariate Adj ###
 #########################
 
-## Set Hyperparameters
+## Observed data
 Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+
+## Set Hyperparameters
 dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 n_files <- 1
 
-## Get CI for mean function
+## Get log likelihood
 LL <- MVLLik(dir, n_files, Y)
 
 #####################
 ### Covariate Adj ###
 #####################
 
-## Set Hyperparameters
+## Observed data and observed covariates
 Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+
+## Set Hyperparameters
 dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 n_files <- 1
-X <- matrix(rnorm(20), ncol = 1)
 
-## Get CI for mean function
+## Get log likelihood
 LL <- MVLLik(dir, n_files, Y, X = X)
 
 #####################################################################
 ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 #####################################################################
 
-## Set Hyperparameters
+## Observed data and observed covariates
 Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+
+## Set Hyperparameters
 dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 n_files <- 1
-X <- matrix(rnorm(20), ncol = 1)
 
-## Get CI for mean function
+## Get log likelihood
 LL <- MVLLik(dir, n_files, Y, X = X, cov_adj = TRUE)
+
 }

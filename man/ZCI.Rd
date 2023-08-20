@@ -25,3 +25,12 @@ This function constructs credible intervals using the MCMC samples of the
 parameters. This function will handle high dimensional functional data,
 functional data, and multivariate data.
 }
+\examples{
+## Set Hyperparameters
+dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+n_files <- 1
+
+## Get CI for Z
+CI <- ZCI(dir, n_files)
+
+}

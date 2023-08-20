@@ -7,7 +7,6 @@
 ConditionalPredictiveOrdinates(
   dir,
   n_files,
-  n_MCMC,
   basis_degree,
   boundary_knots,
   internal_knots,
@@ -23,8 +22,6 @@ ConditionalPredictiveOrdinates(
 \item{dir}{String containing the directory where the MCMC files are located}
 
 \item{n_files}{Int containing the number of files per parameter}
-
-\item{n_MCMC}{Int containing the number of saved MCMC iterations per file}
 
 \item{basis_degree}{Int containing the degree of B-splines used}
 
@@ -50,4 +47,72 @@ CPO Vector containing the CPO for each observation
 \description{
 Calculates the Conditional Predictive Ordinates for functional models.
 This function can handle covariate adjusted models as well as non-adjusted models.
+}
+\examples{
+#########################
+### Not Covariate Adj ###
+#########################
+
+## Observed Data and corresponding time points
+Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+
+## Directory of saved MCMC iterations
+dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+
+## Set Hyperparameters
+n_files <- 1
+basis_degree <- 3
+boundary_knots <- c(0, 1000)
+internal_knots <- c(250, 500, 750)
+
+## Get CPO
+CPO <- ConditionalPredictiveOrdinates(dir, n_files, basis_degree, boundary_knots,
+                                      internal_knots, time, Y)
+
+#####################
+### Covariate Adj ###
+#####################
+
+## Observed Data, corresponding time points, and observed covariates
+Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+X <- matrix(rnorm(40), ncol = 1)
+
+## Directory of saved MCMC iterations
+dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+
+## Set Hyperparameters
+n_files <- 1
+basis_degree <- 3
+boundary_knots <- c(0, 1000)
+internal_knots <- c(250, 500, 750)
+
+## Get CPO
+CPO <- ConditionalPredictiveOrdinates(dir, n_files, basis_degree, boundary_knots,
+                                      internal_knots, time, Y, X = X)
+
+#####################################################################
+### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#####################################################################
+
+## Observed Data, corresponding time points, and observed covariates
+Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+X <- matrix(rnorm(40), ncol = 1)
+
+## Directory of saved MCMC iterations
+dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+
+## Set Hyperparameters
+n_files <- 1
+basis_degree <- 3
+boundary_knots <- c(0, 1000)
+internal_knots <- c(250, 500, 750)
+
+## Get CPO
+CPO <- ConditionalPredictiveOrdinates(dir, n_files, basis_degree, boundary_knots,
+                                      internal_knots, time, Y, X = X,
+                                      cov_adj = TRUE)
+
 }

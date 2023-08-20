@@ -136,6 +136,31 @@
 //'                                 basis_degree, n_eigen, boundary_knots,
 //'                                 internal_knots, X = X)
 //'
+//' #####################################################################
+//' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+//' #####################################################################
+//'
+//' ## Load sample data
+//' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+//'
+//' ## Set Hyperparameters
+//' tot_mcmc_iters <- 150
+//' n_try <- 1
+//' K <- 2
+//' n_funct <- 40
+//' basis_degree <- 3
+//' n_eigen <- 3
+//' boundary_knots <- c(0, 1000)
+//' internal_knots <- c(250, 500, 750)
+//'
+//' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+//'
+//' ## Get Estimates of Z and nu
+//' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+//'                                 basis_degree, n_eigen, boundary_knots,
+//'                                 internal_knots, X = X)
+//'
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
@@ -2465,6 +2490,31 @@ arma::field<arma::vec> ReadFieldVec(std::string file){
 //'                                   basis_degree, n_eigen, boundary_knots,
 //'                                   internal_knots, X = X)
 //'
+//' #####################################################################
+//' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+//' #####################################################################
+//'
+//' ## Load sample data
+//' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+//' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+//'
+//' ## Set Hyperparameters
+//' tot_mcmc_iters <- 150
+//' n_try <- 1
+//' K <- 2
+//' n_funct <- 20
+//' basis_degree <- c(2,2)
+//' n_eigen <- 2
+//' boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+//' internal_knots <- rep(list(c(250, 500, 750)), 2)
+//'
+//' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+//'
+//' ## Get Estimates of Z and nu
+//' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+//'                                   basis_degree, n_eigen, boundary_knots,
+//'                                   internal_knots, X = X)
+//'
 //' @export
 // [[Rcpp::export]]
 Rcpp::List BHDFMMM_Nu_Z_multiple_try(const int tot_mcmc_iters,
@@ -4492,6 +4542,24 @@ Rcpp::List BHDFMMM_warm_start(const int tot_mcmc_iters,
 //' #####################
 //' ### Covariate Adj ###
 //' #####################
+//'
+//' ## Load sample data
+//' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+//'
+//' ## Set Hyperparameters
+//' tot_mcmc_iters <- 150
+//' n_try <- 1
+//' K <- 2
+//' n_eigen <- 2
+//'
+//' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+//'
+//' ## Run function
+//' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+//'
+//' #####################################################################
+//' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+//' #####################################################################
 //'
 //' ## Load sample data
 //' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))

@@ -165,4 +165,22 @@ X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 ## Run function
 est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
 
+#####################################################################
+### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#####################################################################
+
+## Load sample data
+Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+
+## Set Hyperparameters
+tot_mcmc_iters <- 150
+n_try <- 1
+K <- 2
+n_eigen <- 2
+
+X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+
+## Run function
+est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+
 }

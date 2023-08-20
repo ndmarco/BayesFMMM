@@ -625,6 +625,15 @@ SigmaCI <- function(dir, n_files, alpha = 0.05) {
 #' @param rescale Boolean indicating whether or not we should rescale the Z variables so that there is at least one observation almost completely in one group
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @return CI List containing the desired credible values
+#'
+#' @examples
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#'
+#' ## Get CI for Z
+#' CI <- ZCI(dir, n_files)
+#'
 #' @export
 ZCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
     .Call('_BayesFMMM_ZCI', PACKAGE = 'BayesFMMM', dir, n_files, alpha, rescale, burnin_prop)
@@ -645,6 +654,75 @@ ZCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
 #'
 #' @returns DIC Double containing DIC value
+#'
+#' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
+#' ## Observed Data and corresponding time points
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#'
+#' ## Directory of saved MCMC iterations
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Hyperparameters
+#' n_files <- 1
+#' K <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#'
+#' ## Get DIC
+#' DIC <- FDIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y)
+#'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' ## Observed data, corresponding time points, and observed covariates
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#'
+#' ## Directory of saved MCMC iterations
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Hyperparameters
+#' K <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#' ## Get DIC
+#' DIC <- FDIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time,
+#'             Y, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' ## Observed data, corresponding time points, and observed covariates
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#'
+#' ## Directory of saved MCMC iterations
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Hyperparameters
+#' n_files <- 1
+#' K <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#' ## Get DIC
+#' DIC <- FDIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time,
+#'             Y, X = X, cov_adj = TRUE)
+#'
 #' @export
 FDIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
     .Call('_BayesFMMM_FDIC', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj)
@@ -665,6 +743,76 @@ FDIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, tim
 #' @param cov_adj Boolean containing whether or not the covariance structure depends on the covariates of interest
 #'
 #' @returns AIC Double containing AIC value
+#'
+#' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
+#' ## Observed Data and corresponding time points
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#'
+#' ## Directory of saved MCMC iterations
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Hyperparameters
+#' n_files <- 1
+#' K <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#'
+#' ## Get AIC
+#' AIC <- FAIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y)
+#'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' ## Observed data, corresponding time points, and observed covariates
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#'
+#' ## Directory of saved MCMC iterations
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Hyperparameters
+#' n_files <- 1
+#' K <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#' ## Get AIC
+#' AIC <- FAIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time,
+#'             Y, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' ## Observed data, corresponding time points, and observed covariates
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#'
+#' ## Directory of saved MCMC iterations
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Hyperparameters
+#' n_files <- 1
+#' K <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#' ## Get AIC
+#' AIC <- FAIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time,
+#'             Y, X = X, cov_adj = TRUE)
+#'
 #' @export
 FAIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
     .Call('_BayesFMMM_FAIC', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj)
@@ -685,6 +833,76 @@ FAIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, tim
 #' @param cov_adj Boolean containing whether or not the covariance structure depends on the covariates of interest
 #'
 #' @returns BIC Double containing BIC value
+#'
+#' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
+#' ## Observed Data and corresponding time points
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#'
+#' ## Directory of saved MCMC iterations
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Hyperparameters
+#' n_files <- 1
+#' K <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#'
+#' ## Get BIC
+#' BIC <- FBIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y)
+#'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' ## Observed data, corresponding time points, and observed covariates
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#'
+#' ## Directory of saved MCMC iterations
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Hyperparameters
+#' n_files <- 1
+#' K <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#' ## Get BIC
+#' BIC <- FBIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time,
+#'             Y, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' ## Observed data, corresponding time points, and observed covariates
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#'
+#' ## Directory of saved MCMC iterations
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Hyperparameters
+#' n_files <- 1
+#' K <- 2
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#' ## Get BIC
+#' BIC <- FBIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time,
+#'             Y, X = X, cov_adj = TRUE)
+#'
 #' @export
 FBIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
     .Call('_BayesFMMM_FBIC', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj)
@@ -721,10 +939,14 @@ FBIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, tim
 #' ### Not Covariate Adj ###
 #' #########################
 #'
-#' ## Set Hyperparameters
+#' ## Observed Data and corresponding time points
 #' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
 #' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#'
+#' ## Directory of saved MCMC iterations
 #' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Set Hyperparameters
 #' n_files <- 1
 #' basis_degree <- 3
 #' boundary_knots <- c(0, 1000)
@@ -738,15 +960,19 @@ FBIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, tim
 #' ### Covariate Adj ###
 #' #####################
 #'
-#' ## Set Hyperparameters
+#' ## Observed data, corresponding time points, and observed covariates
 #' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
 #' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(40), ncol = 1)
+#'
+#' ## Directory of saved MCMC iterations
 #' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Set Hyperparameters
 #' n_files <- 1
 #' basis_degree <- 3
 #' boundary_knots <- c(0, 1000)
 #' internal_knots <- c(250, 500, 750)
-#' X <- matrix(rnorm(40), ncol = 1)
 #'
 #' ## Get CI for mean function
 #' LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
@@ -756,15 +982,20 @@ FBIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, tim
 #' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 #' #####################################################################
 #'
-#' ## Set Hyperparameters
+#' ## Observed data, corresponding time points, and observed covariates
 #' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
 #' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(40), ncol = 1)
+#'
+#' ## Directory of saved MCMC iterations
 #' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Set Hyperparameters
 #' n_files <- 1
 #' basis_degree <- 3
 #' boundary_knots <- c(0, 1000)
 #' internal_knots <- c(250, 500, 750)
-#' X <- matrix(rnorm(40), ncol = 1)
+#'
 #'
 #' ## Get CI for mean function
 #' LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
@@ -776,44 +1007,180 @@ FLLik <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, ti
 
 #' Calculates the AIC of a multivariate model
 #'
-#' @name MV_Model_AIC
+#' @name MVAIC
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
-#' @param n_MCMC Int containing the number of saved MCMC iterations per file
 #' @param Y Matrix of observed vectors (each row is an observation)
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
+#' @param X Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)
+#' @param cov_adj Boolean containing whether or not the covariance structure depends on the covariates of interest
 #' @returns AIC Double containing AIC value
+#'
+#' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
+#' ## Observed data
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#'
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#'
+#' ## Get AIC
+#' AIC <- MVAIC(dir, n_files, Y)
+#'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' ## Observed data and observed covariates
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+#'
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#'
+#' ## Get AIC
+#' AIC <- MVAIC(dir, n_files, Y,  X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' ## Observed data and observed covariates
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+#'
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#'
+#' ## Get AIC
+#' AIC <- MVAIC(dir, n_files, Y, X = X, cov_adj = TRUE)
+#'
 #' @export
-MV_Model_AIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
-    .Call('_BayesFMMM_MV_Model_AIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, Y, burnin_prop)
+MVAIC <- function(dir, n_files, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
+    .Call('_BayesFMMM_MVAIC', PACKAGE = 'BayesFMMM', dir, n_files, Y, burnin_prop, X, cov_adj)
 }
 
 #' Calculates the BIC of a multivariate model
 #'
-#' @name MV_Model_BIC
+#' @name MVBIC
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
-#' @param n_MCMC Int containing the number of saved MCMC iterations per file
 #' @param Y Matrix of observed vectors (each row is an observation)
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
+#' @param X Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)
+#' @param cov_adj Boolean containing whether or not the covariance structure depends on the covariates of interest
 #' @returns BIC Double containing BIC value
+#'
+#' @examples
+#'
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
+#' ## Observed data
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#'
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#'
+#' ## Get BIC
+#' BIC <- MVBIC(dir, n_files, Y)
+#'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' ## Observed data and observed covariates
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+#'
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#'
+#' ## Get BIC
+#' BIC <- MVBIC(dir, n_files, Y, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' ## Observed data and observed covariates
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+#'
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#'
+#' ## Get BIC
+#' BIC <- MVBIC(dir, n_files, Y, X = X, cov_adj = TRUE)
+#'
 #' @export
-MV_Model_BIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
-    .Call('_BayesFMMM_MV_Model_BIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, Y, burnin_prop)
+MVBIC <- function(dir, n_files, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
+    .Call('_BayesFMMM_MVBIC', PACKAGE = 'BayesFMMM', dir, n_files, Y, burnin_prop, X, cov_adj)
 }
 
-#' Calculates the DIC of a functional model
+#' Calculates the DIC of a multivariate model
 #'
-#' @name Model_DIC
+#' @name MVDIC
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
-#' @param n_MCMC Int containing the number of saved MCMC iterations per file
 #' @param Y Matrix of observed vectors (each row is an observation)
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
+#' @param X Matrix of covariates, where each row corresponds to an observation (if covariate adjusted)
+#' @param cov_adj Boolean containing whether or not the covariance structure depends on the covariates of interest
 #' @returns DIC Double containing DIC value
+#'
+#' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
+#' ## Observed data
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#'
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#'
+#' ## Get DIC
+#' DIC <- MVDIC(dir, n_files, Y)
+#'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' ## Observed data and observed covariates
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+#'
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#'
+#' ## Get DIC
+#' DIC <- MVDIC(dir, n_files, Y, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' ## Observed data and observed covariates
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+#'
+#' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#'
+#' ## Get DIC
+#' DIC <- MVDIC(dir, n_files, Y, X = X, cov_adj = TRUE)
+#'
 #' @export
-MV_Model_DIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
-    .Call('_BayesFMMM_MV_Model_DIC', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, Y, burnin_prop)
+MVDIC <- function(dir, n_files, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
+    .Call('_BayesFMMM_MVDIC', PACKAGE = 'BayesFMMM', dir, n_files, Y, burnin_prop, X, cov_adj)
 }
 
 #' Calculates the Log-Likelihood of a Multivariate Model
@@ -842,39 +1209,46 @@ MV_Model_DIC <- function(dir, n_files, n_MCMC, Y, burnin_prop = 0.2) {
 #' ### Not Covariate Adj ###
 #' #########################
 #'
-#' ## Set Hyperparameters
+#' ## Observed data
 #' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#'
+#' ## Set Hyperparameters
 #' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 #' n_files <- 1
 #'
-#' ## Get CI for mean function
+#' ## Get log likelihood
 #' LL <- MVLLik(dir, n_files, Y)
 #'
 #' #####################
 #' ### Covariate Adj ###
 #' #####################
 #'
-#' ## Set Hyperparameters
+#' ## Observed data and observed covariates
 #' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+#'
+#' ## Set Hyperparameters
 #' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 #' n_files <- 1
-#' X <- matrix(rnorm(20), ncol = 1)
 #'
-#' ## Get CI for mean function
+#' ## Get log likelihood
 #' LL <- MVLLik(dir, n_files, Y, X = X)
 #'
 #' #####################################################################
 #' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 #' #####################################################################
 #'
-#' ## Set Hyperparameters
+#' ## Observed data and observed covariates
 #' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+#'
+#' ## Set Hyperparameters
 #' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
 #' n_files <- 1
-#' X <- matrix(rnorm(20), ncol = 1)
 #'
-#' ## Get CI for mean function
+#' ## Get log likelihood
 #' LL <- MVLLik(dir, n_files, Y, X = X, cov_adj = TRUE)
+#'
 #' @export
 MVLLik <- function(dir, n_files, Y, X = NULL, cov_adj = FALSE) {
     .Call('_BayesFMMM_MVLLik', PACKAGE = 'BayesFMMM', dir, n_files, Y, X, cov_adj)
@@ -888,7 +1262,6 @@ MVLLik <- function(dir, n_files, Y, X = NULL, cov_adj = FALSE) {
 #' @name ConditionalPredictiveOrdinates
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Int containing the number of files per parameter
-#' @param n_MCMC Int containing the number of saved MCMC iterations per file
 #' @param basis_degree Int containing the degree of B-splines used
 #' @param boundary_knots Vector containing the boundary points of our index domain of interest
 #' @param internal_knots Vector location of internal knots for B-splines
@@ -899,9 +1272,77 @@ MVLLik <- function(dir, n_files, Y, X = NULL, cov_adj = FALSE) {
 #' @param cov_adj Boolean containing whether the model fit had a covariance structure that is covariate-dependent (optional argument)
 #' @param log_CPO Boolean conatining whether or not CPO is returned on the log scale (optional argument)
 #' @returns CPO Vector containing the CPO for each observation
+#'
+#' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
+#' ## Observed Data and corresponding time points
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#'
+#' ## Directory of saved MCMC iterations
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Set Hyperparameters
+#' n_files <- 1
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#' ## Get CPO
+#' CPO <- ConditionalPredictiveOrdinates(dir, n_files, basis_degree, boundary_knots,
+#'                                       internal_knots, time, Y)
+#'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' ## Observed Data, corresponding time points, and observed covariates
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(40), ncol = 1)
+#'
+#' ## Directory of saved MCMC iterations
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Set Hyperparameters
+#' n_files <- 1
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#' ## Get CPO
+#' CPO <- ConditionalPredictiveOrdinates(dir, n_files, basis_degree, boundary_knots,
+#'                                       internal_knots, time, Y, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' ## Observed Data, corresponding time points, and observed covariates
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' X <- matrix(rnorm(40), ncol = 1)
+#'
+#' ## Directory of saved MCMC iterations
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#'
+#' ## Set Hyperparameters
+#' n_files <- 1
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#' ## Get CPO
+#' CPO <- ConditionalPredictiveOrdinates(dir, n_files, basis_degree, boundary_knots,
+#'                                       internal_knots, time, Y, X = X,
+#'                                       cov_adj = TRUE)
+#'
 #' @export
-ConditionalPredictiveOrdinates <- function(dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE, log_CPO = TRUE) {
-    .Call('_BayesFMMM_ConditionalPredictiveOrdinates', PACKAGE = 'BayesFMMM', dir, n_files, n_MCMC, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj, log_CPO)
+ConditionalPredictiveOrdinates <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE, log_CPO = TRUE) {
+    .Call('_BayesFMMM_ConditionalPredictiveOrdinates', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj, log_CPO)
 }
 
 #' Find initial starting position for mean and allocation structure for functional data
@@ -1015,6 +1456,31 @@ ConditionalPredictiveOrdinates <- function(dir, n_files, n_MCMC, basis_degree, b
 #' #####################
 #' ### Covariate Adj ###
 #' #####################
+#'
+#' ## Load sample data
+#' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#'
+#' ## Set Hyperparameters
+#' tot_mcmc_iters <- 150
+#' n_try <- 1
+#' K <- 2
+#' n_funct <- 40
+#' basis_degree <- 3
+#' n_eigen <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+#'
+#' ## Get Estimates of Z and nu
+#' est1 <- BFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+#'                                 basis_degree, n_eigen, boundary_knots,
+#'                                 internal_knots, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
 #'
 #' ## Load sample data
 #' Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
@@ -1810,6 +2276,31 @@ ReadFieldVec <- function(file) {
 #'                                   basis_degree, n_eigen, boundary_knots,
 #'                                   internal_knots, X = X)
 #'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' ## Load sample data
+#' Y <- readRDS(system.file("test-data", "HDSim_data.RDS", package = "BayesFMMM"))
+#' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
+#'
+#' ## Set Hyperparameters
+#' tot_mcmc_iters <- 150
+#' n_try <- 1
+#' K <- 2
+#' n_funct <- 20
+#' basis_degree <- c(2,2)
+#' n_eigen <- 2
+#' boundary_knots <- matrix(c(0, 0, 990, 990), nrow = 2)
+#' internal_knots <- rep(list(c(250, 500, 750)), 2)
+#'
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+#'
+#' ## Get Estimates of Z and nu
+#' est1 <- BHDFMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, time, n_funct,
+#'                                   basis_degree, n_eigen, boundary_knots,
+#'                                   internal_knots, X = X)
+#'
 #' @export
 BHDFMMM_Nu_Z_multiple_try <- function(tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, X = NULL, c = NULL, b = 10, alpha1l = 1, alpha2l = 2, beta1l = 1, beta2l = 1, a_Z_PM = 10000, a_pi_PM = 1000, var_alpha3 = 0.05, var_epsilon1 = 1, var_epsilon2 = 1, alpha_nu = 10, beta_nu = 1, alpha_eta = 10, beta_eta = 1, alpha_0 = 1, beta_0 = 1) {
     .Call('_BayesFMMM_BHDFMMM_Nu_Z_multiple_try', PACKAGE = 'BayesFMMM', tot_mcmc_iters, n_try, K, Y, time, n_funct, basis_degree, n_eigen, boundary_knots, internal_knots, X, c, b, alpha1l, alpha2l, beta1l, beta2l, a_Z_PM, a_pi_PM, var_alpha3, var_epsilon1, var_epsilon2, alpha_nu, beta_nu, alpha_eta, beta_eta, alpha_0, beta_0)
@@ -2322,6 +2813,24 @@ BHDFMMM_warm_start <- function(tot_mcmc_iters, K, Y, time, n_funct, basis_degree
 #' #####################
 #' ### Covariate Adj ###
 #' #####################
+#'
+#' ## Load sample data
+#' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
+#'
+#' ## Set Hyperparameters
+#' tot_mcmc_iters <- 150
+#' n_try <- 1
+#' K <- 2
+#' n_eigen <- 2
+#'
+#' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
+#'
+#' ## Run function
+#' est1 <- BMVMMM_Nu_Z_multiple_try(tot_mcmc_iters, n_try, K, Y, n_eigen, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
 #'
 #' ## Load sample data
 #' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))

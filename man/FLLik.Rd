@@ -58,10 +58,14 @@ The following must be true:
 ### Not Covariate Adj ###
 #########################
 
-## Set Hyperparameters
+## Observed Data and corresponding time points
 Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+
+## Directory of saved MCMC iterations
 dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+
+## Set Hyperparameters
 n_files <- 1
 basis_degree <- 3
 boundary_knots <- c(0, 1000)
@@ -75,15 +79,19 @@ LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
 ### Covariate Adj ###
 #####################
 
-## Set Hyperparameters
+## Observed data, corresponding time points, and observed covariates
 Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+X <- matrix(rnorm(40), ncol = 1)
+
+## Directory of saved MCMC iterations
 dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+
+## Set Hyperparameters
 n_files <- 1
 basis_degree <- 3
 boundary_knots <- c(0, 1000)
 internal_knots <- c(250, 500, 750)
-X <- matrix(rnorm(40), ncol = 1)
 
 ## Get CI for mean function
 LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
@@ -93,15 +101,20 @@ LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,
 ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 #####################################################################
 
-## Set Hyperparameters
+## Observed data, corresponding time points, and observed covariates
 Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+X <- matrix(rnorm(40), ncol = 1)
+
+## Directory of saved MCMC iterations
 dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+
+## Set Hyperparameters
 n_files <- 1
 basis_degree <- 3
 boundary_knots <- c(0, 1000)
 internal_knots <- c(250, 500, 750)
-X <- matrix(rnorm(40), ncol = 1)
+
 
 ## Get CI for mean function
 LL <- FLLik(dir, n_files, basis_degree, boundary_knots, internal_knots,

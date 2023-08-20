@@ -193,6 +193,49 @@ inline double calcDIC2MV(const arma::rowvec& y_obs,
   return lik;
 }
 
+
+// Calculates the second term of the DIC expression for covariate adjusted multivariate model
+//
+// @name calcDIC2MVCovariateAdj
+// @param y_obs Field of vectors containing observed time points
+// @param X Matrix containing the covariates of interest
+// @param nu Matrix containing current nu parameters
+// @param eta Cube containing current eta parameters
+// @param Phi Cube containing current Phi parameters
+// @param xi Field of cubes containing xi parameters
+// @param Z Matrix containing current Z parameters
+// @param chi Matrix containing current chi parameters
+// @param iter Int containing the MCMC iteration of interest for xi parameters
+// @param i Int containing vector number of interest
+// @param sigma Double containing current sigma parameter
+// @return lik Double containing likelihood
+inline double calcDIC2MVCovariateAdj(const arma::rowvec& y_obs,
+                                     const arma::mat& X,
+                                     const arma::mat& nu,
+                                     const arma::cube& eta,
+                                     const arma::cube& Phi,
+                                     const arma::field<arma::cube>& xi,
+                                     const arma::mat& Z,
+                                     const arma::mat& chi,
+                                     const int iter,
+                                     const int i,
+                                     const double& sigma){
+  arma::vec mean = arma::zeros(y_obs.n_elem);
+  for(int k = 0; k < Z.n_cols; k++){
+    if(Z(i,k) != 0){
+      mean = mean + Z(i,k) * (nu.row(k).t() + eta.slice(k) * X.row(i).t());
+      for(int n = 0; n < Phi.n_slices; n++){
+        mean = mean + Z(i,k) * chi(i,n) * (Phi.slice(n).row(k).t() + (xi(iter,k).slice(n) * X.row(i).t()));
+      }
+    }
+  }
+  double lik = 1;
+  for(int j = 0; j < y_obs.n_elem; j++){
+    lik = lik * R::dnorm(y_obs(j), mean(j), std::sqrt(sigma), false);
+  }
+
+  return lik;
+}
 // Calculates the log likelihood of the covariate adjusted partial membership model for functional data
 //
 // @name calcLikelihoodCovariateAdj

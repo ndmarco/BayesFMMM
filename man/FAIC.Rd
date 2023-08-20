@@ -44,3 +44,73 @@ AIC Double containing AIC value
 \description{
 Calculates the AIC of a functional model
 }
+\examples{
+#########################
+### Not Covariate Adj ###
+#########################
+
+## Observed Data and corresponding time points
+Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+
+## Directory of saved MCMC iterations
+dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+
+## Hyperparameters
+n_files <- 1
+K <- 2
+basis_degree <- 3
+boundary_knots <- c(0, 1000)
+internal_knots <- c(250, 500, 750)
+
+
+## Get AIC
+AIC <- FAIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y)
+
+#####################
+### Covariate Adj ###
+#####################
+
+## Observed data, corresponding time points, and observed covariates
+Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+
+## Directory of saved MCMC iterations
+dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+
+## Hyperparameters
+n_files <- 1
+K <- 2
+basis_degree <- 3
+boundary_knots <- c(0, 1000)
+internal_knots <- c(250, 500, 750)
+
+## Get AIC
+AIC <- FAIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time,
+            Y, X = X)
+
+#####################################################################
+### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#####################################################################
+
+## Observed data, corresponding time points, and observed covariates
+Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
+time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
+
+## Directory of saved MCMC iterations
+dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+
+## Hyperparameters
+n_files <- 1
+K <- 2
+basis_degree <- 3
+boundary_knots <- c(0, 1000)
+internal_knots <- c(250, 500, 750)
+
+## Get AIC
+AIC <- FAIC(dir, n_files, basis_degree, boundary_knots, internal_knots, time,
+            Y, X = X, cov_adj = TRUE)
+
+}
