@@ -4632,13 +4632,13 @@ double FBIC(const std::string dir,
     arma::field<arma::mat> curve_fit(Z_i.n_rows, 1);
     for(int i = 0; i < Z_i.n_rows; i++){
       curve_fit(i,0) = arma::zeros(std::round((1 - burnin_prop) * n_MCMC * n_files), Y(i,0).n_elem);
-      for(int j = (n_MCMC * n_files) - std::round((1 - burnin_prop) * n_MCMC * n_files); j < n_MCMC * n_files; j++){
+      for(int j = (n_MCMC * n_files - std::round((1 - burnin_prop) * n_MCMC * n_files)); j < n_MCMC * n_files; j++){
         for(int l = 0; l < Y(i,0).n_elem; l++){
           for(int k = 0; k < Z_samp.n_cols; k++){
-            curve_fit(i,0)(j - (n_MCMC * n_files) - std::round((1 - burnin_prop) * n_MCMC * n_files), l) = curve_fit(i,0)(j - (n_MCMC * n_files) - std::round((1 - burnin_prop) * n_MCMC * n_files), l) + (Z_samp(i,k,j) * arma::dot(nu_samp.slice(j).row(k).t() +
+            curve_fit(i,0)(j - (n_MCMC * n_files - std::round((1 - burnin_prop) * n_MCMC * n_files)), l) = curve_fit(i,0)(j - (n_MCMC * n_files - std::round((1 - burnin_prop) * n_MCMC * n_files)), l) + (Z_samp(i,k,j) * arma::dot(nu_samp.slice(j).row(k).t() +
               (eta_samp(j,0).slice(k) * X1.row(i).t()), B_obs(i,0).row(l)));
             for(int m = 0; m < chi_samp.n_cols; m++){
-              curve_fit(i,0)(j - (n_MCMC * n_files) - std::round((1 - burnin_prop) * n_MCMC * n_files),l) = curve_fit(i,0)(j - (n_MCMC * n_files) - std::round((1 - burnin_prop) * n_MCMC * n_files), l) + (Z_samp(i,k,j) * chi_samp(i,m,j) * arma::dot(phi_samp(j,0).slice(m).row(k).t() +
+              curve_fit(i,0)(j - (n_MCMC * n_files - std::round((1 - burnin_prop) * n_MCMC * n_files)),l) = curve_fit(i,0)(j - (n_MCMC * n_files - std::round((1 - burnin_prop) * n_MCMC * n_files)), l) + (Z_samp(i,k,j) * chi_samp(i,m,j) * arma::dot(phi_samp(j,0).slice(m).row(k).t() +
                 (xi_samp(j,k).slice(m) * X1.row(i).t()), B_obs(i,0).row(l)));
             }
           }
