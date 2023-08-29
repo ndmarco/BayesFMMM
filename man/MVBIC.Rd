@@ -4,7 +4,7 @@
 \alias{MVBIC}
 \title{Calculates the BIC of a multivariate model}
 \usage{
-MVBIC(dir, n_files, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE)
+MVBIC(dir, n_files, Y, burnin_prop = 0.1, X = NULL, cov_adj = FALSE)
 }
 \arguments{
 \item{dir}{String containing the directory where the MCMC files are located}

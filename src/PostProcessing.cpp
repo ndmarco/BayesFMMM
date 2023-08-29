@@ -3314,6 +3314,7 @@ Rcpp::List MVCovCI(const std::string dir,
 //' @param dir String containing the directory where the MCMC files are located
 //' @param n_files Integer containing the number of MCMC files
 //' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
+//' @param burnin_prop Double containing proportion of MCMC samples to discard
 //' @returns CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
 //'
 //' @section Warning:
@@ -3335,7 +3336,8 @@ Rcpp::List MVCovCI(const std::string dir,
 // [[Rcpp::export]]
 Rcpp::List SigmaCI(const std::string dir,
                    const int n_files,
-                   const double alpha = 0.05){
+                   const double alpha = 0.05,
+                   const double burnin_prop = 0.1){
   if(n_files <= 0){
     Rcpp::stop("'n_files' must be greater than 0");
   }
@@ -3345,15 +3347,23 @@ Rcpp::List SigmaCI(const std::string dir,
   if(alpha >= 1){
     Rcpp::stop("'alpha' must be between 0 and 1");
   }
+  if(burnin_prop < 0){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(burnin_prop >= 1){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
 
   arma::vec sigma_i;
   sigma_i.load(dir + "Sigma0.txt");
-  arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
-  sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
+  arma::vec sigma_samp1 = arma::zeros(sigma_i.n_elem * n_files);
+  sigma_samp1.subvec(0, sigma_i.n_elem - 1) = sigma_i;
   for(int i = 1; i < n_files; i++){
     sigma_i.load(dir + "Sigma" + std::to_string(i) +".txt");
-    sigma_samp.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
+    sigma_samp1.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
   }
+  arma::vec sigma_samp = arma::zeros(std::round(sigma_samp1.n_elem * (1 - burnin_prop)));
+  sigma_samp = sigma_samp1.subvec(sigma_samp1.n_elem - std::round(sigma_samp1.n_elem * (1 - burnin_prop)), sigma_samp1.n_elem - 1);
 
   arma::vec p = {alpha/2, 0.5, 1 - (alpha/2)};
   arma::vec q = arma::zeros(3);
@@ -3553,7 +3563,7 @@ double FDIC(const std::string dir,
             const arma::vec internal_knots,
             const arma::field<arma::vec> time,
             const arma::field<arma::vec> Y,
-            const double burnin_prop = 0.2,
+            const double burnin_prop = 0.1,
             Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
             const bool cov_adj = false){
   double DIC;
@@ -3934,7 +3944,7 @@ double FAIC(const std::string dir,
             const arma::vec internal_knots,
             const arma::field<arma::vec> time,
             const arma::field<arma::vec> Y,
-            const double burnin_prop = 0.2,
+            const double burnin_prop = 0.1,
             Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
             const bool cov_adj = false){
   double AIC;
@@ -4351,7 +4361,7 @@ double FBIC(const std::string dir,
             const arma::vec internal_knots,
             const arma::field<arma::vec> time,
             const arma::field<arma::vec> Y,
-            const double burnin_prop = 0.2,
+            const double burnin_prop = 0.1,
             Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
             const bool cov_adj = false){
   double BIC;
@@ -5005,7 +5015,7 @@ arma::vec FLLik(const std::string dir,
 double MVAIC(const std::string dir,
              const int n_files,
              const arma::mat Y,
-             const double burnin_prop = 0.2,
+             const double burnin_prop = 0.1,
              Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
              const bool cov_adj = false){
   double AIC;
@@ -5341,7 +5351,7 @@ double MVAIC(const std::string dir,
 double MVBIC(const std::string dir,
              const int n_files,
              const arma::mat Y,
-             const double burnin_prop = 0.2,
+             const double burnin_prop = 0.1,
              Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
              const bool cov_adj = false){
   double BIC;
@@ -5678,7 +5688,7 @@ double MVBIC(const std::string dir,
 double MVDIC(const std::string dir,
              const int n_files,
              const arma::mat Y,
-             const double burnin_prop = 0.2,
+             const double burnin_prop = 0.1,
              Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
              const bool cov_adj = false){
   double DIC;
@@ -6145,6 +6155,17 @@ arma::vec MVLLik(const std::string dir,
 //' @param log_CPO Boolean conatining whether or not CPO is returned on the log scale (optional argument)
 //' @returns CPO Vector containing the CPO for each observation
 //'
+//' //' @section Warning:
+//' The following must be true:
+//' \describe{
+//'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+//'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+//'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+//'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+//'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
+//' }
+//'
+//'
 //' @examples
 //' #########################
 //' ### Not Covariate Adj ###
@@ -6221,12 +6242,22 @@ arma::vec ConditionalPredictiveOrdinates(const std::string dir,
                                          const arma::vec internal_knots,
                                          const arma::field<arma::vec> time,
                                          const arma::field<arma::vec> Y,
-                                         const double burnin_prop = 0.2,
+                                         const double burnin_prop = 0.1,
                                          Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
                                          const bool cov_adj = false,
                                          const bool log_CPO = true){
 
   bool mean_adj = false;
+  if(n_files <= 0){
+    Rcpp::stop("'n_files' must be greater than 0");
+  }
+
+  if(burnin_prop < 0){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(burnin_prop >= 1){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
   if(X.isNotNull()){
     mean_adj = true;
   }
@@ -6383,3 +6414,342 @@ arma::vec ConditionalPredictiveOrdinates(const std::string dir,
 
   return(CPO);
 }
+
+//' Estimated Sample Paths
+//'
+//' Calculates CIs for the estimated sample paths of the observed data for posterior
+//' predictive checks.
+//'
+//' @name FSamplePaths
+//' @param dir String containing the directory where the MCMC files are located
+//' @param n_files Int containing the number of files per parameter
+//' @param basis_degree Int containing the degree of B-splines used
+//' @param boundary_knots Vector containing the boundary points of our index domain of interest
+//' @param internal_knots Vector location of internal knots for B-splines
+//' @param time Field of vectors containing time points at which the function was observed
+//' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
+//' @param burnin_prop Double containing proportion of MCMC samples to discard
+//' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
+//' @param X Matrix of covariates (each row contains the covariates for a single observation) (optional arugment)
+//' @param cov_adj Boolean containing whether the model fit had a covariance structure that is covariate-dependent (optional argument)
+//' @returns CPO Vector containing the CPO for each observation
+//'
+//' //' @section Warning:
+//' The following must be true:
+//' \describe{
+//'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+//'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+//'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+//'   \item{\code{alpha}}{must be between 0 and 1}
+//'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+//'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
+//' }
+//'
+//' @examples
+//' #########################
+//' ### Not Covariate Adj ###
+//' #########################
+//'
+//' ## Set Hyperparameters
+//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+//' basis_degree <- 3
+//' boundary_knots <- c(0, 1000)
+//' internal_knots <- c(250, 500, 750)
+//'
+//' ## Get CI for Sample Paths
+//' CI <- FSamplePaths(dir, n_files, basis_degree, boundary_knots, internal_knots, time)
+//'
+//' #####################
+//' ### Covariate Adj ###
+//' #####################
+//'
+//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+//' basis_degree <- 3
+//' boundary_knots <- c(0, 1000)
+//' internal_knots <- c(250, 500, 750)
+//' X <- matrix(rnorm(40), ncol = 1)
+//'
+//' ## Get CI for Sample Paths
+//' CI <- FSamplePaths(dir, n_files, basis_degree, boundary_knots,
+//'                    internal_knots, time, X = X)
+//'
+//' #####################################################################
+//' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+//' #####################################################################
+//'
+//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' n_files <- 1
+//' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+//' basis_degree <- 3
+//' boundary_knots <- c(0, 1000)
+//' internal_knots <- c(250, 500, 750)
+//' X <- matrix(rnorm(40), ncol = 1)
+//'
+//' ## Get CI for Sample Paths
+//' CI <- FSamplePaths(dir, n_files, basis_degree, boundary_knots,
+//'                    internal_knots, time, X = X, cov_adj = TRUE)
+//'
+//' @export
+// [[Rcpp::export]]
+Rcpp::List FSamplePaths(const std::string dir,
+                        const int n_files,
+                        const int basis_degree,
+                        const arma::vec boundary_knots,
+                        const arma::vec internal_knots,
+                        const arma::field<arma::vec> time,
+                        const double alpha = 0.05,
+                        const double burnin_prop = 0.1,
+                        const bool simultaneous = false,
+                        Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
+                        const bool cov_adj = false){
+  // initialize object to return
+  Rcpp::List CI;
+
+  bool mean_adj = false;
+  if(X.isNotNull()){
+    mean_adj = true;
+  }
+  if(n_files <= 0){
+    Rcpp::stop("'n_files' must be greater than 0");
+  }
+  if(alpha < 0){
+    Rcpp::stop("'alpha' must be between 0 and 1");
+  }
+  if(alpha >= 1){
+    Rcpp::stop("'alpha' must be between 0 and 1");
+  }
+
+  if(burnin_prop < 0){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(burnin_prop >= 1){
+    Rcpp::stop("'burnin_prop' must be between 0 and 1");
+  }
+  if(basis_degree <  1){
+    Rcpp::stop("'basis_degree' must be an integer greater than or equal to 1");
+  }
+  for(int i = 0; i < internal_knots.n_elem; i++){
+    if(boundary_knots(0) >= internal_knots(i)){
+      Rcpp::stop("at least one element in 'internal_knots' is less than or equal to first boundary knot");
+    }
+    if(boundary_knots(1) <= internal_knots(i)){
+      Rcpp::stop("at least one element in 'internal_knots' is more than or equal to second boundary knot");
+    }
+  }
+
+  // Get Nu parameters
+  arma::cube nu_i;
+  nu_i.load(dir + "Nu0.txt");
+  int n_MCMC = nu_i.n_slices;
+  arma::cube nu_samp = arma::zeros(nu_i.n_rows, nu_i.n_cols, nu_i.n_slices * n_files);
+  nu_samp.subcube(0, 0, 0, nu_i.n_rows-1, nu_i.n_cols-1, nu_i.n_slices-1) = nu_i;
+  for(int i = 1; i < n_files; i++){
+    nu_i.load(dir + "Nu" + std::to_string(i) +".txt");
+    nu_samp.subcube(0, 0,  nu_i.n_slices*i, nu_i.n_rows-1, nu_i.n_cols-1,
+                    (nu_i.n_slices)*(i+1) - 1) = nu_i;
+  }
+  // Get Phi parameters
+  arma::field<arma::cube> phi_i;
+  phi_i.load(dir + "Phi0.txt");
+  arma::field<arma::cube> phi_samp(n_MCMC * n_files, 1);
+  for(int i = 0; i < n_MCMC; i++){
+    phi_samp(i,0) = phi_i(i,0);
+  }
+
+  for(int i = 1; i < n_files; i++){
+    phi_i.load(dir + "Phi" + std::to_string(i) +".txt");
+    for(int j = 0; j < n_MCMC; j++){
+      phi_samp((i * n_MCMC) + j, 0) = phi_i(j,0);
+    }
+  }
+
+  // Get Z parameters
+  arma::cube Z_i;
+  Z_i.load(dir + "Z0.txt");
+  arma::cube Z_samp = arma::zeros(Z_i.n_rows, Z_i.n_cols, Z_i.n_slices * n_files);
+  Z_samp.subcube(0, 0, 0, Z_i.n_rows-1, Z_i.n_cols-1, Z_i.n_slices-1) = Z_i;
+  for(int i = 1; i < n_files; i++){
+    Z_i.load(dir + "Z" + std::to_string(i) +".txt");
+    Z_samp.subcube(0, 0,  Z_i.n_slices*i, Z_i.n_rows-1, Z_i.n_cols-1, (Z_i.n_slices)*(i+1) - 1) = Z_i;
+  }
+
+  // Get sigma parameters
+  arma::vec sigma_i;
+  sigma_i.load(dir + "Sigma0.txt");
+  arma::vec sigma_samp = arma::zeros(sigma_i.n_elem * n_files);
+  sigma_samp.subvec(0, sigma_i.n_elem - 1) = sigma_i;
+  for(int i = 1; i < n_files; i++){
+    sigma_i.load(dir + "Sigma" + std::to_string(i) +".txt");
+    sigma_samp.subvec(sigma_i.n_elem *i, (sigma_i.n_elem *(i + 1)) - 1) = sigma_i;
+  }
+
+  // Get chi parameters
+  arma::cube chi_i;
+  chi_i.load(dir + "Chi0.txt");
+  arma::cube chi_samp = arma::zeros(chi_i.n_rows, chi_i.n_cols, chi_i.n_slices * n_files);
+  chi_samp.subcube(0, 0, 0, chi_i.n_rows-1, chi_i.n_cols-1, chi_i.n_slices-1) = chi_i;
+  for(int i = 1; i < n_files; i++){
+    chi_i.load(dir + "Chi" + std::to_string(i) +".txt");
+    chi_samp.subcube(0, 0,  chi_i.n_slices*i, chi_i.n_rows-1, chi_i.n_cols-1,
+                     (chi_i.n_slices)*(i+1) - 1) = chi_i;
+  }
+
+
+  // Get eta parameters
+  arma::field<arma::cube> eta_samp(n_MCMC * n_files, 1);
+  if(mean_adj == false){
+    for(int i = 0; i < n_MCMC * n_files; i++){
+      eta_samp(i,0) = arma::zeros(nu_samp.n_cols, 1, nu_samp.n_rows);
+    }
+  }else{
+    arma::field<arma::cube> eta_i;
+    eta_i.load(dir + "Eta0.txt");
+    for(int i = 0; i < n_MCMC; i++){
+      eta_samp(i,0) = eta_i(i,0);
+    }
+
+    for(int i = 1; i < n_files; i++){
+      eta_i.load(dir + "Eta" + std::to_string(i) +".txt");
+      for(int j = 0; j < n_MCMC; j++){
+        eta_samp((i * n_MCMC) + j, 0) = eta_i(j,0);
+      }
+    }
+  }
+
+  // initialize X
+  arma::mat X1;
+  if(X.isNotNull()) {
+    Rcpp::NumericMatrix X_(X);
+    X1 = Rcpp::as<arma::mat>(X_);
+  }else{
+    X1 = arma::zeros(Z_samp.n_rows, 1);
+  }
+
+  if(X1.n_cols != eta_samp(0,0).n_cols){
+    Rcpp::stop("The number of columns in 'X' must be equal to the number of covariates in the model");
+  }
+  if(X1.n_rows != Z_samp.n_rows){
+    Rcpp::stop("The number of rows in 'X' must be equal to the number of observations");
+  }
+
+  arma::field<arma::cube> xi_samp(n_MCMC * n_files, nu_samp.n_rows);
+  if(cov_adj == false){
+    for(int k = 0; k < nu_samp.n_rows; k++){
+      for(int i = 0; i < n_MCMC * n_files; i++){
+        xi_samp(i,k) = arma::zeros(nu_samp.n_cols, X1.n_cols, phi_samp(0,0).n_slices);
+      }
+    }
+  }else{
+    arma::field<arma::cube> xi_i;
+    xi_i.load(dir + "Xi0.txt");
+    for(int k = 0; k < nu_samp.n_rows; k++){
+      for(int i = 0; i < n_MCMC; i++){
+        xi_samp(i,k) = xi_i(i,k);
+      }
+    }
+    for(int i = 1; i < n_files; i++){
+      xi_i.load(dir + "Xi" + std::to_string(i) +".txt");
+      for(int k = 0; k < nu_samp.n_rows; k++){
+        for(int j = 0; j < n_MCMC; j++){
+          xi_samp((i * n_MCMC) + j, k) = xi_i(j,k);
+        }
+      }
+    }
+  }
+
+
+  // Make spline basis
+  arma::field<arma::mat> B_obs(Z_samp.n_rows, 1);
+  splines2::BSpline bspline2;
+  for(int i = 0; i < Z_samp.n_rows; i++){
+    bspline2 = splines2::BSpline(time(i,0),  internal_knots, basis_degree,
+                                 boundary_knots);
+    // Get Basis matrix (time2 x Phi.n_cols)
+    arma::mat bspline_mat2{bspline2.basis(true)};
+    // Make B_obs
+    B_obs(i,0) = bspline_mat2;
+  }
+
+  arma::field<arma::vec> CI_50(Z_samp.n_rows, 1);
+  arma::field<arma::vec> CI_Upper(Z_samp.n_rows, 1);
+  arma::field<arma::vec> CI_Lower(Z_samp.n_rows, 1);
+  arma::field<arma::mat> SampPaths(Z_samp.n_rows, 1);
+  for(int i = 0; i < Z_samp.n_rows; i++){
+    CI_50(i,0) = arma::zeros(time(i,0).n_elem);
+    CI_Upper(i,0) = arma::zeros(time(i,0).n_elem);
+    CI_Lower(i,0) = arma::zeros(time(i,0).n_elem);
+    SampPaths(i,0) = arma::zeros(std::round(Z_samp.n_slices * (1 - burnin_prop)), time(i,0).n_elem);
+  }
+
+  double mean = 0;
+  for(int i = 0; i < Z_samp.n_rows; i++){
+    for(int iter = (Z_samp.n_slices - std::round(Z_samp.n_slices * (1 - burnin_prop))); iter < Z_samp.n_slices; iter++){
+      for(int l = 0; l < time(i,0).n_elem; l++){
+        mean = 0;
+        for(int k = 0; k < Z_samp.n_cols; k++){
+          if(Z_samp(i,k, iter) != 0){
+            mean = mean + Z_samp(i,k, iter) * arma::dot(nu_samp.slice(iter).row(k).t() +
+              (eta_samp(iter,0).slice(k) * X1.row(i).t()), B_obs(i,0).row(l));
+            for(int n = 0; n < phi_samp(iter,0).n_slices; n++){
+              mean = mean + Z_samp(i,k, iter) * chi_samp(i,n, iter) * arma::dot(phi_samp(iter,0).slice(n).row(k).t() +
+                (xi_samp(iter,k).slice(n) * X1.row(i).t()), B_obs(i,0).row(l));
+            }
+          }
+        }
+        SampPaths(i,0)(iter -(Z_samp.n_slices - std::round(Z_samp.n_slices * (1 - burnin_prop))), l) = R::rnorm(mean, sigma_samp(iter));
+      }
+    }
+    Rcpp::Rcout << "Finished function " << i << "\n";
+  }
+
+  if(simultaneous == false){
+    arma::vec p = {alpha/2, 0.5, 1 - (alpha/2)};
+    arma::vec q = arma::zeros(3);
+
+    for(int i = 0; i < Z_samp.n_rows; i++){
+      for(int l = 0; l < time(i,0).n_elem; l++){
+        q = arma::quantile(SampPaths(i,0).col(l), p);
+        CI_Lower(i,0)(l) = q(0);
+        CI_50(i,0)(l) = q(1);
+        CI_Upper(i,0)(l) = q(2);
+      }
+    }
+  }else{
+
+
+    for(int i = 0; i < Z_samp.n_rows; i++){
+      arma::rowvec f_mean = arma::mean(SampPaths(i,0), 0);
+      arma::rowvec f_sd = arma::stddev(SampPaths(i,0), 0, 0);
+
+      arma::vec C = arma::zeros(SampPaths(i,0).n_rows);
+      arma::vec ph1 = arma::zeros(time.n_elem);
+      for(int l = 0; l < SampPaths(i,0).n_rows; l++){
+        for(int j = 0; j < time(i,0).n_elem; j++){
+          ph1(j) = std::abs((SampPaths(i,0)(l,j) - f_mean(j)) / f_sd(j));
+        }
+        C(l) = arma::max(ph1);
+      }
+
+      arma::vec p = {1 - alpha};
+      arma::vec q = arma::zeros(1);
+      q = arma::quantile(C, p);
+
+      for(int l = 0; l < time(i,0).n_elem; l++){
+        CI_Lower(i,0)(l) = f_mean(l) - q(0) * f_sd(l);
+        CI_50(i,0)(l) = f_mean(l);
+        CI_Upper(i,0)(l) =  f_mean(l) + q(0) * f_sd(l);
+      }
+    }
+  }
+
+  CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
+                           Rcpp::Named("CI_50", CI_50),
+                           Rcpp::Named("CI_Lower", CI_Lower),
+                           Rcpp::Named("Path_trace", SampPaths));
+  return(CI);
+}
+

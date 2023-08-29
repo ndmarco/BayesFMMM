@@ -139,15 +139,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // SigmaCI
-Rcpp::List SigmaCI(const std::string dir, const int n_files, const double alpha);
-RcppExport SEXP _BayesFMMM_SigmaCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP alphaSEXP) {
+Rcpp::List SigmaCI(const std::string dir, const int n_files, const double alpha, const double burnin_prop);
+RcppExport SEXP _BayesFMMM_SigmaCI(SEXP dirSEXP, SEXP n_filesSEXP, SEXP alphaSEXP, SEXP burnin_propSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
     Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
     Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
-    rcpp_result_gen = Rcpp::wrap(SigmaCI(dir, n_files, alpha));
+    Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
+    rcpp_result_gen = Rcpp::wrap(SigmaCI(dir, n_files, alpha, burnin_prop));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -326,6 +327,27 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type cov_adj(cov_adjSEXP);
     Rcpp::traits::input_parameter< const bool >::type log_CPO(log_CPOSEXP);
     rcpp_result_gen = Rcpp::wrap(ConditionalPredictiveOrdinates(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj, log_CPO));
+    return rcpp_result_gen;
+END_RCPP
+}
+// FSamplePaths
+Rcpp::List FSamplePaths(const std::string dir, const int n_files, const int basis_degree, const arma::vec boundary_knots, const arma::vec internal_knots, const arma::field<arma::vec> time, const double alpha, const double burnin_prop, const bool simultaneous, Rcpp::Nullable<Rcpp::NumericMatrix> X, const bool cov_adj);
+RcppExport SEXP _BayesFMMM_FSamplePaths(SEXP dirSEXP, SEXP n_filesSEXP, SEXP basis_degreeSEXP, SEXP boundary_knotsSEXP, SEXP internal_knotsSEXP, SEXP timeSEXP, SEXP alphaSEXP, SEXP burnin_propSEXP, SEXP simultaneousSEXP, SEXP XSEXP, SEXP cov_adjSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string >::type dir(dirSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_files(n_filesSEXP);
+    Rcpp::traits::input_parameter< const int >::type basis_degree(basis_degreeSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type boundary_knots(boundary_knotsSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type internal_knots(internal_knotsSEXP);
+    Rcpp::traits::input_parameter< const arma::field<arma::vec> >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const double >::type burnin_prop(burnin_propSEXP);
+    Rcpp::traits::input_parameter< const bool >::type simultaneous(simultaneousSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericMatrix> >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const bool >::type cov_adj(cov_adjSEXP);
+    rcpp_result_gen = Rcpp::wrap(FSamplePaths(dir, n_files, basis_degree, boundary_knots, internal_knots, time, alpha, burnin_prop, simultaneous, X, cov_adj));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -774,7 +796,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFMMM_FCovCI", (DL_FUNC) &_BayesFMMM_FCovCI, 14},
     {"_BayesFMMM_HDFCovCI", (DL_FUNC) &_BayesFMMM_HDFCovCI, 14},
     {"_BayesFMMM_MVCovCI", (DL_FUNC) &_BayesFMMM_MVCovCI, 8},
-    {"_BayesFMMM_SigmaCI", (DL_FUNC) &_BayesFMMM_SigmaCI, 3},
+    {"_BayesFMMM_SigmaCI", (DL_FUNC) &_BayesFMMM_SigmaCI, 4},
     {"_BayesFMMM_ZCI", (DL_FUNC) &_BayesFMMM_ZCI, 5},
     {"_BayesFMMM_FDIC", (DL_FUNC) &_BayesFMMM_FDIC, 10},
     {"_BayesFMMM_FAIC", (DL_FUNC) &_BayesFMMM_FAIC, 10},
@@ -785,6 +807,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BayesFMMM_MVDIC", (DL_FUNC) &_BayesFMMM_MVDIC, 6},
     {"_BayesFMMM_MVLLik", (DL_FUNC) &_BayesFMMM_MVLLik, 5},
     {"_BayesFMMM_ConditionalPredictiveOrdinates", (DL_FUNC) &_BayesFMMM_ConditionalPredictiveOrdinates, 11},
+    {"_BayesFMMM_FSamplePaths", (DL_FUNC) &_BayesFMMM_FSamplePaths, 11},
     {"_BayesFMMM_BFMMM_Nu_Z_multiple_try", (DL_FUNC) &_BayesFMMM_BFMMM_Nu_Z_multiple_try, 28},
     {"_BayesFMMM_BFMMM_Theta_est", (DL_FUNC) &_BayesFMMM_BFMMM_Theta_est, 32},
     {"_BayesFMMM_BFMMM_warm_start", (DL_FUNC) &_BayesFMMM_BFMMM_warm_start, 38},

@@ -4,7 +4,7 @@
 \alias{SigmaCI}
 \title{Calculates the credible interval for sigma squared for all types of data}
 \usage{
-SigmaCI(dir, n_files, alpha = 0.05)
+SigmaCI(dir, n_files, alpha = 0.05, burnin_prop = 0.1)
 }
 \arguments{
 \item{dir}{String containing the directory where the MCMC files are located}
@@ -12,6 +12,8 @@ SigmaCI(dir, n_files, alpha = 0.05)
 \item{n_files}{Integer containing the number of MCMC files}
 
 \item{alpha}{Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)}
+
+\item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 }
 \value{
 CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function

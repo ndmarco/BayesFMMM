@@ -590,6 +590,7 @@ MVCovCI <- function(dir, n_files, l, m, alpha = 0.05, rescale = TRUE, burnin_pro
 #' @param dir String containing the directory where the MCMC files are located
 #' @param n_files Integer containing the number of MCMC files
 #' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @returns CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function
 #'
 #' @section Warning:
@@ -608,8 +609,8 @@ MVCovCI <- function(dir, n_files, l, m, alpha = 0.05, rescale = TRUE, burnin_pro
 #' CI <- SigmaCI(dir, n_files)
 #'
 #' @export
-SigmaCI <- function(dir, n_files, alpha = 0.05) {
-    .Call('_BayesFMMM_SigmaCI', PACKAGE = 'BayesFMMM', dir, n_files, alpha)
+SigmaCI <- function(dir, n_files, alpha = 0.05, burnin_prop = 0.1) {
+    .Call('_BayesFMMM_SigmaCI', PACKAGE = 'BayesFMMM', dir, n_files, alpha, burnin_prop)
 }
 
 #' Calculates the credible interval for membership parameters Z
@@ -724,7 +725,7 @@ ZCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0.1) {
 #'             Y, X = X, cov_adj = TRUE)
 #'
 #' @export
-FDIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
+FDIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.1, X = NULL, cov_adj = FALSE) {
     .Call('_BayesFMMM_FDIC', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj)
 }
 
@@ -814,7 +815,7 @@ FDIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, tim
 #'             Y, X = X, cov_adj = TRUE)
 #'
 #' @export
-FAIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
+FAIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.1, X = NULL, cov_adj = FALSE) {
     .Call('_BayesFMMM_FAIC', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj)
 }
 
@@ -904,7 +905,7 @@ FAIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, tim
 #'             Y, X = X, cov_adj = TRUE)
 #'
 #' @export
-FBIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
+FBIC <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.1, X = NULL, cov_adj = FALSE) {
     .Call('_BayesFMMM_FBIC', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj)
 }
 
@@ -1060,7 +1061,7 @@ FLLik <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, ti
 #' AIC <- MVAIC(dir, n_files, Y, X = X, cov_adj = TRUE)
 #'
 #' @export
-MVAIC <- function(dir, n_files, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
+MVAIC <- function(dir, n_files, Y, burnin_prop = 0.1, X = NULL, cov_adj = FALSE) {
     .Call('_BayesFMMM_MVAIC', PACKAGE = 'BayesFMMM', dir, n_files, Y, burnin_prop, X, cov_adj)
 }
 
@@ -1120,7 +1121,7 @@ MVAIC <- function(dir, n_files, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE)
 #' BIC <- MVBIC(dir, n_files, Y, X = X, cov_adj = TRUE)
 #'
 #' @export
-MVBIC <- function(dir, n_files, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
+MVBIC <- function(dir, n_files, Y, burnin_prop = 0.1, X = NULL, cov_adj = FALSE) {
     .Call('_BayesFMMM_MVBIC', PACKAGE = 'BayesFMMM', dir, n_files, Y, burnin_prop, X, cov_adj)
 }
 
@@ -1179,7 +1180,7 @@ MVBIC <- function(dir, n_files, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE)
 #' DIC <- MVDIC(dir, n_files, Y, X = X, cov_adj = TRUE)
 #'
 #' @export
-MVDIC <- function(dir, n_files, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE) {
+MVDIC <- function(dir, n_files, Y, burnin_prop = 0.1, X = NULL, cov_adj = FALSE) {
     .Call('_BayesFMMM_MVDIC', PACKAGE = 'BayesFMMM', dir, n_files, Y, burnin_prop, X, cov_adj)
 }
 
@@ -1273,6 +1274,17 @@ MVLLik <- function(dir, n_files, Y, X = NULL, cov_adj = FALSE) {
 #' @param log_CPO Boolean conatining whether or not CPO is returned on the log scale (optional argument)
 #' @returns CPO Vector containing the CPO for each observation
 #'
+#' //' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+#'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+#'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+#'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+#'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
+#' }
+#'
+#'
 #' @examples
 #' #########################
 #' ### Not Covariate Adj ###
@@ -1341,8 +1353,91 @@ MVLLik <- function(dir, n_files, Y, X = NULL, cov_adj = FALSE) {
 #'                                       cov_adj = TRUE)
 #'
 #' @export
-ConditionalPredictiveOrdinates <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.2, X = NULL, cov_adj = FALSE, log_CPO = TRUE) {
+ConditionalPredictiveOrdinates <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop = 0.1, X = NULL, cov_adj = FALSE, log_CPO = TRUE) {
     .Call('_BayesFMMM_ConditionalPredictiveOrdinates', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, Y, burnin_prop, X, cov_adj, log_CPO)
+}
+
+#' Estimated Sample Paths
+#'
+#' Calculates CIs for the estimated sample paths of the observed data for posterior
+#' predictive checks.
+#'
+#' @name FSamplePaths
+#' @param dir String containing the directory where the MCMC files are located
+#' @param n_files Int containing the number of files per parameter
+#' @param basis_degree Int containing the degree of B-splines used
+#' @param boundary_knots Vector containing the boundary points of our index domain of interest
+#' @param internal_knots Vector location of internal knots for B-splines
+#' @param time Field of vectors containing time points at which the function was observed
+#' @param alpha Double specifying the percentile of the credible interval ((1 - alpha) * 100 percent)
+#' @param burnin_prop Double containing proportion of MCMC samples to discard
+#' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
+#' @param X Matrix of covariates (each row contains the covariates for a single observation) (optional arugment)
+#' @param cov_adj Boolean containing whether the model fit had a covariance structure that is covariate-dependent (optional argument)
+#' @returns CPO Vector containing the CPO for each observation
+#'
+#' //' @section Warning:
+#' The following must be true:
+#' \describe{
+#'   \item{\code{n_files}}{must be an integer larger than or equal to 1}
+#'   \item{\code{basis_degree}}{must be an integer larger than or equal to 1}
+#'   \item{\code{internal_knots}}{must lie in the range of \code{boundary_knots}}
+#'   \item{\code{alpha}}{must be between 0 and 1}
+#'   \item{\code{burnin_prop}}{must be less than 1 and greater than or equal to 0}
+#'   \item{\code{X}}{must have the same number of columns as covariates in the model (D)}
+#' }
+#'
+#' @examples
+#' #########################
+#' ### Not Covariate Adj ###
+#' #########################
+#'
+#' ## Set Hyperparameters
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#'
+#' ## Get CI for Sample Paths
+#' CI <- FSamplePaths(dir, n_files, basis_degree, boundary_knots, internal_knots, time)
+#'
+#' #####################
+#' ### Covariate Adj ###
+#' #####################
+#'
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#' X <- matrix(rnorm(40), ncol = 1)
+#'
+#' ## Get CI for Sample Paths
+#' CI <- FSamplePaths(dir, n_files, basis_degree, boundary_knots,
+#'                    internal_knots, time, X = X)
+#'
+#' #####################################################################
+#' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
+#' #####################################################################
+#'
+#' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+#' n_files <- 1
+#' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
+#' basis_degree <- 3
+#' boundary_knots <- c(0, 1000)
+#' internal_knots <- c(250, 500, 750)
+#' X <- matrix(rnorm(40), ncol = 1)
+#'
+#' ## Get CI for Sample Paths
+#' CI <- FSamplePaths(dir, n_files, basis_degree, boundary_knots,
+#'                    internal_knots, time, X = X, cov_adj = TRUE)
+#'
+#' @export
+FSamplePaths <- function(dir, n_files, basis_degree, boundary_knots, internal_knots, time, alpha = 0.05, burnin_prop = 0.1, simultaneous = FALSE, X = NULL, cov_adj = FALSE) {
+    .Call('_BayesFMMM_FSamplePaths', PACKAGE = 'BayesFMMM', dir, n_files, basis_degree, boundary_knots, internal_knots, time, alpha, burnin_prop, simultaneous, X, cov_adj)
 }
 
 #' Find initial starting position for mean and allocation structure for functional data

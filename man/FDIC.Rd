@@ -12,7 +12,7 @@ FDIC(
   internal_knots,
   time,
   Y,
-  burnin_prop = 0.2,
+  burnin_prop = 0.1,
   X = NULL,
   cov_adj = FALSE
 )
