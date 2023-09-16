@@ -55,7 +55,7 @@ The following must be true:
 #########################
 
 ## Set Hyperparameters
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 
 ## Get CI for mean function
@@ -65,7 +65,7 @@ CI <- MVMeanCI(dir, n_files)
 ### Covariate Adj ###
 #####################
 
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 
@@ -76,7 +76,7 @@ CI <- MVMeanCI(dir, n_files, X = X)
 ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 #####################################################################
 
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 

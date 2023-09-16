@@ -96,7 +96,7 @@ The following must be true:
 #########################
 
 ## Set Hyperparameters
-dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 n_files <- 1
 time1 <- seq(0, 990, 10)
 time2 <- seq(0, 990, 10)
@@ -115,7 +115,7 @@ CI <- FCovCI(dir, n_files, time1, time2, basis_degree,
 #####################
 
 ## Set Hyperparameters
-dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 n_files <- 1
 time1 <- seq(0, 990, 10)
 time2 <- seq(0, 990, 10)
@@ -134,7 +134,7 @@ CI <- FCovCI(dir, n_files, time1, time2, basis_degree,
 #####################################################################
 
 ## Set Hyperparameters
-dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 n_files <- 1
 time1 <- seq(0, 990, 10)
 time2 <- seq(0, 990, 10)

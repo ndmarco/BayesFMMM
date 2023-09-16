@@ -32,7 +32,7 @@ The following must be true:
 
 \examples{
 ## Set Hyperparameters
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 
 ## Get CI for Z

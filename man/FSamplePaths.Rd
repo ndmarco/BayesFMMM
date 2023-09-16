@@ -65,7 +65,7 @@ predictive checks.
 #########################
 
 ## Set Hyperparameters
-dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 n_files <- 1
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 basis_degree <- 3
@@ -79,7 +79,7 @@ CI <- FSamplePaths(dir, n_files, basis_degree, boundary_knots, internal_knots, t
 ### Covariate Adj ###
 #####################
 
-dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 n_files <- 1
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 basis_degree <- 3
@@ -95,7 +95,7 @@ CI <- FSamplePaths(dir, n_files, basis_degree, boundary_knots,
 ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 #####################################################################
 
-dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 n_files <- 1
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 basis_degree <- 3

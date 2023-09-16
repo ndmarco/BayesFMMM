@@ -51,7 +51,7 @@
 //' #########################
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //' n_files <- 1
 //' time <- seq(0, 990, 10)
 //' K <- 2
@@ -66,7 +66,7 @@
 //' ### Covariate Adj ###
 //' #####################
 //'
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //' n_files <- 1
 //' time <- seq(0, 990, 10)
 //' K <- 2
@@ -82,7 +82,7 @@
 //' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 //' #####################################################################
 //'
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //' n_files <- 1
 //' time <- seq(0, 990, 10)
 //' K <- 2
@@ -749,7 +749,7 @@ Rcpp::List FMeanCI(const std::string dir,
 //' #########################
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "HDFunctional_trace", package = "BayesFMMM"), "/")
 //' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 //' time <- time[[1]]
 //' n_files <- 1
@@ -767,7 +767,7 @@ Rcpp::List FMeanCI(const std::string dir,
 //' ### Covariate Adj ###
 //' #####################
 //'
-//' dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "HDFunctional_trace", package = "BayesFMMM"), "/")
 //' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 //' time <- time[[1]]
 //' n_files <- 1
@@ -786,7 +786,7 @@ Rcpp::List FMeanCI(const std::string dir,
 //' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 //' #####################################################################
 //'
-//' dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "HDFunctional_trace", package = "BayesFMMM"), "/")
 //' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
 //' time <- time[[1]]
 //' n_files <- 1
@@ -1377,7 +1377,7 @@ Rcpp::List HDFMeanCI(const std::string dir,
 //' #########################
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get CI for mean function
@@ -1387,7 +1387,7 @@ Rcpp::List HDFMeanCI(const std::string dir,
 //' ### Covariate Adj ###
 //' #####################
 //'
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 //'
@@ -1398,7 +1398,7 @@ Rcpp::List HDFMeanCI(const std::string dir,
 //' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 //' #####################################################################
 //'
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //' X <- matrix(seq(-2, 2, 0.2), ncol = 1)
 //'
@@ -1722,7 +1722,7 @@ Rcpp::List MVMeanCI(const std::string dir,
 //' #########################
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //' n_files <- 1
 //' time1 <- seq(0, 990, 10)
 //' time2 <- seq(0, 990, 10)
@@ -1741,7 +1741,7 @@ Rcpp::List MVMeanCI(const std::string dir,
 //' #####################
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //' n_files <- 1
 //' time1 <- seq(0, 990, 10)
 //' time2 <- seq(0, 990, 10)
@@ -1760,7 +1760,7 @@ Rcpp::List MVMeanCI(const std::string dir,
 //' #####################################################################
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //' n_files <- 1
 //' time1 <- seq(0, 990, 10)
 //' time2 <- seq(0, 990, 10)
@@ -2403,7 +2403,7 @@ Rcpp::List FCovCI(const std::string dir,
 //' ### Not Covariate Adj ###
 //' #########################
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "HDFunctional_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //' n_MCMC <- 200
 //' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
@@ -2424,7 +2424,7 @@ Rcpp::List FCovCI(const std::string dir,
 //' ### Covariate Adj ###
 //' #####################
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "HDFunctional_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //' n_MCMC <- 200
 //' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
@@ -2445,7 +2445,7 @@ Rcpp::List FCovCI(const std::string dir,
 //' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 //' #####################################################################
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "HDFunctional_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //' n_MCMC <- 200
 //' time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
@@ -3059,7 +3059,7 @@ Rcpp::List HDFCovCI(const std::string dir,
 //' #########################
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //' l <- 1
 //' m <- 1
@@ -3071,7 +3071,7 @@ Rcpp::List HDFCovCI(const std::string dir,
 //' ### Covariate Adj ###
 //' #####################
 //'
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //' l <- 1
 //' m <- 1
@@ -3083,7 +3083,7 @@ Rcpp::List HDFCovCI(const std::string dir,
 //' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 //' #####################################################################
 //'
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //' l <- 1
 //' m <- 1
@@ -3424,7 +3424,7 @@ Rcpp::List MVCovCI(const std::string dir,
 //'
 //' @examples
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get CI for Z
@@ -3494,7 +3494,7 @@ Rcpp::List SigmaCI(const std::string dir,
 //'
 //' @examples
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get CI for Z
@@ -3597,7 +3597,7 @@ Rcpp::List ZCI(const std::string dir,
 //' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Hyperparameters
 //' n_files <- 1
@@ -3620,7 +3620,7 @@ Rcpp::List ZCI(const std::string dir,
 //' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Hyperparameters
 //' K <- 2
@@ -3642,7 +3642,7 @@ Rcpp::List ZCI(const std::string dir,
 //' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Hyperparameters
 //' n_files <- 1
@@ -3977,7 +3977,7 @@ double FDIC(const std::string dir,
 //' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Hyperparameters
 //' n_files <- 1
@@ -4000,7 +4000,7 @@ double FDIC(const std::string dir,
 //' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Hyperparameters
 //' n_files <- 1
@@ -4023,7 +4023,7 @@ double FDIC(const std::string dir,
 //' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Hyperparameters
 //' n_files <- 1
@@ -4394,7 +4394,7 @@ double FAIC(const std::string dir,
 //' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Hyperparameters
 //' n_files <- 1
@@ -4417,7 +4417,7 @@ double FAIC(const std::string dir,
 //' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Hyperparameters
 //' n_files <- 1
@@ -4440,7 +4440,7 @@ double FAIC(const std::string dir,
 //' X <- matrix(rnorm(40, 0 , 1), nrow = 40, ncol = 1)
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Hyperparameters
 //' n_files <- 1
@@ -4831,7 +4831,7 @@ double FBIC(const std::string dir,
 //' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Set Hyperparameters
 //' n_files <- 1
@@ -4853,7 +4853,7 @@ double FBIC(const std::string dir,
 //' X <- matrix(rnorm(40), ncol = 1)
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Set Hyperparameters
 //' n_files <- 1
@@ -4875,7 +4875,7 @@ double FBIC(const std::string dir,
 //' X <- matrix(rnorm(40), ncol = 1)
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Set Hyperparameters
 //' n_files <- 1
@@ -5077,7 +5077,7 @@ arma::vec FLLik(const std::string dir,
 //' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get AIC
@@ -5091,7 +5091,7 @@ arma::vec FLLik(const std::string dir,
 //' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get AIC
@@ -5105,7 +5105,7 @@ arma::vec FLLik(const std::string dir,
 //' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get AIC
@@ -5413,7 +5413,7 @@ double MVAIC(const std::string dir,
 //' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get BIC
@@ -5427,7 +5427,7 @@ double MVAIC(const std::string dir,
 //' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get BIC
@@ -5441,7 +5441,7 @@ double MVAIC(const std::string dir,
 //' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get BIC
@@ -5750,7 +5750,7 @@ double MVBIC(const std::string dir,
 //' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get DIC
@@ -5764,7 +5764,7 @@ double MVBIC(const std::string dir,
 //' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get DIC
@@ -5778,7 +5778,7 @@ double MVBIC(const std::string dir,
 //' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get DIC
@@ -6058,7 +6058,7 @@ double MVDIC(const std::string dir,
 //' Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get log likelihood
@@ -6073,7 +6073,7 @@ double MVDIC(const std::string dir,
 //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get log likelihood
@@ -6088,7 +6088,7 @@ double MVDIC(const std::string dir,
 //' X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 //' n_files <- 1
 //'
 //' ## Get log likelihood
@@ -6277,7 +6277,7 @@ arma::vec MVLLik(const std::string dir,
 //' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Set Hyperparameters
 //' n_files <- 1
@@ -6299,7 +6299,7 @@ arma::vec MVLLik(const std::string dir,
 //' X <- matrix(rnorm(40), ncol = 1)
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Set Hyperparameters
 //' n_files <- 1
@@ -6321,7 +6321,7 @@ arma::vec MVLLik(const std::string dir,
 //' X <- matrix(rnorm(40), ncol = 1)
 //'
 //' ## Directory of saved MCMC iterations
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //'
 //' ## Set Hyperparameters
 //' n_files <- 1
@@ -6552,7 +6552,7 @@ arma::vec ConditionalPredictiveOrdinates(const std::string dir,
 //' #########################
 //'
 //' ## Set Hyperparameters
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //' n_files <- 1
 //' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 //' basis_degree <- 3
@@ -6566,7 +6566,7 @@ arma::vec ConditionalPredictiveOrdinates(const std::string dir,
 //' ### Covariate Adj ###
 //' #####################
 //'
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //' n_files <- 1
 //' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 //' basis_degree <- 3
@@ -6582,7 +6582,7 @@ arma::vec ConditionalPredictiveOrdinates(const std::string dir,
 //' ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 //' #####################################################################
 //'
-//' dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+//' dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 //' n_files <- 1
 //' time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 //' basis_degree <- 3

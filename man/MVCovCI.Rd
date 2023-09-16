@@ -69,7 +69,7 @@ The following must be true:
 #########################
 
 ## Set Hyperparameters
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 l <- 1
 m <- 1
@@ -81,7 +81,7 @@ CI <- MVCovCI(dir, n_files, l, m)
 ### Covariate Adj ###
 #####################
 
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 l <- 1
 m <- 1
@@ -93,7 +93,7 @@ CI <- MVCovCI(dir, n_files, l, m)
 ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 #####################################################################
 
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 l <- 1
 m <- 1

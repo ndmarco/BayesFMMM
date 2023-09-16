@@ -68,7 +68,7 @@ Y <- readRDS(system.file("test-data", "Sim_data.RDS", package = "BayesFMMM"))
 time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 
 ## Directory of saved MCMC iterations
-dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 
 ## Set Hyperparameters
 n_files <- 1
@@ -90,7 +90,7 @@ time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 X <- matrix(rnorm(40), ncol = 1)
 
 ## Directory of saved MCMC iterations
-dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 
 ## Set Hyperparameters
 n_files <- 1
@@ -112,7 +112,7 @@ time <- readRDS(system.file("test-data", "time.RDS", package = "BayesFMMM"))
 X <- matrix(rnorm(40), ncol = 1)
 
 ## Directory of saved MCMC iterations
-dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 
 ## Set Hyperparameters
 n_files <- 1

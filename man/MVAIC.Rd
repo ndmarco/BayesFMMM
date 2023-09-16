@@ -34,7 +34,7 @@ Calculates the AIC of a multivariate model
 Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 
 ## Set Hyperparameters
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 
 ## Get AIC
@@ -48,7 +48,7 @@ AIC <- MVAIC(dir, n_files, Y)
 Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 
 ## Get AIC
@@ -62,7 +62,7 @@ AIC <- MVAIC(dir, n_files, Y,  X = X)
 Y <- readRDS(system.file("test-data", "MVSim_data.RDS", package = "BayesFMMM"))
 X <- matrix(rnorm(20, 0 , 1), nrow = 20, ncol = 1)
 
-dir <- system.file("test-data", "Multivariate_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Multivariate_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 
 ## Get AIC

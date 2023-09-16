@@ -83,7 +83,7 @@ The following must be true:
 #########################
 
 ## Set Hyperparameters
-dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 n_files <- 1
 time <- seq(0, 990, 10)
 K <- 2
@@ -98,7 +98,7 @@ CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, 
 ### Covariate Adj ###
 #####################
 
-dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 n_files <- 1
 time <- seq(0, 990, 10)
 K <- 2
@@ -114,7 +114,7 @@ CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, 
 ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 #####################################################################
 
-dir <- system.file("test-data", "Functional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "Functional_trace", package = "BayesFMMM"),"/")
 n_files <- 1
 time <- seq(0, 990, 10)
 K <- 2

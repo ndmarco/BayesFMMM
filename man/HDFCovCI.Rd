@@ -92,7 +92,7 @@ The following must be true:
 ### Not Covariate Adj ###
 #########################
 ## Set Hyperparameters
-dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "HDFunctional_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 n_MCMC <- 200
 time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
@@ -113,7 +113,7 @@ CI <- HDFCovCI(dir, n_files, time1, time2, basis_degree,
 ### Covariate Adj ###
 #####################
 ## Set Hyperparameters
-dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "HDFunctional_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 n_MCMC <- 200
 time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
@@ -134,7 +134,7 @@ CI <- HDFCovCI(dir, n_files, time1, time2, basis_degree,
 ### Covariate Adj  (with Covariate-depenent covariance structure) ###
 #####################################################################
 ## Set Hyperparameters
-dir <- system.file("test-data", "HDFunctional_trace", "", package = "BayesFMMM")
+dir <- paste0(system.file("test-data", "HDFunctional_trace", package = "BayesFMMM"), "/")
 n_files <- 1
 n_MCMC <- 200
 time <- readRDS(system.file("test-data", "HDtime.RDS", package = "BayesFMMM"))
