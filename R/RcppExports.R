@@ -28,6 +28,7 @@
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
+#' @param trans_mats Matrix containing transformations of the variables to help with identifiability when K > 2 (of dimension (K x n_iters) x K)
 #' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior samples fo the mean function are also returned.
 #'
 #' @section Warning:
@@ -92,8 +93,8 @@
 #' CI <- FMeanCI(dir, n_files, time, basis_degree, boundary_knots, internal_knots, K, X = X)
 #'
 #' @export
-FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1, X = NULL) {
-    .Call('_BayesFMMM_FMeanCI', PACKAGE = 'BayesFMMM', dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop, X)
+FMeanCI <- function(dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1, X = NULL, trans_mats = NULL) {
+    .Call('_BayesFMMM_FMeanCI', PACKAGE = 'BayesFMMM', dir, n_files, time, basis_degree, boundary_knots, internal_knots, k, alpha, rescale, simultaneous, burnin_prop, X, trans_mats)
 }
 
 #' Calculates the credible interval for the mean (High Dimensional Functional Data)
@@ -301,6 +302,7 @@ MVMeanCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0
 #' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 #' @param burnin_prop Double containing proportion of MCMC samples to discard
 #' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
+#' @param trans_mats Matrix containing transformations of the variables to help with identifiability when K > 2 (of dimension (K x n_iters) x K)
 #' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function. Posterior estimates of the covariance function are also returned.
 #'
 #' @section Warning:
@@ -378,8 +380,8 @@ MVMeanCI <- function(dir, n_files, alpha = 0.05, rescale = TRUE, burnin_prop = 0
 #'
 #'
 #' @export
-FCovCI <- function(dir, n_files, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1, X = NULL) {
-    .Call('_BayesFMMM_FCovCI', PACKAGE = 'BayesFMMM', dir, n_files, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop, X)
+FCovCI <- function(dir, n_files, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha = 0.05, rescale = TRUE, simultaneous = FALSE, burnin_prop = 0.1, X = NULL, trans_mats = NULL) {
+    .Call('_BayesFMMM_FCovCI', PACKAGE = 'BayesFMMM', dir, n_files, time1, time2, basis_degree, boundary_knots, internal_knots, l, m, alpha, rescale, simultaneous, burnin_prop, X, trans_mats)
 }
 
 #' Calculates the credible interval for the covariance (High Dimensional Functional Data)

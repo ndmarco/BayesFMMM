@@ -30,6 +30,7 @@
 //' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
 //' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
+//' @param trans_mats Matrix containing transformations of the variables to help with identifiability when K > 2 (of dimension (K x n_iters) x K)
 //' @return CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior samples fo the mean function are also returned.
 //'
 //' @section Warning:
@@ -106,7 +107,8 @@ Rcpp::List FMeanCI(const std::string dir,
                    bool rescale = true,
                    const bool simultaneous = false,
                    const double burnin_prop = 0.1,
-                   Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue){
+                   Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
+                   Rcpp::Nullable<Rcpp::NumericMatrix> trans_mats = R_NilValue){
   // initialize object to return
   Rcpp::List CI;
 
@@ -219,6 +221,15 @@ Rcpp::List FMeanCI(const std::string dir,
           f_samp.row(i) = (B * nu_samp.slice(i).row(k-1).t()).t();
         }
       } else{
+        if(trans_mats.isNotNull()){
+          Rcpp::NumericMatrix trans_mats_(trans_mats);
+          arma::mat trans_mats1 = Rcpp::as<arma::mat>(trans_mats_);
+          // rescale nu parameters
+          for(int j = 0; j < nu_samp.n_slices; j++){
+            nu_samp.slice(j) = trans_mats1.submat((j * nu_samp.n_rows), 0,
+                          ((j+1)*nu_samp.n_rows - 1), nu_samp.n_rows - 1) * nu_samp.slice(j);
+          }
+        }
         for(int i = 0; i < nu_samp.n_slices; i++){
           f_samp.row(i) = (B * nu_samp.slice(i).row(k-1).t()).t();
         }
@@ -290,6 +301,15 @@ Rcpp::List FMeanCI(const std::string dir,
           CI_Upper(i) =  f_mean(i) + q(0) * f_sd(i);
         }
       }else{
+        if(trans_mats.isNotNull()){
+          Rcpp::NumericMatrix trans_mats_(trans_mats);
+          arma::mat trans_mats1 = Rcpp::as<arma::mat>(trans_mats_);
+          // rescale nu parameters
+          for(int j = 0; j < nu_samp.n_slices; j++){
+            nu_samp.slice(j) = trans_mats1.submat((j * nu_samp.n_rows), 0,
+                          ((j+1)*nu_samp.n_rows - 1), nu_samp.n_rows - 1) * nu_samp.slice(j);
+          }
+        }
         for(int i = 0; i < nu_samp.n_slices; i++){
           f_samp.row(i) = (B * nu_samp.slice(i).row(k-1).t()).t();
         }
@@ -474,6 +494,33 @@ Rcpp::List FMeanCI(const std::string dir,
           }
         }
       } else{
+        if(trans_mats.isNotNull()){
+          Rcpp::NumericMatrix trans_mats_(trans_mats);
+          arma::mat trans_mats1 = Rcpp::as<arma::mat>(trans_mats_);
+          arma::mat eta_ph = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+          // rescale nu and eta parameters
+          for(int j = 0; j < nu_samp.n_slices; j++){
+            nu_samp.slice(j) = trans_mats1.submat((j * nu_samp.n_rows), 0,
+                          ((j+1)*nu_samp.n_rows - 1), nu_samp.n_rows - 1) * nu_samp.slice(j);
+            // transform eta parameters
+            for(int d = 0; d < X1.n_cols; d++){
+              for(int r = 0; r < nu_samp.n_rows; r++){
+                for(int p = 0; p < nu_samp.n_cols; p++){
+                  eta_ph(r,p) = eta_samp(j,0)(p,d,r);
+                }
+              }
+              eta_ph = trans_mats1.submat((j * nu_samp.n_rows), 0,
+                                          ((j+1)*nu_samp.n_rows - 1), nu_samp.n_rows - 1) * eta_ph;
+              for(int r = 0; r < nu_samp.n_rows; r++){
+                for(int p = 0; p < nu_samp.n_cols; p++){
+                  eta_samp(j,0)(p,d,r) = eta_ph(r,p);
+                }
+              }
+            }
+          }
+
+        }
+
         for(int n = 0; n < X1.n_rows; n++){
           for(int i = 0; i < nu_samp.n_slices; i++){
             f_samp.slice(i).row(n) = (B * (nu_samp.slice(i).row(k-1).t() +
@@ -581,6 +628,32 @@ Rcpp::List FMeanCI(const std::string dir,
         }
 
       }else{
+        if(trans_mats.isNotNull()){
+          Rcpp::NumericMatrix trans_mats_(trans_mats);
+          arma::mat trans_mats1 = Rcpp::as<arma::mat>(trans_mats_);
+          arma::mat eta_ph = arma::zeros(nu_samp.n_rows, nu_samp.n_cols);
+          // rescale nu and eta parameters
+          for(int j = 0; j < nu_samp.n_slices; j++){
+            nu_samp.slice(j) = trans_mats1.submat((j * nu_samp.n_rows), 0,
+                          ((j+1)*nu_samp.n_rows - 1), nu_samp.n_rows - 1) * nu_samp.slice(j);
+            // transform eta parameters
+            for(int d = 0; d < X1.n_cols; d++){
+              for(int r = 0; r < nu_samp.n_rows; r++){
+                for(int p = 0; p < nu_samp.n_cols; p++){
+                  eta_ph(r,p) = eta_samp(j,0)(p,d,r);
+                }
+              }
+              eta_ph = trans_mats1.submat((j * nu_samp.n_rows), 0,
+                                          ((j+1)*nu_samp.n_rows - 1), nu_samp.n_rows - 1) * eta_ph;
+              for(int r = 0; r < nu_samp.n_rows; r++){
+                for(int p = 0; p < nu_samp.n_cols; p++){
+                  eta_samp(j,0)(p,d,r) = eta_ph(r,p);
+                }
+              }
+            }
+          }
+        }
+
         for(int n = 0; n < X1.n_rows; n++){
           for(int i = 0; i < nu_samp.n_slices; i++){
             f_samp.slice(i).row(n) = (B * (nu_samp.slice(i).row(k-1).t() +
@@ -1626,6 +1699,7 @@ Rcpp::List MVMeanCI(const std::string dir,
 //' @param simultaneous Boolean indicating whether or not the credible intervals should be simultaneous credible intervals or pointwise credible intervals
 //' @param burnin_prop Double containing proportion of MCMC samples to discard
 //' @param X Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))
+//' @param trans_mats Matrix containing transformations of the variables to help with identifiability when K > 2 (of dimension (K x n_iters) x K)
 //' @return CI list containing the credible interval for the covariance function, as well as the median posterior estimate of the covariance function. Posterior estimates of the covariance function are also returned.
 //'
 //' @section Warning:
@@ -1717,7 +1791,8 @@ Rcpp::List FCovCI(const std::string dir,
                   bool rescale = true,
                   const bool simultaneous = false,
                   const double burnin_prop = 0.1,
-                  Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue){
+                  Rcpp::Nullable<Rcpp::NumericMatrix> X = R_NilValue,
+                  Rcpp::Nullable<Rcpp::NumericMatrix> trans_mats = R_NilValue){
   Rcpp::List CI;
   arma::vec sigma_i;
   sigma_i.load(dir + "Sigma0.txt");
@@ -1849,6 +1924,17 @@ Rcpp::List FCovCI(const std::string dir,
           }
         }
       }
+      if(trans_mats.isNotNull()){
+        Rcpp::NumericMatrix trans_mats_(trans_mats);
+        arma::mat trans_mats1 = Rcpp::as<arma::mat>(trans_mats_);
+        // rescale nu parameters
+        for(int j = 0; j  < std::round((n_MCMC * n_files) * (1 - burnin_prop)); j++){
+          for(int b = 0; b < phi_samp(j,0).n_slices; b++){
+            phi_samp(j,0).slice(b) = trans_mats1.submat((j * phi_samp(j,0).n_rows), 0,
+                     ((j+1)*phi_samp(j,0).n_rows - 1), phi_samp(j,0).n_rows - 1) * phi_samp(j,0).slice(b);
+          }
+        }
+      }
       for(int i = 0; i < cov_samp.n_slices; i++){
         for(int j = 0; j < phi_samp(i,0).n_slices; j++){
           cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
@@ -1903,6 +1989,18 @@ Rcpp::List FCovCI(const std::string dir,
           }
         }
       }
+      if(trans_mats.isNotNull()){
+        Rcpp::NumericMatrix trans_mats_(trans_mats);
+        arma::mat trans_mats1 = Rcpp::as<arma::mat>(trans_mats_);
+        // rescale nu parameters
+        for(int j = 0; j  < std::round((n_MCMC * n_files) * (1 - burnin_prop)); j++){
+          for(int b = 0; b < phi_samp(j,0).n_slices; b++){
+            phi_samp(j,0).slice(b) = trans_mats1.submat((j * phi_samp(j,0).n_rows), 0,
+                     ((j+1)*phi_samp(j,0).n_rows - 1), phi_samp(j,0).n_rows - 1) * phi_samp(j,0).slice(b);
+          }
+        }
+      }
+
       for(int i = 0; i < cov_samp.n_slices; i++){
         for(int j = 0; j < phi_samp(i,0).n_slices; j++){
           cov_samp.slice(i) = cov_samp.slice(i) + (B1 * (phi_samp(i,0).slice(j).row(l-1)).t() *
@@ -3463,10 +3561,13 @@ Rcpp::List ZCI(const std::string dir,
     }
   }
 
+  arma::cube Z_out = Z_samp.subcube(0,0, std::round(Z_samp.n_slices * burnin_prop),
+                                    Z_samp.n_rows - 1, Z_samp.n_cols - 1, Z_samp.n_slices - 1);
+
   Rcpp::List CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
                                       Rcpp::Named("CI_50", CI_50),
-                                      Rcpp::Named("CI_Lower", CI_Lower));
-
+                                      Rcpp::Named("CI_Lower", CI_Lower),
+                                      Rcpp::Named("Z_trace", Z_out));
   return(CI);
 }
 
@@ -6678,21 +6779,27 @@ Rcpp::List FSamplePaths(const std::string dir,
   arma::field<arma::vec> CI_Upper(Z_samp.n_rows, 1);
   arma::field<arma::vec> CI_Lower(Z_samp.n_rows, 1);
   arma::field<arma::mat> SampPaths(Z_samp.n_rows, 1);
+  arma::field<arma::mat> SampPaths_mean_only(Z_samp.n_rows, 1);
   for(int i = 0; i < Z_samp.n_rows; i++){
     CI_50(i,0) = arma::zeros(time(i,0).n_elem);
     CI_Upper(i,0) = arma::zeros(time(i,0).n_elem);
     CI_Lower(i,0) = arma::zeros(time(i,0).n_elem);
     SampPaths(i,0) = arma::zeros(std::round(Z_samp.n_slices * (1 - burnin_prop)), time(i,0).n_elem);
+    SampPaths_mean_only(i,0) = arma::zeros(std::round(Z_samp.n_slices * (1 - burnin_prop)), time(i,0).n_elem);
   }
 
   double mean = 0;
+  double mean_only = 0;
   for(int i = 0; i < Z_samp.n_rows; i++){
     for(int iter = (Z_samp.n_slices - std::round(Z_samp.n_slices * (1 - burnin_prop))); iter < Z_samp.n_slices; iter++){
       for(int l = 0; l < time(i,0).n_elem; l++){
         mean = 0;
+        mean_only = 0;
         for(int k = 0; k < Z_samp.n_cols; k++){
           if(Z_samp(i,k, iter) != 0){
             mean = mean + Z_samp(i,k, iter) * arma::dot(nu_samp.slice(iter).row(k).t() +
+              (eta_samp(iter,0).slice(k) * X1.row(i).t()), B_obs(i,0).row(l));
+            mean_only = mean_only + Z_samp(i,k, iter) * arma::dot(nu_samp.slice(iter).row(k).t() +
               (eta_samp(iter,0).slice(k) * X1.row(i).t()), B_obs(i,0).row(l));
             for(int n = 0; n < phi_samp(iter,0).n_slices; n++){
               mean = mean + Z_samp(i,k, iter) * chi_samp(i,n, iter) * arma::dot(phi_samp(iter,0).slice(n).row(k).t() +
@@ -6700,7 +6807,8 @@ Rcpp::List FSamplePaths(const std::string dir,
             }
           }
         }
-        SampPaths(i,0)(iter -(Z_samp.n_slices - std::round(Z_samp.n_slices * (1 - burnin_prop))), l) = R::rnorm(mean, sigma_samp(iter));
+        SampPaths_mean_only(i,0)(iter -(Z_samp.n_slices - std::round(Z_samp.n_slices * (1 - burnin_prop))), l) = mean_only;
+        SampPaths(i,0)(iter -(Z_samp.n_slices - std::round(Z_samp.n_slices * (1 - burnin_prop))), l) = R::rnorm(mean, std::sqrt(sigma_samp(iter)));
       }
     }
     Rcpp::Rcout << "Finished function " << i << "\n";
@@ -6749,7 +6857,8 @@ Rcpp::List FSamplePaths(const std::string dir,
   CI =  Rcpp::List::create(Rcpp::Named("CI_Upper", CI_Upper),
                            Rcpp::Named("CI_50", CI_50),
                            Rcpp::Named("CI_Lower", CI_Lower),
-                           Rcpp::Named("Path_trace", SampPaths));
+                           Rcpp::Named("Path_trace", SampPaths),
+                           Rcpp::Named("Mean_only_Path_trace", SampPaths_mean_only));
   return(CI);
 }
 

@@ -16,7 +16,8 @@ FMeanCI(
   rescale = TRUE,
   simultaneous = FALSE,
   burnin_prop = 0.1,
-  X = NULL
+  X = NULL,
+  trans_mats = NULL
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ FMeanCI(
 \item{burnin_prop}{Double containing proportion of MCMC samples to discard}
 
 \item{X}{Matrix containing covariates at points of interest (of dimension W x D (number of points of interest x number of covariates))}
+
+\item{trans_mats}{Matrix containing transformations of the variables to help with identifiability when K > 2 (of dimension (K x n_iters) x K)}
 }
 \value{
 CI list containing the credible interval for the mean function, as well as the median posterior estimate of the mean function. Posterior samples fo the mean function are also returned.
