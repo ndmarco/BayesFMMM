@@ -48,3 +48,16 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
+
+      - name: Build binary package
+        run: |
+          dir.create("build")
+          remotes::install_cran("devtools")
+          devtools::build(path = "build", binary = TRUE)
+        shell: Rscript {0}
+
+      - name: Upload build results
+        uses: actions/upload-artifact@main
+        with:
+          name: r-${{ matrix.config.r }}-pkg
+          path: build
