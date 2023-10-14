@@ -2038,7 +2038,6 @@ Rcpp::List BFMMM_warm_start(const int tot_mcmc_iters,
       arma::field<arma::cube> gamma_xi_est(1,K);
 
       for(int j = 0; j < K; j++){
-        Rcpp::Rcout << "j =" << K;
         xi_est(0,j) = arma::zeros(xi_samp(0,j).n_rows, xi_samp(0,j).n_cols,
                xi_samp(0,j).n_slices);
         gamma_xi_est(0,j) = arma::zeros(gamma_xi_samp(0,j).n_rows,
