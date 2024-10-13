@@ -102,7 +102,9 @@ ${\color{blue}A_\Xi}$ | [MCMC_iters] (K, 2, D) | Parameters used in the prior on
 #### Associated Repositories
  1. [Simulation Studies and Case Studies for Functional Data](https://github.com/ndmarco/BFMMM_Functional_Sims)
  2. [Simulation Studies and Case Studies for Multivariate Data](https://github.com/ndmarco/BFMMM_Multivariate_Sims)
+ 3. [Simulation Studies and Case Studies for Covariate Adjusted Functional Mixed Membership Models](https://github.com/ndmarco/BFMMM_CA_Functional_Sims)
  
 #### Associated Papers
  1. [Functional Mixed Membership Models](https://www.tandfonline.com/doi/full/10.1080/10618600.2024.2304633)
  2. [Flexible Regularized Estimation in High-Dimensional Mixed Membership Models](https://www.sciencedirect.com/science/article/abs/pii/S016794732400015X)
+ 3. [Covariate Adjusted Functional Mixed Membership Models](https://arxiv.org/abs/2410.00370)
