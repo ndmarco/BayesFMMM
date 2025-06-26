@@ -108,3 +108,8 @@ ${\color{blue}A_\Xi}$ | [MCMC_iters] (K, 2, D) | Parameters used in the prior on
  1. [Functional Mixed Membership Models](https://www.tandfonline.com/doi/full/10.1080/10618600.2024.2304633)
  2. [Flexible Regularized Estimation in High-Dimensional Mixed Membership Models](https://www.sciencedirect.com/science/article/abs/pii/S016794732400015X)
  3. [Covariate Adjusted Functional Mixed Membership Models](https://arxiv.org/abs/2410.00370)
+
+***
+
+### Installation Note
+Our package can be installed and compiled via the `devtools` package using the function `install_github('ndmarco/BayesFMMM')`. However, to install the package this way, you will need the GNU compiler collection (GCC) to compile the code. On Mac OS you will also need to install the Xcode developer tools. See [r-project](https://mac.r-project.org/tools/) to install the GNU Fortran compiler and for instructions on how to install the Xcode developer tools. On windows, you will need to install the RTools package from [r-project](https://cran.r-project.org/bin/windows/Rtools/). This [website](https://clanfear.github.io/CSSS508/docs/compiling.html)  can also be a helpful resource for compiling R packages on Mac or Windows. The R package also depends on the following R packages: Rcpp, RcppArmadillo, RcppDist, splines2 (>= 0.3.0), and testthat.
